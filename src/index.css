@@ -1,0 +1,57 @@
+@import url("https://fonts.googleapis.com/css2?family=Nunito&display=swap");
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+* {
+  font-family: "Nunito", sans-serif;
+}
+/* CSS */
+/* Select the scrollbar */
+::-webkit-scrollbar {
+  width: 14px; /* Set the width of the scrollbar */
+  height: 14px;
+}
+
+/* Handle of the scrollbar */
+::-webkit-scrollbar-thumb {
+  background-color: #888; /* Set the color of the scrollbar handle */
+  border-radius: 4px; /* Rounded corners for the scrollbar handle */
+}
+
+/* Track of the scrollbar */
+::-webkit-scrollbar-track {
+  background-color: #f1f1f1; /* Set the color of the scrollbar track */
+  border-radius: 4px; /* Rounded corners for the scrollbar track */
+}
+
+/* Hover effect on the scrollbar handle */
+::-webkit-scrollbar-thumb:hover {
+  background-color: #555; /* Change color on hover */
+}
+
+.placeholder-style::placeholder {
+  color: #555; /* Set the color of the placeholder text */
+  font-style: italic; /* Make the placeholder text italic */
+}
+
+.loading-spinner {
+  display: inline-block;
+  animation: rotate360 infinite 2s linear;
+}
+
+@keyframes rotate360 {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.selected-row {
+  background-color: #ffeeba;
+}
+.updated-row {
+  background-color: #b1f0be;
+}
