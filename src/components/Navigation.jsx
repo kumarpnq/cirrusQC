@@ -27,7 +27,7 @@ const Navigation = () => {
   };
 
   return (
-    <div className="rounded-lg shadow-md bg-primary">
+    <div className="sticky top-0 z-50 rounded-lg shadow-md bg-primary">
       <ul className="flex border-b border-gray-200 justify-evenly">
         <h1 className="px-4 text-xl font-bold text-gray-500 uppercase border-transparent">
           Research
@@ -51,6 +51,16 @@ const Navigation = () => {
                   onClick={handleQc2PrintClick}
                 >
                   Print
+                </button>
+              </NavLink>
+            </li>
+            <li className="mr-1 -mb-px">
+              <NavLink to={"/dump"}>
+                <button
+                  className="inline-block px-4 tracking-wider text-gray-200 uppercase bg-transparent border-b-2 border-transparent cursor-pointer hover:text-slate-500 hover:border-gray-500 focus:outline-none"
+                  // onClick={handleQc2PrintClick}
+                >
+                  Dump
                 </button>
               </NavLink>
             </li>

@@ -1,8 +1,13 @@
 import { useContext, useEffect, useState } from "react";
 import { makeStyles } from "@mui/styles";
+import TextFields from "../components/TextFields/TextField";
 import { url } from "../constants/baseUrl";
+
+// ** constantss
 import { formattedDate, formattedNextDay } from "../constants/dates";
 import { qc1Array, qc2Array } from "../constants/dataArray";
+
+// **component imports
 import Client from "./dropdowns/Client";
 import Category from "./dropdowns/Category";
 import useFetchData from "../hooks/useFetchData";
@@ -64,6 +69,8 @@ const DDComp = () => {
   const [pubType, setPubType] = useState(1);
   const [category, setCategory] = useState("");
   const [subject, setSubject] = useState("");
+  const [mProm, setMProm] = useState();
+  const [pageNo, setPageNo] = useState();
   // reporting tone
   const [reportingTones, setReportingTones] = useState([]);
   const [reportingTone, setReportingTone] = useState("");
@@ -196,6 +203,18 @@ const DDComp = () => {
         requestData,
         "city",
         arrayToString(city)
+      );
+      addPropertyIfConditionIsTrue(
+        pageNo && Number(pageNo),
+        requestData,
+        "pagenumber",
+        Number(pageNo)
+      );
+      addPropertyIfConditionIsTrue(
+        mProm && Number(mProm),
+        requestData,
+        "manualprominence",
+        Number(mProm)
       );
 
       const headers = {
@@ -366,6 +385,22 @@ const DDComp = () => {
             language={languages}
             setLanguage={setLanguages}
             classes={classes}
+          />
+        </div>
+        <div className="h-[25px] flex items-center justify-center w-[95px]">
+          <TextFields
+            placeholder="Prominence"
+            type={"number"}
+            value={mProm}
+            setValue={setMProm}
+          />
+        </div>
+        <div className="h-[25px] flex items-center justify-center w-[95px]">
+          <TextFields
+            placeholder="Page"
+            type={"number"}
+            value={pageNo}
+            setValue={setPageNo}
           />
         </div>
         <div className="h-[25px] flex items-center justify-center">

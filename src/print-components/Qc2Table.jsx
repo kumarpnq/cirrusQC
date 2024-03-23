@@ -217,7 +217,11 @@ const Qc2Table = ({
                     <td className="px-6 py-4 whitespace-nowrap">
                       {items.total_space}
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
+                    <td
+                      className={`px-6 py-4 whitespace-nowrap ${
+                        items.reporting_tone === "Unknown" && "text-[#FF7F7F]"
+                      }`}
+                    >
                       {items.reporting_tone}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
@@ -264,10 +268,19 @@ const Qc2Table = ({
                     <td className="px-6 py-4 whitespace-nowrap">
                       {items.company_id}
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
+                    <td
+                      className={`px-6 py-4 whitespace-nowrap ${
+                        items.system_prominence === "Unknown" &&
+                        "text-[#FF7F7F]"
+                      }`}
+                    >
                       {items.system_prominence}
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
+                    <td
+                      className={`px-6 py-4 whitespace-nowrap ${
+                        items.other_prominence === "Unknown" && "text-[#FF7F7F]"
+                      }`}
+                    >
                       {items.other_prominence}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">{items.box}</td>

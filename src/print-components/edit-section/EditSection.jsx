@@ -139,10 +139,10 @@ const EditSection = ({
     }, 0);
   };
   const handleSave = async () => {
-    setSaveLoading(!saveLoading);
     const dateNow = new Date();
     const formattedDate = dateNow.toISOString().slice(0, 19).replace("T", " ");
     const dataToSending = updatedData.map((row) => ({
+      ARTICLEID: row.article_id,
       COMPANYID: row.company_id,
       DETAILSUMMARY: row.detail_summary,
       KEYWORD: row.keyword,
@@ -159,29 +159,27 @@ const EditSection = ({
       REMARKS: row.remarks,
     }));
     try {
-      const url = `${import.meta.env.VITE_BASE_URL}endpoint/`;
+      const url = `${import.meta.env.VITE_BASE_URL}updatePrint2database/`;
       if (dataToSending.length > 0) {
-        await axios.post(url, dataToSending, {
+        setSaveLoading(true);
+        const res = await axios.post(url, dataToSending, {
           headers: {
             "Content-Type": "application/json",
             Authorization: "Bearer " + userToken,
           },
         });
+        res.statusText === "OK" && toast.success("Row Updated");
         setSelectedItems([]);
         setHighlightRows([]);
-        setSaveLoading(!saveLoading);
+        setSaveLoading(false);
         setRetrieveAfterSave((prev) => !prev);
+        setUpdatedData([]);
       } else {
         toast.warning("No Data to Save.");
-        setRetrieveAfterSave((prev) => !prev);
-        setSaveLoading(!saveLoading);
       }
     } catch (error) {
       console.log(error);
-      setSaveLoading(!saveLoading);
-    } finally {
-      setSaveLoading(!saveLoading);
-      setRetrieveAfterSave((prev) => !prev);
+      setSaveLoading(false);
     }
   };
   return (
@@ -221,7 +219,10 @@ const EditSection = ({
           onClick={handleApplyChanges}
           isLoading={applyLoading}
         />
-        <Button btnText="Save" onClick={handleSave} />
+        <Button
+          btnText={saveLoading ? "Loading" : "Save"}
+          onClick={handleSave}
+        />
       </div>
       <div className="flex flex-wrap items-center gap-2 ">
         <HeaderForEdits
