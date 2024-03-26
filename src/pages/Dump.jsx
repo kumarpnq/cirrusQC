@@ -21,6 +21,8 @@ import Qc2All from "../components/research-dropdowns/Qc2All";
 import Qc1By from "../components/research-dropdowns/Qc1By";
 import Qc2By from "../components/research-dropdowns/Qc2By";
 import Button from "../components/custom/Button";
+import BasicTabs from "../dump-components/customTabPanel";
+import AlertDialogSlide from "../dump-components/alertSlide";
 
 const useStyle = makeStyles(() => ({
   dropDowns: {
@@ -40,6 +42,7 @@ const useStyle = makeStyles(() => ({
 }));
 const Dump = () => {
   // states
+  const [tabValue, setTabValue] = useState(0);
   const [clients, setClients] = useState([]);
   const [selectedClient, setSelectedClient] = useState("");
   const [companies, setCompanies] = useState([]);
@@ -52,6 +55,8 @@ const Dump = () => {
   const [qc1By, setQc1By] = useState([]);
   const [qc2By, setQc2By] = useState([]);
   const [dumpLoading, setDumpLoading] = useState(false);
+  const [openDialog, setOpenDialog] = useState(false);
+  const [selectedColumnsForDump, setSelectedColumnsForDump] = useState([]);
 
   // clients
   const {
@@ -79,12 +84,26 @@ const Dump = () => {
   });
   const qcUsersData = qcUserData?.data?.qc_users || [];
 
+  const { data: articleData } = useFetchData(
+    `${url}articlecolumnslist/`,
+    tabValue
+  );
+  const articleFeedList = articleData?.data?.socialfeedlist || {};
+
+  const { data: socialFeedData } = useFetchData(
+    `${url}socialfeedcolumnslist/`,
+    tabValue
+  );
+  const socialFeedList = socialFeedData?.data?.socialfeedlist || {};
+
+  const columnsForDump = tabValue ? articleFeedList : socialFeedList;
+
   const handleDump = () => {
-    setDumpLoading((prev) => !prev);
     if (!selectedClient) {
-      toast.warning("Please select the fields.");
-      setDumpLoading((prev) => !prev);
+      return toast.warning("Please select the fields.");
     }
+    setDumpLoading((prev) => !prev);
+    setOpenDialog(true);
     setDumpLoading((prev) => !prev);
   };
 
@@ -92,83 +111,103 @@ const Dump = () => {
 
   const classes = useStyle();
   return (
-    <div className="h-screen mx-3">
-      <div className="flex flex-wrap items-center gap-1 mt-2 ">
-        <div className="flex items-center mt-1" style={{ height: 25 }}>
-          <SearchableDropdown
-            options={clients}
-            testclient={selectedClient}
-            setTestClient={setSelectedClient}
-            label="Clients"
-            width={300}
+    <div className="mt-1">
+      <BasicTabs value={tabValue} setValue={setTabValue} />
+      <div className="h-screen mx-3">
+        <div className="flex flex-wrap items-center gap-1 mt-2 ">
+          <div className="flex items-center mt-1" style={{ height: 25 }}>
+            <SearchableDropdown
+              options={clients}
+              testclient={selectedClient}
+              setTestClient={setSelectedClient}
+              label="Clients"
+              width={300}
+            />
+          </div>
+          {/* company */}
+          <CustomAutocomplete
+            companies={selectedCompanies}
+            setCompanies={setSelectedCompanies}
+            company={companies}
           />
-        </div>
-        {/* company */}
-        <CustomAutocomplete
-          companies={selectedCompanies}
-          setCompanies={setSelectedCompanies}
-          company={companies}
-        />
-        <Datetype
-          dateType={dateType}
-          setDateType={setDateType}
-          dateTypes={dateTypes}
-          classes={classes}
-        />
-        <div className="h-[25px] flex items-center justify-center">
-          <FromDate fromDate={fromDate} setFromDate={setFromDate} />
-        </div>
-        <div className="h-[25px] flex items-center justify-center">
-          <ToDate dateNow={toDate} setDateNow={setToDate} />
-        </div>
-        <div className="h-[25px] flex items-center justify-center">
-          <Qc1All
-            qc1done={qc1Done}
-            setQc1done={setQc1Done}
-            classes={classes}
-            qc1Array={qc1Array}
-          />
-        </div>
-        <div className="h-[25px] flex items-center justify-center">
-          <Qc2All
-            qc2done={qc2Done}
-            setQc2done={setQc2Done}
-            s
-            classes={classes}
-            qc2Array={qc2Array}
-          />
-        </div>
-        <div className="h-[25px] flex items-center justify-center">
-          <Qc1By
-            qcUsersData={qcUsersData}
-            qc1by={qc1By}
-            setQc1by={setQc1By}
+          <Datetype
+            dateType={dateType}
+            setDateType={setDateType}
+            dateTypes={dateTypes}
             classes={classes}
           />
-        </div>
-        <div className="h-[25px] flex items-center justify-center">
-          <Qc2By
-            qcUsersData={qcUsersData}
-            classes={classes}
-            qc2by={qc2By}
-            setQc2by={setQc2By}
-          />
-        </div>
-        <div className="h-[25px] flex items-center justify-center">
-          <Button
-            btnText={dumpLoading ? "Searching" : "Search"}
-            onClick={handleDump}
-            isLoading={dumpLoading}
-          />
-        </div>
-        <div className="h-[25px] flex items-center justify-center">
-          <Button
-            btnText={"Reset"}
-            onClick={handleReset}
-            // isLoading={dumpLoading}
-          />
+          <div className="h-[25px] flex items-center justify-center">
+            <FromDate fromDate={fromDate} setFromDate={setFromDate} />
+          </div>
+          <div className="h-[25px] flex items-center justify-center">
+            <ToDate dateNow={toDate} setDateNow={setToDate} />
+          </div>
+          <div className="h-[25px] flex items-center justify-center">
+            <Qc1All
+              qc1done={qc1Done}
+              setQc1done={setQc1Done}
+              classes={classes}
+              qc1Array={qc1Array}
+            />
+          </div>
+          <div className="h-[25px] flex items-center justify-center">
+            <Qc2All
+              qc2done={qc2Done}
+              setQc2done={setQc2Done}
+              s
+              classes={classes}
+              qc2Array={qc2Array}
+            />
+          </div>
+          <div className="h-[25px] flex items-center justify-center">
+            <Qc1By
+              qcUsersData={qcUsersData}
+              qc1by={qc1By}
+              setQc1by={setQc1By}
+              classes={classes}
+            />
+          </div>
+          <div className="h-[25px] flex items-center justify-center">
+            <Qc2By
+              qcUsersData={qcUsersData}
+              classes={classes}
+              qc2by={qc2By}
+              setQc2by={setQc2By}
+            />
+          </div>
+          <div className="h-[25px] flex items-center justify-center">
+            <Button
+              btnText={dumpLoading ? "Searching" : "Search"}
+              onClick={handleDump}
+              isLoading={dumpLoading}
+            />
+          </div>
+          <div className="h-[25px] flex items-center justify-center">
+            <Button
+              btnText={"Reset"}
+              onClick={handleReset}
+              // isLoading={dumpLoading}
+            />
+          </div>
         </div>
       </div>
+      <AlertDialogSlide
+        open={openDialog}
+        setOpen={setOpenDialog}
+        data={columnsForDump}
+        selectedColumnForDump={selectedColumnsForDump}
+        setSelectedColumnsForDump={setSelectedColumnsForDump}
+        tabValue={tabValue}
+        clientId={selectedClient}
+        companyId={selectedCompanies}
+        dateType={dateType}
+        fromDate={fromDate}
+        toDate={toDate}
+        qc1By={qc1By}
+        qc2By={qc2By}
+        isQc1={qc1Done}
+        isQc2={qc2Done}
+      />
     </div>
   );
 };

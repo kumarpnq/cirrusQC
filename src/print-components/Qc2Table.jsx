@@ -6,6 +6,7 @@ import EditSection from "./edit-section/EditSection";
 import Loader from "../components/loader/Loader";
 import { AiOutlineLoading } from "react-icons/ai";
 import Pagination from "../components/pagination/Pagination";
+import { IoIosArrowRoundDown, IoIosArrowRoundUp } from "react-icons/io";
 
 const Qc2Table = ({
   isTableDataLoading,
@@ -26,6 +27,9 @@ const Qc2Table = ({
   const [tableLoading, setTableLoading] = useState(false);
   const [masterCheckBoxLoading, setMasterCheckBoxLoading] = useState(false);
   const [checkBoxLoading, setCheckBoxLoading] = useState(false);
+  const [sortedColumn, setSortedColumn] = useState(null);
+  const [sortedAscending, setSortedAscending] = useState(true);
+
   useEffect(() => {
     if (qc2PrintTableData && qc2PrintTableData?.length > 0) {
       const header = Object.keys(qc2PrintTableData[0]);
@@ -105,6 +109,10 @@ const Qc2Table = ({
 
   // sorting a tableData
   const sortTableData = (header) => {
+    // Update sorting column and order
+    setSortedColumn(header);
+    setSortedAscending((prev) => (header === sortedColumn ? !prev : true));
+
     if (qc2PrintTableData?.length > 0) {
       const sortedData = [...qc2PrintTableData].sort((a, b) => {
         if (a[header] < b[header]) return -1;
@@ -171,9 +179,33 @@ const Qc2Table = ({
                     <th
                       key={item}
                       scope="col"
-                      className={`px-6 py-3 text-left text-xs font-medium uppercase tracking-wider cursor-pointer whitespace-nowrap`}
+                      className={`px-6 py-1 text-left text-xs font-medium uppercase tracking-wider cursor-pointer whitespace-nowrap`}
                       onClick={() => sortTableData(item)}
                     >
+                      <span className="flex">
+                        <IoIosArrowRoundUp
+                          style={{
+                            color:
+                              item === sortedColumn
+                                ? sortedAscending
+                                  ? "green"
+                                  : "red"
+                                : "",
+                            fontSize: "x-small",
+                          }}
+                        />
+                        <IoIosArrowRoundDown
+                          style={{
+                            color:
+                              item === sortedColumn
+                                ? sortedAscending
+                                  ? "red"
+                                  : "green"
+                                : "",
+                            fontSize: "x-small",
+                          }}
+                        />
+                      </span>
                       {item.toUpperCase().replace(/_/g, " ")}
                     </th>
                   ))}
@@ -187,7 +219,7 @@ const Qc2Table = ({
                       selectedItems.includes(items) ? "selected-row" : ""
                     } ${highlightRows.includes(items) ? "updated-row" : ""}`}
                   >
-                    <td className="sticky left-0 px-6 py-4 bg-white top-10 whitespace-nowrap">
+                    <td className="sticky left-0 px-6 py-2 bg-white top-10 whitespace-nowrap">
                       <input
                         type="checkbox"
                         checked={selectedItems.includes(items)}
@@ -195,11 +227,21 @@ const Qc2Table = ({
                       />
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
-                      {items.company_name}
+                      <div className="w-28 truncate">{items.company_name}</div>
                     </td>
                     <Tooltip placement="top" title={items.headline}>
-                      <td className="px-6 py-4 overflow-hidden whitespace-nowrap">
-                        <div className="w-48 truncate">{items.headline}</div>
+                      <td className="px-6 py-4">
+                        <div
+                          className="w-48"
+                          style={{
+                            display: "-webkit-box",
+                            WebkitBoxOrient: "vertical",
+                            WebkitLineClamp: 2,
+                            overflow: "hidden",
+                          }}
+                        >
+                          {items.headline}
+                        </div>
                       </td>
                     </Tooltip>
                     <td className="px-6 py-4 whitespace-nowrap">
@@ -230,12 +272,30 @@ const Qc2Table = ({
                     <td className="px-6 py-4 whitespace-nowrap">
                       {items.remark}
                     </td>
-                    <td className="px-6 py-4 overflow-hidden whitespace-nowrap">
-                      <div className="w-48 truncate">{items.keyword}</div>
+                    <td className="px-6 py-4 overflow-hidden">
+                      <div
+                        className="w-48"
+                        style={{
+                          display: "-webkit-box",
+                          WebkitBoxOrient: "vertical",
+                          WebkitLineClamp: 2,
+                          overflow: "hidden",
+                        }}
+                      >
+                        {items.keyword}
+                      </div>
                     </td>
                     <Tooltip placement="top" title={items.detail_summary}>
-                      <td className="px-6 py-4 overflow-hidden whitespace-nowrap">
-                        <div className="w-48 truncate">
+                      <td className="px-6 py-4 overflow-hidden">
+                        <div
+                          className="w-48"
+                          style={{
+                            display: "-webkit-box",
+                            WebkitBoxOrient: "vertical",
+                            WebkitLineClamp: 2,
+                            overflow: "hidden",
+                          }}
+                        >
                           {items.detail_summary}
                         </div>
                       </td>
@@ -250,8 +310,16 @@ const Qc2Table = ({
                       {items.city_name}
                     </td>
                     <Tooltip placement="top" title={items.head_summary}>
-                      <td className="px-2 py-4 whitespace-nowrap">
-                        <div className="w-48 truncate">
+                      <td className="px-2 py-4 ">
+                        <div
+                          className="w-48 "
+                          style={{
+                            display: "-webkit-box",
+                            WebkitBoxOrient: "vertical",
+                            WebkitLineClamp: 2,
+                            overflow: "hidden",
+                          }}
+                        >
                           {items.head_summary}
                         </div>
                       </td>

@@ -1,6 +1,7 @@
 import * as React from "react";
 import { useContext } from "react";
-import { NavLink, useLocation } from "react-router-dom";
+import { NavLink, useLocation, useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
 import { styled, alpha } from "@mui/material/styles";
 import AppBar from "@mui/material/AppBar";
 import Box from "@mui/material/Box";
@@ -70,10 +71,18 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
   },
 }));
 
+const navList = [
+  { id: 1, title: "Online", path: "/", icon: <HiStatusOnline /> },
+  { id: 2, title: "Print", path: "/print", icon: <FaPrint /> },
+  { id: 3, title: "Dump", path: "/dump", icon: <FaDumpster /> },
+];
 export default function MainNav() {
+  const navigate = useNavigate();
   const [anchorEl, setAnchorEl] = React.useState(null);
   const [mobileMoreAnchorEl, setMobileMoreAnchorEl] = React.useState(null);
   const [open, setOpen] = React.useState(false);
+  const [searchValue, setSearchValue] = React.useState();
+  const [filteredNavItems, setFilteredNavItems] = React.useState([]);
   const { userToken, handleLogout } = useContext(ResearchContext);
   const location = useLocation();
 
@@ -105,6 +114,30 @@ export default function MainNav() {
     handleMobileMenuClose();
     handleMenuClose();
     handleLogout();
+  };
+
+  const handleSearchValue = React.useCallback((event) => {
+    const { value } = event.target;
+    setSearchValue(value);
+    const list = navList.map((i) => i.title);
+    const filteredItems = list.filter((item) =>
+      item.toLowerCase().includes(value.toLowerCase())
+    );
+    setFilteredNavItems(filteredItems || []);
+  }, []);
+
+  const handleEnterKeyPress = (event) => {
+    if (event.key === "Enter") {
+      if (searchValue === "online") {
+        navigate("/");
+      } else if (searchValue === "print") {
+        navigate("/print");
+      } else if (searchValue === "dump") {
+        navigate("/dump");
+      } else {
+        toast.error("No such page found.");
+      }
+    }
   };
 
   const menuId = "primary-search-account-menu";
@@ -180,12 +213,6 @@ export default function MainNav() {
     </Menu>
   );
 
-  const navList = [
-    { id: 1, title: "Online", path: "/", icon: <HiStatusOnline /> },
-    { id: 2, title: "Print", path: "/print", icon: <FaPrint /> },
-    { id: 3, title: "Dump", path: "/dump", icon: <FaDumpster /> },
-  ];
-
   const DrawerList = (
     <Box sx={{ width: 200 }} role="presentation" onClick={toggleDrawer(false)}>
       <List>
@@ -255,8 +282,12 @@ export default function MainNav() {
               <StyledInputBase
                 placeholder="Search…"
                 inputProps={{ "aria-label": "search" }}
+                value={searchValue}
+                onChange={handleSearchValue}
+                onKeyDown={handleEnterKeyPress}
               />
             </Search>
+
             <Box sx={{ flexGrow: 1 }} />
             <Box sx={{ display: { xs: "none", md: "flex" } }}>
               {/* <IconButton
