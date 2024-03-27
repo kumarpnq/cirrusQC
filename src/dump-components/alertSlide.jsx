@@ -78,7 +78,7 @@ export default function AlertDialogSlide(props) {
 
     try {
       const request_data = {
-        client_id: clientId, //"AVIANKIA",
+        client_id: clientId,
         date_type: dateType,
         from_date: fromDate,
         to_date: toDate,
@@ -108,25 +108,19 @@ export default function AlertDialogSlide(props) {
         responseType: "blob",
       });
 
-      // Create a Blob object from the binary data
       const blob = new Blob([response.data], {
         type: "application/octet-stream",
       });
+      const filename = `${clientId + endPoint.slice(0, -1)}.xlsx`;
 
-      // Generate a unique filename or use a default one
-      const filename = "downloaded_file.xlsx"; // Adjust the filename as needed
-
-      // Create a temporary URL for the Blob object
       const urls = window.URL.createObjectURL(blob);
 
-      // Create a link element and trigger the download
       const link = document.createElement("a");
       link.href = urls;
-      link.setAttribute("download", filename); // Use the filename
+      link.setAttribute("download", filename);
       document.body.appendChild(link);
       link.click();
 
-      // Clean up
       window.URL.revokeObjectURL(urls);
 
       setDumpLoading((prev) => !prev);

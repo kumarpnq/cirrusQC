@@ -37,9 +37,14 @@ function a11yProps(index) {
   };
 }
 
-export default function BasicTabs({ value, setValue }) {
+export default function BasicTabs({
+  value,
+  setValue,
+  setSelectedColumnsForDump,
+}) {
   const handleChange = (event, newValue) => {
     setValue(newValue);
+    setSelectedColumnsForDump([]);
   };
 
   return (
@@ -61,4 +66,5 @@ export default function BasicTabs({ value, setValue }) {
 BasicTabs.propTypes = {
   value: PropTypes.number.isRequired,
   setValue: PropTypes.func.isRequired,
+  setSelectedColumnsForDump: PropTypes.func.isRequired,
 };

@@ -179,7 +179,7 @@ const Qc2Table = ({
                     <th
                       key={item}
                       scope="col"
-                      className={`px-6 py-1 text-left text-xs font-medium uppercase tracking-wider cursor-pointer whitespace-nowrap`}
+                      className={`px-3 py-1 text-left text-xs font-medium uppercase tracking-wider cursor-pointer whitespace-nowrap`}
                       onClick={() => sortTableData(item)}
                     >
                       <span className="flex">
@@ -226,13 +226,13 @@ const Qc2Table = ({
                         onChange={() => handleCheckboxChange(items)}
                       />
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="w-28 truncate">{items.company_name}</div>
+                    <td className="px-3 py-4 whitespace-nowrap">
+                      <div className="w-28 truncate">{items.company}</div>
                     </td>
                     <Tooltip placement="top" title={items.headline}>
-                      <td className="px-6 py-4">
+                      <td className="px-3 py-4">
                         <div
-                          className="w-48"
+                          className="w-60"
                           style={{
                             display: "-webkit-box",
                             WebkitBoxOrient: "vertical",
@@ -244,7 +244,7 @@ const Qc2Table = ({
                         </div>
                       </td>
                     </Tooltip>
-                    <td className="px-6 py-4 whitespace-nowrap">
+                    <td className="px-3 py-4 whitespace-nowrap">
                       <div className="w-48 truncate">
                         {items.publication_name}
                       </div>
@@ -253,28 +253,28 @@ const Qc2Table = ({
                       {items.manual_prominence}
                     </td>
 
-                    <td className="px-6 py-4 whitespace-nowrap">
+                    <td className="px-3 py-4 whitespace-nowrap">
                       {items.space}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       {items.total_space}
                     </td>
                     <td
-                      className={`px-6 py-4 whitespace-nowrap ${
+                      className={`px-3 py-4 whitespace-nowrap ${
                         items.reporting_tone === "Unknown" && "text-[#FF7F7F]"
                       }`}
                     >
                       {items.reporting_tone}
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
+                    <td className="px-3 py-4 whitespace-nowrap">
                       {items.reporting_subject}
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
+                    <td className="px-3 py-4 whitespace-nowrap">
                       {items.remark}
                     </td>
-                    <td className="px-6 py-4 overflow-hidden">
+                    <td className="px-3 py-4 overflow-hidden">
                       <div
-                        className="w-48"
+                        className="w-52"
                         style={{
                           display: "-webkit-box",
                           WebkitBoxOrient: "vertical",
@@ -286,9 +286,9 @@ const Qc2Table = ({
                       </div>
                     </td>
                     <Tooltip placement="top" title={items.detail_summary}>
-                      <td className="px-6 py-4 overflow-hidden">
+                      <td className="px-3 py-4 overflow-hidden">
                         <div
-                          className="w-48"
+                          className="w-60"
                           style={{
                             display: "-webkit-box",
                             WebkitBoxOrient: "vertical",
@@ -300,19 +300,19 @@ const Qc2Table = ({
                         </div>
                       </td>
                     </Tooltip>
-                    <td className="px-6 py-4 whitespace-nowrap">
+                    <td className="px-3 py-4 whitespace-nowrap">
                       <div className="w-40 truncate">{items.journalist}</div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       {items.subcategory}
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
+                    <td className="px-3 py-4 whitespace-nowrap">
                       {items.city_name}
                     </td>
                     <Tooltip placement="top" title={items.head_summary}>
                       <td className="px-2 py-4 ">
                         <div
-                          className="w-48 "
+                          className="w-60"
                           style={{
                             display: "-webkit-box",
                             WebkitBoxOrient: "vertical",
@@ -324,20 +324,20 @@ const Qc2Table = ({
                         </div>
                       </td>
                     </Tooltip>
-                    <td className="px-6 py-4 whitespace-nowrap">
+                    <td className="px-3 py-4 whitespace-nowrap">
                       {items.qc1_done}
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
+                    <td className="px-3 py-4 whitespace-nowrap">
                       {items.qc2_done}
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
+                    <td className="px-3 py-4 whitespace-nowrap">
                       {items.article_id}
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
+                    <td className="px-3 py-4 whitespace-nowrap">
                       {items.company_id}
                     </td>
                     <td
-                      className={`px-6 py-4 whitespace-nowrap ${
+                      className={`px-3 py-4 whitespace-nowrap ${
                         items.system_prominence === "Unknown" &&
                         "text-[#FF7F7F]"
                       }`}
@@ -345,27 +345,27 @@ const Qc2Table = ({
                       {items.system_prominence}
                     </td>
                     <td
-                      className={`px-6 py-4 whitespace-nowrap ${
+                      className={`px-3 py-4 whitespace-nowrap ${
                         items.other_prominence === "Unknown" && "text-[#FF7F7F]"
                       }`}
                     >
                       {items.other_prominence}
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap">{items.box}</td>
-                    <td className="px-6 py-4 whitespace-nowrap">
+                    <td className="px-3 py-4 whitespace-nowrap">{items.box}</td>
+                    <td className="px-3 py-4 whitespace-nowrap">
                       {items.box_value}
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
+                    <td className="px-3 py-4 whitespace-nowrap">
                       {items.page_number}
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
+                    <td className="px-3 py-4 whitespace-nowrap">
                       {items.page_value}
                     </td>
 
-                    <td className="px-6 py-4 whitespace-nowrap">
+                    <td className="px-3 py-4 whitespace-nowrap">
                       {items.article_date}
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
+                    <td className="px-3 py-4 whitespace-nowrap">
                       {items.upload_date}
                     </td>
                   </tr>

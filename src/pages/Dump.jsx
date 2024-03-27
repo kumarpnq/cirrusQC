@@ -47,7 +47,7 @@ const Dump = () => {
   const [selectedClient, setSelectedClient] = useState("");
   const [companies, setCompanies] = useState([]);
   const [selectedCompanies, setSelectedCompanies] = useState([]);
-  const [dateType, setDateType] = useState("");
+  const [dateType, setDateType] = useState("upload");
   const [fromDate, setFromDate] = useState(formattedDate);
   const [toDate, setToDate] = useState(formattedNextDay);
   const [qc1Done, setQc1Done] = useState("");
@@ -112,7 +112,11 @@ const Dump = () => {
   const classes = useStyle();
   return (
     <div className="mt-1">
-      <BasicTabs value={tabValue} setValue={setTabValue} />
+      <BasicTabs
+        value={tabValue}
+        setValue={setTabValue}
+        setSelectedColumnsForDump={setSelectedColumnsForDump}
+      />
       <div className="h-screen mx-3">
         <div className="flex flex-wrap items-center gap-1 mt-2 ">
           <div className="flex items-center mt-1" style={{ height: 25 }}>
