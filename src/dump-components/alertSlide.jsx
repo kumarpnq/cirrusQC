@@ -17,6 +17,7 @@ import { toast } from "react-toastify";
 import axios from "axios";
 import { url } from "../constants/baseUrl";
 import { ResearchContext } from "../context/ContextProvider";
+import JSZip from "jszip";
 
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
@@ -103,25 +104,31 @@ export default function AlertDialogSlide(props) {
       const response = await axios.post(`${url}${endPoint}`, request_data, {
         headers: {
           Authorization: `Bearer ${userToken}`,
-          responseType: "arraybuffer",
         },
+        responseType: "blob",
       });
 
-      // Create Blob from binary data
+      // Create a Blob object from the binary data
       const blob = new Blob([response.data], {
-        type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        type: "application/octet-stream",
       });
 
+      // Generate a unique filename or use a default one
+      const filename = "downloaded_file.xlsx"; // Adjust the filename as needed
+
+      // Create a temporary URL for the Blob object
       const urls = window.URL.createObjectURL(blob);
 
+      // Create a link element and trigger the download
       const link = document.createElement("a");
       link.href = urls;
-      link.setAttribute("download", "newFile.xlsx");
+      link.setAttribute("download", filename); // Use the filename
       document.body.appendChild(link);
       link.click();
 
       // Clean up
       window.URL.revokeObjectURL(urls);
+
       setDumpLoading((prev) => !prev);
       if (response) {
         setOpen(false);
