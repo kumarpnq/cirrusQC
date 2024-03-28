@@ -107,7 +107,17 @@ const Dump = () => {
     setDumpLoading((prev) => !prev);
   };
 
-  const handleReset = () => {};
+  const handleReset = () => {
+    setSelectedClient("");
+    setSelectedCompanies([]);
+    setDateType("");
+    setFromDate(formattedDate);
+    setToDate(formattedNextDay);
+    setQc1Done("");
+    setQc2Done("");
+    setQc1By([]);
+    setQc2By([]);
+  };
 
   const classes = useStyle();
   return (
