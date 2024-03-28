@@ -160,9 +160,9 @@ const Qc2Table = ({
       {isTableDataLoading || tableLoading ? (
         <Loader />
       ) : (
-        <div className="h-screen mt-6 overflow-scroll border border-gray-200 shadow sm:rounded-lg">
+        <div className="overflow-scroll border border-gray-200 shadow h-[550px] sm:rounded-lg">
           {dataToRender?.length > 0 ? (
-            <table className="min-w-full divide-y divide-gray-200">
+            <table className="sticky min-w-full divide-y divide-gray-200 top-10">
               <thead className="sticky top-0 text-white bg-primary">
                 <tr>
                   <th

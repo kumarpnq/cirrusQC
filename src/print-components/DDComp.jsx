@@ -352,7 +352,7 @@ const DDComp = () => {
             value={prominence}
             setValues={setProminence}
             placeholder={"Prominence"}
-            options={prominences}
+            mappingValue={prominences}
           />
         </div>
         <div className="h-[25px] flex items-center justify-center">

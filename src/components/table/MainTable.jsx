@@ -240,14 +240,14 @@ const MainTable = ({
         </TableRow>
       ))
     ) : (
-      <table className="bg-white w-screen border h-screen text-gray-400 text-sm text-center py-4"></table>
+      <table className="w-screen h-screen py-4 text-sm text-center text-gray-400 bg-white border"></table>
     );
   };
   return (
-    <div className="mt-2 overflow-scroll h-screen">
+    <div className="mt-2 overflow-scroll h-[550px]">
       <table>
         <thead>
-          <tr className="sticky left-0 top-0 bg-primary">
+          <tr className="sticky top-0 left-0 bg-primary">
             {" "}
             {tableHeaders?.length > 0 && (
               <td
@@ -260,7 +260,7 @@ const MainTable = ({
                 className="bg-primary"
               >
                 {checkBoxLoading ? (
-                  <div className="loading-spinner ml-3 mt-1">
+                  <div className="mt-1 ml-3 loading-spinner">
                     <AiOutlineLoading />
                   </div>
                 ) : (

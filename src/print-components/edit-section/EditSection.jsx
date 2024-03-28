@@ -100,7 +100,7 @@ const EditSection = ({
           reporting_tone: reportingTone || row.reporting_tone,
           reporting_subject: subject || row.reporting_subject,
           subcategory: category || row.subcategory,
-          prominence: prominence || row.prominence,
+          m_prom: prominence || row.m_prom,
           total_space: prominenceInNumber * row.space || row.total_space,
           detail_summary:
             (editRow === "detail_summary" && editValue) || row.detail_summary,
@@ -157,7 +157,7 @@ const EditSection = ({
       KEYWORD: row.keyword,
       MODIFIEDBY: name,
       MODIFIEDON: formattedDate,
-      PROMINENCE: row.prominence,
+      PROMINENCE: row.m_prom,
       REPORTINGSUBJECT: row.reporting_subject,
       REPORTINGTONE: row.reporting_tone,
       SOCIALFEEDID: row.social_feed_id,
@@ -222,7 +222,7 @@ const EditSection = ({
             setCategory={setCategory}
             category={category}
             width={120}
-            endpoint="subcategorylist/"
+            endpoint="subcategorylist"
           />
         </div>
         <Button
