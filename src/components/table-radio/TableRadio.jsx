@@ -8,7 +8,7 @@ import PropTypes from "prop-types";
 
 const TableRadio = ({ selectedRadioValue, handleChange }) => {
   return (
-    <FormControl component="fieldset" sx={{ height: 25 }}>
+    <FormControl component="fieldset" sx={{ height: 25, display: "flex" }}>
       <RadioGroup
         aria-label="and-or-label"
         name="and-or-label"

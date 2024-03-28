@@ -1,4 +1,4 @@
-import { useContext, useEffect, useState } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
 import { makeStyles } from "@mui/styles";
 import TextFields from "../components/TextFields/TextField";
 import { url } from "../constants/baseUrl";
@@ -53,6 +53,14 @@ const useStyle = makeStyles(() => ({
 }));
 const DDComp = () => {
   const { userToken, pageNumber, recordsPerPage } = useContext(ResearchContext);
+  // main table data
+  const [printTableData, setPrintTableData] = useState([]);
+  const printTableRef = useRef(null);
+  useEffect(() => {
+    if (printTableData.length > 1 && printTableRef.current) {
+      printTableRef.current.scrollIntoView({ behavior: "smooth" });
+    }
+  }, [printTableData]);
   const [client, setClient] = useState([]);
   const [withCategory, setWithCategory] = useState("");
   const [companies, setCompanies] = useState([]);
@@ -71,6 +79,7 @@ const DDComp = () => {
   const [subject, setSubject] = useState("");
   const [mProm, setMProm] = useState();
   const [pageNo, setPageNo] = useState();
+
   // reporting tone
   const [reportingTones, setReportingTones] = useState([]);
   const [reportingTone, setReportingTone] = useState("");
@@ -101,7 +110,6 @@ const DDComp = () => {
   const [city, setCity] = useState([]);
   const [languages, setLanguages] = useState([]);
   // main TableData
-  const [printTableData, setPrintTableData] = useState([]);
   const [isTableDataLoading, setIsTableDataLoading] = useState(false);
   const [totalRecordsCount, setTotalRecordsCount] = useState(0);
   const [fetchingUsingPrevNext, setFetchingUsingPrevNext] = useState(false);
@@ -282,6 +290,7 @@ const DDComp = () => {
             width={150}
           />
         </div>
+
         <div className="h-[25px] flex items-center justify-center">
           <FromDate fromDate={fromDate} setFromDate={setFromDate} />
         </div>
@@ -319,6 +328,7 @@ const DDComp = () => {
             setCategory={setCategory}
             category={category}
             width={150}
+            endpoint="categorylist"
           />
         </div>
         <div className="h-[25px] flex items-center justify-center pt-1">
@@ -412,14 +422,16 @@ const DDComp = () => {
         </div>
       </div>
       <hr className="mt-4" />
-      <Qc2Table
-        isTableDataLoading={isTableDataLoading}
-        qc2PrintTableData={printTableData}
-        setQc2PrintTableData={setPrintTableData}
-        totalRecordsCount={totalRecordsCount}
-        setFetchingUsingPrevNext={setFetchingUsingPrevNext}
-        setRetrieveAfterSave={setRetrieveAfterSave}
-      />
+      <div ref={printTableRef}>
+        <Qc2Table
+          isTableDataLoading={isTableDataLoading}
+          qc2PrintTableData={printTableData}
+          setQc2PrintTableData={setPrintTableData}
+          totalRecordsCount={totalRecordsCount}
+          setFetchingUsingPrevNext={setFetchingUsingPrevNext}
+          setRetrieveAfterSave={setRetrieveAfterSave}
+        />
+      </div>
     </div>
   );
 };

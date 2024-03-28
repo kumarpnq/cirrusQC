@@ -533,6 +533,7 @@ const ResearchTable = ({
             setCategory={setCategory}
             category={category}
             width={120}
+            endpoint="subcategorylist"
           />{" "}
         </div>
         <Button

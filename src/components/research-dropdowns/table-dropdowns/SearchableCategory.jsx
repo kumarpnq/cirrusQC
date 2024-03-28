@@ -41,13 +41,23 @@ const useStyles = makeStyles(() => ({
     },
   },
 }));
-const SearchableCategory = ({ label, setCategory, category, width }) => {
+const SearchableCategory = ({
+  label,
+  setCategory,
+  category,
+  width,
+  endpoint,
+}) => {
   const [categories, setCategories] = useState([]);
   const classes = useStyles();
-  const { data: categoryLists } = useFetchData(`${url}subcategorylist`);
+  const { data: categoryLists } = useFetchData(`${url + endpoint}`);
   useEffect(() => {
     if (categoryLists.data) {
-      setCategories(categoryLists.data.subcategory_list);
+      const data =
+        endpoint === "subcategorylist"
+          ? categoryLists.data.subcategory_list
+          : categoryLists.data.category_list;
+      setCategories(data);
     }
   }, [categoryLists]);
   const handleSelectChange = (event, newValue) => {
@@ -104,5 +114,6 @@ SearchableCategory.propTypes = {
   setCategory: PropTypes.func.isRequired,
   category: PropTypes.string,
   width: PropTypes.number,
+  endpoint: PropTypes.string.isRequired,
 };
 export default memo(SearchableCategory);

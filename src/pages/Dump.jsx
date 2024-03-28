@@ -7,7 +7,12 @@ import useFetchData from "../hooks/useFetchData";
 import { toast } from "react-toastify";
 // **constants
 import { url } from "../constants/baseUrl";
-import { dateTypes, qc1Array, qc2Array } from "../constants/dataArray";
+import {
+  dateTypes,
+  qc1Array,
+  qc2Array,
+  qcPermissions,
+} from "../constants/dataArray";
 import { formattedDate, formattedNextDay } from "../constants/dates";
 
 // ** component
@@ -23,6 +28,7 @@ import Qc2By from "../components/research-dropdowns/Qc2By";
 import Button from "../components/custom/Button";
 import BasicTabs from "../dump-components/customTabPanel";
 import AlertDialogSlide from "../dump-components/alertSlide";
+import Permissions from "../dump-components/Permission";
 
 const useStyle = makeStyles(() => ({
   dropDowns: {
@@ -57,6 +63,7 @@ const Dump = () => {
   const [dumpLoading, setDumpLoading] = useState(false);
   const [openDialog, setOpenDialog] = useState(false);
   const [selectedColumnsForDump, setSelectedColumnsForDump] = useState([]);
+  const [qcPermission, setQcPermission] = useState(0);
 
   // clients
   const {
@@ -117,6 +124,7 @@ const Dump = () => {
     setQc2Done("");
     setQc1By([]);
     setQc2By([]);
+    setQcPermission(0);
   };
 
   const classes = useStyle();
@@ -150,6 +158,23 @@ const Dump = () => {
             dateTypes={dateTypes}
             classes={classes}
           />
+
+          {
+            // only show when tab is print
+            !!tabValue && (
+              <div className="mb-[2px]">
+                <Permissions
+                  value={qcPermission}
+                  setValue={setQcPermission}
+                  classes={classes}
+                  width={120}
+                  mapValue={qcPermissions}
+                  placeholder="Permission"
+                />
+              </div>
+            )
+          }
+
           <div className="h-[25px] flex items-center justify-center">
             <FromDate fromDate={fromDate} setFromDate={setFromDate} />
           </div>
@@ -221,6 +246,7 @@ const Dump = () => {
         qc2By={qc2By}
         isQc1={qc1Done}
         isQc2={qc2Done}
+        qcPermission={qcPermission}
       />
     </div>
   );

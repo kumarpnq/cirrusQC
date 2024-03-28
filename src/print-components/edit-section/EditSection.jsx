@@ -85,6 +85,14 @@ const EditSection = ({
       });
 
     setApplyLoading(true);
+    let text = prominence;
+    let prominenceInNumber = ((text) => {
+      let match;
+      return (match = text.match(/\(([\d.]+)\)/))
+        ? match[1]
+        : "No match found.";
+    })(text);
+
     setTimeout(() => {
       if (selectedItems.length > 0) {
         const updatedSelectedRows = selectedItems.map((row) => ({
@@ -93,6 +101,7 @@ const EditSection = ({
           reporting_subject: subject || row.reporting_subject,
           subcategory: category || row.subcategory,
           prominence: prominence || row.prominence,
+          total_space: prominenceInNumber * row.space || row.total_space,
           detail_summary:
             (editRow === "detail_summary" && editValue) || row.detail_summary,
           headline: (editRow === "headline" && editValue) || row.headline,
@@ -157,6 +166,7 @@ const EditSection = ({
       HEADSUMMARY: row.headsummary,
       AUTHOR: row.author_name,
       REMARKS: row.remarks,
+      TOTALSPACE: row.total_space,
     }));
     try {
       const url = `${import.meta.env.VITE_BASE_URL}updatePrint2database/`;
@@ -178,7 +188,7 @@ const EditSection = ({
         toast.warning("No Data to Save.");
       }
     } catch (error) {
-      console.log(error);
+      toast.warning(error.message);
       setSaveLoading(false);
     }
   };
@@ -208,10 +218,11 @@ const EditSection = ({
             width={120}
           />
           <SearchableCategory
-            label={"Category"}
+            label={"Sub Category"}
             setCategory={setCategory}
             category={category}
             width={120}
+            endpoint="subcategorylist/"
           />
         </div>
         <Button

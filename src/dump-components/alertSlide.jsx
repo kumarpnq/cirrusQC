@@ -17,7 +17,6 @@ import { toast } from "react-toastify";
 import axios from "axios";
 import { url } from "../constants/baseUrl";
 import { ResearchContext } from "../context/ContextProvider";
-import JSZip from "jszip";
 
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
@@ -40,6 +39,7 @@ export default function AlertDialogSlide(props) {
     qc2By,
     isQc1,
     isQc2,
+    qcPermission,
   } = props;
   const endPoint = !tabValue ? "onlinedump/" : "printdump/";
   const { userToken } = React.useContext(ResearchContext);
@@ -99,6 +99,9 @@ export default function AlertDialogSlide(props) {
       }
       if (isQc2) {
         request_data.is_qc2 = isQc2;
+      }
+      if (tabValue) {
+        request_data.permission = qcPermission;
       }
       setDumpLoading((prev) => !prev);
       const response = await axios.post(`${url}${endPoint}`, request_data, {
@@ -192,4 +195,5 @@ AlertDialogSlide.propTypes = {
   qc2By: PropTypes.array.isRequired,
   isQc1: PropTypes.number.isRequired,
   isQc2: PropTypes.number.isRequired,
+  qcPermission: PropTypes.number.isRequired,
 };

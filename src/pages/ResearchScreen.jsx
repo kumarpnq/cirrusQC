@@ -114,16 +114,16 @@ const ReasearchScreen = () => {
   // clients
   const {
     data: clientData,
-    error: ClientEror,
+    error: ClientError,
     loading: clientLoading,
   } = useFetchData(`${url}clientlist/`, clients);
   useEffect(() => {
     if (clientData.data) {
       setClients(clientData.data.clients);
     } else {
-      console.log(ClientEror);
+      console.log(ClientError);
     }
-  }, [clientData, setClients, ClientEror]);
+  }, [clientData, setClients, ClientError]);
   // fetching the companies
   const {
     data: companyData,

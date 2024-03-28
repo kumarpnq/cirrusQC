@@ -86,10 +86,18 @@ const Qc2Table = ({
           prev = [];
         }
         const isSelected = prev.some(
-          (row) => row.article_id === items.article_id
+          (row) =>
+            row.article_id &&
+            row.company_id === items.article_id &&
+            row.company_id
         );
         if (isSelected) {
-          return prev.filter((row) => row.article_id !== items.article_id);
+          return prev.filter(
+            (row) =>
+              row.article_id &&
+              row.company_id !== items.article_id &&
+              row.company_id
+          );
         } else {
           if (searchedData.length > 0) {
             if (searchedData.includes(items)) {
@@ -212,9 +220,9 @@ const Qc2Table = ({
                 </tr>
               </thead>
               <tbody className="bg-white divide-y divide-gray-200 text-[0.8em]">
-                {dataToRender.map((items) => (
+                {dataToRender.map((items, index) => (
                   <tr
-                    key={items.article_id}
+                    key={index}
                     className={` ${
                       selectedItems.includes(items) ? "selected-row" : ""
                     } ${highlightRows.includes(items) ? "updated-row" : ""}`}
@@ -227,7 +235,7 @@ const Qc2Table = ({
                       />
                     </td>
                     <td className="px-3 py-4 whitespace-nowrap">
-                      <div className="w-28 truncate">{items.company}</div>
+                      <div className="truncate w-28">{items.company}</div>
                     </td>
                     <Tooltip placement="top" title={items.headline}>
                       <td className="px-3 py-4">
@@ -250,7 +258,7 @@ const Qc2Table = ({
                       </div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
-                      {items.manual_prominence}
+                      {items.m_prom}
                     </td>
 
                     <td className="px-3 py-4 whitespace-nowrap">
@@ -302,6 +310,9 @@ const Qc2Table = ({
                     </Tooltip>
                     <td className="px-3 py-4 whitespace-nowrap">
                       <div className="w-40 truncate">{items.journalist}</div>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      {items.category}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       {items.subcategory}

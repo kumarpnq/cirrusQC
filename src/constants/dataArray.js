@@ -398,3 +398,7 @@ export const PrintDDEditValues = [
     value: "headsummary",
   },
 ];
+export const qcPermissions = [
+  { title: "Yes", value: 1 },
+  { title: "No", value: 0 },
+];
