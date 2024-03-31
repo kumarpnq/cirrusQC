@@ -10,7 +10,6 @@ import {
   Paper,
   TableHead,
   Checkbox,
-  TextField,
 } from "@mui/material";
 import useFetchData from "../../../hooks/useFetchData";
 import { url } from "../../../constants/baseUrl";
@@ -90,41 +89,20 @@ const SecondSection = (props) => {
     setModifiedRows(changedRows);
   }, [editableTagData, tagDataToMap]);
 
-  console.log(modifiedRows);
-
   const handleSaveClick = () => {
     // Send editableTagData to backend
-    console.log(editableTagData);
 
     // Reset modifiedRows state
     setModifiedRows([]);
   };
-  console.log(editableTagData);
-  console.log(articleId);
-  // for adding new company in table
-  // useEffect(() => {
-  //   if (selectedCompany) {
-  //     console.log("test");
-  //     console.log(selectedCompany.value);
-  //     const newRow =
-  //       editableTagData.length > 0 ? { ...editableTagData[0] } : {};
-  //     newRow.company_name = selectedCompany.label;
-  //     newRow.company_id = selectedCompany.value;
-  //     setEditableTagData((prev) => [...prev, newRow]);
-  //     console.log(newRow);
-  //   }
-  // }, [selectedCompany, editableTagData]);
 
   const handleAddCompany = () => {
     if (selectedCompany) {
-      console.log("test");
-      console.log(selectedCompany.value);
       const newRow =
         editableTagData.length > 0 ? { ...editableTagData[0] } : {};
       newRow.company_name = selectedCompany.label;
       newRow.company_id = selectedCompany.value;
       setEditableTagData((prev) => [...prev, newRow]);
-      console.log(newRow);
     }
   };
 
