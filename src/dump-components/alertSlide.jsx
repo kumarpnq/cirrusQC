@@ -1,5 +1,4 @@
 import * as React from "react";
-import Button from "@mui/material/Button";
 import Dialog from "@mui/material/Dialog";
 import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
@@ -10,6 +9,7 @@ import FormControlLabel from "@mui/material/FormControlLabel";
 import Checkbox from "@mui/material/Checkbox";
 import Box from "@mui/material/Box";
 import CircularProgress from "@mui/material/CircularProgress";
+import Typography from "@mui/material/Typography";
 
 // ** third party imports
 import PropTypes from "prop-types";
@@ -17,6 +17,7 @@ import { toast } from "react-toastify";
 import axios from "axios";
 import { url } from "../constants/baseUrl";
 import { ResearchContext } from "../context/ContextProvider";
+import CustomButton from "../components/custom/Button";
 
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
@@ -146,11 +147,20 @@ export default function AlertDialogSlide(props) {
       onClose={handleClose}
       aria-describedby="alert-dialog-slide-description"
     >
-      <DialogTitle>{"Select Column"}</DialogTitle>
-      <DialogContent className="bg-secondory">
-        <Box>
-          <Button onClick={handleSelectAll}>Select All</Button>
-          <Button onClick={handleClearAll}>Clear All</Button>
+      <DialogTitle fontSize={"1em"}>{"Select Column"}</DialogTitle>
+      <DialogContent>
+        <Box
+          sx={{
+            display: "flex",
+            gap: 1,
+            position: "sticky",
+            top: 0,
+            zIndex: 50,
+          }}
+          className="bg-secondory"
+        >
+          <CustomButton btnText="Select All" onClick={handleSelectAll} />
+          <CustomButton btnText="Clear All" onClick={handleClearAll} />
         </Box>
         <FormControl
           sx={{ display: "grid", gridTemplateColumns: "repeat(2,auto)" }}
@@ -164,16 +174,22 @@ export default function AlertDialogSlide(props) {
                   onChange={handleCheckboxChange(key)}
                 />
               }
-              label={value}
+              label={<Typography fontSize={"0.9em"}>{value}</Typography>}
             />
           ))}
         </FormControl>
       </DialogContent>
       <DialogActions>
-        <Button onClick={handleClose}>Disagree</Button>
-        <Button onClick={handleDump}>
-          {dumpLoading ? <CircularProgress thickness={1} /> : "Agree"}
-        </Button>
+        <CustomButton btnText="Close" onClick={handleClose} />
+        {dumpLoading ? (
+          <CircularProgress thickness={1} />
+        ) : (
+          <CustomButton
+            btnText="Download"
+            onClick={handleDump}
+            isLoading={dumpLoading}
+          />
+        )}
       </DialogActions>
     </Dialog>
   );

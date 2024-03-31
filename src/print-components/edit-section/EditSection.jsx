@@ -43,10 +43,12 @@ const EditSection = ({
 }) => {
   const { name, userToken } = useContext(ResearchContext);
   const classes = useStyles();
+
   const [editRow, setEditRow] = useState("");
   const [editValue, setEditValue] = useState("");
   const [applyLoading, setApplyLoading] = useState(false);
   const [saveLoading, setSaveLoading] = useState(false);
+
   // updated data to snd database
   const [updatedData, setUpdatedData] = useState([]);
   const [reportingTones, setReportingTones] = useState([]);
@@ -101,7 +103,8 @@ const EditSection = ({
           reporting_subject: subject || row.reporting_subject,
           subcategory: category || row.subcategory,
           m_prom: prominence || row.m_prom,
-          total_space: prominenceInNumber * row.space || row.total_space,
+          space:
+            (prominenceInNumber * row.header_space).toFixed(2) || row.space,
           detail_summary:
             (editRow === "detail_summary" && editValue) || row.detail_summary,
           headline: (editRow === "headline" && editValue) || row.headline,
@@ -166,7 +169,7 @@ const EditSection = ({
       HEADSUMMARY: row.headsummary,
       AUTHOR: row.author_name,
       REMARKS: row.remarks,
-      TOTALSPACE: row.total_space,
+      TOTALSPACE: row.space,
     }));
     try {
       const url = `${import.meta.env.VITE_BASE_URL}updatePrint2database/`;
@@ -192,6 +195,7 @@ const EditSection = ({
       setSaveLoading(false);
     }
   };
+
   return (
     <>
       <div className="flex items-center gap-2">

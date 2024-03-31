@@ -402,3 +402,7 @@ export const qcPermissions = [
   { title: "Yes", value: 1 },
   { title: "No", value: 0 },
 ];
+export const yesOrNo = [
+  { title: "Yes", value: 1 },
+  { title: "No", value: 0 },
+];

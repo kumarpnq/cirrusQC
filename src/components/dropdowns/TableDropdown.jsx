@@ -34,11 +34,23 @@ export default function TableDropdown({
         </MenuItem>
         {mappingValue?.map((item) => (
           <MenuItem
-            key={item.value || item.tonality || item.prominence || item}
-            value={item.value || item.tonality || item.prominence || item}
+            key={
+              item.value ||
+              item.tonality ||
+              item.prominence ||
+              item.company_id ||
+              item
+            }
+            value={
+              item.value ||
+              item.tonality ||
+              item.prominence ||
+              item.company_id ||
+              item
+            }
             sx={{ fontSize: "0.8em", opacity: 0.7 }}
           >
-            {item.tonality || item.prominence}
+            {item.tonality || item.prominence || item.company_id}
           </MenuItem>
         ))}
       </Select>

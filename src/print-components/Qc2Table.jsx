@@ -7,6 +7,9 @@ import Loader from "../components/loader/Loader";
 import { AiOutlineLoading } from "react-icons/ai";
 import Pagination from "../components/pagination/Pagination";
 import { IoIosArrowRoundDown, IoIosArrowRoundUp } from "react-icons/io";
+import EditModal from "./editModal/editModal";
+import { EditAttributesOutlined } from "@mui/icons-material";
+import { url } from "../constants/baseUrl";
 
 const Qc2Table = ({
   isTableDataLoading,
@@ -21,6 +24,8 @@ const Qc2Table = ({
   const [tableHeaders, setTableHeaders] = useState([]);
   // searchedData
   const [searchedData, setSearchedData] = useState([]);
+  // single article selection for edit
+  const [selectedArticle, setSelectedArticle] = useState(null);
   // for highlight the rows
   const [highlightRows, setHighlightRows] = useState([]);
   // loading states
@@ -86,18 +91,10 @@ const Qc2Table = ({
           prev = [];
         }
         const isSelected = prev.some(
-          (row) =>
-            row.article_id &&
-            row.company_id === items.article_id &&
-            row.company_id
+          (row) => row.article_id === items.article_id
         );
         if (isSelected) {
-          return prev.filter(
-            (row) =>
-              row.article_id &&
-              row.company_id !== items.article_id &&
-              row.company_id
-          );
+          return prev.filter((row) => row.article_id !== items.article_id);
         } else {
           if (searchedData.length > 0) {
             if (searchedData.includes(items)) {
@@ -109,7 +106,6 @@ const Qc2Table = ({
         }
         return prev;
       });
-
       // Set checkBoxLoading to false after the asynchronous operations are completed
       setCheckBoxLoading(false);
     }, 0);
@@ -133,6 +129,15 @@ const Qc2Table = ({
   const dataToRender =
     searchedData.length > 0 ? searchedData : qc2PrintTableData;
 
+  //for edit modal
+  const [open, setOpen] = useState(false);
+
+  const handleClose = () => setOpen(false);
+  const tableRowClick = (item) => {
+    setOpen(true);
+    setSelectedArticle((prev) => (prev === item ? null : item));
+  };
+
   return (
     <>
       <FindSection
@@ -151,6 +156,7 @@ const Qc2Table = ({
         setSearchedData={setSearchedData}
         setHighlightRows={setHighlightRows}
         setRetrieveAfterSave={setRetrieveAfterSave}
+        selectedArticle={selectedArticle}
       />
       <Pagination
         tableData={qc2PrintTableData}
@@ -183,6 +189,12 @@ const Qc2Table = ({
                       />
                     )}
                   </th>
+                  {/* <th
+                    scope="col"
+                    className={`px-2 py-1 text-left text-xs font-medium uppercase tracking-wider cursor-pointer whitespace-nowrap pt-2 pr-2`}
+                  >
+                    Edit
+                  </th> */}
                   {tableHeaders.map((item) => (
                     <th
                       key={item}
@@ -234,6 +246,12 @@ const Qc2Table = ({
                         onChange={() => handleCheckboxChange(items)}
                       />
                     </td>
+                    {/* <td
+                      onClick={() => tableRowClick(items)}
+                      className="text-gray-800 font-thin"
+                    >
+                      <EditAttributesOutlined />
+                    </td> */}
                     <td className="px-3 py-4 whitespace-nowrap">
                       <div className="truncate w-28">{items.company}</div>
                     </td>
@@ -257,15 +275,23 @@ const Qc2Table = ({
                         {items.publication_name}
                       </div>
                     </td>
+                    <td className="px-4 py-4 whitespace-nowrap underline">
+                      <a
+                        href={`${url}${items.link}`}
+                        target="_blank"
+                        rel="noreferrer"
+                      >
+                        link
+                      </a>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      {items.header_space}
+                    </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       {items.m_prom}
                     </td>
-
                     <td className="px-3 py-4 whitespace-nowrap">
                       {items.space}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      {items.total_space}
                     </td>
                     <td
                       className={`px-3 py-4 whitespace-nowrap ${
@@ -274,6 +300,10 @@ const Qc2Table = ({
                     >
                       {items.reporting_tone}
                     </td>
+                    {/* <td className="px-6 py-4 whitespace-nowrap">
+                      {items.total_space}
+                    </td> */}
+
                     <td className="px-3 py-4 whitespace-nowrap">
                       {items.reporting_subject}
                     </td>
@@ -336,31 +366,18 @@ const Qc2Table = ({
                       </td>
                     </Tooltip>
                     <td className="px-3 py-4 whitespace-nowrap">
-                      {items.qc1_done}
-                    </td>
-                    <td className="px-3 py-4 whitespace-nowrap">
-                      {items.qc2_done}
-                    </td>
-                    <td className="px-3 py-4 whitespace-nowrap">
                       {items.article_id}
                     </td>
+
                     <td className="px-3 py-4 whitespace-nowrap">
                       {items.company_id}
                     </td>
-                    <td
-                      className={`px-3 py-4 whitespace-nowrap ${
-                        items.system_prominence === "Unknown" &&
-                        "text-[#FF7F7F]"
-                      }`}
-                    >
-                      {items.system_prominence}
+                    <td className="px-3 py-4 whitespace-nowrap">
+                      {items.article_date}
                     </td>
-                    <td
-                      className={`px-3 py-4 whitespace-nowrap ${
-                        items.other_prominence === "Unknown" && "text-[#FF7F7F]"
-                      }`}
-                    >
-                      {items.other_prominence}
+
+                    <td className="px-3 py-4 whitespace-nowrap">
+                      {items.upload_date}
                     </td>
                     <td className="px-3 py-4 whitespace-nowrap">{items.box}</td>
                     <td className="px-3 py-4 whitespace-nowrap">
@@ -372,12 +389,23 @@ const Qc2Table = ({
                     <td className="px-3 py-4 whitespace-nowrap">
                       {items.page_value}
                     </td>
-
                     <td className="px-3 py-4 whitespace-nowrap">
-                      {items.article_date}
+                      {items.qc1_done}
                     </td>
                     <td className="px-3 py-4 whitespace-nowrap">
-                      {items.upload_date}
+                      {items.qc2_done}
+                    </td>
+                    <td className="px-3 py-4 whitespace-nowrap">
+                      {items.qc1_by}
+                    </td>
+                    <td className="px-3 py-4 whitespace-nowrap">
+                      {items.qc1_on}
+                    </td>
+                    <td className="px-3 py-4 whitespace-nowrap">
+                      {items.qc2_by}
+                    </td>
+                    <td className="px-3 py-4 whitespace-nowrap">
+                      {items.qc2_on}
                     </td>
                   </tr>
                 ))}
@@ -388,6 +416,11 @@ const Qc2Table = ({
           )}
         </div>
       )}
+      <EditModal
+        open={open}
+        handleClose={handleClose}
+        selectedArticle={selectedArticle}
+      />
     </>
   );
 };

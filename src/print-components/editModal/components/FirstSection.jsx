@@ -1,0 +1,192 @@
+import PropTypes from "prop-types";
+import { FormControl, FormLabel, Box, Typography } from "@mui/material";
+import PublicationGroup from "../../dropdowns/PublicationGoup";
+import YesOrNo from "../../../@core/YesOrNo";
+import { yesOrNo } from "../../../constants/dataArray";
+import FormWithLabelTextField from "../../../@core/FormWithLabel";
+
+const FirstSection = (props) => {
+  const {
+    classes,
+    selectedArticle,
+    selectedPublication,
+    setSelectedPublication,
+    headline,
+    setHeadline,
+    journalist,
+    setJournalist,
+    summary,
+    setSummary,
+    box,
+    setBox,
+    photo,
+    setPhoto,
+    pageNumber,
+    setPageNumber,
+    pageValue,
+    setPageValue,
+    space,
+    setSpace,
+    qc1By,
+    setQc1By,
+    qc2By,
+    setQc2By,
+    articleSummary,
+    setArticleSummary,
+  } = props;
+  return (
+    <>
+      <form>
+        <Typography textAlign={"center"}>Edit Article</Typography>
+        <Box
+          sx={{
+            display: "grid",
+            gridTemplateColumns: "repeat(2,auto)",
+            gap: 2,
+          }}
+        >
+          <PublicationGroup
+            classes={classes}
+            publicationGroup={selectedPublication}
+            setPublicationGroup={setSelectedPublication}
+            width={300}
+          />
+          <FormWithLabelTextField
+            label="Headlines"
+            type="text"
+            value={selectedArticle?.headline || headline}
+            setValue={setHeadline}
+            width={300}
+          />
+          <FormWithLabelTextField
+            label="Journalist"
+            type="text"
+            value={selectedArticle?.journalist || journalist}
+            setValue={setJournalist}
+            width={200}
+          />
+          <FormWithLabelTextField
+            label="Summary"
+            type="text"
+            value={selectedArticle?.head_summary || summary}
+            setValue={setSummary}
+            width={300}
+          />
+        </Box>
+        <Box display={"flex"} alignItems={"center"} gap={2}>
+          <FormControl
+            sx={{
+              display: "flex",
+              flexDirection: "row",
+              alignItems: "center",
+              gap: 2,
+            }}
+          >
+            <FormLabel sx={{ fontSize: "0.9em" }}>Box</FormLabel>
+            <YesOrNo
+              classes={classes}
+              placeholder="Box"
+              mapValue={yesOrNo}
+              value={box}
+              setValue={setBox}
+              width={100}
+            />
+          </FormControl>
+          <FormControl
+            sx={{
+              display: "flex",
+              flexDirection: "row",
+              alignItems: "center",
+              gap: 2,
+            }}
+          >
+            <FormLabel sx={{ fontSize: "0.9em" }}>Photo</FormLabel>
+            <YesOrNo
+              classes={classes}
+              placeholder="Photo"
+              mapValue={yesOrNo}
+              value={photo}
+              setValue={setPhoto}
+              width={100}
+            />
+          </FormControl>
+          <FormWithLabelTextField
+            label="PageNo"
+            type="number"
+            value={selectedArticle?.page_number || pageNumber}
+            setValue={setPageNumber}
+            width={100}
+          />
+          <FormWithLabelTextField
+            label="PageValue"
+            type="number"
+            value={selectedArticle?.page_value || pageValue}
+            setValue={setPageValue}
+            width={100}
+          />
+          <FormWithLabelTextField
+            label="Space"
+            type="number"
+            value={selectedArticle?.space || space}
+            setValue={setSpace}
+            width={100}
+          />
+          <FormWithLabelTextField
+            label="Qc1 By"
+            type="text"
+            value={selectedArticle?.qc1_by || qc1By}
+            setValue={setQc1By}
+            width={100}
+          />
+
+          <FormWithLabelTextField
+            label="Qc2 By"
+            type="text"
+            value={selectedArticle?.qc2_by || qc2By}
+            setValue={setQc2By}
+            width={100}
+          />
+        </Box>
+        <Box mt={2}>
+          <FormWithLabelTextField
+            label="Article Summary"
+            type="text"
+            value={selectedArticle?.detail_summary || articleSummary}
+            setValue={setArticleSummary}
+            width={500}
+          />
+        </Box>
+      </form>
+    </>
+  );
+};
+
+FirstSection.propTypes = {
+  classes: PropTypes.object.isRequired,
+  selectedArticle: PropTypes.object,
+  selectedPublication: PropTypes.string,
+  setSelectedPublication: PropTypes.func.isRequired,
+  headline: PropTypes.string,
+  setHeadline: PropTypes.func.isRequired,
+  journalist: PropTypes.string,
+  setJournalist: PropTypes.func.isRequired,
+  summary: PropTypes.string,
+  setSummary: PropTypes.func.isRequired,
+  box: PropTypes.string,
+  setBox: PropTypes.func.isRequired,
+  photo: PropTypes.string,
+  setPhoto: PropTypes.func.isRequired,
+  pageNumber: PropTypes.number,
+  setPageNumber: PropTypes.func.isRequired,
+  pageValue: PropTypes.number,
+  setPageValue: PropTypes.func.isRequired,
+  space: PropTypes.number,
+  setSpace: PropTypes.func.isRequired,
+  qc1By: PropTypes.string,
+  setQc1By: PropTypes.func.isRequired,
+  qc2By: PropTypes.string,
+  setQc2By: PropTypes.func.isRequired,
+  articleSummary: PropTypes.string,
+  setArticleSummary: PropTypes.func.isRequired,
+};
+export default FirstSection;
