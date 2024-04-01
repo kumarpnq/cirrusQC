@@ -1,9 +1,11 @@
 import { FormControl, Select, MenuItem, OutlinedInput } from "@mui/material";
 import PropTypes from "prop-types";
 
-const Qc1By = ({ qcUsersData, qc1by, setQc1by, classes }) => {
+const Qc1By = ({ qcUsersData, qc1by, setQc1by, classes, pageType }) => {
   const selectedUsernamesqc1 = qcUsersData
-    .filter((item) => qc1by.includes(item.usersid))
+    .filter((item) =>
+      qc1by.includes(pageType === "print" ? item.username : item.usersid)
+    )
     .map((selectedItem) => selectedItem.username);
   return (
     <div style={{ height: 25 }} className="flex items-center">
@@ -25,14 +27,14 @@ const Qc1By = ({ qcUsersData, qc1by, setQc1by, classes }) => {
             return selectedUsernamesqc1.join(", ");
           }}
         >
-          <MenuItem value="" sx={{ fontSize: "0.8em", opacity: 0.7 }}>
+          <MenuItem value="" disabled sx={{ fontSize: "0.8em", opacity: 0.7 }}>
             <em>Qc1 by</em>
           </MenuItem>
           {qcUsersData &&
             qcUsersData.map((item) => (
               <MenuItem
                 key={item.usersid}
-                value={item.usersid}
+                value={pageType === "print" ? item.username : item.usersid}
                 sx={{ fontSize: "0.8em", opacity: 0.7 }}
               >
                 {item.username}
@@ -53,5 +55,6 @@ Qc1By.propTypes = {
   qc1by: PropTypes.array.isRequired,
   setQc1by: PropTypes.func.isRequired,
   classes: PropTypes.object.isRequired,
+  pageType: PropTypes.string,
 };
 export default Qc1By;

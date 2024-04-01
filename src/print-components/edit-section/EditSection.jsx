@@ -108,12 +108,13 @@ const EditSection = ({
           detail_summary:
             (editRow === "detail_summary" && editValue) || row.detail_summary,
           headline: (editRow === "headline" && editValue) || row.headline,
-          headsummary:
-            (editRow === "headsummary" && editValue) || row.headsummary,
-          author_name:
-            (editRow === "author_name" && editValue) || row.author_name,
+          head_summary:
+            (editRow === "headsummary" && editValue) || row.head_summary,
+          author: (editRow === "author_name" && editValue) || row.author,
           keyword: (editRow === "keyword" && editValue) || row.keyword,
-          remarks: (editRow === "remarks" && editValue) || row.remarks,
+          remark: (editRow === "remarks" && editValue) || row.remark,
+          header_space:
+            (editRow === "header_space" && editValue) || row.header_space,
         }));
 
         const updatedTableData = qc2PrintTableData.map((row) => {
@@ -244,6 +245,7 @@ const EditSection = ({
           editRow={editRow}
           handleEditRowChange={handleEditRowChange}
           classes={classes}
+          pageType={"print"}
         />
         <span className="mt-3">
           <input

@@ -98,8 +98,8 @@ const DDComp = () => {
       setProminences(prominenceLists.data.prominence_list);
     }
   }, [prominenceLists]);
-  const [qc1Done, setQc1Done] = useState(2);
-  const [qc2Done, setQc2Done] = useState(0);
+  const [qc1Done, setQc1Done] = useState("2");
+  const [qc2Done, setQc2Done] = useState("0");
   const [qc1By, setQc1By] = useState([]);
   const [qc2By, setQc2By] = useState([]);
   const { data: qcUserData } = useFetchData(`${url}qcuserlist/`, {
@@ -138,7 +138,6 @@ const DDComp = () => {
       setIsTableDataLoading(true);
       const requestData = {
         client_id: client,
-        with_category: withCategory,
         from_date: fromDate,
         to_date: dateNow,
         date_type: dateType,
@@ -148,6 +147,12 @@ const DDComp = () => {
       };
 
       // Adding optional fields conditionally
+      addPropertyIfConditionIsTrue(
+        withCategory,
+        requestData,
+        "with_category",
+        withCategory
+      );
       addPropertyIfConditionIsTrue(
         companies.length > 0,
         requestData,
@@ -163,16 +168,21 @@ const DDComp = () => {
       addPropertyIfConditionIsTrue(
         publicationGroup,
         requestData,
-        "publication_group",
+        "pubgroup_id",
         publicationGroup
       );
       addPropertyIfConditionIsTrue(
         publication,
         requestData,
-        "publication",
+        "publication_id",
         publication
       );
-      addPropertyIfConditionIsTrue(pubType, requestData, "pub_type", pubType);
+      addPropertyIfConditionIsTrue(
+        pubType,
+        requestData,
+        "pubtype",
+        Number(pubType)
+      );
       addPropertyIfConditionIsTrue(category, requestData, "category", category);
       addPropertyIfConditionIsTrue(
         subject,
@@ -192,8 +202,18 @@ const DDComp = () => {
         "prominence",
         prominence
       );
-      addPropertyIfConditionIsTrue(qc1Done, requestData, "is_qc1", qc1Done);
-      addPropertyIfConditionIsTrue(qc2Done, requestData, "is_qc2", qc2Done);
+      addPropertyIfConditionIsTrue(
+        qc1Done,
+        requestData,
+        "is_qc1",
+        Number(qc1Done)
+      );
+      addPropertyIfConditionIsTrue(
+        qc2Done,
+        requestData,
+        "is_qc2",
+        Number(qc2Done)
+      );
       addPropertyIfConditionIsTrue(
         qc1By.length > 0 && arrayToString(qc1By),
         requestData,
@@ -224,7 +244,6 @@ const DDComp = () => {
         "manualprominence",
         Number(mProm)
       );
-
       const headers = {
         Authorization: "Bearer " + userToken,
       };
@@ -377,6 +396,7 @@ const DDComp = () => {
             qc1by={qc1By}
             setQc1by={setQc1By}
             classes={classes}
+            pageType={"print"}
           />
         </div>
         <div className="h-[25px] flex items-center justify-center">
@@ -385,6 +405,7 @@ const DDComp = () => {
             classes={classes}
             qc2by={qc2By}
             setQc2by={setQc2By}
+            pageType={"print"}
           />
         </div>
         <div className="h-[25px] flex items-center justify-center">

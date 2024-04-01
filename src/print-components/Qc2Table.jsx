@@ -113,19 +113,19 @@ const Qc2Table = ({
 
   // sorting a tableData
   const sortTableData = (header) => {
-    // Update sorting column and order
     setSortedColumn(header);
     setSortedAscending((prev) => (header === sortedColumn ? !prev : true));
 
     if (qc2PrintTableData?.length > 0) {
       const sortedData = [...qc2PrintTableData].sort((a, b) => {
-        if (a[header] < b[header]) return -1;
-        if (a[header] > b[header]) return 1;
+        if (a[header] < b[header]) return sortedAscending ? -1 : 1;
+        if (a[header] > b[header]) return sortedAscending ? 1 : -1;
         return 0;
       });
       setQc2PrintTableData(sortedData);
     }
   };
+
   const dataToRender =
     searchedData.length > 0 ? searchedData : qc2PrintTableData;
 
@@ -285,6 +285,9 @@ const Qc2Table = ({
                       </a>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
+                      {items.author}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
                       {items.header_space}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
@@ -338,9 +341,9 @@ const Qc2Table = ({
                         </div>
                       </td>
                     </Tooltip>
-                    <td className="px-3 py-4 whitespace-nowrap">
+                    {/* <td className="px-3 py-4 whitespace-nowrap">
                       <div className="w-40 truncate">{items.journalist}</div>
-                    </td>
+                    </td> */}
                     <td className="px-6 py-4 whitespace-nowrap">
                       {items.category}
                     </td>

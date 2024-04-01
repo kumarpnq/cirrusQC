@@ -22,7 +22,7 @@ const Category = ({ category, setCategory, classes, width }) => {
         sx={{ fontSize: "0.8em" }}
       >
         <MenuItem value="" sx={{ fontSize: "0.8em", opacity: 0.7 }}>
-          <em>Category</em>
+          <em>Include Category</em>
         </MenuItem>
         {categories.map((cate) => (
           <MenuItem

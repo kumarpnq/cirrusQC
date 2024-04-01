@@ -1,9 +1,11 @@
 import { FormControl, Select, MenuItem } from "@mui/material";
 import PropTypes from "prop-types";
 
-const Qc2By = ({ qcUsersData, classes, qc2by, setQc2by }) => {
+const Qc2By = ({ qcUsersData, classes, qc2by, setQc2by, pageType }) => {
   const selectedUsernamesqc2 = qcUsersData
-    .filter((item) => qc2by.includes(item.usersid))
+    .filter((item) =>
+      qc2by.includes(pageType === "print" ? item.username : item.usersid)
+    )
     .map((selectedItem) => selectedItem.username);
   return (
     <div style={{ height: 25 }} className="flex items-center">
@@ -31,7 +33,7 @@ const Qc2By = ({ qcUsersData, classes, qc2by, setQc2by }) => {
             qcUsersData?.map((items) => (
               <MenuItem
                 key={items.usersid}
-                value={items.usersid}
+                value={pageType === "print" ? items.username : items.usersid}
                 sx={{ fontSize: "0.8em", opacity: 0.7 }}
               >
                 {items.username}
@@ -52,5 +54,6 @@ Qc2By.propTypes = {
   classes: PropTypes.object.isRequired,
   qc2by: PropTypes.array.isRequired,
   setQc2by: PropTypes.func.isRequired,
+  pageType: PropTypes.string,
 };
 export default Qc2By;

@@ -56,8 +56,8 @@ const Dump = () => {
   const [dateType, setDateType] = useState("upload");
   const [fromDate, setFromDate] = useState(formattedDate);
   const [toDate, setToDate] = useState(formattedNextDay);
-  const [qc1Done, setQc1Done] = useState("");
-  const [qc2Done, setQc2Done] = useState("");
+  const [qc1Done, setQc1Done] = useState("2");
+  const [qc2Done, setQc2Done] = useState("2");
   const [qc1By, setQc1By] = useState([]);
   const [qc2By, setQc2By] = useState([]);
   const [dumpLoading, setDumpLoading] = useState(false);

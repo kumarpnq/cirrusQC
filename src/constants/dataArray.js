@@ -334,6 +334,44 @@ export const DDEditValues = [
     value: "headsummary",
   },
 ];
+export const DDEditValuesForPrint = [
+  {
+    id: 1,
+    title: "Headline",
+    value: "headline",
+  },
+  {
+    id: 2,
+    title: "Remarks",
+    value: "remarks",
+  },
+  {
+    id: 3,
+    title: "Keyword",
+    value: "keyword",
+  },
+  {
+    id: 4,
+    title: "Summary",
+    value: "detail_summary",
+  },
+  {
+    id: 5,
+    title: "Author",
+    value: "author_name",
+  },
+
+  {
+    id: 6,
+    title: "Head Summary",
+    value: "headsummary",
+  },
+  {
+    id: 7,
+    title: "Header Space",
+    value: "header_space",
+  },
+];
 export const recordsPerPage = [200, 400, 600, 800, 1000];
 // print
 export const categories = [
