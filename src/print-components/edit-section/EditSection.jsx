@@ -88,11 +88,10 @@ const EditSection = ({
 
     setApplyLoading(true);
     let text = prominence;
+
     let prominenceInNumber = ((text) => {
       let match;
-      return (match = text.match(/\(([\d.]+)\)/))
-        ? match[1]
-        : "No match found.";
+      return (match = text.match(/\(([\d.]+)\)/)) ? match[1] : 0;
     })(text);
 
     setTimeout(() => {
@@ -104,7 +103,8 @@ const EditSection = ({
           subcategory: category || row.subcategory,
           m_prom: prominence || row.m_prom,
           space:
-            (prominenceInNumber * row.header_space).toFixed(2) || row.space,
+            (prominenceInNumber * Number(row.header_space)).toFixed(2) ||
+            row.space,
           detail_summary:
             (editRow === "detail_summary" && editValue) || row.detail_summary,
           headline: (editRow === "headline" && editValue) || row.headline,

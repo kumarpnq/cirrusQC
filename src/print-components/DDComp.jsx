@@ -74,7 +74,7 @@ const DDComp = () => {
   const [dateNow, setDateNow] = useState(formattedNextDay);
   const [publicationGroup, setPublicationGroup] = useState("");
   const [publication, setPublication] = useState("");
-  const [pubType, setPubType] = useState(1);
+  const [pubType, setPubType] = useState("");
   const [category, setCategory] = useState("");
   const [subject, setSubject] = useState("");
   const [mProm, setMProm] = useState();
