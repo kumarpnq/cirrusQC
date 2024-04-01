@@ -57,7 +57,6 @@ export default function EditModal({ open, handleClose, selectedArticle }) {
   // second section states
   const [selectedClient, setSelectedClient] = useState("");
 
-  console.log(selectedArticle);
   const classes = useStyle();
   return (
     <div style={{ height: "800px !important", overflow: "scroll" }}>

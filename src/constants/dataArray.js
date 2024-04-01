@@ -334,6 +334,9 @@ export const DDEditValues = [
     value: "headsummary",
   },
 ];
+
+export const recordsPerPage = [200, 400, 600, 800, 1000];
+// print
 export const DDEditValuesForPrint = [
   {
     id: 1,
@@ -372,8 +375,6 @@ export const DDEditValuesForPrint = [
     value: "header_space",
   },
 ];
-export const recordsPerPage = [200, 400, 600, 800, 1000];
-// print
 export const categories = [
   {
     id: 1,
@@ -389,18 +390,33 @@ export const categories = [
 export const pubTypes = [
   {
     id: 1,
-    title: "Daily",
-    value: 1,
+    title: "All",
+    value: "ALL",
   },
   {
     id: 2,
-    title: "Magazine",
-    value: 2,
+    title: "Daily",
+    value: "DAILY",
   },
   {
     id: 3,
-    title: "All",
-    value: 3,
+    title: "FortNightly",
+    value: "FORTNIGHTLY",
+  },
+  {
+    id: 4,
+    title: "Monthly",
+    value: "MONTHLY",
+  },
+  {
+    id: 5,
+    title: "Others",
+    value: "OTHERS",
+  },
+  {
+    id: 6,
+    title: "Weekly",
+    value: "WEEKLY",
   },
 ];
 export const PrintDDEditValues = [

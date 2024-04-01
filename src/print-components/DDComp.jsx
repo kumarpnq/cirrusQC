@@ -177,12 +177,7 @@ const DDComp = () => {
         "publication_id",
         publication
       );
-      addPropertyIfConditionIsTrue(
-        pubType,
-        requestData,
-        "pubtype",
-        Number(pubType)
-      );
+      addPropertyIfConditionIsTrue(pubType, requestData, "pubtype", pubType);
       addPropertyIfConditionIsTrue(category, requestData, "category", category);
       addPropertyIfConditionIsTrue(
         subject,
