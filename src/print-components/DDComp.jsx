@@ -1,4 +1,4 @@
-import { useContext, useEffect, useRef, useState } from "react";
+import { useCallback, useContext, useEffect, useRef, useState } from "react";
 import { makeStyles } from "@mui/styles";
 import TextFields from "../components/TextFields/TextField";
 import { url } from "../constants/baseUrl";
@@ -114,6 +114,7 @@ const DDComp = () => {
   const [totalRecordsCount, setTotalRecordsCount] = useState(0);
   const [fetchingUsingPrevNext, setFetchingUsingPrevNext] = useState(false);
   const [retrieveAfterSave, setRetrieveAfterSave] = useState(false);
+  const [isInitialMount, setIsInitialMount] = useState(true);
 
   const arrayToString = (arr) => {
     if (Array.isArray(arr) && arr.length > 0) {
@@ -128,7 +129,17 @@ const DDComp = () => {
     }
   };
 
-  const handleSearchPrintData = async () => {
+  useEffect(() => {
+    // Set isInitialMount to false after the first render
+    setIsInitialMount(false);
+  }, []);
+
+  const handleSearchPrintData = useCallback(async () => {
+    // Don't run the function on the initial mount
+    if (isInitialMount) {
+      return;
+    }
+
     if (!client) {
       toast.warning(`Please select a Client`);
       return;
@@ -263,7 +274,38 @@ const DDComp = () => {
       setIsTableDataLoading(false);
       setFetchingUsingPrevNext(false);
     }
-  };
+  }, [
+    client,
+    fromDate,
+    dateNow,
+    dateType,
+    recordsPerPage,
+    pageNumber,
+    withCategory,
+    companies,
+    languages,
+    publicationGroup,
+    publication,
+    pubType,
+    category,
+    subject,
+    reportingTone,
+    prominence,
+    qc1Done,
+    qc2Done,
+    qc1By,
+    qc2By,
+    city,
+    pageNo,
+    mProm,
+    userToken,
+    url,
+    setPrintTableData,
+    setTotalRecordsCount,
+    setIsTableDataLoading,
+    setFetchingUsingPrevNext,
+    toast,
+  ]);
 
   useEffect(() => {
     handleSearchPrintData();
