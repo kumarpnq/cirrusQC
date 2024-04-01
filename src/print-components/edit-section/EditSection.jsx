@@ -154,22 +154,23 @@ const EditSection = ({
   const handleSave = async () => {
     const dateNow = new Date();
     const formattedDate = dateNow.toISOString().slice(0, 19).replace("T", " ");
+    const userName = name;
     const dataToSending = updatedData.map((row) => ({
       ARTICLEID: row.article_id,
       COMPANYID: row.company_id,
       DETAILSUMMARY: row.detail_summary,
       KEYWORD: row.keyword,
-      MODIFIEDBY: name,
+      MODIFIEDBY: userName,
       MODIFIEDON: formattedDate,
       PROMINENCE: row.m_prom,
       REPORTINGSUBJECT: row.reporting_subject,
       REPORTINGTONE: row.reporting_tone,
       SOCIALFEEDID: row.social_feed_id,
-      SUBCATEGORY: row.subcategory,
+      SUBCATEGORY: row.sub_category,
       HEADLINE: row.headline,
-      HEADSUMMARY: row.headsummary,
-      AUTHOR: row.author_name,
-      REMARKS: row.remarks,
+      HEADSUMMARY: row.head_summary,
+      AUTHOR: row.author,
+      REMARKS: row.remark,
       TOTALSPACE: row.space,
     }));
     try {
@@ -179,7 +180,7 @@ const EditSection = ({
         const res = await axios.post(url, dataToSending, {
           headers: {
             "Content-Type": "application/json",
-            Authorization: "Bearer " + userToken,
+            Authorization: `Bearer ${userToken} `,
           },
         });
         res.statusText === "OK" && toast.success("Row Updated");
