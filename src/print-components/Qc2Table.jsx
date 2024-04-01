@@ -271,9 +271,7 @@ const Qc2Table = ({
                       </td>
                     </Tooltip>
                     <td className="px-3 py-4 whitespace-nowrap">
-                      <div className="w-48 truncate">
-                        {items.publication_name}
-                      </div>
+                      <div className="w-48 truncate">{items.publication}</div>
                     </td>
                     <td className="px-4 py-4 whitespace-nowrap underline">
                       <a
