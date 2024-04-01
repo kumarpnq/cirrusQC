@@ -103,8 +103,10 @@ const EditSection = ({
           subcategory: category || row.subcategory,
           m_prom: prominence || row.m_prom,
           space:
-            (prominenceInNumber * Number(row.header_space)).toFixed(2) ||
-            row.space,
+            (
+              prominenceInNumber *
+              Number(editValue ? Number(editValue) : row.header_space)
+            ).toFixed(2) || row.space,
           detail_summary:
             (editRow === "detail_summary" && editValue) || row.detail_summary,
           headline: (editRow === "headline" && editValue) || row.headline,
