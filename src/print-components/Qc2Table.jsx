@@ -8,7 +8,6 @@ import { AiOutlineLoading } from "react-icons/ai";
 import Pagination from "../components/pagination/Pagination";
 import { IoIosArrowRoundDown, IoIosArrowRoundUp } from "react-icons/io";
 import EditModal from "./editModal/editModal";
-import { EditAttributesOutlined } from "@mui/icons-material";
 import { url } from "../constants/baseUrl";
 
 const Qc2Table = ({

@@ -55,3 +55,8 @@
 .updated-row {
   background-color: #b1f0be;
 }
+
+::placeholder {
+  font-style: italic;
+  font-size: 0.9em;
+}

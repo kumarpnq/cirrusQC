@@ -93,7 +93,7 @@ const Company = ({ companyData, companies, setCompanies }) => {
         </span>
       </div>
       {isListOpen && (
-        <div className="absolute top-6 left-0 bg-white border border-gray-300 rounded-md z-50 w-[200px] h-[200px] text-[0.8em] flex flex-col items-center gap-1">
+        <div className="absolute top-6 left-0 bg-white border border-gray-300 rounded-md z-50 w-[230px] h-[200px] text-[0.8em] flex flex-col items-center gap-1">
           {companyData?.length > 0 ? (
             <>
               <input
@@ -151,7 +151,7 @@ const Company = ({ companyData, companies, setCompanies }) => {
                       style={{ opacity: 0.7 }}
                       key={suggestion.companyid}
                       onClick={() => handleSuggestionClick(suggestion)}
-                      className={`cursor-pointer w-full ${
+                      className={`cursor-pointer w-full${
                         companies.includes(suggestion.companyid) ? "hidden" : ""
                       }`}
                     >

@@ -398,25 +398,25 @@ export const pubTypes = [
     title: "Daily",
     value: "DAILY",
   },
+  // {
+  //   id: 3,
+  //   title: "FortNightly",
+  //   value: "FORTNIGHTLY",
+  // },
+  // {
+  //   id: 4,
+  //   title: "Monthly",
+  //   value: "MONTHLY",
+  // },
+  // {
+  //   id: 5,
+  //   title: "Others",
+  //   value: "OTHERS",
+  // },
   {
     id: 3,
-    title: "FortNightly",
-    value: "FORTNIGHTLY",
-  },
-  {
-    id: 4,
-    title: "Monthly",
-    value: "MONTHLY",
-  },
-  {
-    id: 5,
-    title: "Others",
-    value: "OTHERS",
-  },
-  {
-    id: 6,
-    title: "Weekly",
-    value: "WEEKLY",
+    title: "Magazine",
+    value: "MAGAZINE",
   },
 ];
 export const PrintDDEditValues = [

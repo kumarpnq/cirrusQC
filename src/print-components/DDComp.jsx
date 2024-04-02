@@ -15,7 +15,6 @@ import Company from "./dropdowns/Company";
 import Datetype from "./dropdowns/DateType";
 import FromDate from "../components/research-dropdowns/FromDate";
 import ToDate from "../components/research-dropdowns/ToDate";
-import PublicationGroup from "./dropdowns/PublicationGoup";
 import Publication from "./dropdowns/Publication";
 import PubType from "./dropdowns/PubType";
 import SearchableCategory from "../components/research-dropdowns/table-dropdowns/SearchableCategory";
@@ -34,6 +33,7 @@ import Button from "../components/custom/Button";
 // ** third party imports
 import axios from "axios";
 import { toast } from "react-toastify";
+import CustomDebounceDropdown from "../@core/CustomDebounceDropdown";
 
 const useStyle = makeStyles(() => ({
   dropDowns: {
@@ -353,12 +353,18 @@ const DDComp = () => {
         <div className="h-[25px] flex items-center justify-center">
           <ToDate dateNow={dateNow} setDateNow={setDateNow} />
         </div>
-        <div className="h-[25px] flex items-center justify-center">
+        {/* <div className="h-[25px] flex items-center justify-center">
           <PublicationGroup
             publicationGroup={publicationGroup}
             setPublicationGroup={setPublicationGroup}
             classes={classes}
             width={150}
+          />
+        </div> */}
+        <div className="h-[25px] flex items-center justify-center">
+          <CustomDebounceDropdown
+            publicationGroup={publicationGroup}
+            setPublicationGroup={setPublicationGroup}
           />
         </div>
         <div className="h-[25px] flex items-center justify-center">

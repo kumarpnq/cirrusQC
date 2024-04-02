@@ -275,7 +275,7 @@ export const FindSection = ({
         value={secondSearchValue}
         setValue={setSecondSearchValue}
       />
-      <Button btnText="Find" onClick={handleSearch} />
+      <Button btnText="Find" onClick={handleSearch} bg={"bg-primary"} />
     </div>
   );
 };

@@ -11,6 +11,8 @@ import SubjectSearchable from "../../components/research-dropdowns/table-dropdow
 import SearchableCategory from "../../components/research-dropdowns/table-dropdowns/SearchableCategory";
 import useFetchData from "../../hooks/useFetchData";
 import { url } from "../../constants/baseUrl";
+import CustomButton from "../../@core/CustomButton";
+import Delete from "../../@core/Delete";
 
 const useStyles = makeStyles(() => ({
   dropDowns: {
@@ -48,6 +50,7 @@ const EditSection = ({
   const [editValue, setEditValue] = useState("");
   const [applyLoading, setApplyLoading] = useState(false);
   const [saveLoading, setSaveLoading] = useState(false);
+  const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
 
   // updated data to snd database
   const [updatedData, setUpdatedData] = useState([]);
@@ -200,6 +203,10 @@ const EditSection = ({
     }
   };
 
+  const handleDialogOpen = () => {
+    setOpenDeleteDialog((prev) => !prev);
+  };
+
   return (
     <>
       <div className="flex items-center gap-2">
@@ -242,6 +249,13 @@ const EditSection = ({
           btnText={saveLoading ? "Loading" : "Save"}
           onClick={handleSave}
         />
+        {!!selectedItems.length && (
+          <CustomButton
+            btnText="Delete"
+            onClick={handleDialogOpen}
+            bg="bg-red-500"
+          />
+        )}
       </div>
       <div className="flex flex-wrap items-center gap-2 ">
         <HeaderForEdits
@@ -259,6 +273,11 @@ const EditSection = ({
           />
         </span>
       </div>
+      <Delete
+        open={openDeleteDialog}
+        setOpen={setOpenDeleteDialog}
+        selectedArticles={selectedItems}
+      />
     </>
   );
 };
