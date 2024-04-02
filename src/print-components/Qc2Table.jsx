@@ -9,6 +9,7 @@ import Pagination from "../components/pagination/Pagination";
 import { IoIosArrowRoundDown, IoIosArrowRoundUp } from "react-icons/io";
 import EditModal from "./editModal/editModal";
 import { url } from "../constants/baseUrl";
+import { EditAttributesOutlined } from "@mui/icons-material";
 
 const Qc2Table = ({
   isTableDataLoading,
@@ -188,12 +189,12 @@ const Qc2Table = ({
                       />
                     )}
                   </th>
-                  {/* <th
+                  <th
                     scope="col"
                     className={`px-2 py-1 text-left text-xs font-medium uppercase tracking-wider cursor-pointer whitespace-nowrap pt-2 pr-2`}
                   >
                     Edit
-                  </th> */}
+                  </th>
                   {tableHeaders.map((item) => (
                     <th
                       key={item}
@@ -245,12 +246,12 @@ const Qc2Table = ({
                         onChange={() => handleCheckboxChange(items)}
                       />
                     </td>
-                    {/* <td
+                    <td
                       onClick={() => tableRowClick(items)}
                       className="text-gray-800 font-thin"
                     >
                       <EditAttributesOutlined />
-                    </td> */}
+                    </td>
                     <td className="px-3 py-4 whitespace-nowrap">
                       <div className="truncate w-28">{items.company}</div>
                     </td>

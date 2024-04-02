@@ -6,7 +6,7 @@ import {
   DialogActions,
   CircularProgress,
 } from "@mui/material";
-import { useContext, useEffect, useState } from "react";
+import { useContext, useState } from "react";
 import Button from "../components/custom/Button"; // Assuming this is the correct import for your Button component
 import { url } from "../constants/baseUrl";
 import { ResearchContext } from "../context/ContextProvider";
@@ -21,7 +21,7 @@ import useProtectedRequest from "../hooks/useProtectedRequest";
 const Delete = ({ open, setOpen, selectedArticles }) => {
   const [password, setPassword] = useState("");
   const [verificationLoading, setVerificationLoading] = useState(false);
-  const { userToken } = useContext(ResearchContext);
+  const { userToken, setFetchAfterSave } = useContext(ResearchContext);
   const { loading, error, data, makeRequest } = useProtectedRequest(userToken);
   const requestData = selectedArticles.map((item) => ({
     update_type: "D",
@@ -57,6 +57,7 @@ const Delete = ({ open, setOpen, selectedArticles }) => {
       toast.success("Article deleted successfully.");
       setOpen(false);
       setPassword("");
+      setFetchAfterSave(true);
     }
   };
 

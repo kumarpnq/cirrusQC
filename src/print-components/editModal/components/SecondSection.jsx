@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import {
   Box,
   Typography,
@@ -10,25 +10,55 @@ import {
   Paper,
   TableHead,
   Checkbox,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  TextField,
+  CircularProgress,
 } from "@mui/material";
 import useFetchData from "../../../hooks/useFetchData";
 import { url } from "../../../constants/baseUrl";
+import axios from "axios";
+import PropTypes from "prop-types";
 
 import DebounceSearch from "../../dropdowns/DebounceSearch";
+import { ResearchContext } from "../../../context/ContextProvider";
+import CustomButton from "../../../@core/CustomButton";
+import useProtectedRequest from "../../../hooks/useProtectedRequest";
+import { toast } from "react-toastify";
 
 const SecondSection = (props) => {
-  const { selectedClient, setSelectedClient, selectedArticle } = props;
+  const { selectedClient, selectedArticle } = props;
+  const { userToken } = useContext(ResearchContext);
   const [selectedCompany, setSelectedCompany] = useState(null);
+  const [tagData, setTagData] = useState([]);
+  const [tagDataLoading, setTagDataLoading] = useState(false);
+  const [fetchTagDataAfterChange, setFetchTagDataAfterChange] = useState(false);
 
   const [editableTagData, setEditableTagData] = useState([]);
   const [modifiedRows, setModifiedRows] = useState([]);
+  const [checkedRows, setCheckedRows] = useState([]);
 
   const articleId = !!selectedArticle && selectedArticle?.article_id;
 
-  const { data: tagData } = useFetchData(
-    `${url}articletagdetails/?article_id=${articleId}`
-  );
-  const tagDataToMap = tagData?.data?.article_details || [];
+  useEffect(() => {
+    const fetchTagDetails = async () => {
+      try {
+        setTagDataLoading(true);
+        const headers = { Authorization: `Bearer ${userToken}` };
+        const res = await axios.get(
+          `${url}articletagdetails/?article_id=${articleId}`,
+          { headers }
+        );
+        setTagData(res.data.article_details);
+        setTagDataLoading(false);
+      } catch (error) {
+        console.log(error);
+      }
+    };
+    fetchTagDetails();
+  }, [fetchTagDataAfterChange, articleId, userToken]);
 
   const { data: tones } = useFetchData(`${url}reportingtonelist`);
   const reportingTones = tones?.data?.reportingtones_list || [];
@@ -46,8 +76,10 @@ const SecondSection = (props) => {
   const categories = categoryLists?.data?.subcategory_list || [];
 
   useEffect(() => {
-    setEditableTagData(tagDataToMap);
-  }, [tagDataToMap]);
+    if (tagData.length > 0) {
+      setEditableTagData(tagData);
+    }
+  }, [tagData]);
 
   const handleChange = (index, key, value) => {
     const updatedRow = { ...editableTagData[index], [key]: value };
@@ -82,18 +114,16 @@ const SecondSection = (props) => {
     const changedRows =
       editableTagData.length > 0 &&
       editableTagData.filter((row, index) => {
-        const originalRow = tagDataToMap[index];
+        const originalRow = tagData[index];
         if (!originalRow) return false;
         return Object.keys(row).some((key) => row[key] !== originalRow[key]);
       });
     setModifiedRows(changedRows);
-  }, [editableTagData, tagDataToMap]);
+  }, [editableTagData, tagData]);
 
   const handleSaveClick = () => {
-    // Send editableTagData to backend
-
-    // Reset modifiedRows state
     setModifiedRows([]);
+    console.log(modifiedRows);
   };
 
   const handleAddCompany = () => {
@@ -103,6 +133,74 @@ const SecondSection = (props) => {
       newRow.company_name = selectedCompany.label;
       newRow.company_id = selectedCompany.value;
       setEditableTagData((prev) => [...prev, newRow]);
+    }
+  };
+
+  const handleCheckboxChange = (row) => {
+    // Check if the row is already in checkedRows
+    const index = checkedRows.findIndex(
+      (checkedRow) => checkedRow.company_id === row.company_id
+    );
+    if (index !== -1) {
+      // If the row is already checked, remove it
+      const updatedCheckedRows = [...checkedRows];
+      updatedCheckedRows.splice(index, 1);
+      setCheckedRows(updatedCheckedRows);
+    } else {
+      // If the row is not checked, add it
+      setCheckedRows([...checkedRows, row]);
+    }
+  };
+
+  // delete states
+  const [password, setPassword] = useState("");
+  const [verificationLoading, setVerificationLoading] = useState(false);
+  const { loading, error, data, makeRequest } = useProtectedRequest(userToken);
+  const [open, setOpen] = useState(false);
+
+  const handleClickOpen = () => {
+    setOpen(true);
+  };
+
+  const handleClose = () => {
+    setOpen(false);
+  };
+
+  const requestData = checkedRows.map((item) => ({
+    update_type: "D",
+    ARTICLEID: item.article_id,
+    COMPANYID: item.company_id,
+  }));
+
+  const userVerification = async () => {
+    try {
+      setVerificationLoading(true);
+      const headers = { Authorization: `Bearer ${userToken}` };
+      const data = { password };
+      const response = await axios.post(`${url}isValidUser/`, data, {
+        headers,
+      });
+      setVerificationLoading(false);
+      return response.data.valid_user;
+    } catch (error) {
+      console.log("Error:", error.message);
+    }
+  };
+
+  const handleDelete = async () => {
+    const isValid = await userVerification();
+    isValid && (await makeRequest(requestData));
+    if (!isValid) {
+      return toast.error("Password not match with records");
+    }
+
+    if (error) {
+      toast.error("An error occurred while deleting the articles.");
+    } else {
+      toast.success("Article deleted successfully.");
+      setOpen(false);
+      setPassword("");
+      setFetchTagDataAfterChange(true);
     }
   };
 
@@ -124,6 +222,15 @@ const SecondSection = (props) => {
         >
           Add company
         </button>
+        {!!checkedRows.length && (
+          <button
+            onClick={handleClickOpen}
+            className="px-8 py-1 text-white uppercase rounded-md bg-red-500"
+          >
+            Delete
+          </button>
+        )}
+
         <button
           onClick={handleSaveClick}
           className="px-8 py-1 text-white uppercase rounded-md bg-primary"
@@ -217,10 +324,15 @@ const SecondSection = (props) => {
                     ))}
                   </select>
                 </TableCell>
-
                 <TableCell align="right">
-                  <Checkbox />
+                  <Checkbox
+                    checked={checkedRows.some(
+                      (checkedRow) => checkedRow.company_id === row.company_id
+                    )}
+                    onChange={() => handleCheckboxChange(row)}
+                  />
                 </TableCell>
+
                 <TableCell align="right">
                   <select
                     value={row.subcategory}
@@ -251,8 +363,45 @@ const SecondSection = (props) => {
           </TableBody>
         </Table>
       </TableContainer>
+      <div>
+        <Dialog open={open} onClose={handleClose}>
+          <DialogTitle fontSize={"1em"}>
+            Enter Password For Confirmation.
+          </DialogTitle>
+          <DialogContent>
+            <TextField
+              type="password"
+              sx={{ outline: "none" }}
+              size="small"
+              placeholder="Password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+            />
+          </DialogContent>
+          <DialogActions>
+            <CustomButton
+              btnText="Cancel"
+              onClick={handleClose}
+              bg={"bg-primary"}
+            />
+            {verificationLoading ? (
+              <CircularProgress />
+            ) : (
+              <CustomButton
+                btnText="Delete"
+                onClick={handleDelete}
+                bg={"bg-red-500"}
+              />
+            )}
+          </DialogActions>
+        </Dialog>
+      </div>
     </div>
   );
 };
 
+SecondSection.propTypes = {
+  selectedClient: PropTypes.string.isRequired,
+  selectedArticle: PropTypes.array.isRequired,
+};
 export default SecondSection;

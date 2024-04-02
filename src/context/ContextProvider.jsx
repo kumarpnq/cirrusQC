@@ -49,7 +49,7 @@ const ContextProvider = ({ children }) => {
   // qc2print
   const [qc2Open, setQc2Open] = useState(false);
   const [qc2PrintTableData, setQc2PrintTableData] = useState([]);
-  // when seearch direct move to table
+  const [fetchAfterSave, setFetchAfterSave] = useState(false);
 
   const handleLogout = () => {
     if (logoutTimer) {
@@ -98,6 +98,8 @@ const ContextProvider = ({ children }) => {
         setQc2Open,
         qc2PrintTableData,
         setQc2PrintTableData,
+        fetchAfterSave,
+        setFetchAfterSave,
       }}
     >
       {children}

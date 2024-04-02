@@ -52,7 +52,13 @@ const useStyle = makeStyles(() => ({
   },
 }));
 const DDComp = () => {
-  const { userToken, pageNumber, recordsPerPage } = useContext(ResearchContext);
+  const {
+    userToken,
+    pageNumber,
+    recordsPerPage,
+    fetchAfterSave,
+    setFetchAfterSave,
+  } = useContext(ResearchContext);
   // main table data
   const [printTableData, setPrintTableData] = useState([]);
   const printTableRef = useRef(null);
@@ -268,6 +274,7 @@ const DDComp = () => {
         const count = response?.data?.feed_count[0].total_rows;
         setTotalRecordsCount(count);
       }
+      setFetchAfterSave(false);
     } catch (error) {
       console.error(error);
     } finally {
@@ -305,11 +312,12 @@ const DDComp = () => {
     setIsTableDataLoading,
     setFetchingUsingPrevNext,
     toast,
+    setFetchAfterSave,
   ]);
 
   useEffect(() => {
     handleSearchPrintData();
-  }, [fetchingUsingPrevNext, retrieveAfterSave]);
+  }, [fetchingUsingPrevNext, retrieveAfterSave, fetchAfterSave]);
   const classes = useStyle();
   return (
     <div className="flex flex-col h-screen px-4">
@@ -353,14 +361,7 @@ const DDComp = () => {
         <div className="h-[25px] flex items-center justify-center">
           <ToDate dateNow={dateNow} setDateNow={setDateNow} />
         </div>
-        {/* <div className="h-[25px] flex items-center justify-center">
-          <PublicationGroup
-            publicationGroup={publicationGroup}
-            setPublicationGroup={setPublicationGroup}
-            classes={classes}
-            width={150}
-          />
-        </div> */}
+
         <div className="h-[25px] flex items-center justify-center">
           <CustomDebounceDropdown
             publicationGroup={publicationGroup}

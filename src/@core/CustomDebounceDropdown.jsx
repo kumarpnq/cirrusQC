@@ -88,10 +88,19 @@ const CustomDebounceDropdown = ({ publicationGroup, setPublicationGroup }) => {
             <input
               type="text"
               className="outline-none border border-gray-400 rounded-[3px] bg-secondory h-[18] px-2 py-[2px] placeholder-black placeholder-opacity-75 placeholder-italic text-sm  hover:border-black"
-              placeholder="Publication Group"
+              placeholder="Type here for search"
               value={value}
               onChange={handleSearchTermChange}
             />
+          </li>
+          <li
+            className="italic text-gray-400 text-[0.8em] ml-1 cursor-pointer"
+            onClick={() => {
+              setPublicationGroup("");
+              setPubTitleForShow("");
+            }}
+          >
+            Publication group
           </li>
           {publicationGroups.map((item) => (
             <li
