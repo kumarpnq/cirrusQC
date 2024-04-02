@@ -83,7 +83,7 @@ const DDComp = () => {
   const [pubType, setPubType] = useState("");
   const [category, setCategory] = useState("");
   const [subject, setSubject] = useState("");
-  const [mProm, setMProm] = useState();
+  // const [mProm, setMProm] = useState();
   const [pageNo, setPageNo] = useState();
 
   // reporting tone
@@ -250,12 +250,12 @@ const DDComp = () => {
         "pagenumber",
         Number(pageNo)
       );
-      addPropertyIfConditionIsTrue(
-        mProm && Number(mProm),
-        requestData,
-        "manualprominence",
-        Number(mProm)
-      );
+      // addPropertyIfConditionIsTrue(
+      //   mProm && Number(mProm),
+      //   requestData,
+      //   "manualprominence",
+      //   Number(mProm)
+      // );
       const headers = {
         Authorization: "Bearer " + userToken,
       };
@@ -304,7 +304,6 @@ const DDComp = () => {
     qc2By,
     city,
     pageNo,
-    mProm,
     userToken,
     url,
     setPrintTableData,
@@ -462,14 +461,14 @@ const DDComp = () => {
             classes={classes}
           />
         </div>
-        <div className="h-[25px] flex items-center justify-center w-[95px]">
+        {/* <div className="h-[25px] flex items-center justify-center w-[95px]">
           <TextFields
             placeholder="Prominence"
             type={"number"}
             value={mProm}
             setValue={setMProm}
           />
-        </div>
+        </div> */}
         <div className="h-[25px] flex items-center justify-center w-[95px]">
           <TextFields
             placeholder="Page"

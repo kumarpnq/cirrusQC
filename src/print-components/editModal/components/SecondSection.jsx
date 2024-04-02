@@ -17,16 +17,19 @@ import {
   TextField,
   CircularProgress,
 } from "@mui/material";
+
+// ** custom imports
 import useFetchData from "../../../hooks/useFetchData";
 import { url } from "../../../constants/baseUrl";
-import axios from "axios";
-import PropTypes from "prop-types";
-
 import DebounceSearch from "../../dropdowns/DebounceSearch";
 import { ResearchContext } from "../../../context/ContextProvider";
 import CustomButton from "../../../@core/CustomButton";
 import useProtectedRequest from "../../../hooks/useProtectedRequest";
+
+// ** third party imports
 import { toast } from "react-toastify";
+import axios from "axios";
+import PropTypes from "prop-types";
 
 const SecondSection = (props) => {
   const { selectedClient, selectedArticle } = props;
@@ -35,10 +38,12 @@ const SecondSection = (props) => {
   const [tagData, setTagData] = useState([]);
   const [tagDataLoading, setTagDataLoading] = useState(false);
   const [fetchTagDataAfterChange, setFetchTagDataAfterChange] = useState(false);
+  const [saveLoading, setSaveLoading] = useState(false);
 
   const [editableTagData, setEditableTagData] = useState([]);
   const [modifiedRows, setModifiedRows] = useState([]);
   const [checkedRows, setCheckedRows] = useState([]);
+  const [manuallyAddedCompanies, setManuallyAddedCompanies] = useState([]);
 
   const articleId = !!selectedArticle && selectedArticle?.article_id;
 
@@ -53,8 +58,10 @@ const SecondSection = (props) => {
         );
         setTagData(res.data.article_details);
         setTagDataLoading(false);
+        setFetchTagDataAfterChange(false);
       } catch (error) {
         console.log(error);
+        setFetchTagDataAfterChange(false);
       }
     };
     fetchTagDetails();
@@ -82,10 +89,30 @@ const SecondSection = (props) => {
   }, [tagData]);
 
   const handleChange = (index, key, value) => {
-    const updatedRow = { ...editableTagData[index], [key]: value };
+    const updatedRow = {
+      ...editableTagData[index],
+      [key]: value,
+      update_type: "U", // Mark as updated
+    };
     const newData = [...editableTagData];
     newData[index] = updatedRow;
     setEditableTagData(newData);
+
+    // If the edited row is a manually added company, mark it as modified
+    if (
+      manuallyAddedCompanies.some(
+        (row) => row.company_id === updatedRow.company_id
+      )
+    ) {
+      // Update the modified row in manuallyAddedCompanies
+      const updatedManuallyAddedCompanies = manuallyAddedCompanies.map((row) =>
+        row.company_id === updatedRow.company_id ? updatedRow : row
+      );
+      setManuallyAddedCompanies(updatedManuallyAddedCompanies);
+
+      // Update modifiedRows to include the edited row
+      setModifiedRows((prev) => [...prev, updatedRow]);
+    }
   };
 
   const handleHeaderSpaceBlur = (index) => {
@@ -118,12 +145,38 @@ const SecondSection = (props) => {
         if (!originalRow) return false;
         return Object.keys(row).some((key) => row[key] !== originalRow[key]);
       });
-    setModifiedRows(changedRows);
-  }, [editableTagData, tagData]);
 
-  const handleSaveClick = () => {
-    setModifiedRows([]);
-    console.log(modifiedRows);
+    // Include manually added companies in modifiedRows
+    const allModifiedRows = changedRows
+      ? [...changedRows, ...manuallyAddedCompanies]
+      : [...manuallyAddedCompanies];
+
+    setModifiedRows(allModifiedRows);
+  }, [editableTagData, tagData, manuallyAddedCompanies]);
+
+  const handleSaveClick = async () => {
+    if (modifiedRows.length < 0) {
+      return toast.warning("No changes in the rows.");
+    }
+    try {
+      setSaveLoading(true);
+      const requestData = modifiedRows;
+      const headers = { Authorization: `Bearer ${userToken}` };
+      const res = await axios.post(
+        `${url}updatearticletagdetails/`,
+        requestData,
+        {
+          headers,
+        }
+      );
+      if (res.data) {
+        toast.success("Successfully saved changes!");
+      }
+      setFetchTagDataAfterChange(true);
+      setSaveLoading(false);
+    } catch (error) {
+      toast.error(error.message);
+    }
   };
 
   const handleAddCompany = () => {
@@ -132,7 +185,13 @@ const SecondSection = (props) => {
         editableTagData.length > 0 ? { ...editableTagData[0] } : {};
       newRow.company_name = selectedCompany.label;
       newRow.company_id = selectedCompany.value;
+      [newRow.update_type] = "I"; // Mark as inserted
+
       setEditableTagData((prev) => [...prev, newRow]);
+
+      setTagData((prev) => [...prev, newRow]);
+
+      setManuallyAddedCompanies((prev) => [...prev, newRow]);
     }
   };
 
@@ -230,13 +289,16 @@ const SecondSection = (props) => {
             Delete
           </button>
         )}
-
-        <button
-          onClick={handleSaveClick}
-          className="px-8 py-1 text-white uppercase rounded-md bg-primary"
-        >
-          Save
-        </button>
+        {saveLoading ? (
+          <CircularProgress />
+        ) : (
+          <button
+            onClick={handleSaveClick}
+            className="px-8 py-1 text-white uppercase rounded-md bg-primary"
+          >
+            Save
+          </button>
+        )}
       </Box>
       <Typography sx={{ fontSize: "0.9em" }}>
         ClientName: {selectedClient ? selectedClient : "No client selected"}
