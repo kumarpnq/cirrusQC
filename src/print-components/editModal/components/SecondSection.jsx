@@ -264,6 +264,7 @@ const SecondSection = (props) => {
       setOpen(false);
       setPassword("");
       setFetchTagDataAfterChange(true);
+      setCheckedRows([]);
     }
   };
 
@@ -289,7 +290,7 @@ const SecondSection = (props) => {
         {!!checkedRows.length && (
           <button
             onClick={handleClickOpen}
-            className="px-6 text-white uppercase rounded-md bg-red-500"
+            className="px-6 text-white uppercase bg-red-500 rounded-md"
             style={{ fontSize: "0.8em" }}
           >
             Delete
@@ -329,106 +330,113 @@ const SecondSection = (props) => {
             </TableRow>
           </TableHead>
           <TableBody>
-            {editableTagData?.map((row, index) => (
-              <TableRow
-                key={row.company_id}
-                sx={{
-                  "&:last-child td, &:last-child th": { border: 0 },
-                }}
-              >
-                <TableCell sx={{ fontSize: "0.8em" }} size="small">
-                  {row.company_name}
-                </TableCell>
-                <TableCell align="right" sx={{ fontSize: "0.9em" }}>
-                  <select
-                    value={row.subject}
-                    onChange={(e) =>
-                      handleChange(index, "subject", e.target.value)
-                    }
-                    className="border border-black w-28"
-                  >
-                    {subjects.map((subject, index) => (
-                      <option value={subject} key={subject + String(index)}>
-                        {subject}
-                      </option>
-                    ))}
-                  </select>
-                </TableCell>
-                <TableCell align="right">
-                  <input
-                    className="border border-black outline-none w-14"
-                    value={row.header_space}
-                    onBlur={() => handleHeaderSpaceBlur(index)}
-                    onChange={(e) =>
-                      handleChange(index, "header_space", e.target.value)
-                    }
-                  />
-                </TableCell>
-                <TableCell align="right">
-                  <input
-                    className="border border-black outline-none w-14"
-                    value={row.manual_prominence}
-                    onBlur={() => handleProminenceBlur(index)}
-                    onChange={(e) =>
-                      handleChange(index, "manual_prominence", e.target.value)
-                    }
-                  />
-                </TableCell>
-                <TableCell align="right">{row.space}</TableCell>
-                <TableCell align="right">
-                  <select
-                    value={row.tone}
-                    onChange={(e) =>
-                      handleChange(index, "reporting_tone", e.target.value)
-                    }
-                    className="border border-black w-28"
-                  >
-                    {reportingTones.map((tone, index) => (
-                      <option
-                        value={tone.tonality}
-                        key={tone.tonality + String(index)}
-                      >
-                        {tone.tonality}
-                      </option>
-                    ))}
-                  </select>
-                </TableCell>
-                <TableCell align="right">
-                  <Checkbox
-                    checked={checkedRows.some(
-                      (checkedRow) => checkedRow.company_id === row.company_id
-                    )}
-                    onChange={() => handleCheckboxChange(row)}
-                  />
-                </TableCell>
-
-                <TableCell align="right">
-                  <select
-                    value={row.subcategory}
-                    onChange={(e) =>
-                      handleChange(index, "subcategory", e.target.value)
-                    }
-                    className="border border-black w-28"
-                  >
-                    {categories.map((cate, index) => (
-                      <option value={cate} key={cate + String(index)}>
-                        {cate}
-                      </option>
-                    ))}
-                  </select>
-                </TableCell>
-                <TableCell align="right">
-                  <input
-                    type="text"
-                    className="border border-black outline-none w-14"
-                    value={row.qc2_remark}
-                    onChange={(e) =>
-                      handleChange(index, "remarks", e.target.value)
-                    }
-                  />
+            {tagDataLoading ? (
+              <TableRow>
+                <TableCell colSpan={9} align="center">
+                  <CircularProgress />
                 </TableCell>
               </TableRow>
-            ))}
+            ) : (
+              editableTagData?.map((row, index) => (
+                <TableRow
+                  key={row.company_id}
+                  sx={{
+                    "&:last-child td, &:last-child th": { border: 0 },
+                  }}
+                >
+                  <TableCell sx={{ fontSize: "0.8em" }} size="small">
+                    {row.company_name}
+                  </TableCell>
+                  <TableCell align="right" sx={{ fontSize: "0.9em" }}>
+                    <select
+                      value={row.subject}
+                      onChange={(e) =>
+                        handleChange(index, "subject", e.target.value)
+                      }
+                      className="border border-black w-28"
+                    >
+                      {subjects.map((subject, index) => (
+                        <option value={subject} key={subject + String(index)}>
+                          {subject}
+                        </option>
+                      ))}
+                    </select>
+                  </TableCell>
+                  <TableCell align="right">
+                    <input
+                      className="border border-black outline-none w-14"
+                      value={row.header_space}
+                      onBlur={() => handleHeaderSpaceBlur(index)}
+                      onChange={(e) =>
+                        handleChange(index, "header_space", e.target.value)
+                      }
+                    />
+                  </TableCell>
+                  <TableCell align="right">
+                    <input
+                      className="border border-black outline-none w-14"
+                      value={row.manual_prominence}
+                      onBlur={() => handleProminenceBlur(index)}
+                      onChange={(e) =>
+                        handleChange(index, "manual_prominence", e.target.value)
+                      }
+                    />
+                  </TableCell>
+                  <TableCell align="right">{row.space}</TableCell>
+                  <TableCell align="right">
+                    <select
+                      value={row.tone}
+                      onChange={(e) =>
+                        handleChange(index, "reporting_tone", e.target.value)
+                      }
+                      className="border border-black w-28"
+                    >
+                      {reportingTones.map((tone, index) => (
+                        <option
+                          value={tone.tonality}
+                          key={tone.tonality + String(index)}
+                        >
+                          {tone.tonality}
+                        </option>
+                      ))}
+                    </select>
+                  </TableCell>
+                  <TableCell align="right">
+                    <Checkbox
+                      checked={checkedRows.some(
+                        (checkedRow) => checkedRow.company_id === row.company_id
+                      )}
+                      onChange={() => handleCheckboxChange(row)}
+                    />
+                  </TableCell>
+                  <TableCell align="right">
+                    <select
+                      value={row.subcategory}
+                      onChange={(e) =>
+                        handleChange(index, "subcategory", e.target.value)
+                      }
+                      className="border border-black w-28"
+                    >
+                      {categories.map((cate, index) => (
+                        <option value={cate} key={cate + String(index)}>
+                          {cate}
+                        </option>
+                      ))}
+                    </select>
+                  </TableCell>
+                  <TableCell align="right">
+                    <input
+                      type="text"
+                      className="border border-black outline-none w-14"
+                      value={row.qc2_remark}
+                      onChange={(e) =>
+                        handleChange(index, "remarks", e.target.value)
+                      }
+                    />
+                  </TableCell>
+                </TableRow>
+              ))
+            )}
           </TableBody>
         </Table>
       </TableContainer>

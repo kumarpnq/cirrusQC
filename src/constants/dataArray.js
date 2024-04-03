@@ -1,3 +1,4 @@
+// online
 export const dateTypes = [
   { id: 1, title: "Article", value: "article" },
   { id: 2, title: "Upload", value: "upload" },
@@ -334,7 +335,6 @@ export const DDEditValues = [
     value: "headsummary",
   },
 ];
-
 export const recordsPerPage = [200, 400, 600, 800, 1000];
 // print
 export const DDEditValuesForPrint = [
@@ -367,7 +367,7 @@ export const DDEditValuesForPrint = [
   {
     id: 6,
     title: "Head Summary",
-    value: "headsummary",
+    value: "head_summary",
   },
   {
     id: 7,
@@ -459,4 +459,42 @@ export const qcPermissions = [
 export const yesOrNo = [
   { title: "Yes", value: 1 },
   { title: "No", value: 0 },
+];
+export const DDSearchValuesForPrint = [
+  {
+    title: "All",
+    value: "all",
+  },
+  {
+    title: "Headline",
+    value: "headline",
+  },
+  {
+    title: "Author",
+    value: "author",
+  },
+  {
+    title: "Publication",
+    value: "publication",
+  },
+  {
+    title: "Subject",
+    value: "reporting_subject",
+  },
+  {
+    title: "Summary",
+    value: "detail_summary",
+  },
+  {
+    title: "Keyword",
+    value: "keyword",
+  },
+  {
+    title: "HeadSummary",
+    value: "head_summary",
+  },
+  {
+    title: "Remarks",
+    value: "remark",
+  },
 ];

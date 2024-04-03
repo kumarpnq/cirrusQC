@@ -254,6 +254,7 @@ export const FindSection = ({
         classes={classes}
         headerForSearch={headerForSearch}
         handleTableSearchUsingHeader={handleTableHeaderForSearch}
+        screen={"print"}
       />
       <TextFields
         placeholder="Find Text"
@@ -269,6 +270,7 @@ export const FindSection = ({
         secondHeaderForSearch={secondHeaderForSearch}
         handleSecondSearchUsingHeader={handleSecondTableHeaderForSearch}
         headerForSearch={headerForSearch}
+        screen={"print"}
       />
       <TextFields
         placeholder="Find Text"

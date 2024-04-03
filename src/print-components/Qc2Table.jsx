@@ -189,12 +189,12 @@ const Qc2Table = ({
                       />
                     )}
                   </th>
-                  {/* <th
+                  <th
                     scope="col"
                     className={`px-2 py-1 text-left text-xs font-medium uppercase tracking-wider cursor-pointer whitespace-nowrap pt-2 pr-2`}
                   >
                     Edit
-                  </th> */}
+                  </th>
                   {tableHeaders.map((item) => (
                     <th
                       key={item}
@@ -246,12 +246,12 @@ const Qc2Table = ({
                         onChange={() => handleCheckboxChange(items)}
                       />
                     </td>
-                    {/* <td
+                    <td
                       onClick={() => tableRowClick(items)}
-                      className="text-gray-800 font-thin"
+                      className="font-thin text-gray-800"
                     >
                       <EditAttributesOutlined />
-                    </td> */}
+                    </td>
                     <td className="px-3 py-4 whitespace-nowrap">
                       <div className="truncate w-28">{items.company}</div>
                     </td>
@@ -273,7 +273,7 @@ const Qc2Table = ({
                     <td className="px-3 py-4 whitespace-nowrap">
                       <div className="w-48 truncate">{items.publication}</div>
                     </td>
-                    <td className="px-4 py-4 whitespace-nowrap underline">
+                    <td className="px-4 py-4 underline whitespace-nowrap">
                       <a
                         href={`${url}${items.link}`}
                         target="_blank"
@@ -301,9 +301,6 @@ const Qc2Table = ({
                     >
                       {items.reporting_tone}
                     </td>
-                    {/* <td className="px-6 py-4 whitespace-nowrap">
-                      {items.total_space}
-                    </td> */}
 
                     <td className="px-3 py-4 whitespace-nowrap">
                       {items.reporting_subject}
@@ -339,9 +336,7 @@ const Qc2Table = ({
                         </div>
                       </td>
                     </Tooltip>
-                    {/* <td className="px-3 py-4 whitespace-nowrap">
-                      <div className="w-40 truncate">{items.journalist}</div>
-                    </td> */}
+
                     <td className="px-6 py-4 whitespace-nowrap">
                       {items.category}
                     </td>

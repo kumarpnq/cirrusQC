@@ -1,12 +1,17 @@
 import { FormControl, Select, MenuItem } from "@mui/material";
 import PropTypes from "prop-types";
-import { DDSearchValues } from "../../../constants/dataArray";
+import {
+  DDSearchValues,
+  DDSearchValuesForPrint,
+} from "../../../constants/dataArray";
 
 const FirstFind = ({
   classes,
   headerForSearch,
   handleTableSearchUsingHeader,
+  screen,
 }) => {
+  const dataForMapping = screen ? DDSearchValuesForPrint : DDSearchValues;
   return (
     <FormControl className="w-28">
       <Select
@@ -22,7 +27,7 @@ const FirstFind = ({
           <em>Select</em>
         </MenuItem>
 
-        {DDSearchValues.map((item) => (
+        {dataForMapping.map((item) => (
           <MenuItem
             value={item.value}
             key={item.title}
@@ -40,5 +45,6 @@ FirstFind.propTypes = {
   classes: PropTypes.object.isRequired,
   headerForSearch: PropTypes.string.isRequired,
   handleTableSearchUsingHeader: PropTypes.func.isRequired,
+  screen: PropTypes.string,
 };
 export default FirstFind;
