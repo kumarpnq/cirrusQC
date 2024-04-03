@@ -67,14 +67,16 @@ const CustomDebounceDropdown = ({ publicationGroup, setPublicationGroup }) => {
   return (
     <div ref={dropdownRef} className="relative mt-3">
       <div className="relative">
-        <input
-          type="text"
-          className="outline-none border border-gray-400 rounded-[3px] bg-secondory h-[18] px-2 py-[2px] placeholder-black placeholder-opacity-75 placeholder-italic text-sm  hover:border-black"
-          placeholder="Publication Group"
-          value={pubTitleForShow}
-          onFocus={() => setIsShowList(true)}
-          disabled
-        />
+        <div
+          onClick={() => setIsShowList(true)}
+          className="outline-none border border-gray-400 rounded-[3px] bg-secondory h-[18] px-2 py-[2px] placeholder-black placeholder-opacity-75 placeholder-italic text-sm  hover:border-black w-[200px]"
+        >
+          {pubTitleForShow ? (
+            pubTitleForShow
+          ) : (
+            <p className="italic text-[0.9em]">Publication Group</p>
+          )}
+        </div>
         <span
           className="absolute right-2 top-1 text-lg text-gray-500 cursor-pointer"
           onClick={() => setIsShowList(!isShowList)}

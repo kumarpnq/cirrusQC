@@ -28,7 +28,7 @@ const Cities = ({ classes, city, setCity }) => {
             return selectedCity?.join(", ");
           }}
         >
-          <MenuItem value="" sx={{ fontSize: "0.8em", opacity: 0.7 }}>
+          <MenuItem value="" disabled sx={{ fontSize: "0.8em", opacity: 0.7 }}>
             <em>City</em>
           </MenuItem>
           {citiesArray &&
