@@ -51,7 +51,7 @@ const CustomDebounceDropdown = ({ publicationGroup, setPublicationGroup }) => {
 
   useEffect(() => {
     fetchData();
-  }, []);
+  }, [value]);
   const debouncedFetchData = debounce(fetchData, 500);
 
   const handleSearchTermChange = (event) => {
@@ -96,7 +96,7 @@ const CustomDebounceDropdown = ({ publicationGroup, setPublicationGroup }) => {
       </div>
       {isShowList && (
         <ul className=" w-[200px] h-[200px] absolute bg-white z-30 shadow-lg rounded-md overflow-y-scroll">
-          <li>
+          <li className="sticky top-0">
             <input
               type="text"
               className="outline-none border border-gray-400 rounded-[3px] bg-secondory h-[18] px-2 py-[2px] placeholder-black placeholder-opacity-75 placeholder-italic text-sm  hover:border-black"
