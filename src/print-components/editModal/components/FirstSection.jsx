@@ -1,5 +1,5 @@
 import PropTypes from "prop-types";
-import { FormControl, FormLabel, Box, Typography } from "@mui/material";
+import { Box } from "@mui/material";
 import PublicationGroup from "../../dropdowns/PublicationGoup";
 import YesOrNo from "../../../@core/YesOrNo";
 import { yesOrNo } from "../../../constants/dataArray";
@@ -42,7 +42,7 @@ const FirstSection = (props) => {
       const data = {
         ARTICLEID: selectedArticle.article_id,
         BOX: selectedArticle?.box || box,
-        PAHOTO: selectedArticle.photo || photo,
+        PAHOTO: selectedArticle?.photo || photo,
         PAGENUMBER: selectedArticle?.page_number || pageNumber,
         HEADLINES: selectedArticle?.headline || headline,
         PAGEVALUE: selectedArticle?.page_value || pageValue,
@@ -55,19 +55,19 @@ const FirstSection = (props) => {
         QC2BY: selectedArticle.qc2_by || qc2By,
       };
       const dataForCompare = {
-        ARTICLEID: selectedArticle.article_id,
+        ARTICLEID: selectedArticle?.article_id,
         BOX: selectedArticle?.box,
-        PAHOTO: selectedArticle.photo,
+        PAHOTO: selectedArticle?.photo,
         PAGENUMBER: selectedArticle?.page_number,
         HEADLINES: selectedArticle?.headline,
         PAGEVALUE: selectedArticle?.page_value,
-        PUBLICATIONNAME: selectedArticle.publication,
-        SUMMARY: selectedArticle.detail_summary,
-        JOURNALIST: selectedArticle.author,
-        SPACE: selectedArticle.space,
-        HEADSUMMARY: selectedArticle.head_summary,
-        QC1BY: selectedArticle.qc1_by,
-        QC2BY: selectedArticle.qc2_by,
+        PUBLICATIONNAME: selectedArticle?.publication,
+        SUMMARY: selectedArticle?.detail_summary,
+        JOURNALIST: selectedArticle?.author,
+        SPACE: selectedArticle?.space,
+        HEADSUMMARY: selectedArticle?.head_summary,
+        QC1BY: selectedArticle?.qc1_by,
+        QC2BY: selectedArticle?.qc2_by,
       };
       const isEqual = JSON.stringify(data) === JSON.stringify(dataForCompare);
       if (!isEqual) {
@@ -92,20 +92,26 @@ const FirstSection = (props) => {
   ]);
   return (
     <form>
-      <Typography textAlign={"center"}>Edit Article</Typography>
       <Box
         sx={{
-          display: "grid",
-          gridTemplateColumns: "repeat(2,auto)",
-          gap: 2,
+          display: "flex",
+          items: "center",
+          flexWrap: "wrap",
+          gap: 1,
         }}
       >
-        <PublicationGroup
-          classes={classes}
-          publicationGroup={selectedPublication}
-          setPublicationGroup={setSelectedPublication}
-          width={300}
-        />
+        <div className="flex items-center gap-2">
+          <label className="mt-2 text-[0.8em]">Publication:</label>
+          <div className="flex justify-center">
+            <PublicationGroup
+              classes={classes}
+              publicationGroup={selectedPublication}
+              setPublicationGroup={setSelectedPublication}
+              width={300}
+            />
+          </div>
+        </div>
+
         <FormWithLabelTextField
           label="Headlines"
           type="text"
@@ -127,42 +133,28 @@ const FirstSection = (props) => {
           setValue={setSummary}
           width={300}
         />
-        <FormControl
-          sx={{
-            display: "flex",
-            flexDirection: "row",
-            alignItems: "center",
-            gap: 2,
-          }}
-        >
-          <FormLabel sx={{ fontSize: "0.9em" }}>Box</FormLabel>
+        <div className="flex items-center gap-2">
+          <label className="mt-2 text-[0.8em]">Box:</label>
           <YesOrNo
             classes={classes}
             placeholder="Box"
             mapValue={yesOrNo}
-            value={selectedArticle?.box || box}
+            value={box}
             setValue={setBox}
             width={100}
           />
-        </FormControl>
-        <FormControl
-          sx={{
-            display: "flex",
-            flexDirection: "row",
-            alignItems: "center",
-            gap: 2,
-          }}
-        >
-          <FormLabel sx={{ fontSize: "0.9em" }}>Photo</FormLabel>
+        </div>
+        <div className="flex items-center gap-2">
+          <label className="mt-2 text-[0.8em]">Photo:</label>
           <YesOrNo
             classes={classes}
             placeholder="Photo"
             mapValue={yesOrNo}
-            value={selectedArticle.photo || photo}
+            value={selectedArticle?.photo || photo}
             setValue={setPhoto}
             width={100}
           />
-        </FormControl>
+        </div>
         <FormWithLabelTextField
           label="PageNo"
           type="number"

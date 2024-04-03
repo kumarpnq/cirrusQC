@@ -19,7 +19,7 @@ const FormWithLabelTextField = ({
         gap: 1,
       }}
     >
-      <FormLabel sx={{ fontSize: "0.9em" }}>{label}:</FormLabel>
+      <FormLabel sx={{ fontSize: "0.8em" }}>{label}:</FormLabel>
       <CustomTextField
         placeholder={placeholder}
         width={width}

@@ -55,6 +55,11 @@ const DebounceSearch = ({ selectedCompany, setSelectedCompany }) => {
         styles={{
           input: (provided) => ({
             ...provided,
+            fontSize: "0.8em",
+          }),
+          menuPortal: (base) => ({
+            ...base,
+            fontSize: "0.8em",
             height: "20px",
           }),
         }}

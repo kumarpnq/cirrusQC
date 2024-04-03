@@ -29,19 +29,29 @@ const CustomDebounceDropdown = ({ publicationGroup, setPublicationGroup }) => {
   };
 
   const fetchData = async (query) => {
-    const requestParam = { search_term: query };
-
     try {
-      const response = await axios.get(`${url}publicationgroups/`, {
-        headers,
-        params: requestParam,
-      });
+      let response;
+      if (query) {
+        const queryResponse = await axios.get(`${url}publicationgroups/`, {
+          headers,
+          params: { search_term: query },
+        });
+        response = queryResponse;
+      } else {
+        response = await axios.get(`${url}publicationgroups/`, {
+          headers,
+        });
+      }
+
       setPublicationGroups(response.data.publication_groups);
     } catch (error) {
       console.error("Error fetching data:", error);
     }
   };
 
+  useEffect(() => {
+    fetchData();
+  }, []);
   const debouncedFetchData = debounce(fetchData, 500);
 
   const handleSearchTermChange = (event) => {

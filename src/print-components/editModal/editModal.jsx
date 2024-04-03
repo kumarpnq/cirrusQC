@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Modal, Box } from "@mui/material";
+import { Modal, Box, Typography, Button, CardMedia } from "@mui/material";
 import { makeStyles } from "@mui/styles";
 
 // ** components
@@ -8,14 +8,15 @@ import SecondSection from "./components/SecondSection";
 
 // ** third party imports
 import PropTypes from "prop-types";
+import { url } from "../../constants/baseUrl";
 
 const style = {
   position: "absolute",
   top: "50%",
   left: "50%",
   transform: "translate(-50%, -50%)",
-  width: "90vw",
-  height: "90vh",
+  width: "98vw",
+  height: "98vh",
   overflow: "scroll",
   bgcolor: "background.paper",
   border: "2px solid #000",
@@ -39,6 +40,11 @@ const useStyle = makeStyles(() => ({
     maxHeight: 200,
     width: 200,
     background: "#d4c8c7",
+  },
+  iframe: {
+    width: "100%", // Make the iframe fill the entire width of the modal content
+    height: "100%", // Make the iframe fill the entire height of the modal content
+    border: "none", // Remove border around iframe
   },
 }));
 
@@ -71,41 +77,64 @@ export default function EditModal({ open, handleClose, selectedArticle }) {
         aria-describedby="modal-modal-description"
       >
         <Box sx={style}>
-          <FirstSection
-            classes={classes}
-            selectedArticle={selectedArticle}
-            selectedPublication={selectedPublication}
-            setSelectedPublication={setSelectedPublication}
-            headline={headline}
-            setHeadline={setHeadline}
-            journalist={journalist}
-            setJournalist={setJournalist}
-            summary={summary}
-            setSummary={setSummary}
-            box={box}
-            setBox={setBox}
-            photo={photo}
-            setPhoto={setPhoto}
-            pageNumber={pageNumber}
-            setPageNumber={setPageNumber}
-            pageValue={pageValue}
-            setPageValue={setPageValue}
-            space={space}
-            setSpace={setSpace}
-            qc1By={qc1By}
-            setQc1By={setQc1By}
-            qc2By={qc2By}
-            setQc2By={setQc2By}
-            articleSummary={articleSummary}
-            setArticleSummary={setArticleSummary}
-            setEditedSingleArticle={setEditedSingleArticle}
-          />
-          <SecondSection
-            selectedClient={selectedClient}
-            setSelectedClient={setSelectedClient}
-            selectedArticle={selectedArticle}
-            editedSingleArticle={editedSingleArticle}
-          />
+          <Box
+            display={"flex"}
+            alignItems={"center"}
+            justifyContent={"space-between"}
+          >
+            <Typography variant="h1" fontSize={"1em"}>
+              Edit Articles
+            </Typography>
+            <Button onClick={handleClose}>close</Button>
+          </Box>
+          <div className="flex">
+            <Box sx={{ width: "60%" }}>
+              <FirstSection
+                classes={classes}
+                selectedArticle={selectedArticle}
+                selectedPublication={selectedPublication}
+                setSelectedPublication={setSelectedPublication}
+                headline={headline}
+                setHeadline={setHeadline}
+                journalist={journalist}
+                setJournalist={setJournalist}
+                summary={summary}
+                setSummary={setSummary}
+                box={box}
+                setBox={setBox}
+                photo={photo}
+                setPhoto={setPhoto}
+                pageNumber={pageNumber}
+                setPageNumber={setPageNumber}
+                pageValue={pageValue}
+                setPageValue={setPageValue}
+                space={space}
+                setSpace={setSpace}
+                qc1By={qc1By}
+                setQc1By={setQc1By}
+                qc2By={qc2By}
+                setQc2By={setQc2By}
+                articleSummary={articleSummary}
+                setArticleSummary={setArticleSummary}
+                setEditedSingleArticle={setEditedSingleArticle}
+              />
+              <SecondSection
+                selectedClient={selectedClient}
+                setSelectedClient={setSelectedClient}
+                selectedArticle={selectedArticle}
+                editedSingleArticle={editedSingleArticle}
+              />
+            </Box>
+            <Box sx={{ width: "50%" }}>
+              {selectedArticle && selectedArticle.link && (
+                <iframe
+                  title="PDF Viewer"
+                  src={`${url}${selectedArticle.link}`}
+                  className={classes.iframe}
+                />
+              )}
+            </Box>
+          </div>
         </Box>
       </Modal>
     </div>

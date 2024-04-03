@@ -281,14 +281,16 @@ const SecondSection = (props) => {
 
         <button
           onClick={handleAddCompany}
-          className="px-8 py-1 text-white uppercase rounded-md bg-primary"
+          className="px-6 text-white uppercase rounded-md bg-primary"
+          style={{ fontSize: "0.8em" }}
         >
           Add company
         </button>
         {!!checkedRows.length && (
           <button
             onClick={handleClickOpen}
-            className="px-8 py-1 text-white uppercase rounded-md bg-red-500"
+            className="px-6 text-white uppercase rounded-md bg-red-500"
+            style={{ fontSize: "0.8em" }}
           >
             Delete
           </button>
@@ -298,7 +300,8 @@ const SecondSection = (props) => {
         ) : (
           <button
             onClick={handleSaveClick}
-            className="px-8 py-1 text-white uppercase rounded-md bg-primary"
+            className="px-6 text-white uppercase rounded-md bg-primary"
+            style={{ fontSize: "0.8em" }}
           >
             Save
           </button>
@@ -313,7 +316,7 @@ const SecondSection = (props) => {
             sx={{ position: "sticky", top: 0, zIndex: 50, color: "white" }}
             className="bg-primary"
           >
-            <TableRow sx={{ fontSize: "0.9em" }}>
+            <TableRow sx={{ fontSize: "0.8em" }}>
               <TableCell>CompanyName</TableCell>
               <TableCell align="right">Subject</TableCell>
               <TableCell align="right">HeaderSpace</TableCell>
@@ -333,7 +336,7 @@ const SecondSection = (props) => {
                   "&:last-child td, &:last-child th": { border: 0 },
                 }}
               >
-                <TableCell sx={{ fontSize: "0.9em" }} size="small">
+                <TableCell sx={{ fontSize: "0.8em" }} size="small">
                   {row.company_name}
                 </TableCell>
                 <TableCell align="right" sx={{ fontSize: "0.9em" }}>
