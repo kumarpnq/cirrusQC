@@ -469,5 +469,6 @@ const SecondSection = (props) => {
 SecondSection.propTypes = {
   selectedClient: PropTypes.string.isRequired,
   selectedArticle: PropTypes.array.isRequired,
+  editedSingleArticle: PropTypes.array.isRequired,
 };
 export default SecondSection;
