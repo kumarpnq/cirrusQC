@@ -4,6 +4,7 @@ import PublicationGroup from "../../dropdowns/PublicationGoup";
 import YesOrNo from "../../../@core/YesOrNo";
 import { yesOrNo } from "../../../constants/dataArray";
 import FormWithLabelTextField from "../../../@core/FormWithLabel";
+import { useEffect } from "react";
 
 const FirstSection = (props) => {
   const {
@@ -33,131 +34,181 @@ const FirstSection = (props) => {
     setQc2By,
     articleSummary,
     setArticleSummary,
+    setEditedSingleArticle,
   } = props;
+
+  useEffect(() => {
+    if (selectedArticle) {
+      const data = {
+        ARTICLEID: selectedArticle.article_id,
+        BOX: selectedArticle?.box || box,
+        PAHOTO: selectedArticle.photo || photo,
+        PAGENUMBER: selectedArticle?.page_number || pageNumber,
+        HEADLINES: selectedArticle?.headline || headline,
+        PAGEVALUE: selectedArticle?.page_value || pageValue,
+        PUBLICATIONNAME: selectedArticle.publication || selectedPublication,
+        SUMMARY: selectedArticle.detail_summary || articleSummary,
+        JOURNALIST: selectedArticle.author || journalist,
+        SPACE: selectedArticle.space || space,
+        HEADSUMMARY: selectedArticle.head_summary || summary,
+        QC1BY: selectedArticle.qc1_by || qc1By,
+        QC2BY: selectedArticle.qc2_by || qc2By,
+      };
+      const dataForCompare = {
+        ARTICLEID: selectedArticle.article_id,
+        BOX: selectedArticle?.box,
+        PAHOTO: selectedArticle.photo,
+        PAGENUMBER: selectedArticle?.page_number,
+        HEADLINES: selectedArticle?.headline,
+        PAGEVALUE: selectedArticle?.page_value,
+        PUBLICATIONNAME: selectedArticle.publication,
+        SUMMARY: selectedArticle.detail_summary,
+        JOURNALIST: selectedArticle.author,
+        SPACE: selectedArticle.space,
+        HEADSUMMARY: selectedArticle.head_summary,
+        QC1BY: selectedArticle.qc1_by,
+        QC2BY: selectedArticle.qc2_by,
+      };
+      const isEqual = JSON.stringify(data) === JSON.stringify(dataForCompare);
+      if (!isEqual) {
+        setEditedSingleArticle([data]);
+      }
+    }
+  }, [
+    articleSummary,
+    box,
+    headline,
+    journalist,
+    pageNumber,
+    pageValue,
+    photo,
+    selectedPublication,
+    qc1By,
+    qc2By,
+    selectedArticle,
+    space,
+    summary,
+    setEditedSingleArticle,
+  ]);
   return (
-    <>
-      <form>
-        <Typography textAlign={"center"}>Edit Article</Typography>
-        <Box
+    <form>
+      <Typography textAlign={"center"}>Edit Article</Typography>
+      <Box
+        sx={{
+          display: "grid",
+          gridTemplateColumns: "repeat(2,auto)",
+          gap: 2,
+        }}
+      >
+        <PublicationGroup
+          classes={classes}
+          publicationGroup={selectedPublication}
+          setPublicationGroup={setSelectedPublication}
+          width={300}
+        />
+        <FormWithLabelTextField
+          label="Headlines"
+          type="text"
+          value={selectedArticle?.headline || headline}
+          setValue={setHeadline}
+          width={300}
+        />
+        <FormWithLabelTextField
+          label="Journalist"
+          type="text"
+          value={selectedArticle?.author || journalist}
+          setValue={setJournalist}
+          width={200}
+        />
+        <FormWithLabelTextField
+          label="Summary"
+          type="text"
+          value={selectedArticle?.head_summary || summary}
+          setValue={setSummary}
+          width={300}
+        />
+        <FormControl
           sx={{
-            display: "grid",
-            gridTemplateColumns: "repeat(2,auto)",
+            display: "flex",
+            flexDirection: "row",
+            alignItems: "center",
             gap: 2,
           }}
         >
-          <PublicationGroup
+          <FormLabel sx={{ fontSize: "0.9em" }}>Box</FormLabel>
+          <YesOrNo
             classes={classes}
-            publicationGroup={selectedPublication}
-            setPublicationGroup={setSelectedPublication}
-            width={300}
-          />
-          <FormWithLabelTextField
-            label="Headlines"
-            type="text"
-            value={selectedArticle?.headline || headline}
-            setValue={setHeadline}
-            width={300}
-          />
-          <FormWithLabelTextField
-            label="Journalist"
-            type="text"
-            value={selectedArticle?.journalist || journalist}
-            setValue={setJournalist}
-            width={200}
-          />
-          <FormWithLabelTextField
-            label="Summary"
-            type="text"
-            value={selectedArticle?.head_summary || summary}
-            setValue={setSummary}
-            width={300}
-          />
-        </Box>
-        <Box display={"flex"} alignItems={"center"} gap={2}>
-          <FormControl
-            sx={{
-              display: "flex",
-              flexDirection: "row",
-              alignItems: "center",
-              gap: 2,
-            }}
-          >
-            <FormLabel sx={{ fontSize: "0.9em" }}>Box</FormLabel>
-            <YesOrNo
-              classes={classes}
-              placeholder="Box"
-              mapValue={yesOrNo}
-              value={box}
-              setValue={setBox}
-              width={100}
-            />
-          </FormControl>
-          <FormControl
-            sx={{
-              display: "flex",
-              flexDirection: "row",
-              alignItems: "center",
-              gap: 2,
-            }}
-          >
-            <FormLabel sx={{ fontSize: "0.9em" }}>Photo</FormLabel>
-            <YesOrNo
-              classes={classes}
-              placeholder="Photo"
-              mapValue={yesOrNo}
-              value={photo}
-              setValue={setPhoto}
-              width={100}
-            />
-          </FormControl>
-          <FormWithLabelTextField
-            label="PageNo"
-            type="number"
-            value={selectedArticle?.page_number || pageNumber}
-            setValue={setPageNumber}
+            placeholder="Box"
+            mapValue={yesOrNo}
+            value={selectedArticle?.box || box}
+            setValue={setBox}
             width={100}
           />
-          <FormWithLabelTextField
-            label="PageValue"
-            type="number"
-            value={selectedArticle?.page_value || pageValue}
-            setValue={setPageValue}
+        </FormControl>
+        <FormControl
+          sx={{
+            display: "flex",
+            flexDirection: "row",
+            alignItems: "center",
+            gap: 2,
+          }}
+        >
+          <FormLabel sx={{ fontSize: "0.9em" }}>Photo</FormLabel>
+          <YesOrNo
+            classes={classes}
+            placeholder="Photo"
+            mapValue={yesOrNo}
+            value={selectedArticle.photo || photo}
+            setValue={setPhoto}
             width={100}
           />
-          <FormWithLabelTextField
-            label="Space"
-            type="number"
-            value={selectedArticle?.space || space}
-            setValue={setSpace}
-            width={100}
-          />
-          <FormWithLabelTextField
-            label="Qc1 By"
-            type="text"
-            value={selectedArticle?.qc1_by || qc1By}
-            setValue={setQc1By}
-            width={100}
-          />
-
-          <FormWithLabelTextField
-            label="Qc2 By"
-            type="text"
-            value={selectedArticle?.qc2_by || qc2By}
-            setValue={setQc2By}
-            width={100}
-          />
-        </Box>
-        <Box mt={2}>
-          <FormWithLabelTextField
-            label="Article Summary"
-            type="text"
-            value={selectedArticle?.detail_summary || articleSummary}
-            setValue={setArticleSummary}
-            width={500}
-          />
-        </Box>
-      </form>
-    </>
+        </FormControl>
+        <FormWithLabelTextField
+          label="PageNo"
+          type="number"
+          value={selectedArticle?.page_number || pageNumber}
+          setValue={setPageNumber}
+          width={100}
+        />
+        <FormWithLabelTextField
+          label="PageValue"
+          type="number"
+          value={selectedArticle?.page_value || pageValue}
+          setValue={setPageValue}
+          width={100}
+        />
+        <FormWithLabelTextField
+          label="Space"
+          type="number"
+          value={selectedArticle?.space || space}
+          setValue={setSpace}
+          width={100}
+        />
+        <FormWithLabelTextField
+          label="Qc1 By"
+          type="text"
+          value={selectedArticle?.qc1_by || qc1By}
+          setValue={setQc1By}
+          width={100}
+        />
+        <FormWithLabelTextField
+          label="Qc2 By"
+          type="text"
+          value={selectedArticle?.qc2_by || qc2By}
+          setValue={setQc2By}
+          width={100}
+        />
+      </Box>
+      <Box mt={2}>
+        <FormWithLabelTextField
+          label="Article Summary"
+          type="text"
+          value={selectedArticle?.detail_summary || articleSummary}
+          setValue={setArticleSummary}
+          width={500}
+        />
+      </Box>
+    </form>
   );
 };
 
@@ -188,5 +239,8 @@ FirstSection.propTypes = {
   setQc2By: PropTypes.func.isRequired,
   articleSummary: PropTypes.string,
   setArticleSummary: PropTypes.func.isRequired,
+  editedSingleArticle: PropTypes.object.isRequired,
+  setEditedSingleArticle: PropTypes.func.isRequired,
 };
+
 export default FirstSection;

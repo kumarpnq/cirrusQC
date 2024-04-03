@@ -6,6 +6,9 @@ import { makeStyles } from "@mui/styles";
 import FirstSection from "./components/FirstSection";
 import SecondSection from "./components/SecondSection";
 
+// ** third party imports
+import PropTypes from "prop-types";
+
 const style = {
   position: "absolute",
   top: "50%",
@@ -53,6 +56,7 @@ export default function EditModal({ open, handleClose, selectedArticle }) {
   const [qc1By, setQc1By] = useState("");
   const [qc2By, setQc2By] = useState("");
   const [articleSummary, setArticleSummary] = useState("");
+  const [editedSingleArticle, setEditedSingleArticle] = useState([]);
 
   // second section states
   const [selectedClient, setSelectedClient] = useState("");
@@ -94,14 +98,22 @@ export default function EditModal({ open, handleClose, selectedArticle }) {
             setQc2By={setQc2By}
             articleSummary={articleSummary}
             setArticleSummary={setArticleSummary}
+            setEditedSingleArticle={setEditedSingleArticle}
           />
           <SecondSection
             selectedClient={selectedClient}
             setSelectedClient={setSelectedClient}
             selectedArticle={selectedArticle}
+            editedSingleArticle={editedSingleArticle}
           />
         </Box>
       </Modal>
     </div>
   );
 }
+
+EditModal.propTypes = {
+  open: PropTypes.bool.isRequired,
+  handleClose: PropTypes.func.isRequired,
+  selectedArticle: PropTypes.array.isRequired,
+};

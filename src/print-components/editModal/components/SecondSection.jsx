@@ -32,7 +32,7 @@ import axios from "axios";
 import PropTypes from "prop-types";
 
 const SecondSection = (props) => {
-  const { selectedClient, selectedArticle } = props;
+  const { selectedClient, selectedArticle, editedSingleArticle } = props;
   const { userToken } = useContext(ResearchContext);
   const [selectedCompany, setSelectedCompany] = useState(null);
   const [tagData, setTagData] = useState([]);
@@ -161,6 +161,7 @@ const SecondSection = (props) => {
     try {
       setSaveLoading(true);
       const requestData = modifiedRows;
+      const data = editedSingleArticle;
       const headers = { Authorization: `Bearer ${userToken}` };
       const res = await axios.post(
         `${url}updatearticletagdetails/`,
@@ -169,7 +170,10 @@ const SecondSection = (props) => {
           headers,
         }
       );
-      if (res.data) {
+      const resp = await axios.post(`${url}updatearticleheader/`, data, {
+        headers,
+      });
+      if (res.data || resp.data) {
         toast.success("Successfully saved changes!");
       }
       setFetchTagDataAfterChange(true);
