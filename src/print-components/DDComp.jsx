@@ -179,7 +179,7 @@ const DDComp = () => {
       addPropertyIfConditionIsTrue(
         languages.length > 0,
         requestData,
-        "languages",
+        "language",
         arrayToString(languages)
       );
       addPropertyIfConditionIsTrue(
@@ -256,6 +256,7 @@ const DDComp = () => {
       //   "manualprominence",
       //   Number(mProm)
       // );
+
       const headers = {
         Authorization: "Bearer " + userToken,
       };

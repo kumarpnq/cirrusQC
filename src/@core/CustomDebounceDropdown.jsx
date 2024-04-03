@@ -88,7 +88,7 @@ const CustomDebounceDropdown = ({ publicationGroup, setPublicationGroup }) => {
           )}
         </div>
         <span
-          className="absolute right-2 top-1 text-lg text-gray-500 cursor-pointer"
+          className="absolute text-lg text-gray-500 cursor-pointer right-2 top-1"
           onClick={() => setIsShowList(!isShowList)}
         >
           {isShowList ? <IoMdArrowDropup /> : <IoMdArrowDropdown />}
