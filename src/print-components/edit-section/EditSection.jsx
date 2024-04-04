@@ -277,6 +277,7 @@ const EditSection = ({
         open={openDeleteDialog}
         setOpen={setOpenDeleteDialog}
         selectedArticles={selectedItems}
+        setSelectedArticles={setSelectedItems}
       />
     </>
   );

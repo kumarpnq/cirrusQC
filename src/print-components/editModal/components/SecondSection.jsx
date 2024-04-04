@@ -195,17 +195,23 @@ const SecondSection = (props) => {
 
   const handleAddCompany = () => {
     if (selectedCompany) {
+      const isCompanyAlreadyAdded = editableTagData.some(
+        (tag) => tag.company_id === selectedCompany.value
+      );
+      if (isCompanyAlreadyAdded) {
+        return toast.error("Company already added!");
+      }
       const newRow =
         editableTagData.length > 0 ? { ...editableTagData[0] } : {};
       newRow.company_name = selectedCompany.label;
       newRow.company_id = selectedCompany.value;
       [newRow.update_type] = "I"; // Mark as inserted
 
-      setEditableTagData((prev) => [...prev, newRow]);
+      setEditableTagData((prev) => [newRow, ...prev]);
 
-      setTagData((prev) => [...prev, newRow]);
+      setTagData((prev) => [newRow, ...prev]);
 
-      setManuallyAddedCompanies((prev) => [...prev, newRow]);
+      setManuallyAddedCompanies((prev) => [newRow, ...prev]);
     }
   };
 
@@ -319,7 +325,7 @@ const SecondSection = (props) => {
           </button>
         )}
       </Box>
-      <Typography sx={{ fontSize: "0.9em" }}>
+      <Typography sx={{ fontSize: "0.9em", my: 1 }}>
         ClientName: {selectedClient ? selectedClient : "No client selected"}
       </Typography>
       <TableContainer component={Paper} sx={{ maxHeight: 400 }}>

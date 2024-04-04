@@ -18,13 +18,13 @@ import axios from "axios";
 import { toast } from "react-toastify";
 import useProtectedRequest from "../hooks/useProtectedRequest";
 
-const Delete = ({ open, setOpen, selectedArticles }) => {
+const Delete = ({ open, setOpen, selectedArticles, setSelectedArticles }) => {
   const [password, setPassword] = useState("");
   const [verificationLoading, setVerificationLoading] = useState(false);
   const { userToken, setFetchAfterSave } = useContext(ResearchContext);
   const { loading, error, data, makeRequest } = useProtectedRequest(userToken);
   const requestData = selectedArticles.map((item) => ({
-    update_type: "D",
+    UPDATETYPE: "D",
     ARTICLEID: item.article_id,
     COMPANYID: item.company_id,
   }));
@@ -57,6 +57,7 @@ const Delete = ({ open, setOpen, selectedArticles }) => {
       toast.success("Article deleted successfully.");
       setOpen(false);
       setPassword("");
+      setSelectedArticles([]);
       setFetchAfterSave(true);
     }
   };
@@ -99,6 +100,7 @@ Delete.propTypes = {
   open: PropTypes.bool.isRequired,
   setOpen: PropTypes.func.isRequired,
   selectedArticles: PropTypes.array.isRequired,
+  setSelectedArticles: PropTypes.array.isRequired,
 };
 
 export default Delete;

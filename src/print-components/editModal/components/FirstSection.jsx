@@ -8,6 +8,7 @@ import { useEffect, useState } from "react";
 const FirstSection = (props) => {
   const { classes, selectedArticle, setEditedSingleArticle } = props;
   const [focusedTextFields, setFocusedTextField] = useState({
+    isHeadline: false,
     isSummary: false,
     isArticleSummary: false,
   });
@@ -82,13 +83,32 @@ const FirstSection = (props) => {
   return (
     <form>
       <div className="flex items-center gap-2 flex-wrap">
-        <FormWithLabelTextField
-          label="Headlines"
-          type="text"
-          value={headline}
-          setValue={setHeadline}
-          width={300}
-        />
+        <div className="flex items-center gap-2">
+          <label htmlFor="summary" className="text-[0.9em] text-gray-500">
+            Headlines:
+          </label>
+          <textarea
+            name=""
+            id=""
+            className="outline-none border border-gray-400 text-[0.9em] rounded-[3px]"
+            cols="32"
+            rows={focusedTextFields.isHeadline ? 3 : 1}
+            onFocus={() =>
+              setFocusedTextField((prevState) => ({
+                ...prevState,
+                isHeadline: true,
+              }))
+            }
+            onBlur={() =>
+              setFocusedTextField((prevState) => ({
+                ...prevState,
+                isHeadline: false,
+              }))
+            }
+            value={headline}
+            onChange={(e) => setHeadline(e.target.value)}
+          />
+        </div>
 
         <div className="flex items-center gap-2">
           <label htmlFor="summary" className="text-[0.9em] text-gray-500">
@@ -98,7 +118,7 @@ const FirstSection = (props) => {
             name=""
             id=""
             className="outline-none border border-gray-400 text-[0.9em] rounded-[3px]"
-            cols="30"
+            cols="32"
             rows={focusedTextFields.isSummary ? 3 : 1}
             onFocus={() =>
               setFocusedTextField((prevState) => ({

@@ -132,7 +132,11 @@ const Qc2Table = ({
   //for edit modal
   const [open, setOpen] = useState(false);
 
-  const handleClose = () => setOpen(false);
+  const handleClose = () => {
+    setOpen(false);
+    setSelectedArticle(null);
+  };
+
   const tableRowClick = (item) => {
     setOpen(true);
     setSelectedArticle((prev) => (prev === item ? null : item));
@@ -250,7 +254,7 @@ const Qc2Table = ({
                       onClick={() => tableRowClick(items)}
                       className="font-thin text-gray-800"
                     >
-                      <EditAttributesOutlined />
+                      <EditAttributesOutlined className="text-primary" />
                     </td>
                     <td className="px-3 py-4 whitespace-nowrap">
                       <div className="truncate w-28">{items.company}</div>
