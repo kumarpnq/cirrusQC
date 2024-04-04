@@ -38,5 +38,7 @@ FormWithLabelTextField.propTypes = {
   setValue: PropTypes.func.isRequired,
   placeholder: PropTypes.string,
   width: PropTypes.number,
+  isIncrease: PropTypes.bool,
+  customHeight: PropTypes.number,
 };
 export default FormWithLabelTextField;

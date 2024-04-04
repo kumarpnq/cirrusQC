@@ -92,7 +92,7 @@ const SecondSection = (props) => {
     const updatedRow = {
       ...editableTagData[index],
       [key]: value,
-      update_type: "U", // Mark as updated
+      UPDATETYPE: "U", // Mark as updated
     };
     const newData = [...editableTagData];
     newData[index] = updatedRow;
@@ -154,14 +154,24 @@ const SecondSection = (props) => {
     setModifiedRows(allModifiedRows);
   }, [editableTagData, tagData, manuallyAddedCompanies]);
 
+  // for modification keys to uppercase
+  const convertKeys = (obj) => {
+    const newObj = {};
+    for (let key in obj) {
+      const newKey = key.replace(/_/g, "").toUpperCase();
+      newObj[newKey] = obj[key];
+    }
+    return newObj;
+  };
   const handleSaveClick = async () => {
     if (modifiedRows.length < 0) {
       return toast.warning("No changes in the rows.");
     }
     try {
       setSaveLoading(true);
-      const requestData = modifiedRows;
       const data = editedSingleArticle;
+      const requestData = modifiedRows.map((obj) => convertKeys(obj));
+      console.log(data);
       const headers = { Authorization: `Bearer ${userToken}` };
       const res = await axios.post(
         `${url}updatearticletagdetails/`,
@@ -230,7 +240,7 @@ const SecondSection = (props) => {
   };
 
   const requestData = checkedRows.map((item) => ({
-    update_type: "D",
+    UPDATETYPE: "D",
     ARTICLEID: item.article_id,
     COMPANYID: item.company_id,
   }));
@@ -253,6 +263,7 @@ const SecondSection = (props) => {
   const handleDelete = async () => {
     const isValid = await userVerification();
     isValid && (await makeRequest(requestData));
+    console.log(requestData);
     if (!isValid) {
       return toast.error("Password not match with records");
     }
@@ -319,14 +330,14 @@ const SecondSection = (props) => {
           >
             <TableRow sx={{ fontSize: "0.8em" }}>
               <TableCell>CompanyName</TableCell>
-              <TableCell align="right">Subject</TableCell>
-              <TableCell align="right">HeaderSpace</TableCell>
-              <TableCell align="right">Prominence</TableCell>
-              <TableCell align="right">Space</TableCell>
-              <TableCell align="right">Tone</TableCell>
-              <TableCell align="right">Delete</TableCell>
-              <TableCell align="right">SubCategory</TableCell>
-              <TableCell align="right">Remarks</TableCell>
+              <TableCell size="small">Subject</TableCell>
+              <TableCell size="small">HeaderSpace</TableCell>
+              <TableCell size="small">Prominence</TableCell>
+              <TableCell size="small">Space</TableCell>
+              <TableCell size="small">Tone</TableCell>
+              <TableCell size="small">Delete</TableCell>
+              <TableCell size="small">SubCategory</TableCell>
+              <TableCell size="small">Remarks</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -347,7 +358,7 @@ const SecondSection = (props) => {
                   <TableCell sx={{ fontSize: "0.8em" }} size="small">
                     {row.company_name}
                   </TableCell>
-                  <TableCell align="right" sx={{ fontSize: "0.9em" }}>
+                  <TableCell size="small" sx={{ fontSize: "0.9em" }}>
                     <select
                       value={row.subject}
                       onChange={(e) =>
@@ -362,7 +373,7 @@ const SecondSection = (props) => {
                       ))}
                     </select>
                   </TableCell>
-                  <TableCell align="right">
+                  <TableCell size="small">
                     <input
                       className="border border-black outline-none w-14"
                       value={row.header_space}
@@ -372,7 +383,7 @@ const SecondSection = (props) => {
                       }
                     />
                   </TableCell>
-                  <TableCell align="right">
+                  <TableCell size="small">
                     <input
                       className="border border-black outline-none w-14"
                       value={row.manual_prominence}
@@ -382,8 +393,12 @@ const SecondSection = (props) => {
                       }
                     />
                   </TableCell>
-                  <TableCell align="right">{row.space}</TableCell>
-                  <TableCell align="right">
+                  <TableCell size="small">
+                    <div className="border border-black w-14 h-5">
+                      {row.space}
+                    </div>
+                  </TableCell>
+                  <TableCell size="small">
                     <select
                       value={row.tone}
                       onChange={(e) =>
@@ -401,7 +416,7 @@ const SecondSection = (props) => {
                       ))}
                     </select>
                   </TableCell>
-                  <TableCell align="right">
+                  <TableCell size="small">
                     <Checkbox
                       checked={checkedRows.some(
                         (checkedRow) => checkedRow.company_id === row.company_id
@@ -409,7 +424,7 @@ const SecondSection = (props) => {
                       onChange={() => handleCheckboxChange(row)}
                     />
                   </TableCell>
-                  <TableCell align="right">
+                  <TableCell size="small">
                     <select
                       value={row.subcategory}
                       onChange={(e) =>
@@ -424,7 +439,7 @@ const SecondSection = (props) => {
                       ))}
                     </select>
                   </TableCell>
-                  <TableCell align="right">
+                  <TableCell size="small">
                     <input
                       type="text"
                       className="border border-black outline-none w-14"

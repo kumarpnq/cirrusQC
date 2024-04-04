@@ -249,13 +249,13 @@ const EditSection = ({
           btnText={saveLoading ? "Loading" : "Save"}
           onClick={handleSave}
         />
-        {/* {!!selectedItems.length && (
+        {!!selectedItems.length && (
           <CustomButton
             btnText="Delete"
             onClick={handleDialogOpen}
             bg="bg-red-500"
           />
-        )} */}
+        )}
       </div>
       <div className="flex flex-wrap items-center gap-2 ">
         <HeaderForEdits

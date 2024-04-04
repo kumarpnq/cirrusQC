@@ -1,42 +1,31 @@
 import PropTypes from "prop-types";
-import { Box } from "@mui/material";
 import PublicationGroup from "../../dropdowns/PublicationGoup";
 import YesOrNo from "../../../@core/YesOrNo";
 import { yesOrNo } from "../../../constants/dataArray";
 import FormWithLabelTextField from "../../../@core/FormWithLabel";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 
 const FirstSection = (props) => {
-  const {
-    classes,
-    selectedArticle,
-    selectedPublication,
-    setSelectedPublication,
-    headline,
-    setHeadline,
-    journalist,
-    setJournalist,
-    summary,
-    setSummary,
-    box,
-    setBox,
-    photo,
-    setPhoto,
-    pageNumber,
-    setPageNumber,
-    pageValue,
-    setPageValue,
-    space,
-    setSpace,
-    qc1By,
-    setQc1By,
-    qc2By,
-    setQc2By,
-    articleSummary,
-    setArticleSummary,
-    setEditedSingleArticle,
-  } = props;
+  const { classes, selectedArticle, setEditedSingleArticle } = props;
+  const [focusedTextFields, setFocusedTextField] = useState({
+    isSummary: false,
+    isArticleSummary: false,
+  });
+  const [headline, setHeadline] = useState(selectedArticle?.headline);
+  const [selectedPublication, setSelectedPublication] = useState("");
 
+  const [journalist, setJournalist] = useState(selectedArticle?.author);
+  const [summary, setSummary] = useState(selectedArticle?.head_summary);
+  const [box, setBox] = useState(0);
+  const [photo, setPhoto] = useState(selectedArticle?.photo);
+  const [pageNumber, setPageNumber] = useState(selectedArticle?.page_number);
+  const [pageValue, setPageValue] = useState(selectedArticle?.page_value);
+  const [space, setSpace] = useState(selectedArticle?.space);
+  const [qc1By, setQc1By] = useState(selectedArticle?.qc1_by);
+  const [qc2By, setQc2By] = useState(selectedArticle?.qc2_by);
+  const [articleSummary, setArticleSummary] = useState(
+    selectedArticle?.detail_summary
+  );
   useEffect(() => {
     if (selectedArticle) {
       const data = {
@@ -92,114 +81,142 @@ const FirstSection = (props) => {
   ]);
   return (
     <form>
-      <Box
-        sx={{
-          display: "flex",
-          items: "center",
-          flexWrap: "wrap",
-          gap: 1,
-        }}
-      >
-        <div className="flex items-center gap-2">
-          <label className="mt-2 text-[0.8em]">Publication:</label>
-          <div className="flex justify-center">
-            <PublicationGroup
-              classes={classes}
-              publicationGroup={selectedPublication}
-              setPublicationGroup={setSelectedPublication}
-              width={300}
-            />
-          </div>
-        </div>
-
+      <div className="flex items-center gap-2 flex-wrap">
         <FormWithLabelTextField
           label="Headlines"
           type="text"
-          value={selectedArticle?.headline || headline}
+          value={headline}
           setValue={setHeadline}
           width={300}
         />
+
+        <div className="flex items-center gap-2">
+          <label htmlFor="summary" className="text-[0.9em] text-gray-500">
+            Summary:
+          </label>
+          <textarea
+            name=""
+            id=""
+            className="outline-none border border-gray-400 text-[0.9em] rounded-[3px]"
+            cols="30"
+            rows={focusedTextFields.isSummary ? 3 : 1}
+            onFocus={() =>
+              setFocusedTextField((prevState) => ({
+                ...prevState,
+                isSummary: true,
+              }))
+            }
+            onBlur={() =>
+              setFocusedTextField((prevState) => ({
+                ...prevState,
+                isSummary: false,
+              }))
+            }
+            value={summary}
+            onChange={(e) => setSummary(e.target.value)}
+          />
+        </div>
+        <div className="flex items-center gap-2">
+          <label htmlFor="summary" className="text-[0.9em] text-gray-500">
+            ArticleSummary:
+          </label>
+          <textarea
+            className="outline-none border border-gray-400 text-[0.9em] rounded-[3px]"
+            cols="72"
+            rows={focusedTextFields.isArticleSummary ? 3 : 1}
+            onFocus={() =>
+              setFocusedTextField((prevState) => ({
+                ...prevState,
+                isArticleSummary: true,
+              }))
+            }
+            onBlur={() =>
+              setFocusedTextField((prevState) => ({
+                ...prevState,
+                isArticleSummary: false,
+              }))
+            }
+            value={articleSummary}
+            onChange={(e) => setArticleSummary(e.target.value)}
+          />
+        </div>
+
         <FormWithLabelTextField
           label="Journalist"
           type="text"
-          value={selectedArticle?.author || journalist}
+          value={journalist}
           setValue={setJournalist}
           width={200}
         />
-        <FormWithLabelTextField
-          label="Summary"
-          type="text"
-          value={selectedArticle?.head_summary || summary}
-          setValue={setSummary}
-          width={300}
-        />
-        <div className="flex items-center gap-2">
-          <label className="mt-2 text-[0.8em]">Box:</label>
-          <YesOrNo
+        <div className="flex items-center gap-1">
+          <label className="text-[0.8em]">Publication:</label>
+          <PublicationGroup
             classes={classes}
-            placeholder="Box"
-            mapValue={yesOrNo}
-            value={box}
-            setValue={setBox}
+            publicationGroup={selectedPublication}
+            setPublicationGroup={setSelectedPublication}
+            width={300}
+          />
+        </div>
+        <div className="flex items-center gap-2 flex-wrap">
+          <div className="flex items-center gap-2">
+            <label className="text-[0.8em]">Box:</label>
+            <YesOrNo
+              classes={classes}
+              placeholder="Box"
+              mapValue={yesOrNo}
+              value={box}
+              setValue={setBox}
+              width={100}
+            />
+          </div>
+          <div className="flex items-center gap-2">
+            <label className="text-[0.8em]">Photo:</label>
+            <YesOrNo
+              classes={classes}
+              placeholder="Photo"
+              mapValue={yesOrNo}
+              value={photo}
+              setValue={setPhoto}
+              width={100}
+            />
+          </div>
+          <FormWithLabelTextField
+            label="PageNo"
+            type="number"
+            value={pageNumber}
+            setValue={setPageNumber}
+            width={100}
+          />
+          <FormWithLabelTextField
+            label="PageValue"
+            type="number"
+            value={pageValue}
+            setValue={setPageValue}
+            width={100}
+          />
+          <FormWithLabelTextField
+            label="Space"
+            type="number"
+            value={space}
+            setValue={setSpace}
+            width={100}
+          />
+          <FormWithLabelTextField
+            label="Qc1 By"
+            type="text"
+            value={qc1By}
+            setValue={setQc1By}
+            width={100}
+          />
+          <FormWithLabelTextField
+            label="Qc2 By"
+            type="text"
+            value={qc2By}
+            setValue={setQc2By}
             width={100}
           />
         </div>
-        <div className="flex items-center gap-2">
-          <label className="mt-2 text-[0.8em]">Photo:</label>
-          <YesOrNo
-            classes={classes}
-            placeholder="Photo"
-            mapValue={yesOrNo}
-            value={selectedArticle?.photo || photo}
-            setValue={setPhoto}
-            width={100}
-          />
-        </div>
-        <FormWithLabelTextField
-          label="PageNo"
-          type="number"
-          value={selectedArticle?.page_number || pageNumber}
-          setValue={setPageNumber}
-          width={100}
-        />
-        <FormWithLabelTextField
-          label="PageValue"
-          type="number"
-          value={selectedArticle?.page_value || pageValue}
-          setValue={setPageValue}
-          width={100}
-        />
-        <FormWithLabelTextField
-          label="Space"
-          type="number"
-          value={selectedArticle?.space || space}
-          setValue={setSpace}
-          width={100}
-        />
-        <FormWithLabelTextField
-          label="Qc1 By"
-          type="text"
-          value={selectedArticle?.qc1_by || qc1By}
-          setValue={setQc1By}
-          width={100}
-        />
-        <FormWithLabelTextField
-          label="Qc2 By"
-          type="text"
-          value={selectedArticle?.qc2_by || qc2By}
-          setValue={setQc2By}
-          width={100}
-        />
-      </Box>
-      <Box mt={2}>
-        <FormWithLabelTextField
-          label="Article Summary"
-          type="text"
-          value={selectedArticle?.detail_summary || articleSummary}
-          setValue={setArticleSummary}
-          width={500}
-        />
-      </Box>
+      </div>
     </form>
   );
 };
@@ -207,31 +224,6 @@ const FirstSection = (props) => {
 FirstSection.propTypes = {
   classes: PropTypes.object.isRequired,
   selectedArticle: PropTypes.object,
-  selectedPublication: PropTypes.string,
-  setSelectedPublication: PropTypes.func.isRequired,
-  headline: PropTypes.string,
-  setHeadline: PropTypes.func.isRequired,
-  journalist: PropTypes.string,
-  setJournalist: PropTypes.func.isRequired,
-  summary: PropTypes.string,
-  setSummary: PropTypes.func.isRequired,
-  box: PropTypes.string,
-  setBox: PropTypes.func.isRequired,
-  photo: PropTypes.string,
-  setPhoto: PropTypes.func.isRequired,
-  pageNumber: PropTypes.number,
-  setPageNumber: PropTypes.func.isRequired,
-  pageValue: PropTypes.number,
-  setPageValue: PropTypes.func.isRequired,
-  space: PropTypes.number,
-  setSpace: PropTypes.func.isRequired,
-  qc1By: PropTypes.string,
-  setQc1By: PropTypes.func.isRequired,
-  qc2By: PropTypes.string,
-  setQc2By: PropTypes.func.isRequired,
-  articleSummary: PropTypes.string,
-  setArticleSummary: PropTypes.func.isRequired,
-  editedSingleArticle: PropTypes.object.isRequired,
   setEditedSingleArticle: PropTypes.func.isRequired,
 };
 

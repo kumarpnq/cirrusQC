@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Modal, Box, Typography, Button, CardMedia } from "@mui/material";
+import { Modal, Box, Typography, Button } from "@mui/material";
 import { makeStyles } from "@mui/styles";
 
 // ** components
@@ -30,7 +30,6 @@ const useStyle = makeStyles(() => ({
   dropDowns: {
     height: 25,
     fontSize: "0.8em",
-    marginTop: "1em",
   },
 
   clientForm: {
@@ -50,18 +49,7 @@ const useStyle = makeStyles(() => ({
 
 export default function EditModal({ open, handleClose, selectedArticle }) {
   // first section states
-  const [selectedPublication, setSelectedPublication] = useState("");
-  const [headline, setHeadline] = useState("");
-  const [journalist, setJournalist] = useState("");
-  const [summary, setSummary] = useState("");
-  const [box, setBox] = useState(0);
-  const [photo, setPhoto] = useState(0);
-  const [pageNumber, setPageNumber] = useState(null);
-  const [pageValue, setPageValue] = useState(null);
-  const [space, setSpace] = useState(null);
-  const [qc1By, setQc1By] = useState("");
-  const [qc2By, setQc2By] = useState("");
-  const [articleSummary, setArticleSummary] = useState("");
+
   const [editedSingleArticle, setEditedSingleArticle] = useState([]);
 
   // second section states
@@ -92,30 +80,6 @@ export default function EditModal({ open, handleClose, selectedArticle }) {
               <FirstSection
                 classes={classes}
                 selectedArticle={selectedArticle}
-                selectedPublication={selectedPublication}
-                setSelectedPublication={setSelectedPublication}
-                headline={headline}
-                setHeadline={setHeadline}
-                journalist={journalist}
-                setJournalist={setJournalist}
-                summary={summary}
-                setSummary={setSummary}
-                box={box}
-                setBox={setBox}
-                photo={photo}
-                setPhoto={setPhoto}
-                pageNumber={pageNumber}
-                setPageNumber={setPageNumber}
-                pageValue={pageValue}
-                setPageValue={setPageValue}
-                space={space}
-                setSpace={setSpace}
-                qc1By={qc1By}
-                setQc1By={setQc1By}
-                qc2By={qc2By}
-                setQc2By={setQc2By}
-                articleSummary={articleSummary}
-                setArticleSummary={setArticleSummary}
                 setEditedSingleArticle={setEditedSingleArticle}
               />
               <SecondSection
