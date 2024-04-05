@@ -111,16 +111,24 @@ const Qc2Table = ({
     }, 0);
   };
 
-  // sorting a tableData
   const sortTableData = (header) => {
     setSortedColumn(header);
     setSortedAscending((prev) => (header === sortedColumn ? !prev : true));
 
     if (qc2PrintTableData?.length > 0) {
       const sortedData = [...qc2PrintTableData].sort((a, b) => {
-        if (a[header] < b[header]) return sortedAscending ? -1 : 1;
-        if (a[header] > b[header]) return sortedAscending ? 1 : -1;
-        return 0;
+        const valueA =
+          typeof a[header] === "string" ? a[header] : String(a[header]);
+        const valueB =
+          typeof b[header] === "string" ? b[header] : String(b[header]);
+
+        if (isNaN(valueA) || isNaN(valueB)) {
+          return sortedAscending
+            ? valueA.localeCompare(valueB)
+            : valueB.localeCompare(valueA);
+        } else {
+          return sortedAscending ? valueA - valueB : valueB - valueA;
+        }
       });
       setQc2PrintTableData(sortedData);
     }
