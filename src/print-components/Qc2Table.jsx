@@ -260,7 +260,7 @@ const Qc2Table = ({
                     </td>
                     <td
                       onClick={() => tableRowClick(items)}
-                      className="sticky font-thin text-gray-800 bg-white left-14 "
+                      className="sticky font-thin text-gray-800 bg-white top-10 left-14"
                     >
                       <EditAttributesOutlined className="text-primary" />
                     </td>
