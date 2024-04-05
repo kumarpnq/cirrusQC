@@ -14,6 +14,7 @@ import Menu from "@mui/material/Menu";
 import MenuIcon from "@mui/icons-material/Menu";
 import SearchIcon from "@mui/icons-material/Search";
 import AccountCircle from "@mui/icons-material/AccountCircle";
+import UploadFileIcon from "@mui/icons-material/UploadFile";
 
 import MoreIcon from "@mui/icons-material/MoreVert";
 import Drawer from "@mui/material/Drawer";
@@ -75,6 +76,12 @@ const navList = [
   { id: 1, title: "Online", path: "/", icon: <HiStatusOnline /> },
   { id: 2, title: "Print", path: "/print", icon: <FaPrint /> },
   { id: 3, title: "Dump", path: "/dump", icon: <FaDumpster /> },
+  // {
+  //   id: 3,
+  //   title: "Manual-Dump",
+  //   path: "/manual-upload",
+  //   icon: <UploadFileIcon />,
+  // },
 ];
 export default function MainNav() {
   const navigate = useNavigate();
@@ -134,6 +141,8 @@ export default function MainNav() {
         navigate("/print");
       } else if (searchValue === "dump") {
         navigate("/dump");
+      } else if (searchValue === "manual-upload") {
+        navigate("/manual-upload");
       } else {
         toast.error("No such page found.");
       }

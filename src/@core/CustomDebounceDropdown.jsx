@@ -6,7 +6,12 @@ import { IoMdArrowDropup, IoMdArrowDropdown } from "react-icons/io";
 import { debounce } from "lodash";
 import PropTypes from "prop-types";
 
-const CustomDebounceDropdown = ({ publicationGroup, setPublicationGroup }) => {
+const CustomDebounceDropdown = ({
+  publicationGroup,
+  setPublicationGroup,
+  bg,
+  m,
+}) => {
   const [isShowList, setIsShowList] = useState(false);
   const [value, setValue] = useState("");
   const [publicationGroups, setPublicationGroups] = useState([]);
@@ -75,11 +80,11 @@ const CustomDebounceDropdown = ({ publicationGroup, setPublicationGroup }) => {
   }, [publicationGroup, publicationGroups]);
 
   return (
-    <div ref={dropdownRef} className="relative mt-3">
+    <div ref={dropdownRef} className={`relative ${m}`}>
       <div className="relative">
         <div
           onClick={() => setIsShowList(true)}
-          className="outline-none border border-gray-400 rounded-[3px] bg-secondory h-[18] px-2 py-[2px] placeholder-black placeholder-opacity-75 placeholder-italic text-sm  hover:border-black w-[200px]"
+          className={`outline-none border border-gray-400 rounded-[3px] h-[18] px-2 py-[2px] placeholder-black placeholder-opacity-75 placeholder-italic text-sm  hover:border-black w-[200px] ${bg}`}
         >
           {pubTitleForShow ? (
             pubTitleForShow
@@ -136,6 +141,8 @@ const CustomDebounceDropdown = ({ publicationGroup, setPublicationGroup }) => {
 CustomDebounceDropdown.propTypes = {
   publicationGroup: PropTypes.string.isRequired,
   setPublicationGroup: PropTypes.func.isRequired,
+  bg: PropTypes.string.isRequired,
+  m: PropTypes.string.isRequired,
 };
 
 export default CustomDebounceDropdown;

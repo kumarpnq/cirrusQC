@@ -1,7 +1,14 @@
 import PropTypes from "prop-types";
 import { TextField } from "@mui/material";
 
-const CustomTextField = ({ placeholder, value, setValue, type, width }) => {
+const CustomTextField = ({
+  placeholder,
+  value,
+  setValue,
+  type,
+  width,
+  isDisabled,
+}) => {
   function handleChange(e) {
     setValue(e.target.value);
   }
@@ -21,6 +28,7 @@ const CustomTextField = ({ placeholder, value, setValue, type, width }) => {
       }}
       value={value}
       onChange={handleChange}
+      disabled={isDisabled}
     />
   );
 };
@@ -33,6 +41,7 @@ CustomTextField.propTypes = {
   width: PropTypes.number.isRequired,
   isIncrease: PropTypes.bool,
   customHeight: PropTypes.number,
+  isDisabled: PropTypes.bool,
 };
 
 export default CustomTextField;

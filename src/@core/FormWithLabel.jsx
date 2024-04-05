@@ -9,6 +9,7 @@ const FormWithLabelTextField = ({
   setValue,
   placeholder,
   width,
+  isDisabled,
 }) => {
   return (
     <FormControl
@@ -26,6 +27,7 @@ const FormWithLabelTextField = ({
         type={type}
         value={value}
         setValue={setValue}
+        isDisabled={isDisabled}
       />
     </FormControl>
   );
@@ -40,5 +42,6 @@ FormWithLabelTextField.propTypes = {
   width: PropTypes.number,
   isIncrease: PropTypes.bool,
   customHeight: PropTypes.number,
+  isDisabled: PropTypes.bool,
 };
 export default FormWithLabelTextField;

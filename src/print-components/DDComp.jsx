@@ -366,6 +366,8 @@ const DDComp = () => {
           <CustomDebounceDropdown
             publicationGroup={publicationGroup}
             setPublicationGroup={setPublicationGroup}
+            bg="secondory"
+            m="mt-3"
           />
         </div>
         <div className="h-[25px] flex items-center justify-center">

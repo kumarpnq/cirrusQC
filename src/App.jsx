@@ -14,6 +14,7 @@ import AutoTokenRefresh from "./auth/autoToken";
 import Qc2Print from "./pages/Qc2Print";
 import Dump from "./pages/Dump";
 import MainNav from "./components/material-navbar";
+import ManualUpload from "./pages/ManualUpload";
 
 function App() {
   const { userToken, setUserToken } = useContext(ResearchContext);
@@ -40,6 +41,7 @@ function App() {
             <Route path="/" element={<Home />} />
             <Route path="/print" element={<Qc2Print />} />
             <Route path="/dump" element={<Dump />} />
+            <Route path="/manual-upload" element={<ManualUpload />} />
           </>
         ) : (
           <Route path="/login" element={<Login />} />

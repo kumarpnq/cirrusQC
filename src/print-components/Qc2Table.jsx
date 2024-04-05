@@ -203,7 +203,7 @@ const Qc2Table = ({
                   </th>
                   <th
                     scope="col"
-                    className={`px-2 py-1 text-left text-xs font-medium uppercase tracking-wider cursor-pointer whitespace-nowrap pt-2 pr-2`}
+                    className={`px-2 py-1 text-left text-xs font-medium uppercase tracking-wider cursor-pointer whitespace-nowrap pt-2 pr-2 sticky left-14 bg-primary`}
                   >
                     Edit
                   </th>
@@ -260,7 +260,7 @@ const Qc2Table = ({
                     </td>
                     <td
                       onClick={() => tableRowClick(items)}
-                      className="font-thin text-gray-800"
+                      className="sticky font-thin text-gray-800 bg-white left-14 "
                     >
                       <EditAttributesOutlined className="text-primary" />
                     </td>
