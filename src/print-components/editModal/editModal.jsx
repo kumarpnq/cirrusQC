@@ -47,14 +47,17 @@ const useStyle = makeStyles(() => ({
   },
 }));
 
-export default function EditModal({ open, handleClose, selectedArticle }) {
+export default function EditModal({
+  open,
+  handleClose,
+  selectedArticle,
+  editedSingleArticle,
+  setEditedSingleArticle,
+}) {
   // first section states
-
-  const [editedSingleArticle, setEditedSingleArticle] = useState([]);
 
   // second section states
   const [selectedClient, setSelectedClient] = useState("");
-
   const classes = useStyle();
   return (
     <div style={{ height: "800px !important", overflow: "scroll" }}>
@@ -109,4 +112,6 @@ EditModal.propTypes = {
   open: PropTypes.bool.isRequired,
   handleClose: PropTypes.func.isRequired,
   selectedArticle: PropTypes.array.isRequired,
+  editedSingleArticle: PropTypes.array.isRequired,
+  setEditedSingleArticle: PropTypes.func.isRequired,
 };

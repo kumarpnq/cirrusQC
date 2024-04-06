@@ -1,4 +1,4 @@
-import { useContext, useEffect, useState } from "react";
+import { useCallback, useContext, useEffect, useState } from "react";
 import {
   Box,
   Typography,
@@ -45,6 +45,8 @@ const SecondSection = (props) => {
   const [checkedRows, setCheckedRows] = useState([]);
   const [manuallyAddedCompanies, setManuallyAddedCompanies] = useState([]);
 
+  const [storedData, setStoredData] = useState({});
+
   const articleId = !!selectedArticle && selectedArticle?.article_id;
 
   useEffect(() => {
@@ -82,6 +84,14 @@ const SecondSection = (props) => {
   const { data: categoryLists } = useFetchData(`${url}subcategorylist/`);
   const categories = categoryLists?.data?.subcategory_list || [];
 
+  const [prominences, setProminences] = useState([]);
+  const { data: prominenceLists } = useFetchData(`${url}prominencelist`);
+  useEffect(() => {
+    if (prominenceLists.data) {
+      setProminences(prominenceLists.data.prominence_list);
+    }
+  }, [prominenceLists]);
+
   useEffect(() => {
     if (tagData.length > 0) {
       setEditableTagData(tagData);
@@ -89,49 +99,79 @@ const SecondSection = (props) => {
   }, [tagData]);
 
   const handleChange = (index, key, value) => {
+    if (storedData.index !== index) {
+      setStoredData({
+        index: index,
+        data: {
+          [key]: value,
+        },
+      });
+    } else {
+      // If index is the same, update the stored object
+      setStoredData({
+        ...storedData,
+        data: {
+          ...storedData.data,
+          [key]: value,
+        },
+      });
+    }
+
     const updatedRow = {
       ...editableTagData[index],
       [key]: value,
-      UPDATETYPE: "U", // Mark as updated
+      UPDATETYPE: "U",
     };
-    const newData = [...editableTagData];
-    newData[index] = updatedRow;
-    setEditableTagData(newData);
 
-    // If the edited row is a manually added company, mark it as modified
+    // Update editableTagData
+    setEditableTagData((prevData) => {
+      const newData = [...prevData];
+      newData[index] = updatedRow;
+      return newData;
+    });
+
     if (
       manuallyAddedCompanies.some(
         (row) => row.company_id === updatedRow.company_id
       )
     ) {
-      // Update the modified row in manuallyAddedCompanies
-      const updatedManuallyAddedCompanies = manuallyAddedCompanies.map((row) =>
-        row.company_id === updatedRow.company_id ? updatedRow : row
-      );
-      setManuallyAddedCompanies(updatedManuallyAddedCompanies);
+      setManuallyAddedCompanies((prevCompanies) => {
+        const updatedCompanies = prevCompanies.map((row) =>
+          row.company_id === updatedRow.company_id ? updatedRow : row
+        );
+        return updatedCompanies;
+      });
 
       // Update modifiedRows to include the edited row
-      setModifiedRows((prev) => [...prev, updatedRow]);
+      setModifiedRows((prevRows) => [...prevRows, updatedRow]);
     }
   };
 
   const handleHeaderSpaceBlur = (index) => {
-    const spaceValue = Math.round(
-      editableTagData[index].header_space *
-        editableTagData[index].manual_prominence
-    );
-    const updatedRow = { ...editableTagData[index], space: spaceValue };
+    const updatedRow = {
+      ...editableTagData[index],
+      space: Math.round(
+        editableTagData[index].header_space *
+          editableTagData[index].manual_prominence
+      ),
+    };
     const newData = [...editableTagData];
     newData[index] = updatedRow;
     setEditableTagData(newData);
   };
 
   const handleProminenceBlur = (index) => {
-    const spaceValue = Math.round(
-      editableTagData[index].header_space *
-        editableTagData[index].manual_prominence
+    const row = editableTagData[index];
+    // Extracting the numerical value from the manual prominence string
+    const manualProminenceValue = parseFloat(
+      row.manual_prominence.match(/\d+(\.\d+)?/)[0]
     );
-    const updatedRow = { ...editableTagData[index], space: spaceValue };
+
+    const updatedRow = {
+      ...row,
+      space: Math.round(row.header_space * manualProminenceValue),
+    };
+
     const newData = [...editableTagData];
     newData[index] = updatedRow;
     setEditableTagData(newData);
@@ -164,32 +204,56 @@ const SecondSection = (props) => {
     return newObj;
   };
   const handleSaveClick = async () => {
-    if (modifiedRows.length < 0) {
-      return toast.warning("No changes in the rows.");
+    if (modifiedRows.length > 0 && !editedSingleArticle)
+      return toast.warn("No data to save");
+    const invalidRows = modifiedRows.filter((row) =>
+      ["reporting_tone", "manual_prominence", "subject"].some(
+        (field) => row[field] === null
+      )
+    );
+
+    if (invalidRows.length > 0) {
+      invalidRows.forEach((row) =>
+        toast.warning(
+          `${row.company_name} has null values in reporting_tone, manual_prominence, or subject.`
+        )
+      );
+      return;
     }
+
+    const requestData = modifiedRows.map((obj) => convertKeys(obj));
+    const data = [editedSingleArticle];
+
     try {
       setSaveLoading(true);
-      const data = editedSingleArticle;
-      const requestData = modifiedRows.map((obj) => convertKeys(obj));
-      console.log(data);
       const headers = { Authorization: `Bearer ${userToken}` };
-      const res = await axios.post(
-        `${url}updatearticletagdetails/`,
-        requestData,
-        {
-          headers,
+      if (requestData.length > 0) {
+        const res = await axios.post(
+          `${url}updatearticletagdetails/`,
+          requestData,
+          { headers }
+        );
+
+        if (res.data) {
+          toast.success("Successfully saved changes!");
         }
-      );
-      const resp = await axios.post(`${url}updatearticleheader/`, data, {
-        headers,
-      });
-      if (res.data || resp.data) {
-        toast.success("Successfully saved changes!");
       }
+
+      if (editedSingleArticle) {
+        const resp = await axios.post(`${url}updatearticleheader/`, data, {
+          headers,
+        });
+
+        if (resp.data) {
+          toast.success("Successfully saved changes!");
+        }
+      }
+
       setFetchTagDataAfterChange(true);
       setSaveLoading(false);
     } catch (error) {
       toast.error(error.message);
+      setSaveLoading(false);
     }
   };
 
@@ -285,6 +349,18 @@ const SecondSection = (props) => {
     }
   };
 
+  const handleCopy = () => {
+    const copiedData = editableTagData.map((row, rowIndex) => {
+      const updatedRow = { ...row };
+      for (const key in storedData.data) {
+        updatedRow[key] = storedData.data[key];
+      }
+      return updatedRow;
+    });
+    setEditableTagData(copiedData);
+    setStoredData({});
+  };
+
   return (
     <div className="px-2 mt-2 border border-black">
       <Box
@@ -302,7 +378,7 @@ const SecondSection = (props) => {
           className="px-6 text-white uppercase rounded-md bg-primary"
           style={{ fontSize: "0.8em" }}
         >
-          Add company
+          Add
         </button>
         {!!checkedRows.length && (
           <button
@@ -325,9 +401,23 @@ const SecondSection = (props) => {
           </button>
         )}
       </Box>
-      <Typography sx={{ fontSize: "0.9em", my: 1 }}>
-        ClientName: {selectedClient ? selectedClient : "No client selected"}
-      </Typography>
+      <Box
+        display={"flex"}
+        alignItems={"center"}
+        justifyContent={"space-between"}
+        component={"div"}
+      >
+        <Typography sx={{ fontSize: "0.9em", my: 1 }}>
+          ClientName: {selectedClient ? selectedClient : "No client selected"}
+        </Typography>
+        <button
+          className="px-6 text-white uppercase rounded-md bg-primary"
+          style={{ fontSize: "0.8em" }}
+          onClick={handleCopy}
+        >
+          Copy
+        </button>
+      </Box>
       <TableContainer component={Paper} sx={{ maxHeight: 400 }}>
         <Table sx={{ overflow: "scroll" }} aria-label="simple table">
           <TableHead
@@ -389,15 +479,38 @@ const SecondSection = (props) => {
                       }
                     />
                   </TableCell>
-                  <TableCell size="small">
-                    <input
+                  <TableCell
+                    size="small"
+                    onClick={() => handleProminenceBlur(index)}
+                  >
+                    <select
+                      value={row.manual_prominence}
+                      onChange={(e) => {
+                        handleChange(
+                          index,
+                          "manual_prominence",
+                          e.target.value
+                        );
+                      }}
+                      className="border border-black w-28"
+                    >
+                      {prominences.map((item, index) => (
+                        <option
+                          value={item.prominence}
+                          key={item.prominence + String(index)}
+                        >
+                          {item.prominence}
+                        </option>
+                      ))}
+                    </select>
+                    {/* <input
                       className="border border-black outline-none w-14"
                       value={row.manual_prominence}
                       onBlur={() => handleProminenceBlur(index)}
                       onChange={(e) =>
                         handleChange(index, "manual_prominence", e.target.value)
                       }
-                    />
+                    /> */}
                   </TableCell>
                   <TableCell size="small">
                     <div className="border border-black w-14 h-5">
@@ -451,7 +564,7 @@ const SecondSection = (props) => {
                       className="border border-black outline-none w-14"
                       value={row.qc2_remark}
                       onChange={(e) =>
-                        handleChange(index, "remarks", e.target.value)
+                        handleChange(index, "qc2_remark", e.target.value)
                       }
                     />
                   </TableCell>

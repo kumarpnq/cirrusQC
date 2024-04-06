@@ -1,5 +1,4 @@
 import PropTypes from "prop-types";
-// import PublicationGroup from "../../dropdowns/PublicationGoup";
 import YesOrNo from "../../../@core/YesOrNo";
 import { yesOrNo } from "../../../constants/dataArray";
 import FormWithLabelTextField from "../../../@core/FormWithLabel";
@@ -17,7 +16,6 @@ const FirstSection = (props) => {
   const [selectedPublication, setSelectedPublication] = useState("");
 
   const [journalist, setJournalist] = useState(selectedArticle?.author);
-  // const [summary, setSummary] = useState(selectedArticle?.head_summary);
   const [box, setBox] = useState(0);
   const [photo, setPhoto] = useState(selectedArticle?.photo);
   const [pageNumber, setPageNumber] = useState(selectedArticle?.page_number);
@@ -32,28 +30,28 @@ const FirstSection = (props) => {
     if (selectedArticle) {
       const data = {
         ARTICLEID: selectedArticle.article_id,
-        BOX: selectedArticle?.box || box,
-        PAHOTO: selectedArticle?.photo || photo,
-        PAGENUMBER: selectedArticle?.page_number || pageNumber,
-        HEADLINES: selectedArticle?.headline || headline,
-        PAGEVALUE: selectedArticle?.page_value || pageValue,
-        PUBLICATIONNAME: selectedArticle.publication || selectedPublication,
-        // SUMMARY: selectedArticle.detail_summary || articleSummary,
-        JOURNALIST: selectedArticle.author || journalist,
-        SPACE: selectedArticle.space || space,
-        HEADSUMMARY: selectedArticle.head_summary || articleSummary,
-        QC1BY: selectedArticle.qc1_by || qc1By,
-        QC2BY: selectedArticle.qc2_by || qc2By,
+        BOX: box ?? selectedArticle?.box,
+        PHOTO: photo ?? selectedArticle?.photo,
+        PAGENUMBER: pageNumber ?? selectedArticle?.page_number,
+        HEADLINES: headline ?? selectedArticle?.headline,
+        PAGEVALUE: pageValue ?? selectedArticle?.page_value,
+        PUBLICATIONNAME: selectedPublication
+          ? selectedArticle.publication
+          : null,
+        JOURNALIST: journalist ?? selectedArticle.author,
+        SPACE: space ?? selectedArticle.space,
+        HEADSUMMARY: articleSummary ?? selectedArticle.head_summary,
+        QC1BY: qc1By ?? selectedArticle.qc1_by,
+        QC2BY: qc2By ?? selectedArticle.qc2_by,
       };
       const dataForCompare = {
         ARTICLEID: selectedArticle?.article_id,
         BOX: selectedArticle?.box,
-        PAHOTO: selectedArticle?.photo,
+        PHOTO: selectedArticle?.photo,
         PAGENUMBER: selectedArticle?.page_number,
         HEADLINES: selectedArticle?.headline,
         PAGEVALUE: selectedArticle?.page_value,
         PUBLICATIONNAME: selectedArticle?.publication,
-        // SUMMARY: selectedArticle?.detail_summary,
         JOURNALIST: selectedArticle?.author,
         SPACE: selectedArticle?.space,
         HEADSUMMARY: selectedArticle?.head_summary,
@@ -61,8 +59,8 @@ const FirstSection = (props) => {
         QC2BY: selectedArticle?.qc2_by,
       };
       const isEqual = JSON.stringify(data) === JSON.stringify(dataForCompare);
-      if (!isEqual) {
-        setEditedSingleArticle([data]);
+      if (isEqual === false) {
+        setEditedSingleArticle(data);
       }
     }
   }, [
@@ -111,32 +109,6 @@ const FirstSection = (props) => {
           />
         </div>
 
-        {/* <div className="flex items-center gap-2">
-          <label htmlFor="summary" className="text-[0.9em] text-gray-500">
-            Summary:
-          </label>
-          <textarea
-            name=""
-            id=""
-            className="outline-none border border-gray-400 text-[0.9em] rounded-[3px]"
-            cols="32"
-            rows={focusedTextFields.isSummary ? 3 : 1}
-            onFocus={() =>
-              setFocusedTextField((prevState) => ({
-                ...prevState,
-                isSummary: true,
-              }))
-            }
-            onBlur={() =>
-              setFocusedTextField((prevState) => ({
-                ...prevState,
-                isSummary: false,
-              }))
-            }
-            value={summary}
-            onChange={(e) => setSummary(e.target.value)}
-          />
-        </div> */}
         <div className="flex items-center gap-2">
           <label htmlFor="summary" className="text-[0.9em] text-gray-500">
             Summary:

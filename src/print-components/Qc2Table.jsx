@@ -139,10 +139,12 @@ const Qc2Table = ({
 
   //for edit modal
   const [open, setOpen] = useState(false);
+  const [editedSingleArticle, setEditedSingleArticle] = useState(null);
 
   const handleClose = () => {
     setOpen(false);
     setSelectedArticle(null);
+    setEditedSingleArticle([]);
   };
 
   const tableRowClick = (item) => {
@@ -428,6 +430,8 @@ const Qc2Table = ({
         open={open}
         handleClose={handleClose}
         selectedArticle={selectedArticle}
+        editedSingleArticle={editedSingleArticle}
+        setEditedSingleArticle={setEditedSingleArticle}
       />
     </>
   );
