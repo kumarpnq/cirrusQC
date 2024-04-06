@@ -186,10 +186,8 @@ const EditSection = ({
     );
 
     if (invalidRows.length > 0) {
-      invalidRows.forEach((row) =>
-        toast.warning(
-          `${row.company_name} has null values in reporting_tone, manual_prominence, or subject.`
-        )
+      toast.warning(
+        "Some rows have null values in reporting_tone, manual_prominence, or subject."
       );
       return;
     }

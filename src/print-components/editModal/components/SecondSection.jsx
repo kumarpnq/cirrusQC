@@ -213,10 +213,8 @@ const SecondSection = (props) => {
     );
 
     if (invalidRows.length > 0) {
-      invalidRows.forEach((row) =>
-        toast.warning(
-          `${row.company_name} has null values in reporting_tone, manual_prominence, or subject.`
-        )
+      toast.warning(
+        "Some rows have null values in reporting_tone, manual_prominence, or subject."
       );
       return;
     }
@@ -462,6 +460,7 @@ const SecondSection = (props) => {
                       }
                       className="border border-black w-28"
                     >
+                      <option value={null}>select</option>
                       {subjects.map((subject, index) => (
                         <option value={subject} key={subject + String(index)}>
                           {subject}
@@ -494,6 +493,7 @@ const SecondSection = (props) => {
                       }}
                       className="border border-black w-28"
                     >
+                      <option value={null}>select</option>
                       {prominences.map((item, index) => (
                         <option
                           value={item.prominence}
@@ -513,9 +513,15 @@ const SecondSection = (props) => {
                     /> */}
                   </TableCell>
                   <TableCell size="small">
-                    <div className="border border-black w-14 h-5">
-                      {row.space}
-                    </div>
+                    <input
+                      type="text"
+                      value={row.space}
+                      onChange={(e) =>
+                        handleChange(index, "space", e.target.value)
+                      }
+                      disabled
+                      className="border border-black outline-none w-14"
+                    />
                   </TableCell>
                   <TableCell size="small">
                     <select
@@ -525,6 +531,7 @@ const SecondSection = (props) => {
                       }
                       className="border border-black w-28"
                     >
+                      <option value={null}>select</option>
                       {reportingTones.map((tone, index) => (
                         <option
                           value={tone.tonality}
@@ -551,6 +558,7 @@ const SecondSection = (props) => {
                       }
                       className="border border-black w-28"
                     >
+                      <option value={null}>select</option>
                       {categories.map((cate, index) => (
                         <option value={cate} key={cate + String(index)}>
                           {cate}
