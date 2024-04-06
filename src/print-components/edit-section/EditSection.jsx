@@ -178,6 +178,21 @@ const EditSection = ({
       REMARKS: row.remark,
       TOTALSPACE: row.space,
     }));
+
+    const invalidRows = updatedData.filter((row) =>
+      ["reporting_tone", "m_prom", "reporting_subject"].some(
+        (field) => row[field] === null
+      )
+    );
+
+    if (invalidRows.length > 0) {
+      invalidRows.forEach((row) =>
+        toast.warning(
+          `${row.company_name} has null values in reporting_tone, manual_prominence, or subject.`
+        )
+      );
+      return;
+    }
     try {
       const url = `${import.meta.env.VITE_BASE_URL}updatePrint2database/`;
       if (dataToSending.length > 0) {
