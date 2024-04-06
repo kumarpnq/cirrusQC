@@ -1,10 +1,11 @@
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { makeStyles } from "@mui/styles";
 // hook
 import useFetchData from "../hooks/useFetchData";
 
 // * third party imports
 import { toast } from "react-toastify";
+import axios from "axios";
 // **constants
 import { url } from "../constants/baseUrl";
 import {
@@ -29,6 +30,8 @@ import Button from "../components/custom/Button";
 import BasicTabs from "../dump-components/customTabPanel";
 import AlertDialogSlide from "../dump-components/alertSlide";
 import Permissions from "../dump-components/Permission";
+import JobDetails from "../dump-components/JobDetails";
+import { ResearchContext } from "../context/ContextProvider";
 
 const useStyle = makeStyles(() => ({
   dropDowns: {
@@ -47,6 +50,7 @@ const useStyle = makeStyles(() => ({
   },
 }));
 const Dump = () => {
+  const { userToken } = useContext(ResearchContext);
   // states
   const [tabValue, setTabValue] = useState(0);
   const [clients, setClients] = useState([]);
@@ -64,6 +68,8 @@ const Dump = () => {
   const [openDialog, setOpenDialog] = useState(false);
   const [selectedColumnsForDump, setSelectedColumnsForDump] = useState([]);
   const [qcPermission, setQcPermission] = useState(0);
+  // job data
+  const [jobData, setJobData] = useState([]);
 
   // clients
   const {
@@ -113,6 +119,27 @@ const Dump = () => {
     setOpenDialog(true);
     setDumpLoading((prev) => !prev);
   };
+  // for the job details
+  useEffect(() => {
+    const fetchJobs = async () => {
+      try {
+        const headers = {
+          Authorization: `Bearer ${userToken}`,
+        };
+        const screen_type = tabValue ? "print" : "online";
+        const response = await axios.get(
+          `${url}userjoblist?screen=${screen_type}`,
+          {
+            headers,
+          }
+        );
+        setJobData(response.data.job_list);
+      } catch (error) {
+        console.log(error);
+      }
+    };
+    fetchJobs();
+  }, [userToken, tabValue]);
 
   const handleReset = () => {
     setSelectedClient("");
@@ -129,13 +156,13 @@ const Dump = () => {
 
   const classes = useStyle();
   return (
-    <div className="mt-1">
+    <div className="mt-1 h-screen mx-3 ">
       <BasicTabs
         value={tabValue}
         setValue={setTabValue}
         setSelectedColumnsForDump={setSelectedColumnsForDump}
       />
-      <div className="h-screen mx-3">
+      <div className="flex flex-col gap-5">
         <div className="flex flex-wrap items-center gap-1 mt-2 ">
           <div className="flex items-center mt-1" style={{ height: 25 }}>
             <SearchableDropdown
@@ -229,7 +256,9 @@ const Dump = () => {
             />
           </div>
         </div>
+        <JobDetails rows={jobData} URI={url} />
       </div>
+
       <AlertDialogSlide
         open={openDialog}
         setOpen={setOpenDialog}
