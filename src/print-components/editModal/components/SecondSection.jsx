@@ -351,8 +351,16 @@ const SecondSection = (props) => {
     const copiedData = editableTagData.map((row, rowIndex) => {
       const updatedRow = { ...row };
       for (const key in storedData.data) {
-        updatedRow[key] = storedData.data[key];
+        // Skip copying the 'space' field
+        if (key !== "space") {
+          updatedRow[key] = storedData.data[key];
+        }
       }
+      // Calculate 'space' field based on 'header_space' and 'manual_prominence'
+      updatedRow.space = Math.round(
+        updatedRow.header_space *
+          parseFloat(updatedRow.manual_prominence.match(/\d+(\.\d+)?/)[0])
+      );
       return updatedRow;
     });
     setEditableTagData(copiedData);
