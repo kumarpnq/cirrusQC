@@ -1,6 +1,6 @@
 import PropTypes from "prop-types";
 import YesOrNo from "../../../@core/YesOrNo";
-import { yesOrNo, yesOrNoBox } from "../../../constants/dataArray";
+import { yesOrNo } from "../../../constants/dataArray";
 import FormWithLabelTextField from "../../../@core/FormWithLabel";
 import { useEffect, useState } from "react";
 import CustomDebounceDropdown from "../../../@core/CustomDebounceDropdown";
@@ -13,10 +13,10 @@ const FirstSection = (props) => {
     isArticleSummary: false,
   });
   const [headline, setHeadline] = useState(selectedArticle?.headline);
-  const [selectedPublication, setSelectedPublication] = useState("");
+  const [selectedPublication, setSelectedPublication] = useState(null);
 
   const [journalist, setJournalist] = useState(selectedArticle?.author);
-  const [box, setBox] = useState(0);
+  const [box, setBox] = useState(selectedArticle?.box);
   const [photo, setPhoto] = useState(selectedArticle?.photo);
   const [pageNumber, setPageNumber] = useState(selectedArticle?.page_number);
   const [pageValue, setPageValue] = useState(selectedArticle?.page_value);
@@ -35,9 +35,7 @@ const FirstSection = (props) => {
         PAGENUMBER: pageNumber ?? selectedArticle?.page_number,
         HEADLINES: headline ?? selectedArticle?.headline,
         PAGEVALUE: pageValue ?? selectedArticle?.page_value,
-        PUBLICATIONNAME: selectedPublication
-          ? selectedArticle.publication
-          : null,
+        PUBLICATIONNAME: selectedPublication ?? selectedArticle.publication,
         JOURNALIST: journalist ?? selectedArticle.author,
         SPACE: space ?? selectedArticle.space,
         HEADSUMMARY: articleSummary ?? selectedArticle.head_summary,
@@ -157,7 +155,7 @@ const FirstSection = (props) => {
             <YesOrNo
               classes={classes}
               placeholder="Box"
-              mapValue={yesOrNoBox}
+              mapValue={yesOrNo}
               value={box}
               setValue={setBox}
               width={100}

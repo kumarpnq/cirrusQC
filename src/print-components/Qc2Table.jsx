@@ -144,7 +144,7 @@ const Qc2Table = ({
   const handleClose = () => {
     setOpen(false);
     setSelectedArticle(null);
-    setEditedSingleArticle([]);
+    setEditedSingleArticle(null);
   };
 
   const tableRowClick = (item) => {
@@ -392,6 +392,12 @@ const Qc2Table = ({
                     <td className="px-3 py-4 whitespace-nowrap">{items.box}</td>
                     <td className="px-3 py-4 whitespace-nowrap">
                       {items.box_value}
+                    </td>
+                    <td className="px-3 py-4 whitespace-nowrap">
+                      {items.photo}
+                    </td>
+                    <td className="px-3 py-4 whitespace-nowrap">
+                      {items.photo_value}
                     </td>
                     <td className="px-3 py-4 whitespace-nowrap">
                       {items.page_number}

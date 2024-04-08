@@ -456,14 +456,8 @@ export const qcPermissions = [
   { title: "Yes", value: 1 },
   { title: "No", value: 0 },
 ];
-export const yesOrNo = [
-  { title: "Yes", value: 1 },
-  { title: "No", value: 0 },
-];
-export const yesOrNoBox = [
-  { title: "Yes", value: "Y" },
-  { title: "No", value: "N" },
-];
+export const yesOrNo = ["Yes", "No"];
+
 export const DDSearchValuesForPrint = [
   {
     title: "All",

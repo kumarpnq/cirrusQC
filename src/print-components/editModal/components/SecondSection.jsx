@@ -99,30 +99,11 @@ const SecondSection = (props) => {
   }, [tagData]);
 
   const handleChange = (index, key, value) => {
-    // if (storedData.index !== index) {
-    //   setStoredData({
-    //     index: index,
-    //     data: {
-    //       [key]: value,
-    //     },
-    //   });
-    // } else {
-    //   // If index is the same, update the stored object
-    //   setStoredData({
-    //     ...storedData,
-    //     data: {
-    //       ...storedData.data,
-    //       [key]: value,
-    //     },
-    //   });
-    // }
-
     const updatedRow = {
       ...editableTagData[index],
       [key]: value,
       UPDATETYPE: "U",
     };
-
     // Update editableTagData
     setEditableTagData((prevData) => {
       const newData = [...prevData];
@@ -131,7 +112,6 @@ const SecondSection = (props) => {
     });
 
     setStoredData({
-      index: index,
       data: updatedRow,
     });
 
@@ -207,8 +187,9 @@ const SecondSection = (props) => {
     return newObj;
   };
   const handleSaveClick = async () => {
-    if (modifiedRows.length > 0 && !editedSingleArticle)
-      return toast.warn("No data to save");
+    if (!(modifiedRows.length > 0 || !!editedSingleArticle)) {
+      return toast.warning("No data");
+    }
     const invalidRows = modifiedRows.filter((row) =>
       ["reporting_tone", "manual_prominence", "subject"].some(
         (field) => row[field] === null
@@ -223,8 +204,7 @@ const SecondSection = (props) => {
     }
 
     const requestData = modifiedRows.map((obj) => convertKeys(obj));
-    const data = [editedSingleArticle];
-    console.log(requestData);
+    const data = editedSingleArticle ? [editedSingleArticle] : [];
 
     try {
       setSaveLoading(true);
@@ -238,22 +218,22 @@ const SecondSection = (props) => {
 
         if (res.data) {
           toast.success("Successfully saved changes!");
+          setFetchTagDataAfterChange(true);
         }
       }
 
-      if (editedSingleArticle) {
+      if (data.length > 0) {
         const resp = await axios.post(`${url}updatearticleheader/`, data, {
           headers,
         });
-
         if (resp.data) {
           toast.success("Successfully saved changes!");
           setEditableTagData([]);
           setModifiedRows([]);
+          setFetchTagDataAfterChange(true);
         }
       }
 
-      setFetchTagDataAfterChange(true);
       setSaveLoading(false);
     } catch (error) {
       toast.error(error.message);
@@ -354,25 +334,21 @@ const SecondSection = (props) => {
   const handleCopy = () => {
     const copiedData = editableTagData.map((row) => {
       const updatedRow = { ...row };
-
       for (const key in storedData.data) {
         if (key !== "space") {
           updatedRow[key] = storedData.data[key];
         }
       }
-
       const manualProminenceValue = parseFloat(
-        updatedRow.manual_prominence.match(/\d+(\.\d+)?/)[0]
+        updatedRow.manual_prominence?.match(/\d+(\.\d+)?/)?.[0] || "0"
       );
+
       updatedRow.space = Number(
         (updatedRow.header_space * manualProminenceValue).toFixed(2)
       );
 
-      updatedRow.UPDATETYPE = "U";
-
       return updatedRow;
     });
-
     setEditableTagData(copiedData);
     setStoredData({});
   };
@@ -479,8 +455,11 @@ const SecondSection = (props) => {
                       className="border border-black w-28"
                     >
                       <option value={null}>select</option>
-                      {subjects.map((subject, index) => (
-                        <option value={subject} key={subject + String(index)}>
+                      {subjects.map((subject) => (
+                        <option
+                          value={subject}
+                          key={subject + Math.random(0, 100)}
+                        >
                           {subject}
                         </option>
                       ))}

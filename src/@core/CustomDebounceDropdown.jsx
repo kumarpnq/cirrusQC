@@ -113,7 +113,7 @@ const CustomDebounceDropdown = ({
           <li
             className="italic text-gray-400 text-[0.8em] ml-1 cursor-pointer"
             onClick={() => {
-              setPublicationGroup("");
+              setPublicationGroup(null);
               setPubTitleForShow("");
             }}
           >
