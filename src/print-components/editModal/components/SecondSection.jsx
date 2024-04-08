@@ -350,16 +350,16 @@ const SecondSection = (props) => {
     const copiedData = editableTagData.map((row, rowIndex) => {
       const updatedRow = { ...row };
       for (const key in storedData.data) {
-        // Skip copying the 'space' field
         if (key !== "space") {
           updatedRow[key] = storedData.data[key];
         }
       }
-      // Calculate 'space' field based on 'header_space' and 'manual_prominence'
-      updatedRow.space = Math.round(
-        updatedRow.header_space *
-          parseFloat(updatedRow.manual_prominence.match(/\d+(\.\d+)?/)[0])
+      const manualProminenceValue = parseFloat(
+        updatedRow.manual_prominence.match(/\d+(\.\d+)?/)[0]
       );
+      updatedRow.space = (
+        updatedRow.header_space * manualProminenceValue
+      ).toFixed(2);
       return updatedRow;
     });
     setEditableTagData(copiedData);
@@ -479,6 +479,7 @@ const SecondSection = (props) => {
                     <input
                       className="border border-black outline-none w-14"
                       value={row.header_space}
+                      type="number"
                       onBlur={() => handleHeaderSpaceBlur(index)}
                       onChange={(e) =>
                         handleChange(index, "header_space", e.target.value)
@@ -513,7 +514,7 @@ const SecondSection = (props) => {
                   </TableCell>
                   <TableCell size="small">
                     <input
-                      type="text"
+                      type="number"
                       value={row.space}
                       onChange={(e) =>
                         handleChange(index, "space", e.target.value)
