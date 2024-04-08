@@ -357,9 +357,10 @@ const SecondSection = (props) => {
       const manualProminenceValue = parseFloat(
         updatedRow.manual_prominence.match(/\d+(\.\d+)?/)[0]
       );
-      updatedRow.space = (
-        updatedRow.header_space * manualProminenceValue
-      ).toFixed(2);
+      updatedRow.space = Number(
+        (updatedRow.header_space * manualProminenceValue).toFixed(2)
+      );
+
       return updatedRow;
     });
     setEditableTagData(copiedData);
