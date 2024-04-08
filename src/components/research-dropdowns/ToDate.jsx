@@ -1,7 +1,7 @@
 import { FormControl, TextField } from "@mui/material";
 import PropTypes from "prop-types";
 
-const ToDate = ({ dateNow, setDateNow }) => {
+const ToDate = ({ dateNow, setDateNow, isMargin }) => {
   const handleToDate = (e) => {
     const { value } = e.target;
     if (value) {
@@ -29,7 +29,7 @@ const ToDate = ({ dateNow, setDateNow }) => {
           size="small"
           variant="outlined"
           InputProps={{
-            style: { fontSize: "0.8rem", height: 25, top: 6 },
+            style: { fontSize: "0.8rem", height: 25, top: !isMargin ? 0 : 6 },
           }}
         />
       </FormControl>
@@ -39,5 +39,6 @@ const ToDate = ({ dateNow, setDateNow }) => {
 ToDate.propTypes = {
   dateNow: PropTypes.string.isRequired,
   setDateNow: PropTypes.func.isRequired,
+  isMargin: PropTypes.bool,
 };
 export default ToDate;

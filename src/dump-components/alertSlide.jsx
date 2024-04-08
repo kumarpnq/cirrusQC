@@ -41,6 +41,7 @@ export default function AlertDialogSlide(props) {
     isQc1,
     isQc2,
     qcPermission,
+    setFetchDumpData,
   } = props;
   const endPoint = !tabValue ? "onlinedump/" : "printdump/";
   const { userToken } = React.useContext(ResearchContext);
@@ -109,33 +110,35 @@ export default function AlertDialogSlide(props) {
         headers: {
           Authorization: `Bearer ${userToken}`,
         },
-        responseType: "blob",
+        // responseType: "blob",
       });
 
-      const blob = new Blob([response.data], {
-        type: "application/octet-stream",
-      });
-      const filename = `${clientId + endPoint.slice(0, -1)}.xlsx`;
+      // const blob = new Blob([response.data], {
+      //   type: "application/octet-stream",
+      // });
+      // const filename = `${clientId + endPoint.slice(0, -1)}.xlsx`;
 
-      const urls = window.URL.createObjectURL(blob);
+      // const urls = window.URL.createObjectURL(blob);
 
-      const link = document.createElement("a");
-      link.href = urls;
-      link.setAttribute("download", filename);
-      document.body.appendChild(link);
-      link.click();
+      // const link = document.createElement("a");
+      // link.href = urls;
+      // link.setAttribute("download", filename);
+      // document.body.appendChild(link);
+      // link.click();
 
-      window.URL.revokeObjectURL(urls);
-
+      // window.URL.revokeObjectURL(urls);
       setDumpLoading((prev) => !prev);
       if (response) {
         setOpen(false);
-        toast.success("Dump done successfully.");
+        toast.success(response.data.message);
         setSelectedColumnsForDump([]);
+        setFetchDumpData(true);
       }
     } catch (error) {
       toast.error(error?.message || "Error while dump.");
       setDumpLoading((prev) => !prev);
+    } finally {
+      setFetchDumpData(false);
     }
   };
 
@@ -209,7 +212,8 @@ AlertDialogSlide.propTypes = {
   toDate: PropTypes.string.isRequired,
   qc1By: PropTypes.array.isRequired,
   qc2By: PropTypes.array.isRequired,
-  isQc1: PropTypes.number.isRequired,
-  isQc2: PropTypes.number.isRequired,
+  isQc1: PropTypes.any.isRequired,
+  isQc2: PropTypes.any.isRequired,
   qcPermission: PropTypes.number.isRequired,
+  setFetchDumpData: PropTypes.func.isRequired,
 };

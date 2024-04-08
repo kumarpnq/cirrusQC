@@ -359,7 +359,7 @@ const DDComp = () => {
           <FromDate fromDate={fromDate} setFromDate={setFromDate} />
         </div>
         <div className="h-[25px] flex items-center justify-center">
-          <ToDate dateNow={dateNow} setDateNow={setDateNow} />
+          <ToDate dateNow={dateNow} setDateNow={setDateNow} isMargin={true} />
         </div>
 
         <div className="h-[25px] flex items-center justify-center">

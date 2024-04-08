@@ -70,6 +70,7 @@ const Dump = () => {
   const [qcPermission, setQcPermission] = useState(0);
   // job data
   const [jobData, setJobData] = useState([]);
+  const [fetchDumpData, setFetchDumpData] = useState(false);
 
   // clients
   const {
@@ -139,7 +140,7 @@ const Dump = () => {
       }
     };
     fetchJobs();
-  }, [userToken, tabValue]);
+  }, [userToken, tabValue, fetchDumpData]);
 
   const handleReset = () => {
     setSelectedClient("");
@@ -276,6 +277,7 @@ const Dump = () => {
         isQc1={qc1Done}
         isQc2={qc2Done}
         qcPermission={qcPermission}
+        setFetchDumpData={setFetchDumpData}
       />
     </div>
   );

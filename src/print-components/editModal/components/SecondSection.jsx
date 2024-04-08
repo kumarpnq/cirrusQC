@@ -1,4 +1,4 @@
-import { useCallback, useContext, useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import {
   Box,
   Typography,
@@ -60,9 +60,9 @@ const SecondSection = (props) => {
         );
         setTagData(res.data.article_details);
         setTagDataLoading(false);
-        setFetchTagDataAfterChange(false);
       } catch (error) {
         console.log(error);
+      } finally {
         setFetchTagDataAfterChange(false);
       }
     };
@@ -148,12 +148,12 @@ const SecondSection = (props) => {
   };
 
   const handleHeaderSpaceBlur = (index) => {
+    const row = editableTagData[index];
+    const manualProminenceValue = parseFloat(row.manual_prominence);
+    const updatedSpace = (row.header_space * manualProminenceValue).toFixed(2);
     const updatedRow = {
-      ...editableTagData[index],
-      space: Math.round(
-        editableTagData[index].header_space *
-          editableTagData[index].manual_prominence
-      ),
+      ...row,
+      space: parseFloat(updatedSpace),
     };
     const newData = [...editableTagData];
     newData[index] = updatedRow;
@@ -162,16 +162,14 @@ const SecondSection = (props) => {
 
   const handleProminenceBlur = (index) => {
     const row = editableTagData[index];
-    // Extracting the numerical value from the manual prominence string
     const manualProminenceValue = parseFloat(
       row.manual_prominence.match(/\d+(\.\d+)?/)[0]
     );
-
+    const updatedSpace = (row.header_space * manualProminenceValue).toFixed(2);
     const updatedRow = {
       ...row,
-      space: Math.round(row.header_space * manualProminenceValue),
+      space: parseFloat(updatedSpace),
     };
-
     const newData = [...editableTagData];
     newData[index] = updatedRow;
     setEditableTagData(newData);
@@ -214,7 +212,7 @@ const SecondSection = (props) => {
 
     if (invalidRows.length > 0) {
       toast.warning(
-        "Some rows have null values in reporting_tone, manual_prominence, or subject."
+        "Some rows have null values in tone, prominence, or subject."
       );
       return;
     }
@@ -244,6 +242,8 @@ const SecondSection = (props) => {
 
         if (resp.data) {
           toast.success("Successfully saved changes!");
+          setEditableTagData([]);
+          setModifiedRows([]);
         }
       }
 
@@ -331,7 +331,6 @@ const SecondSection = (props) => {
   const handleDelete = async () => {
     const isValid = await userVerification();
     isValid && (await makeRequest(requestData));
-    console.log(requestData);
     if (!isValid) {
       return toast.error("Password not match with records");
     }
@@ -462,9 +461,9 @@ const SecondSection = (props) => {
                   </TableCell>
                   <TableCell size="small" sx={{ fontSize: "0.9em" }}>
                     <select
-                      value={row.subject}
+                      value={row.reporting_subject}
                       onChange={(e) =>
-                        handleChange(index, "subject", e.target.value)
+                        handleChange(index, "reporting_subject", e.target.value)
                       }
                       className="border border-black w-28"
                     >

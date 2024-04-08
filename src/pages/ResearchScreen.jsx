@@ -355,7 +355,7 @@ const ReasearchScreen = () => {
             {/* date filter from date */}
             <FromDate fromDate={fromDate} setFromDate={setFromDate} />
             {/* date filter to now date */}
-            <ToDate dateNow={dateNow} setDateNow={setDateNow} />
+            <ToDate dateNow={dateNow} setDateNow={setDateNow} isMargin={true} />
             {/* qc1 done */}
             <Qc1All
               qc1done={qc1done}

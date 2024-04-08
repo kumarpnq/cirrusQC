@@ -1,6 +1,6 @@
 import PropTypes from "prop-types";
 import YesOrNo from "../../../@core/YesOrNo";
-import { yesOrNo } from "../../../constants/dataArray";
+import { yesOrNo, yesOrNoBox } from "../../../constants/dataArray";
 import FormWithLabelTextField from "../../../@core/FormWithLabel";
 import { useEffect, useState } from "react";
 import CustomDebounceDropdown from "../../../@core/CustomDebounceDropdown";
@@ -59,7 +59,8 @@ const FirstSection = (props) => {
         QC2BY: selectedArticle?.qc2_by,
       };
       const isEqual = JSON.stringify(data) === JSON.stringify(dataForCompare);
-      if (isEqual === false) {
+
+      if (!isEqual) {
         setEditedSingleArticle(data);
       }
     }
@@ -149,12 +150,6 @@ const FirstSection = (props) => {
             bg="bg-white"
             m="0"
           />
-          {/* <PublicationGroup
-            classes={classes}
-            publicationGroup={selectedPublication}
-            setPublicationGroup={setSelectedPublication}
-            width={300}
-          /> */}
         </div>
         <div className="flex flex-wrap items-center gap-2">
           <div className="flex items-center gap-2">
@@ -162,7 +157,7 @@ const FirstSection = (props) => {
             <YesOrNo
               classes={classes}
               placeholder="Box"
-              mapValue={yesOrNo}
+              mapValue={yesOrNoBox}
               value={box}
               setValue={setBox}
               width={100}
