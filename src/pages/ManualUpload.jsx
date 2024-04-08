@@ -124,7 +124,17 @@ const ManualUpload = () => {
                   </TableCell>
                   <TableCell size="small">{row.feeddate}</TableCell>
                   <TableCell size="small">{row.publicationname}</TableCell>
-                  <TableCell size="small">{row.searchlink}</TableCell>
+                  <TableCell
+                    size="small"
+                    sx={{
+                      width: "200px",
+                      overflow: "hidden",
+                      whiteSpace: "nowrap",
+                      textOverflow: "ellipsis",
+                    }}
+                  >
+                    {row.searchlink}
+                  </TableCell>
                 </TableRow>
               ))}
             </TableBody>

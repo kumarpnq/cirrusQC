@@ -510,14 +510,6 @@ const SecondSection = (props) => {
                         </option>
                       ))}
                     </select>
-                    {/* <input
-                      className="border border-black outline-none w-14"
-                      value={row.manual_prominence}
-                      onBlur={() => handleProminenceBlur(index)}
-                      onChange={(e) =>
-                        handleChange(index, "manual_prominence", e.target.value)
-                      }
-                    /> */}
                   </TableCell>
                   <TableCell size="small">
                     <input
@@ -532,7 +524,7 @@ const SecondSection = (props) => {
                   </TableCell>
                   <TableCell size="small">
                     <select
-                      value={row.tone}
+                      value={row.reporting_tone}
                       onChange={(e) =>
                         handleChange(index, "reporting_tone", e.target.value)
                       }
