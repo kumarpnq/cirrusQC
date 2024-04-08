@@ -99,23 +99,23 @@ const SecondSection = (props) => {
   }, [tagData]);
 
   const handleChange = (index, key, value) => {
-    if (storedData.index !== index) {
-      setStoredData({
-        index: index,
-        data: {
-          [key]: value,
-        },
-      });
-    } else {
-      // If index is the same, update the stored object
-      setStoredData({
-        ...storedData,
-        data: {
-          ...storedData.data,
-          [key]: value,
-        },
-      });
-    }
+    // if (storedData.index !== index) {
+    //   setStoredData({
+    //     index: index,
+    //     data: {
+    //       [key]: value,
+    //     },
+    //   });
+    // } else {
+    //   // If index is the same, update the stored object
+    //   setStoredData({
+    //     ...storedData,
+    //     data: {
+    //       ...storedData.data,
+    //       [key]: value,
+    //     },
+    //   });
+    // }
 
     const updatedRow = {
       ...editableTagData[index],
@@ -128,6 +128,11 @@ const SecondSection = (props) => {
       const newData = [...prevData];
       newData[index] = updatedRow;
       return newData;
+    });
+
+    setStoredData({
+      index: index,
+      data: updatedRow,
     });
 
     if (
@@ -219,6 +224,7 @@ const SecondSection = (props) => {
 
     const requestData = modifiedRows.map((obj) => convertKeys(obj));
     const data = [editedSingleArticle];
+    console.log(requestData);
 
     try {
       setSaveLoading(true);
@@ -345,15 +351,16 @@ const SecondSection = (props) => {
       setCheckedRows([]);
     }
   };
-
   const handleCopy = () => {
-    const copiedData = editableTagData.map((row, rowIndex) => {
+    const copiedData = editableTagData.map((row) => {
       const updatedRow = { ...row };
+
       for (const key in storedData.data) {
         if (key !== "space") {
           updatedRow[key] = storedData.data[key];
         }
       }
+
       const manualProminenceValue = parseFloat(
         updatedRow.manual_prominence.match(/\d+(\.\d+)?/)[0]
       );
@@ -361,8 +368,11 @@ const SecondSection = (props) => {
         (updatedRow.header_space * manualProminenceValue).toFixed(2)
       );
 
+      updatedRow.UPDATETYPE = "U";
+
       return updatedRow;
     });
+
     setEditableTagData(copiedData);
     setStoredData({});
   };
