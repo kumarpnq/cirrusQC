@@ -157,7 +157,7 @@ const Dump = () => {
 
   const classes = useStyle();
   return (
-    <div className="mt-1 h-screen mx-3 ">
+    <div className="h-screen mx-3 mt-1 ">
       <BasicTabs
         value={tabValue}
         setValue={setTabValue}
@@ -207,7 +207,7 @@ const Dump = () => {
             <FromDate fromDate={fromDate} setFromDate={setFromDate} />
           </div>
           <div className="h-[25px] flex items-center justify-center">
-            <ToDate dateNow={toDate} setDateNow={setToDate} />
+            <ToDate dateNow={toDate} setDateNow={setToDate} isMargin={true} />
           </div>
           <div className="h-[25px] flex items-center justify-center">
             <Qc1All

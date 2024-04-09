@@ -39,10 +39,10 @@ const JobDetails = ({ URI, rows }) => {
                   sx={{
                     bgcolor:
                       row.status === "Processing"
-                        ? "yellow"
+                        ? "#fffd8f"
                         : row.status === "Failed"
-                        ? "red"
-                        : row.status === "Completed" && "green",
+                        ? "#f77b52"
+                        : row.status === "Completed" && "#b0faa2",
                   }}
                 >
                   {row.status}

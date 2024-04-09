@@ -191,9 +191,12 @@ const SecondSection = (props) => {
       return toast.warning("No data");
     }
     const invalidRows = modifiedRows.filter((row) =>
-      ["reporting_tone", "manual_prominence", "subject"].some(
-        (field) => row[field] === null
-      )
+      [
+        "reporting_tone",
+        "manual_prominence",
+        "reporting_subject",
+        "header_space",
+      ].some((field) => row[field] === null)
     );
 
     if (invalidRows.length > 0) {
@@ -335,7 +338,8 @@ const SecondSection = (props) => {
     const copiedData = editableTagData.map((row) => {
       const updatedRow = { ...row };
       for (const key in storedData.data) {
-        if (key !== "space") {
+        if (key !== "space" && key !== "company_id" && key !== "company_name") {
+          // Exclude company_id
           updatedRow[key] = storedData.data[key];
         }
       }
