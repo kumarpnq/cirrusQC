@@ -67,7 +67,7 @@ const SecondSection = (props) => {
       }
     };
     fetchTagDetails();
-  }, [fetchTagDataAfterChange, articleId, userToken]);
+  }, [fetchTagDataAfterChange, userToken, articleId]);
 
   const { data: tones } = useFetchData(`${url}reportingtonelist`);
   const reportingTones = tones?.data?.reportingtones_list || [];
@@ -104,7 +104,7 @@ const SecondSection = (props) => {
       [key]: value,
       UPDATETYPE: "U",
     };
-    // Update editableTagData
+
     setEditableTagData((prevData) => {
       const newData = [...prevData];
       newData[index] = updatedRow;
@@ -127,7 +127,6 @@ const SecondSection = (props) => {
         return updatedCompanies;
       });
 
-      // Update modifiedRows to include the edited row
       setModifiedRows((prevRows) => [...prevRows, updatedRow]);
     }
   };
@@ -196,7 +195,7 @@ const SecondSection = (props) => {
         "manual_prominence",
         "reporting_subject",
         "header_space",
-      ].some((field) => row[field] === null)
+      ].some((field) => row[field] === null || row[field] === "Unknown")
     );
 
     if (invalidRows.length > 0) {
@@ -233,7 +232,6 @@ const SecondSection = (props) => {
           toast.success("Successfully saved changes!");
           setEditableTagData([]);
           setModifiedRows([]);
-          setFetchTagDataAfterChange(true);
         }
       }
 
@@ -244,25 +242,73 @@ const SecondSection = (props) => {
     }
   };
 
-  const handleAddCompany = () => {
+  // const handleAddCompany = () => {
+  //   if (selectedCompany) {
+  //     const isCompanyAlreadyAdded = editableTagData.some(
+  //       (tag) => tag.company_id === selectedCompany.value
+  //     );
+  //     if (isCompanyAlreadyAdded) {
+  //       return toast.error("Company already added!");
+  //     }
+  //     const newRow =
+  //       editableTagData.length > 0 ? { ...editableTagData[0] } : {};
+  //     newRow.company_name = selectedCompany.label;
+  //     newRow.company_id = selectedCompany.value;
+  //     [newRow.UPDATETYPE] = "I";
+
+  //     setEditableTagData((prev) => [newRow, ...prev]);
+
+  //     setTagData((prev) => [newRow, ...prev]);
+
+  //     setManuallyAddedCompanies((prev) => [newRow, ...prev]);
+  //   }
+  // };
+  const handleAddCompanies = async () => {
+    const rowData = editableTagData.length > 0 && editableTagData[0];
     if (selectedCompany) {
-      const isCompanyAlreadyAdded = editableTagData.some(
-        (tag) => tag.company_id === selectedCompany.value
-      );
-      if (isCompanyAlreadyAdded) {
-        return toast.error("Company already added!");
+      try {
+        const header = {
+          Authorization: `Bearer ${userToken}`,
+        };
+        const requestData = [
+          {
+            ARTICLEID: rowData.article_id,
+            COMPANYID: selectedCompany.value,
+            COMPANYNAME: selectedCompany.title,
+            MANUALPROMINENCE: rowData.manual_prominence,
+            HEADERSPACE: rowData.header_space,
+            SPACE: rowData.space,
+            REPORTINGTONE: rowData.reporting_tone,
+            REPORTINGSUBJECT: rowData.reporting_subject,
+            SUBCATEGORY: rowData.subcategory,
+            KEYWORD: rowData.keyword,
+            QC2REMARK: rowData.qc2_remark,
+            DETAILSUMMARY: rowData.detail_summary,
+          },
+        ];
+        const response = await axios.post(
+          `${url}insertarticledetails/`,
+          requestData,
+          {
+            headers: header,
+          }
+        );
+        const successOrError =
+          (response.data.result.success.length && "company added") ||
+          (response.data.result.errors.length && "something went wrong");
+
+        if (successOrError === "company added") {
+          toast.success(successOrError);
+          setFetchTagDataAfterChange(true);
+        } else if (successOrError === "something went wrong") {
+          toast.warning(successOrError);
+        }
+      } catch (error) {
+        toast.error(error.message);
+        console.log(error);
       }
-      const newRow =
-        editableTagData.length > 0 ? { ...editableTagData[0] } : {};
-      newRow.company_name = selectedCompany.label;
-      newRow.company_id = selectedCompany.value;
-      [newRow.update_type] = "I"; // Mark as inserted
-
-      setEditableTagData((prev) => [newRow, ...prev]);
-
-      setTagData((prev) => [newRow, ...prev]);
-
-      setManuallyAddedCompanies((prev) => [newRow, ...prev]);
+    } else {
+      toast.warning("No company Selected");
     }
   };
 
@@ -370,7 +416,7 @@ const SecondSection = (props) => {
         />
 
         <button
-          onClick={handleAddCompany}
+          onClick={handleAddCompanies}
           className="px-6 text-white uppercase rounded-md bg-primary"
           style={{ fontSize: "0.8em" }}
         >

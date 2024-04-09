@@ -8,6 +8,7 @@ import Paper from "@mui/material/Paper";
 
 // ** third party component
 import PropTypes from "prop-types";
+import { IoIosArrowRoundDown, IoIosArrowRoundUp } from "react-icons/io";
 
 const JobDetails = ({ URI, rows }) => {
   return (
@@ -18,6 +19,13 @@ const JobDetails = ({ URI, rows }) => {
             <TableRow className="bg-primary">
               <TableCell size="small" sx={{ color: "white" }}>
                 Job Name
+              </TableCell>
+              <TableCell size="small" sx={{ color: "white" }}>
+                Job Date
+                <span>
+                  <IoIosArrowRoundUp />
+                  <IoIosArrowRoundDown />
+                </span>
               </TableCell>
               <TableCell size="small" sx={{ color: "white" }}>
                 Job Status
@@ -34,6 +42,10 @@ const JobDetails = ({ URI, rows }) => {
                 sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
               >
                 <TableCell size="small">{row.filename}</TableCell>
+                <TableCell size="small">
+                  {row.requested_date.replace("T", " ")}
+                </TableCell>
+
                 <TableCell
                   size="small"
                   sx={{

@@ -97,10 +97,10 @@ export default function AlertDialogSlide(props) {
         request_data.qc2_by = arrayToString(qc2By);
       }
       if (isQc1) {
-        request_data.is_qc1 = isQc1;
+        request_data.is_qc1 = Number(isQc1);
       }
       if (isQc2) {
-        request_data.is_qc2 = isQc2;
+        request_data.is_qc2 = Number(isQc2);
       }
       if (tabValue) {
         request_data.permission = qcPermission;
