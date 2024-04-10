@@ -1,3 +1,4 @@
+import { useState } from "react";
 import Table from "@mui/material/Table";
 import TableBody from "@mui/material/TableBody";
 import TableCell from "@mui/material/TableCell";
@@ -5,12 +6,31 @@ import TableContainer from "@mui/material/TableContainer";
 import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import Paper from "@mui/material/Paper";
-
-// ** third party component
 import PropTypes from "prop-types";
 import { IoIosArrowRoundDown, IoIosArrowRoundUp } from "react-icons/io";
 
 const JobDetails = ({ URI, rows }) => {
+  const [sortBy, setSortBy] = useState(null);
+  const [sortOrder, setSortOrder] = useState("asc");
+
+  const handleSort = (column) => {
+    if (sortBy === column) {
+      setSortOrder(sortOrder === "asc" ? "desc" : "asc");
+    } else {
+      setSortBy(column);
+      setSortOrder("asc");
+    }
+  };
+
+  const sortedRows = [...rows].sort((a, b) => {
+    if (sortBy === "date") {
+      const dateA = new Date(a.requested_date).getTime();
+      const dateB = new Date(b.requested_date).getTime();
+      return sortOrder === "asc" ? dateA - dateB : dateB - dateA;
+    }
+    return 0;
+  });
+
   return (
     <div style={{ maxHeight: "400px", overflowY: "auto" }}>
       <TableContainer component={Paper}>
@@ -20,12 +40,26 @@ const JobDetails = ({ URI, rows }) => {
               <TableCell size="small" sx={{ color: "white" }}>
                 Job Name
               </TableCell>
-              <TableCell size="small" sx={{ color: "white" }}>
+              <TableCell
+                size="small"
+                sx={{
+                  color: "white",
+                  display: "flex",
+                  alignItems: "center",
+                  cursor: "pointer",
+                }}
+                onClick={() => handleSort("date")}
+              >
                 Job Date
-                <span>
-                  <IoIosArrowRoundUp />
-                  <IoIosArrowRoundDown />
-                </span>
+                {sortBy === "date" && (
+                  <span className="flex">
+                    {sortOrder === "asc" ? (
+                      <IoIosArrowRoundUp />
+                    ) : (
+                      <IoIosArrowRoundDown />
+                    )}
+                  </span>
+                )}
               </TableCell>
               <TableCell size="small" sx={{ color: "white" }}>
                 Job Status
@@ -36,7 +70,7 @@ const JobDetails = ({ URI, rows }) => {
             </TableRow>
           </TableHead>
           <TableBody>
-            {rows.map((row) => (
+            {sortedRows.map((row) => (
               <TableRow
                 key={row.name}
                 sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
@@ -45,7 +79,6 @@ const JobDetails = ({ URI, rows }) => {
                 <TableCell size="small">
                   {row.requested_date.replace("T", " ")}
                 </TableCell>
-
                 <TableCell
                   size="small"
                   sx={{
@@ -86,7 +119,9 @@ JobDetails.propTypes = {
       filename: PropTypes.string.isRequired,
       status: PropTypes.oneOf(["Processing", "Failed", "Completed"]).isRequired,
       filelink: PropTypes.string.isRequired,
+      requested_date: PropTypes.string.isRequired, // Ensure requested_date is included in rows
     })
   ).isRequired,
 };
+
 export default JobDetails;
