@@ -92,7 +92,7 @@ const JobDetails = ({ URI, rows }) => {
                 >
                   {row.status}
                 </TableCell>
-                <TableCell size="small">
+                <TableCell size="small" sx={{ textDecoration: "underline" }}>
                   {" "}
                   <a
                     href={`${URI + row.filelink}`}

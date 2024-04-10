@@ -131,9 +131,13 @@ const ManualUpload = () => {
                       overflow: "hidden",
                       whiteSpace: "nowrap",
                       textOverflow: "ellipsis",
+                      textDecoration: "underline",
                     }}
                   >
-                    {row.searchlink}
+                    <a href={row.searchlink} target="_blank" rel="noreferrer">
+                      link
+                    </a>
+                    {}
                   </TableCell>
                 </TableRow>
               ))}
