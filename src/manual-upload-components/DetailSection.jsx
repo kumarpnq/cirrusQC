@@ -21,8 +21,8 @@ import PropTypes from "prop-types";
 import axios from "axios";
 import { toast } from "react-toastify";
 import { url } from "../constants/baseUrl";
-import useFetchData from "../hooks/useFetchData";
-import Company from "../print-components/dropdowns/Company";
+
+import DebounceSearch from "../print-components/dropdowns/DebounceSearch";
 
 const useStyle = makeStyles(() => ({
   dropDowns: {
@@ -50,12 +50,9 @@ const Details = ({ selectedRow }) => {
   const [articleURl, setArticleURL] = useState(selectedRow?.articlelink);
   const [publication, setPublication] = useState(selectedRow?.publicationname);
   const [selectedLanguages, setSelectedLanguages] = useState([]);
-  const [selectedCompanies, setSelectedCompanies] = useState([]);
+  const [selectedCompanies, setSelectedCompanies] = useState("");
   const [dateNow, setDateNow] = useState(selectedRow?.feeddate);
   const [saveLoading, setSaveLoading] = useState(false);
-
-  const { data } = useFetchData(`${url}companylist/`, selectedCompanies);
-  const companyData = data?.data?.companies;
 
   const classes = useStyle();
 
@@ -94,6 +91,12 @@ const Details = ({ selectedRow }) => {
         toast.warning("Something wrong");
       }
       setSaveLoading(false);
+      setTitle("");
+      setContent("");
+      setSummary("");
+      setImage("");
+      setSelectedCompanies("");
+      setSelectedLanguages([]);
     } catch (error) {
       console.log(error);
     }
@@ -107,13 +110,14 @@ const Details = ({ selectedRow }) => {
           </Typography>
         }
       />
-      <CardContent sx={{ px: 2, width: 700 }}>
+      <CardContent sx={{ px: 2 }}>
         <FormControl>
-          <Box mb={2} display="flex" alignItems="center" width={500}>
+          <Box mb={1} display="flex" alignItems="center" width={700}>
             <Typography sx={{ fontSize: "0.9em" }}>Title:</Typography>
             <TextField
               size="small"
-              sx={{ width: 430, ml: 5 }}
+              sx={{ ml: 5.5 }}
+              fullWidth
               value={title}
               onChange={(e) => setTitle(e.target.value)}
               InputProps={{
@@ -124,27 +128,30 @@ const Details = ({ selectedRow }) => {
               }}
             />
           </Box>
-          <Box mb={2} display="flex" alignItems="center">
+          <Box mb={1} display="flex" alignItems="center">
             <Typography sx={{ fontSize: "0.9em" }}>Content:</Typography>
             <textarea
-              className="ml-4 w-full outline-none border border-gray-400 border:opacity-50 rounded-[3px] text-[0.9em] px-2  "
+              className="ml-5 w-full outline-none border border-gray-400 border:opacity-50 rounded-[3px] text-[0.9em] px-2"
+              rows={4}
               value={content}
               onChange={(e) => setContent(e.target.value)}
             />
           </Box>
-          <Box mb={2} display="flex" alignItems="center">
+          <Box mb={1} display="flex" alignItems="center">
             <Typography sx={{ fontSize: "0.9em" }}>Summary:</Typography>
             <textarea
               className=" ml-3 w-full outline-none border border-gray-400 border:opacity-50 rounded-[3px] text-[0.9em] px-2"
+              rows={4}
               value={summary}
               onChange={(e) => setSummary(e.target.value)}
             />
           </Box>
-          <Box mb={2} display="flex" alignItems="center">
+          <Box mb={1} display="flex" alignItems="center">
             <Typography sx={{ fontSize: "0.9em" }}>Image:</Typography>
             <TextField
               size="small"
-              sx={{ width: 420, ml: 4 }}
+              sx={{ ml: 4 }}
+              fullWidth
               value={image}
               onChange={(e) => setImage(e.target.value)}
               InputProps={{
@@ -155,7 +162,7 @@ const Details = ({ selectedRow }) => {
               }}
             />
           </Box>
-          <Box mb={2} display="flex" alignItems="center">
+          <Box mb={1} display="flex" alignItems="center">
             <Typography sx={{ fontSize: "0.9em" }}>SearchURL:</Typography>
             <TextField
               size="small"
@@ -171,11 +178,12 @@ const Details = ({ selectedRow }) => {
               }}
             />
           </Box>
-          <Box mb={2} display="flex" alignItems="center">
+          <Box mb={1} display="flex" alignItems="center">
             <Typography sx={{ fontSize: "0.9em" }}>ArticleURL:</Typography>
             <TextField
               size="small"
               fullWidth
+              sx={{ ml: 1 }}
               value={articleURl}
               onChange={(e) => setArticleURL(e.target.value)}
               InputProps={{
@@ -186,53 +194,69 @@ const Details = ({ selectedRow }) => {
               }}
             />
           </Box>
-          <Box mb={2} display="flex" alignItems="center">
-            <Typography sx={{ fontSize: "0.9em" }}>Publication:</Typography>
-            <TextField
-              size="small"
-              fullWidth
-              value={publication}
-              onChange={(e) => setPublication(e.target.value)}
-              InputProps={{
-                style: {
-                  fontSize: "0.8rem",
-                  height: 25,
-                },
-              }}
-            />
+          <Box
+            mb={1}
+            display="flex"
+            alignItems="center"
+            justifyContent="space-between"
+          >
+            <Box display="flex" alignItems="center">
+              <Typography sx={{ fontSize: "0.9em" }}>Company:</Typography>
+              <div className="ml-4">
+                <DebounceSearch
+                  selectedCompany={selectedCompanies}
+                  setSelectedCompany={setSelectedCompanies}
+                />
+              </div>
+            </Box>
+            <Box display="flex" alignItems="center">
+              <Typography sx={{ fontSize: "0.9em", ml: 1 }}>
+                Language:
+              </Typography>
+              <div className="ml-2">
+                <Languages
+                  language={selectedLanguages}
+                  setLanguage={setSelectedLanguages}
+                  classes={classes}
+                />
+              </div>
+            </Box>
           </Box>
-          <Box mb={2} display="flex" alignItems="center">
-            <Typography sx={{ fontSize: "0.9em" }}>Company:</Typography>
-            <div className="ml-2">
-              <Company
-                companyData={companyData}
-                companies={selectedCompanies}
-                setCompanies={setSelectedCompanies}
-                isMt={false}
+          <Box
+            mb={1}
+            display="flex"
+            alignItems="center"
+            justifyContent="space-between"
+          >
+            <Box display="flex" alignItems="center">
+              <Typography sx={{ fontSize: "0.9em" }}>Publication:</Typography>
+              <TextField
+                size="small"
+                fullWidth
+                sx={{ ml: 1 }}
+                value={publication}
+                onChange={(e) => setPublication(e.target.value)}
+                InputProps={{
+                  style: {
+                    fontSize: "0.8rem",
+                    height: 25,
+                  },
+                }}
               />
-            </div>
+            </Box>
+            <Box display="flex" alignItems="center">
+              <Typography sx={{ fontSize: "0.9em" }}>Date:</Typography>
+              <div className="">
+                <ToDate
+                  dateNow={dateNow}
+                  setDateNow={setDateNow}
+                  isMargin={false}
+                />
+              </div>
+            </Box>
           </Box>
-          <Box mb={2} display="flex" alignItems="center">
-            <Typography sx={{ fontSize: "0.9em" }}>Language:</Typography>
-            <div className="ml-2">
-              <Languages
-                language={selectedLanguages}
-                setLanguage={setSelectedLanguages}
-                classes={classes}
-              />
-            </div>
-          </Box>
-          <Box mb={2} display="flex" alignItems="center">
-            <Typography sx={{ fontSize: "0.9em" }}>Date:</Typography>
-            <div className="ml-10">
-              <ToDate
-                dateNow={dateNow}
-                setDateNow={setDateNow}
-                isMargin={false}
-              />
-            </div>
-          </Box>
-          <Box mt={2} display="flex" justifyContent="flex-end">
+
+          <Box mt={1} display="flex" justifyContent="flex-end">
             <Button btnText="Cancel" />
             <Button
               btnText={saveLoading ? "Loading" : "Save"}

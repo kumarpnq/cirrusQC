@@ -8,6 +8,7 @@ import { ResearchContext } from "../../context/ContextProvider";
 import TableRowCheckBox from "./TableRow";
 import { AiOutlineLoading } from "react-icons/ai";
 import { EditAttributesOutlined } from "@mui/icons-material";
+import EditModal from "../editArticle/editModal";
 
 const useStyles = makeStyles(() => ({
   dropDowns: {
@@ -113,16 +114,16 @@ const MainTable = ({
   const [selectedArticle, setSelectedArticle] = useState(null);
   const [editedSingleArticle, setEditedSingleArticle] = useState(null);
 
-  const handleClose = () => {
-    setOpen(false);
-    // setSelectedArticle(null);
-    // setEditedSingleArticle(null);
-  };
-
   const tableRowClick = (item) => {
     setOpen(true);
     setSelectedArticle((prev) => (prev === item ? null : item));
   };
+  const handleClose = () => {
+    setOpen(false);
+    setSelectedArticle(null);
+    setEditedSingleArticle(null);
+  };
+
   const renderTableData = () => {
     const dataToRender = searchedData.length > 0 ? searchedData : tableData;
 
@@ -155,12 +156,9 @@ const MainTable = ({
               setSelectedRowData={setSelectedRowData}
             />
           </TableCell>
-          {/* <TableCell>
-            <EditAttributesOutlined
-              className="text-primary"
-              onClick={() => tableRowClick(rowData)}
-            />
-          </TableCell> */}
+          <TableCell onClick={() => tableRowClick(rowData)}>
+            <EditAttributesOutlined className="text-primary" />
+          </TableCell>
           {tableHeaders?.map((header) => (
             <React.Fragment key={header}>
               {(header === "HEADLINE" ||
@@ -303,7 +301,7 @@ const MainTable = ({
                 )}
               </td>
             )}
-            {/* <td className="text-white text-[0.9em]">Edit</td> */}
+            <td className="text-white text-[0.9em]">Edit</td>
             {showTableData &&
               tableHeaders?.map((header) => (
                 <td
@@ -346,6 +344,13 @@ const MainTable = ({
         </thead>
         <tbody className="bg-thirdOne">{renderTableData()}</tbody>
       </table>
+      <EditModal
+        open={open}
+        handleClose={handleClose}
+        selectedArticle={selectedArticle}
+        editedSingleArticle={editedSingleArticle}
+        setEditedSingleArticle={setEditedSingleArticle}
+      />
     </div>
   );
 };

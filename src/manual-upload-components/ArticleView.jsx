@@ -25,7 +25,7 @@ const ArticleView = ({ selectedArticle }) => {
         <iframe
           src={link}
           title="Article"
-          width="450px"
+          width="500px"
           height="100%"
           frameBorder="0"
         />
