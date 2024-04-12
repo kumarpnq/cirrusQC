@@ -53,11 +53,16 @@ const JobDetails = ({ URI, rows }) => {
                 Job Date
                 {sortBy === "date" && (
                   <span className="flex">
-                    {sortOrder === "asc" ? (
-                      <IoIosArrowRoundUp />
-                    ) : (
-                      <IoIosArrowRoundDown />
-                    )}
+                    <IoIosArrowRoundUp
+                      style={{
+                        color: sortOrder === "asc" ? "green" : "red",
+                      }}
+                    />
+                    <IoIosArrowRoundDown
+                      style={{
+                        color: sortOrder === "asc" ? "red" : "green",
+                      }}
+                    />
                   </span>
                 )}
               </TableCell>
@@ -92,7 +97,7 @@ const JobDetails = ({ URI, rows }) => {
                 >
                   {row.status}
                 </TableCell>
-                <TableCell size="small" sx={{ textDecoration: "underline" }}>
+                <TableCell size="small">
                   {" "}
                   <a
                     href={`${URI + row.filelink}`}
@@ -119,7 +124,7 @@ JobDetails.propTypes = {
       filename: PropTypes.string.isRequired,
       status: PropTypes.oneOf(["Processing", "Failed", "Completed"]).isRequired,
       filelink: PropTypes.string.isRequired,
-      requested_date: PropTypes.string.isRequired, // Ensure requested_date is included in rows
+      requested_date: PropTypes.string.isRequired,
     })
   ).isRequired,
 };

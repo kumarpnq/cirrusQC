@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import PropTypes from "prop-types";
 import { IoMdArrowDropup, IoMdArrowDropdown } from "react-icons/io";
 
-const Company = ({ companyData, companies, setCompanies }) => {
+const Company = ({ companyData, companies, setCompanies, isMt }) => {
   const [filteredSuggestions, setFilteredSuggestions] = useState([]);
   const [isListOpen, setIsListOpen] = useState(false);
   const [selectAllFlag, setSelectAllFlag] = useState(false);
@@ -71,7 +71,7 @@ const Company = ({ companyData, companies, setCompanies }) => {
   };
 
   return (
-    <div className="relative mt-3" ref={componentRef}>
+    <div className={`relative ${!isMt ? "" : "mt-3"}`} ref={componentRef}>
       <div
         role="button"
         className="flex items-center justify-between border border-gray-400 focus:border-black w-[200px] h-[25px] rounded-[3px] text-[0.8em] px-3"
@@ -87,7 +87,7 @@ const Company = ({ companyData, companies, setCompanies }) => {
                 : firstCompanyName}
             </span>
           )) ||
-          (companies.length > 1 && `${companies.length} selected`)}{" "}
+          (companies.length > 1 && `${companies?.length} selected`)}{" "}
         <span className="text-lg text-gray-500">
           {isListOpen ? <IoMdArrowDropup /> : <IoMdArrowDropdown />}
         </span>
@@ -112,7 +112,7 @@ const Company = ({ companyData, companies, setCompanies }) => {
                 </button>
                 <button
                   onClick={handleDisselectAll}
-                  disabled={companies.length === 0}
+                  disabled={companies?.length === 0}
                   className={`${
                     companies.length === 0 && "cursor-not-allowed"
                   }`}
@@ -122,7 +122,7 @@ const Company = ({ companyData, companies, setCompanies }) => {
               </div>
               <ul className="flex flex-col gap-2 mx-2 overflow-y-scroll">
                 {/* Display selected items at the top */}
-                {companies.length > 0 &&
+                {companies?.length > 0 &&
                   companies.map((selectedCompanyId) => {
                     const selectedSuggestion =
                       companyData.length > 0 &&
@@ -145,7 +145,7 @@ const Company = ({ companyData, companies, setCompanies }) => {
                     );
                   })}
                 {/* Display unselected items */}
-                {filteredSuggestions.length > 0 &&
+                {filteredSuggestions?.length > 0 &&
                   filteredSuggestions.map((suggestion) => (
                     <li
                       style={{ opacity: 0.7 }}
@@ -178,6 +178,7 @@ Company.propTypes = {
   ).isRequired,
   companies: PropTypes.arrayOf(PropTypes.string).isRequired,
   setCompanies: PropTypes.func.isRequired,
+  isMt: PropTypes.bool,
 };
 
 export default Company;

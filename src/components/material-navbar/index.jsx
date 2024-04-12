@@ -76,12 +76,12 @@ const navList = [
   { id: 1, title: "Online", path: "/", icon: <HiStatusOnline /> },
   { id: 2, title: "Print", path: "/print", icon: <FaPrint /> },
   { id: 3, title: "Dump", path: "/dump", icon: <FaDumpster /> },
-  // {
-  //   id: 3,
-  //   title: "Manual-Dump",
-  //   path: "/manual-upload",
-  //   icon: <UploadFileIcon />,
-  // },
+  {
+    id: 3,
+    title: "Manual-upload",
+    path: "/manual-upload",
+    icon: <UploadFileIcon />,
+  },
 ];
 export default function MainNav() {
   const navigate = useNavigate();

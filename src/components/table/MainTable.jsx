@@ -7,6 +7,7 @@ import { TableCell, TableRow, Tooltip } from "@mui/material";
 import { ResearchContext } from "../../context/ContextProvider";
 import TableRowCheckBox from "./TableRow";
 import { AiOutlineLoading } from "react-icons/ai";
+import { EditAttributesOutlined } from "@mui/icons-material";
 
 const useStyles = makeStyles(() => ({
   dropDowns: {
@@ -106,6 +107,22 @@ const MainTable = ({
       setSortDirection("asc");
     }
   };
+
+  //for edit modal
+  const [open, setOpen] = useState(false);
+  const [selectedArticle, setSelectedArticle] = useState(null);
+  const [editedSingleArticle, setEditedSingleArticle] = useState(null);
+
+  const handleClose = () => {
+    setOpen(false);
+    // setSelectedArticle(null);
+    // setEditedSingleArticle(null);
+  };
+
+  const tableRowClick = (item) => {
+    setOpen(true);
+    setSelectedArticle((prev) => (prev === item ? null : item));
+  };
   const renderTableData = () => {
     const dataToRender = searchedData.length > 0 ? searchedData : tableData;
 
@@ -138,6 +155,12 @@ const MainTable = ({
               setSelectedRowData={setSelectedRowData}
             />
           </TableCell>
+          {/* <TableCell>
+            <EditAttributesOutlined
+              className="text-primary"
+              onClick={() => tableRowClick(rowData)}
+            />
+          </TableCell> */}
           {tableHeaders?.map((header) => (
             <React.Fragment key={header}>
               {(header === "HEADLINE" ||
@@ -280,6 +303,7 @@ const MainTable = ({
                 )}
               </td>
             )}
+            {/* <td className="text-white text-[0.9em]">Edit</td> */}
             {showTableData &&
               tableHeaders?.map((header) => (
                 <td
