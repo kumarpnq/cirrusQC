@@ -242,27 +242,6 @@ const SecondSection = (props) => {
     }
   };
 
-  // const handleAddCompany = () => {
-  //   if (selectedCompany) {
-  //     const isCompanyAlreadyAdded = editableTagData.some(
-  //       (tag) => tag.company_id === selectedCompany.value
-  //     );
-  //     if (isCompanyAlreadyAdded) {
-  //       return toast.error("Company already added!");
-  //     }
-  //     const newRow =
-  //       editableTagData.length > 0 ? { ...editableTagData[0] } : {};
-  //     newRow.company_name = selectedCompany.label;
-  //     newRow.company_id = selectedCompany.value;
-  //     [newRow.UPDATETYPE] = "I";
-
-  //     setEditableTagData((prev) => [newRow, ...prev]);
-
-  //     setTagData((prev) => [newRow, ...prev]);
-
-  //     setManuallyAddedCompanies((prev) => [newRow, ...prev]);
-  //   }
-  // };
   const handleAddCompanies = async () => {
     const rowData = editableTagData.length > 0 && editableTagData[0];
     if (selectedCompany) {
@@ -331,7 +310,10 @@ const SecondSection = (props) => {
   // delete states
   const [password, setPassword] = useState("");
   const [verificationLoading, setVerificationLoading] = useState(false);
-  const { loading, error, data, makeRequest } = useProtectedRequest(userToken);
+  const { loading, error, data, makeRequest } = useProtectedRequest(
+    userToken,
+    "updatearticletagdetails/"
+  );
   const [open, setOpen] = useState(false);
 
   const handleClickOpen = () => {

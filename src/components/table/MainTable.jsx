@@ -8,7 +8,7 @@ import { ResearchContext } from "../../context/ContextProvider";
 import TableRowCheckBox from "./TableRow";
 import { AiOutlineLoading } from "react-icons/ai";
 import { EditAttributesOutlined } from "@mui/icons-material";
-import EditModal from "../editArticle/editModal";
+import UploadDialog from "../editArticle/UploadDialog";
 
 const useStyles = makeStyles(() => ({
   dropDowns: {
@@ -112,7 +112,6 @@ const MainTable = ({
   //for edit modal
   const [open, setOpen] = useState(false);
   const [selectedArticle, setSelectedArticle] = useState(null);
-  const [editedSingleArticle, setEditedSingleArticle] = useState(null);
 
   const tableRowClick = (item) => {
     setOpen(true);
@@ -121,7 +120,6 @@ const MainTable = ({
   const handleClose = () => {
     setOpen(false);
     setSelectedArticle(null);
-    setEditedSingleArticle(null);
   };
 
   const renderTableData = () => {
@@ -156,7 +154,11 @@ const MainTable = ({
               setSelectedRowData={setSelectedRowData}
             />
           </TableCell>
-          <TableCell onClick={() => tableRowClick(rowData)}>
+          <TableCell
+            onClick={() => tableRowClick(rowData)}
+            sx={{ position: "sticky", left: 35 }}
+            className="bg-white"
+          >
             <EditAttributesOutlined className="text-primary" />
           </TableCell>
           {tableHeaders?.map((header) => (
@@ -301,7 +303,9 @@ const MainTable = ({
                 )}
               </td>
             )}
-            <td className="text-white text-[0.9em]">Edit</td>
+            <td className="text-white text-[0.9em] sticky left-10 bg-primary pl-3">
+              Edit
+            </td>
             {showTableData &&
               tableHeaders?.map((header) => (
                 <td
@@ -344,12 +348,11 @@ const MainTable = ({
         </thead>
         <tbody className="bg-thirdOne">{renderTableData()}</tbody>
       </table>
-      <EditModal
+
+      <UploadDialog
         open={open}
         handleClose={handleClose}
-        selectedArticle={selectedArticle}
-        editedSingleArticle={editedSingleArticle}
-        setEditedSingleArticle={setEditedSingleArticle}
+        selectedRow={selectedArticle}
       />
     </div>
   );

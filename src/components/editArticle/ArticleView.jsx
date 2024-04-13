@@ -4,10 +4,10 @@ import Typography from "@mui/material/Typography";
 import { FaExternalLinkAlt } from "react-icons/fa";
 
 const ArticleView = ({ selectedArticle }) => {
-  const link = selectedArticle?.articlelink;
+  const link = selectedArticle?.link?.props?.href;
 
   return (
-    <Card className="w-full ml-2">
+    <Card className="w-full px-6 ml-2">
       <Typography
         variant="h6"
         component={"a"}
@@ -37,7 +37,9 @@ const ArticleView = ({ selectedArticle }) => {
 ArticleView.propTypes = {
   selectedArticle: PropTypes.shape({
     title: PropTypes.string.isRequired,
-    articlelink: PropTypes.string.isRequired,
+    link: PropTypes.object,
+    props: PropTypes.object,
+    href: PropTypes.string,
     content: PropTypes.string.isRequired,
   }),
 };

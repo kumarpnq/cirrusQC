@@ -2,7 +2,7 @@ import { useState } from "react";
 import axios from "axios";
 import { url } from "../constants/baseUrl";
 
-const useProtectedRequest = (userToken) => {
+const useProtectedRequest = (userToken, endpoint) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [data, setData] = useState(null);
@@ -11,13 +11,9 @@ const useProtectedRequest = (userToken) => {
     setLoading(true);
     try {
       const headers = { Authorization: `Bearer ${userToken}` };
-      const response = await axios.post(
-        `${url}updatearticletagdetails/`,
-        requestData,
-        {
-          headers,
-        }
-      );
+      const response = await axios.post(`${url}${endpoint}`, requestData, {
+        headers,
+      });
       setData(response.data);
     } catch (error) {
       setError(error);

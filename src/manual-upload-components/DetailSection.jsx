@@ -102,7 +102,7 @@ const Details = ({ selectedRow }) => {
     }
   };
   return (
-    <Card>
+    <Card className="w-full">
       <CardHeader
         title={
           <Typography variant="h6" fontSize={"0.9em"}>
@@ -112,11 +112,11 @@ const Details = ({ selectedRow }) => {
       />
       <CardContent sx={{ px: 2 }}>
         <FormControl>
-          <Box mb={1} display="flex" alignItems="center" width={700}>
+          <Box mb={1} display="flex" alignItems="center" width={580}>
             <Typography sx={{ fontSize: "0.9em" }}>Title:</Typography>
             <TextField
               size="small"
-              sx={{ ml: 5.5 }}
+              sx={{ ml: 6.3 }}
               fullWidth
               value={title}
               onChange={(e) => setTitle(e.target.value)}
@@ -131,7 +131,7 @@ const Details = ({ selectedRow }) => {
           <Box mb={1} display="flex" alignItems="center">
             <Typography sx={{ fontSize: "0.9em" }}>Content:</Typography>
             <textarea
-              className="ml-5 w-full outline-none border border-gray-400 border:opacity-50 rounded-[3px] text-[0.9em] px-2"
+              className="ml-7 w-full outline-none border border-gray-400 border:opacity-50 rounded-[3px] text-[0.9em] px-2"
               rows={4}
               value={content}
               onChange={(e) => setContent(e.target.value)}
@@ -140,7 +140,7 @@ const Details = ({ selectedRow }) => {
           <Box mb={1} display="flex" alignItems="center">
             <Typography sx={{ fontSize: "0.9em" }}>Summary:</Typography>
             <textarea
-              className=" ml-3 w-full outline-none border border-gray-400 border:opacity-50 rounded-[3px] text-[0.9em] px-2"
+              className="ml-4 w-full outline-none border border-gray-400 border:opacity-50 rounded-[3px] text-[0.9em] px-2"
               rows={4}
               value={summary}
               onChange={(e) => setSummary(e.target.value)}
@@ -150,7 +150,7 @@ const Details = ({ selectedRow }) => {
             <Typography sx={{ fontSize: "0.9em" }}>Image:</Typography>
             <TextField
               size="small"
-              sx={{ ml: 4 }}
+              sx={{ ml: 4.6 }}
               fullWidth
               value={image}
               onChange={(e) => setImage(e.target.value)}
@@ -168,6 +168,7 @@ const Details = ({ selectedRow }) => {
               size="small"
               disabled
               fullWidth
+              sx={{ ml: 0.5 }}
               value={searchURl}
               onChange={(e) => setSearchURL(e.target.value)}
               InputProps={{
