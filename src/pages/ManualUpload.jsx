@@ -1,5 +1,11 @@
 import { useContext, useState } from "react";
-import { Box } from "@mui/material";
+import {
+  Box,
+  Checkbox,
+  FormGroup,
+  FormControlLabel,
+  Typography,
+} from "@mui/material";
 import Table from "@mui/material/Table";
 import TableBody from "@mui/material/TableBody";
 import TableCell from "@mui/material/TableCell";
@@ -30,9 +36,11 @@ const ManualUpload = () => {
   const [fromDate, setFromDate] = useState(formattedDate);
   const [dateNow, setDateNow] = useState(formattedNextDay);
   const [publicationValue, setPublicationValue] = useState("");
+  const [topPublication, setTopPublication] = useState(false);
   const [errorListLoading, setErrorListLoading] = useState(false);
   const [errorList, setErrorList] = useState([]);
   const [totalRecords, setTotalRecords] = useState(0);
+  const [fetchingUsingPrevNext, setFetchingUsingPrevNext] = useState(false);
 
   // sort
   const [sortBy, setSortBy] = useState(null);
@@ -64,6 +72,7 @@ const ManualUpload = () => {
         page: 1,
         items_per_page: 10,
         search_publication: publicationValue,
+        top_publication: Number(topPublication),
       };
       setErrorListLoading(true);
       const response = await axios.post(
@@ -90,6 +99,7 @@ const ManualUpload = () => {
     setOpen(!open);
     setSelectedRow((prev) => (prev === row ? null : row));
   };
+
   return (
     <div className="h-screen mx-4">
       <Box display="flex" alignItems="center" gap={2} height={50}>
@@ -100,6 +110,22 @@ const ManualUpload = () => {
           value={publicationValue}
           setValue={setPublicationValue}
         />
+        <FormGroup>
+          <FormControlLabel
+            sx={{ mt: 2 }}
+            label={
+              <Typography variant="h6" fontSize={"0.9em"}>
+                Top Publication
+              </Typography>
+            }
+            control={
+              <Checkbox
+                checked={topPublication}
+                onChange={() => setTopPublication(!topPublication)}
+              />
+            }
+          />
+        </FormGroup>
         <Button
           btnText={errorListLoading ? "Loading" : "search"}
           onClick={fetchErrorList}
@@ -112,6 +138,7 @@ const ManualUpload = () => {
             <Pagination
               tableData={errorList}
               totalRecordsCount={totalRecords}
+              setFetchingUsingPrevNext={setFetchingUsingPrevNext}
             />
           </Box>
           <Box mt={2}>
