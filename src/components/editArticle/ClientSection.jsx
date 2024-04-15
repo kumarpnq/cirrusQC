@@ -9,6 +9,7 @@ import {
   TextField,
   CircularProgress,
   Box,
+  Typography,
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import axios from "axios";
@@ -17,14 +18,18 @@ import useFetchData from "../../hooks/useFetchData";
 import { toast } from "react-toastify";
 import useProtectedRequest from "../../hooks/useProtectedRequest";
 import CustomButton from "../../@core/CustomButton";
+import DebounceSearch from "../../print-components/dropdowns/DebounceSearch";
+import { convertKeys } from "../../constants/convertKeys";
 
-const ClientSection = ({ selectedArticle, userToken, selectedCompany }) => {
+const ClientSection = ({ selectedArticle, userToken }) => {
+  const [selectedCompany, setSelectedCompany] = useState("");
   const [tableDataList, setTableDataList] = useState([]);
   const [tableDataLoading, setTableDataLoading] = useState(false);
   const [editableTagData, setEditableTagData] = useState([]);
   const [verificationLoading, setVerificationLoading] = useState(false);
   const [password, setPassword] = useState("");
   const [fetchTagDataAfterChange, setFetchTagDataAfterChange] = useState(false);
+  const [modifiedRows, setModifiedRows] = useState([]);
   const { loading, error, data, makeRequest } = useProtectedRequest(
     userToken,
     "updatesocialfeedtagdetails/"
@@ -95,6 +100,7 @@ const ClientSection = ({ selectedArticle, userToken, selectedCompany }) => {
       newData[index] = updatedRow;
       return newData;
     });
+    setModifiedRows((prevRows) => [...prevRows, updatedRow]);
   };
   const handleAddCompanies = async () => {
     const rowData = editableTagData.length > 0 && editableTagData[0];
@@ -105,22 +111,23 @@ const ClientSection = ({ selectedArticle, userToken, selectedCompany }) => {
         };
         const requestData = [
           {
-            ARTICLEID: rowData.article_id,
+            UPDATETYPE: "I",
+            SOCIALFEEDID: rowData.socialfeed_id,
             COMPANYID: selectedCompany.value,
-            COMPANYNAME: selectedCompany.title,
-            MANUALPROMINENCE: rowData.manual_prominence,
-            HEADERSPACE: rowData.header_space,
-            SPACE: rowData.space,
+            COMPANYNAME: selectedCompany.label,
+            KEYWORD: rowData.keyword,
+            // AUTHOR: rowData.author,
             REPORTINGTONE: rowData.reporting_tone,
             REPORTINGSUBJECT: rowData.reporting_subject,
             SUBCATEGORY: rowData.subcategory,
-            KEYWORD: rowData.keyword,
-            QC2REMARK: rowData.qc2_remark,
-            DETAILSUMMARY: rowData.detail_summary,
+            PROMINENCE: rowData.prominence,
+            SUMMARY: rowData.detail_summary,
+            QC2REMARK: rowData.remarks,
           },
         ];
+
         const response = await axios.post(
-          `${url}insertarticledetails/`,
+          `${url}updatesocialfeedtagdetails/`,
           requestData,
           {
             headers: header,
@@ -132,7 +139,7 @@ const ClientSection = ({ selectedArticle, userToken, selectedCompany }) => {
 
         if (successOrError === "company added") {
           toast.success(successOrError);
-          //   setFetchTagDataAfterChange(true);
+          setFetchTagDataAfterChange(true);
         } else if (successOrError === "something went wrong") {
           toast.warning(successOrError);
         }
@@ -189,157 +196,220 @@ const ClientSection = ({ selectedArticle, userToken, selectedCompany }) => {
       setSelectedRowForDelete(null);
     }
   };
-  return (
-    <Card>
-      <table>
-        <thead className="text-[0.9em] bg-primary text-white">
-          <tr>
-            <th>Action</th>
-            <th>Company</th>
-            <th>Subject</th>
-            <th>Prominence</th>
-            <th>Tone</th>
-            <th>Summary</th>
-            <th>Remarks</th>
-          </tr>
-        </thead>
-        <tbody className="text-[0.9em]">
-          {tableDataLoading ? (
-            <Box width={200}>
-              <CircularProgress />
-            </Box>
-          ) : (
-            editableTagData.map((item, index) => (
-              <tr
-                key={item.socialfeed_id + item.company_id}
-                className="border border-gray-300"
-              >
-                <td
-                  className="text-red-500 cursor-pointer"
-                  onClick={() => handleDeleteClick(item)}
-                >
-                  <CloseIcon />
-                </td>
-                <td>{item.company_name}</td>
-                <td>
-                  <select
-                    value={item.reporting_subject}
-                    onChange={(e) =>
-                      handleChange(index, "reporting_subject", e.target.value)
-                    }
-                    className="border border-black w-28"
-                  >
-                    <option value={null}>select</option>
-                    {subjects.map((subject) => (
-                      <option
-                        value={subject}
-                        key={subject + Math.random(0, 100)}
-                      >
-                        {subject}
-                      </option>
-                    ))}
-                  </select>
-                </td>
-                <td>
-                  <select
-                    value={item.prominence}
-                    onChange={(e) => {
-                      handleChange(index, "prominence", e.target.value);
-                    }}
-                    className="border border-black w-28"
-                  >
-                    <option value={null}>select</option>
-                    {prominences.map((item, index) => (
-                      <option
-                        value={item.prominence}
-                        key={item.prominence + String(index)}
-                      >
-                        {item.prominence}
-                      </option>
-                    ))}
-                  </select>
-                </td>
-                <td>
-                  <select
-                    value={item.reporting_tone}
-                    onChange={(e) =>
-                      handleChange(index, "reporting_tone", e.target.value)
-                    }
-                    className="border border-black w-28"
-                  >
-                    <option value={null}>select</option>
-                    {reportingTones.map((tone, index) => (
-                      <option
-                        value={tone.tonality}
-                        key={tone.tonality + String(index)}
-                      >
-                        {tone.tonality}
-                      </option>
-                    ))}
-                  </select>
-                </td>
-                <Tooltip title={item.detail_summary}>
-                  <td
-                    style={{
-                      display: "-webkit-box",
-                      WebkitBoxOrient: "vertical",
-                      overflow: "hidden",
-                      WebkitLineClamp: 2,
-                    }}
-                  >
-                    {item.detail_summary}
-                  </td>
-                </Tooltip>
 
-                <td>
-                  <input
-                    type="text"
-                    className="border border-black outline-none w-14"
-                    value={item.remarks}
-                    onChange={(e) =>
-                      handleChange(index, "qc2_remark", e.target.value)
-                    }
-                  />
-                </td>
-              </tr>
-            ))
-          )}
-        </tbody>
-      </table>
-      <div>
-        <Dialog open={open} onClose={handleClose}>
-          <DialogTitle fontSize={"1em"}>
-            Enter Password For Confirmation.
-          </DialogTitle>
-          <DialogContent>
-            <TextField
-              type="password"
-              sx={{ outline: "none" }}
-              size="small"
-              placeholder="Password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
+  const handleSave = async () => {
+    if (modifiedRows.length < 0) {
+      return toast.warning("No data");
+    }
+    const invalidRows = modifiedRows.filter((row) =>
+      [
+        "reporting_tone",
+        "prominence",
+        "reporting_subject",
+        // "header_space",
+      ].some((field) => row[field] === null || row[field] === "Unknown")
+    );
+    if (invalidRows.length > 0) {
+      toast.warning(
+        "Some rows have null values in tone, prominence, or subject."
+      );
+      return;
+    }
+    try {
+      const requestData = modifiedRows.map((obj) => convertKeys(obj));
+      const headers = { Authorization: `Bearer ${userToken}` };
+      const response = await axios.post(
+        `${url}updatesocialfeedtagdetails/`,
+        requestData,
+        { headers }
+      );
+      if (response.data.result.success.length > 0) {
+        toast.success("Updated successfully");
+        setModifiedRows([]);
+        setFetchTagDataAfterChange(true);
+      } else {
+        toast.error("Something went wrong");
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+  return (
+    <>
+      <Box display="flex" alignItems="center" my={1}>
+        <Box display="flex" alignItems="center">
+          <Typography sx={{ fontSize: "0.9em" }}>Company:</Typography>
+          <div className="z-50 ml-4">
+            <DebounceSearch
+              selectedCompany={selectedCompany}
+              setSelectedCompany={setSelectedCompany}
             />
-          </DialogContent>
-          <DialogActions>
-            <CustomButton
-              btnText="Cancel"
-              onClick={handleClose}
-              bg={"bg-primary"}
-            />
-            {verificationLoading ? (
-              <CircularProgress />
+          </div>
+        </Box>
+        <button
+          className="text-white uppercase bg-primary rounded-[3px] px-4 py-1 mt-1 ml-4"
+          onClick={handleAddCompanies}
+        >
+          Add
+        </button>
+        <button
+          className="text-white uppercase bg-primary rounded-[3px] px-4 py-1 mt-1 ml-4 cursor-pointer"
+          onClick={handleSave}
+        >
+          Save
+        </button>
+      </Box>
+      <Card>
+        <table>
+          <thead className="text-[0.9em] bg-primary text-white">
+            <tr>
+              <th>Action</th>
+              <th>Company</th>
+              <th>Subject</th>
+              <th>Prominence</th>
+              <th>Tone</th>
+              <th>Summary</th>
+              <th>Remarks</th>
+            </tr>
+          </thead>
+          <tbody className="text-[0.9em]">
+            {tableDataLoading ? (
+              <Box width={200}>
+                <CircularProgress />
+              </Box>
             ) : (
-              <CustomButton
-                btnText="Delete"
-                onClick={handleDelete}
-                bg={"bg-red-500"}
-              />
+              editableTagData.map((item, index) => (
+                <tr
+                  key={item.socialfeed_id + item.company_id}
+                  className="border border-gray-300"
+                >
+                  <td
+                    className="text-red-500 cursor-pointer"
+                    onClick={() => handleDeleteClick(item)}
+                  >
+                    <CloseIcon />
+                  </td>
+                  <td>{item.company_name}</td>
+                  <td>
+                    <select
+                      value={item.reporting_subject}
+                      onChange={(e) =>
+                        handleChange(index, "reporting_subject", e.target.value)
+                      }
+                      className="border border-black w-28"
+                    >
+                      <option value={null}>select</option>
+                      {subjects.map((subject) => (
+                        <option
+                          value={subject}
+                          key={subject + Math.random(0, 100)}
+                        >
+                          {subject}
+                        </option>
+                      ))}
+                    </select>
+                  </td>
+                  <td>
+                    <select
+                      value={item.prominence}
+                      onChange={(e) => {
+                        handleChange(index, "prominence", e.target.value);
+                      }}
+                      className="border border-black w-28"
+                    >
+                      <option value={null}>select</option>
+                      {prominences.map((item, index) => (
+                        <option
+                          value={item.prominence}
+                          key={item.prominence + String(index)}
+                        >
+                          {item.prominence}
+                        </option>
+                      ))}
+                    </select>
+                  </td>
+                  <td>
+                    <select
+                      value={item.reporting_tone}
+                      onChange={(e) =>
+                        handleChange(index, "reporting_tone", e.target.value)
+                      }
+                      className="border border-black w-28"
+                    >
+                      <option value={null}>select</option>
+                      {reportingTones.map((tone, index) => (
+                        <option
+                          value={tone.tonality}
+                          key={tone.tonality + String(index)}
+                        >
+                          {tone.tonality}
+                        </option>
+                      ))}
+                    </select>
+                  </td>
+                  <Tooltip title={item.detail_summary}>
+                    <td
+                      style={{
+                        display: "-webkit-box",
+                        WebkitBoxOrient: "vertical",
+                        overflow: "hidden",
+                        WebkitLineClamp: 2,
+                      }}
+                    >
+                      {item.detail_summary}
+                    </td>
+                  </Tooltip>
+
+                  <td>
+                    <input
+                      type="text"
+                      className="border border-black outline-none w-14"
+                      value={item.remarks}
+                      onChange={(e) =>
+                        handleChange(index, "qc2_remark", e.target.value)
+                      }
+                    />
+                  </td>
+                </tr>
+              ))
             )}
-          </DialogActions>
-        </Dialog>
-      </div>
-    </Card>
+          </tbody>
+        </table>
+        <div>
+          <Dialog open={open} onClose={handleClose}>
+            <DialogTitle fontSize={"1em"}>
+              Enter Password For Confirmation.
+            </DialogTitle>
+            <DialogContent>
+              <TextField
+                type="password"
+                sx={{ outline: "none" }}
+                size="small"
+                placeholder="Password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+              />
+            </DialogContent>
+            <DialogActions>
+              <CustomButton
+                btnText="Cancel"
+                onClick={handleClose}
+                bg={"bg-primary"}
+              />
+              {verificationLoading ? (
+                <CircularProgress />
+              ) : (
+                <CustomButton
+                  btnText="Delete"
+                  onClick={handleDelete}
+                  bg={"bg-red-500"}
+                />
+              )}
+            </DialogActions>
+          </Dialog>
+        </div>
+      </Card>
+    </>
   );
 };
 

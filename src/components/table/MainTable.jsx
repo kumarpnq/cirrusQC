@@ -156,7 +156,7 @@ const MainTable = ({
           </TableCell>
           <TableCell
             onClick={() => tableRowClick(rowData)}
-            sx={{ position: "sticky", left: 35 }}
+            sx={{ position: "sticky", left: 35, top: 28 }}
             className="bg-white"
           >
             <EditAttributesOutlined className="text-primary" />

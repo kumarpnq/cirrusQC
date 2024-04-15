@@ -29,7 +29,6 @@ const style = {
 
 const UploadDialog = ({ open, handleClose, selectedRow }) => {
   const { userToken } = useContext(ResearchContext);
-  const [selectedCompany, setSelectedCompany] = useState("");
   return (
     <Modal open={open} onClose={handleClose}>
       <Box sx={style}>
@@ -44,12 +43,7 @@ const UploadDialog = ({ open, handleClose, selectedRow }) => {
         <DialogContent>
           <Box sx={{ display: "flex", flexDirection: "column" }}>
             <div className="flex">
-              <Details
-                selectedRow={selectedRow}
-                selectedCompany={selectedCompany}
-                setSelectedCompany={setSelectedCompany}
-                userToken={userToken}
-              />
+              <Details selectedRow={selectedRow} userToken={userToken} />
               <ArticleView selectedArticle={selectedRow} />
             </div>
 
@@ -57,7 +51,6 @@ const UploadDialog = ({ open, handleClose, selectedRow }) => {
             <ClientSection
               selectedArticle={selectedRow}
               userToken={userToken}
-              selectedCompany={selectedCompany}
             />
           </Box>
         </DialogContent>

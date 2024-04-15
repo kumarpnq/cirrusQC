@@ -164,11 +164,13 @@ const ManualUpload = () => {
                     </TableCell>
                   </TableRow>
                 </TableHead>
-                <TableBody>
+                <TableBody className="text-[0.8em]">
                   {sortedErrorList.map((row) => (
                     <TableRow
                       key={row.articlelink}
-                      sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
+                      sx={{
+                        "&:last-child td, &:last-child th": { border: 0 },
+                      }}
                     >
                       <TableCell
                         size="small"

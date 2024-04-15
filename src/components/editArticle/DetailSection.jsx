@@ -18,17 +18,11 @@ import { useState } from "react";
 import PropTypes from "prop-types";
 import axios from "axios";
 import { toast } from "react-toastify";
-import DebounceSearch from "../../print-components/dropdowns/DebounceSearch";
 
 import { url } from "../../constants/baseUrl";
 import Button from "../custom/Button";
 
-const Details = ({
-  selectedRow,
-  selectedCompany,
-  setSelectedCompany,
-  userToken,
-}) => {
+const Details = ({ selectedRow, userToken }) => {
   const [headline, setHeadline] = useState(selectedRow?.headline);
   const [journalist, setJournalist] = useState(selectedRow?.author_name);
   const [summary, setSummary] = useState(selectedRow?.headsummary);
@@ -192,7 +186,7 @@ const Details = ({
           </FormControl>
         </CardContent>
       </Card>
-      <Box display="flex" alignItems="center">
+      {/* <Box display="flex" alignItems="center">
         <Box display="flex" alignItems="center">
           <Typography sx={{ fontSize: "0.9em" }}>Company:</Typography>
           <div className="z-50 ml-4">
@@ -214,7 +208,7 @@ const Details = ({
         >
           Save
         </button>
-      </Box>
+      </Box> */}
     </Container>
   );
 };

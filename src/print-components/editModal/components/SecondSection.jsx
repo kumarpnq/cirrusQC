@@ -30,6 +30,7 @@ import useProtectedRequest from "../../../hooks/useProtectedRequest";
 import { toast } from "react-toastify";
 import axios from "axios";
 import PropTypes from "prop-types";
+import { convertKeys } from "../../../constants/convertKeys";
 
 const SecondSection = (props) => {
   const { selectedClient, selectedArticle, editedSingleArticle } = props;
@@ -176,15 +177,6 @@ const SecondSection = (props) => {
     setModifiedRows(allModifiedRows);
   }, [editableTagData, tagData, manuallyAddedCompanies]);
 
-  // for modification keys to uppercase
-  const convertKeys = (obj) => {
-    const newObj = {};
-    for (let key in obj) {
-      const newKey = key.replace(/_/g, "").toUpperCase();
-      newObj[newKey] = obj[key];
-    }
-    return newObj;
-  };
   const handleSaveClick = async () => {
     if (!(modifiedRows.length > 0 || !!editedSingleArticle)) {
       return toast.warning("No data");
