@@ -27,7 +27,7 @@ function App() {
   }, []);
 
   return (
-    <div className="bg-secondory">
+    <div className="bg-secondory" style={{ fontFamily: "Nunito" }}>
       <ToastContainer />
       <div className="sticky top-0 z-50">
         <MainNav />

@@ -35,7 +35,7 @@ const JobDetails = ({ URI, rows }) => {
     <div style={{ maxHeight: "400px", overflowY: "auto" }}>
       <TableContainer component={Paper}>
         <Table sx={{ minWidth: 650 }} aria-label="simple table">
-          <TableHead>
+          <TableHead sx={{ fontFamily: "Nunito" }}>
             <TableRow className="bg-primary">
               <TableCell size="small" sx={{ color: "white" }}>
                 Job Name
@@ -80,8 +80,16 @@ const JobDetails = ({ URI, rows }) => {
                 key={row.name}
                 sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
               >
-                <TableCell size="small">{row.filename}</TableCell>
-                <TableCell size="small">
+                <TableCell
+                  size="small"
+                  sx={{ fontFamily: "Nunito", fontSize: "0.8rem" }}
+                >
+                  {row.filename}
+                </TableCell>
+                <TableCell
+                  size="small"
+                  sx={{ fontFamily: "Nunito", fontSize: "0.8rem" }}
+                >
                   {row.requested_date.replace("T", " ")}
                 </TableCell>
                 <TableCell
@@ -93,11 +101,16 @@ const JobDetails = ({ URI, rows }) => {
                         : row.status === "Failed"
                         ? "#f77b52"
                         : row.status === "Completed" && "#b0faa2",
+                    fontFamily: "Nunito",
+                    fontSize: "0.8rem",
                   }}
                 >
                   {row.status}
                 </TableCell>
-                <TableCell size="small">
+                <TableCell
+                  size="small"
+                  sx={{ fontFamily: "Nunito", fontSize: "0.8rem" }}
+                >
                   {" "}
                   <a
                     href={`${URI + row.filelink}`}

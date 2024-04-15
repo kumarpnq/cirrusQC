@@ -1,4 +1,4 @@
-import { useContext, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import {
   Box,
   Checkbox,
@@ -31,7 +31,7 @@ import { ResearchContext } from "../context/ContextProvider";
 import Pagination from "../components/pagination/Pagination";
 
 const ManualUpload = () => {
-  const { userToken } = useContext(ResearchContext);
+  const { userToken, recordsPerPage } = useContext(ResearchContext);
   const [open, setOpen] = useState(false);
   const [fromDate, setFromDate] = useState(formattedDate);
   const [dateNow, setDateNow] = useState(formattedNextDay);
@@ -70,7 +70,7 @@ const ManualUpload = () => {
         from_date: fromDate,
         to_date: dateNow,
         page: 1,
-        items_per_page: 10,
+        items_per_page: recordsPerPage,
         search_publication: publicationValue,
         top_publication: Number(topPublication),
       };
@@ -86,12 +86,17 @@ const ManualUpload = () => {
       setTotalRecords(response.data.errors_count);
     } catch (error) {
       toast.error(error.message);
-      console.log(error);
     } finally {
       setErrorListLoading(false);
+      setFetchingUsingPrevNext(false);
     }
   };
 
+  useEffect(() => {
+    if (fetchingUsingPrevNext) {
+      fetchErrorList();
+    }
+  }, [fetchingUsingPrevNext]);
   // modal
   const [selectedRow, setSelectedRow] = useState(null);
   const handleClose = () => setOpen((prev) => !prev);
@@ -101,7 +106,7 @@ const ManualUpload = () => {
   };
 
   return (
-    <div className="h-screen mx-4">
+    <div className="mx-4">
       <Box display="flex" alignItems="center" gap={2} height={50}>
         <FromDate fromDate={fromDate} setFromDate={setFromDate} />
         <ToDate dateNow={dateNow} setDateNow={setDateNow} isMargin={true} />
@@ -141,10 +146,13 @@ const ManualUpload = () => {
               setFetchingUsingPrevNext={setFetchingUsingPrevNext}
             />
           </Box>
-          <Box mt={2}>
+          <Box mt={2} sx={{ minWidth: 650, height: 800, overflow: "scroll" }}>
             <TableContainer component={Paper}>
-              <Table sx={{ minWidth: 650 }} aria-label="simple table">
-                <TableHead className="bg-primary">
+              <Table aria-label="simple table">
+                <TableHead
+                  className="bg-primary sticky top-0"
+                  style={{ position: "sticky", top: 0 }}
+                >
                   <TableRow>
                     <TableCell
                       size="small"
@@ -183,7 +191,10 @@ const ManualUpload = () => {
                         </span>
                       )}
                     </TableCell>
-                    <TableCell size="small" sx={{ color: "white" }}>
+                    <TableCell
+                      size="small"
+                      sx={{ color: "white", fontSize: "0.9rem" }}
+                    >
                       Publication
                     </TableCell>
                     <TableCell size="small" sx={{ color: "white" }}>
@@ -205,6 +216,7 @@ const ManualUpload = () => {
                           position: "sticky",
                           left: 0,
                           background: "white",
+                          fontSize: "0.9rem",
                         }}
                       >
                         <EditAttributesOutlined
@@ -218,12 +230,24 @@ const ManualUpload = () => {
                           whiteSpace: "nowrap",
                           overflow: "hidden",
                           textOverflow: "ellipsis",
+                          fontSize: "0.9rem",
+                          fontFamily: "nunito",
                         }}
                       >
                         <span>{row.feeddate.replace("T", " ")}</span>
                       </TableCell>
-                      <TableCell size="small">{row.publicationname}</TableCell>
-                      <TableCell size="small">{row.searchlink}</TableCell>
+                      <TableCell
+                        size="small"
+                        sx={{ fontSize: "0.9rem", fontFamily: "nunito" }}
+                      >
+                        {row.publicationname}
+                      </TableCell>
+                      <TableCell
+                        size="small"
+                        sx={{ fontSize: "0.9rem", fontFamily: "nunito" }}
+                      >
+                        {row.searchlink}
+                      </TableCell>
                     </TableRow>
                   ))}
                 </TableBody>
