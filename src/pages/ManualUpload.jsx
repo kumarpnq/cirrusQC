@@ -31,7 +31,7 @@ import { ResearchContext } from "../context/ContextProvider";
 import Pagination from "../components/pagination/Pagination";
 
 const ManualUpload = () => {
-  const { userToken, recordsPerPage } = useContext(ResearchContext);
+  const { userToken, recordsPerPage, pageNumber } = useContext(ResearchContext);
   const [open, setOpen] = useState(false);
   const [fromDate, setFromDate] = useState(formattedDate);
   const [dateNow, setDateNow] = useState(formattedNextDay);
@@ -70,7 +70,7 @@ const ManualUpload = () => {
       const requestData = {
         from_date: fromDate,
         to_date: dateNow,
-        page: 1,
+        page: pageNumber,
         items_per_page: recordsPerPage,
         search_publication: publicationValue,
         top_publication: Number(topPublication),
@@ -142,7 +142,7 @@ const ManualUpload = () => {
           onClick={fetchErrorList}
           isLoading={errorListLoading}
         />
-        <Button btnText={"SocialFeed Manual"} onClick={handleUploadURL} />
+        <Button btnText={"Other link"} onClick={handleUploadURL} />
       </Box>
       {errorList.length > 0 && (
         <>

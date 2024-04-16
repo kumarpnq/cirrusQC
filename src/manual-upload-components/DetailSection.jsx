@@ -76,7 +76,7 @@ const Details = ({ selectedRow, type, articleURl, setArticleURL }) => {
       };
       const request_data = {
         url: articleURl,
-        companyid: arrayToString(selectedCompanies),
+        companyid: selectedCompanies.value,
         article_datetime: dateNow,
         publication: publication,
         title: title,
