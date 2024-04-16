@@ -26,7 +26,7 @@ const style = {
 };
 
 const UploadDialog = ({ open, handleClose, selectedRow, type }) => {
-  const { articlelink } = selectedRow;
+  const { articlelink } = selectedRow ? selectedRow : {};
   const [link, setLink] = useState(articlelink);
 
   return (
