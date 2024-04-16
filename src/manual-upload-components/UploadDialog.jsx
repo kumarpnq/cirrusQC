@@ -26,7 +26,9 @@ const style = {
 };
 
 const UploadDialog = ({ open, handleClose, selectedRow, type }) => {
-  const [link, setLink] = useState(selectedRow?.articlelink);
+  const { articlelink } = selectedRow;
+  const [link, setLink] = useState(articlelink);
+
   return (
     <Modal open={open} onClose={handleClose}>
       <Box sx={style}>
