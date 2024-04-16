@@ -61,12 +61,6 @@ const Details = ({ selectedRow, type, articleURl, setArticleURL }) => {
     return regex.test(url);
   }
   const handleSave = async () => {
-    const arrayToString = (arr) => {
-      if (Array.isArray(arr) && arr.length > 0) {
-        return arr.map((item) => `'${item}'`).join(",");
-      }
-      return "";
-    };
     const isBothUrlSame = isDomainIncluded(articleURl, publication);
     if (!isBothUrlSame) return toast.warning("Url not match with publication");
     try {
@@ -81,6 +75,7 @@ const Details = ({ selectedRow, type, articleURl, setArticleURL }) => {
         publication: publication,
         title: title,
         summary: summary,
+        content: content,
         image: image,
         language: selectedLanguages,
         otherlink: type,
