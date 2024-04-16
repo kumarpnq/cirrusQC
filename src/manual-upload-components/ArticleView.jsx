@@ -3,9 +3,7 @@ import Card from "@mui/material/Card";
 import Typography from "@mui/material/Typography";
 import { FaExternalLinkAlt } from "react-icons/fa";
 
-const ArticleView = ({ selectedArticle }) => {
-  const link = selectedArticle?.articlelink;
-
+const ArticleView = ({ link }) => {
   return (
     <Card className="w-full ml-2">
       <Typography
@@ -35,11 +33,7 @@ const ArticleView = ({ selectedArticle }) => {
 };
 
 ArticleView.propTypes = {
-  selectedArticle: PropTypes.shape({
-    title: PropTypes.string.isRequired,
-    articlelink: PropTypes.string.isRequired,
-    content: PropTypes.string.isRequired,
-  }),
+  link: PropTypes.string.isRequired,
 };
 
 export default ArticleView;

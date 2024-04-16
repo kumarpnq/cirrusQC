@@ -39,7 +39,7 @@ const useStyle = makeStyles(() => ({
     background: "#d4c8c7",
   },
 }));
-const Details = ({ selectedRow }) => {
+const Details = ({ selectedRow, type, articleURl, setArticleURL }) => {
   const { userToken } = useContext(ResearchContext);
 
   const [title, setTitle] = useState("");
@@ -47,7 +47,6 @@ const Details = ({ selectedRow }) => {
   const [summary, setSummary] = useState("");
   const [image, setImage] = useState("");
   const [searchURl, setSearchURL] = useState(selectedRow?.searchlink);
-  const [articleURl, setArticleURL] = useState(selectedRow?.articlelink);
   const [publication, setPublication] = useState(selectedRow?.publicationname);
   const [selectedLanguages, setSelectedLanguages] = useState([]);
   const [selectedCompanies, setSelectedCompanies] = useState("");
@@ -56,6 +55,11 @@ const Details = ({ selectedRow }) => {
 
   const classes = useStyle();
 
+  function isDomainIncluded(url, domain) {
+    const escapedDomain = domain.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+    const regex = new RegExp(`(?:https?:\/\/)?(?:www\.)?${escapedDomain}`, "i");
+    return regex.test(url);
+  }
   const handleSave = async () => {
     const arrayToString = (arr) => {
       if (Array.isArray(arr) && arr.length > 0) {
@@ -63,6 +67,8 @@ const Details = ({ selectedRow }) => {
       }
       return "";
     };
+    const isBothUrlSame = isDomainIncluded(articleURl, publication);
+    if (!isBothUrlSame) return toast.warning("Url not match with publication");
     try {
       setSaveLoading(true);
       const headers = {
@@ -77,6 +83,7 @@ const Details = ({ selectedRow }) => {
         summary: summary,
         image: image,
         language: selectedLanguages,
+        otherlink: type,
       };
       const response = await axios.post(
         `${url}addsocialfeedmanual/`,
@@ -273,7 +280,13 @@ const Details = ({ selectedRow }) => {
 
 Details.propTypes = {
   selectedRow: PropTypes.shape({
+    searchlink: PropTypes.string,
+    articlelink: PropTypes.string,
     publicationname: PropTypes.string,
+    feeddate: PropTypes.string,
   }),
+  type: PropTypes.number.isRequired,
+  articleURl: PropTypes.string.isRequired,
+  setArticleURL: PropTypes.func.isRequired,
 };
 export default Details;

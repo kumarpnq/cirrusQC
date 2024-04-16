@@ -41,6 +41,7 @@ const ManualUpload = () => {
   const [errorList, setErrorList] = useState([]);
   const [totalRecords, setTotalRecords] = useState(0);
   const [fetchingUsingPrevNext, setFetchingUsingPrevNext] = useState(false);
+  const [modalType, setModalType] = useState();
 
   // sort
   const [sortBy, setSortBy] = useState(null);
@@ -101,8 +102,13 @@ const ManualUpload = () => {
   const [selectedRow, setSelectedRow] = useState(null);
   const handleClose = () => setOpen((prev) => !prev);
   const handleRowClick = (row) => {
+    setModalType(0);
     setOpen(!open);
     setSelectedRow((prev) => (prev === row ? null : row));
+  };
+  const handleUploadURL = () => {
+    setModalType(1);
+    setOpen((prev) => !prev);
   };
 
   return (
@@ -136,6 +142,7 @@ const ManualUpload = () => {
           onClick={fetchErrorList}
           isLoading={errorListLoading}
         />
+        <Button btnText={"SocialFeed Manual"} onClick={handleUploadURL} />
       </Box>
       {errorList.length > 0 && (
         <>
@@ -146,12 +153,12 @@ const ManualUpload = () => {
               setFetchingUsingPrevNext={setFetchingUsingPrevNext}
             />
           </Box>
-          <Box mt={2} sx={{ minWidth: 650, height: 800, overflow: "scroll" }}>
-            <TableContainer component={Paper}>
+          <Box mt={2} sx={{ minWidth: 650, height: 800, overflow: "auto" }}>
+            <TableContainer component={Paper} style={{ maxHeight: 600 }}>
               <Table aria-label="simple table">
                 <TableHead
                   className="bg-primary sticky top-0"
-                  style={{ position: "sticky", top: 0 }}
+                  style={{ position: "sticky", top: 0, zIndex: 1 }}
                 >
                   <TableRow>
                     <TableCell
@@ -261,6 +268,7 @@ const ManualUpload = () => {
         open={open}
         handleClose={handleClose}
         selectedRow={selectedRow}
+        type={modalType}
       />
     </div>
   );
