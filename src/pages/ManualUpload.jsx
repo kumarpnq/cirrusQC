@@ -100,6 +100,12 @@ const ManualUpload = () => {
   }, [fetchingUsingPrevNext]);
   // modal
   const [selectedRow, setSelectedRow] = useState(null);
+  const [link, setLink] = useState(selectedRow?.articlelink);
+
+  useEffect(() => {
+    setLink(selectedRow?.articlelink);
+  }, [selectedRow]);
+
   const handleClose = () => setOpen((prev) => !prev);
   const handleRowClick = (row) => {
     setModalType(0);
@@ -269,6 +275,8 @@ const ManualUpload = () => {
         handleClose={handleClose}
         selectedRow={selectedRow}
         type={modalType}
+        link={link}
+        setLink={setLink}
       />
     </div>
   );

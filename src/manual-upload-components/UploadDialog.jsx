@@ -7,7 +7,6 @@ import Details from "./DetailSection";
 import ArticleView from "./ArticleView";
 import Box from "@mui/material/Box";
 import Modal from "@mui/material/Modal";
-import { useState } from "react";
 
 const style = {
   position: "absolute",
@@ -25,10 +24,14 @@ const style = {
   flexDirection: "column",
 };
 
-const UploadDialog = ({ open, handleClose, selectedRow, type }) => {
-  const { articlelink } = selectedRow ? selectedRow : {};
-  const [link, setLink] = useState(articlelink);
-
+const UploadDialog = ({
+  open,
+  handleClose,
+  selectedRow,
+  type,
+  link,
+  setLink,
+}) => {
   return (
     <Modal open={open} onClose={handleClose}>
       <Box sx={style}>
@@ -61,6 +64,8 @@ UploadDialog.propTypes = {
   handleClose: PropTypes.func.isRequired,
   selectedRow: PropTypes.object.isRequired,
   type: PropTypes.number.isRequired,
+  link: PropTypes.string.isRequired,
+  setLink: PropTypes.func.isRequired,
 };
 
 export default UploadDialog;

@@ -10,8 +10,7 @@ import {
 import { makeStyles } from "@mui/styles";
 
 import Button from "../components/custom/Button";
-import Languages from "../components/research-dropdowns/Languages";
-import { useContext, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import ToDate from "../components/research-dropdowns/ToDate";
 import { ResearchContext } from "../context/ContextProvider";
 
@@ -23,6 +22,7 @@ import { toast } from "react-toastify";
 import { url } from "../constants/baseUrl";
 
 import DebounceSearch from "../print-components/dropdowns/DebounceSearch";
+import useFetchData from "../hooks/useFetchData";
 
 const useStyle = makeStyles(() => ({
   dropDowns: {
@@ -48,12 +48,24 @@ const Details = ({ selectedRow, type, articleURl, setArticleURL }) => {
   const [image, setImage] = useState("");
   const [searchURl, setSearchURL] = useState(selectedRow?.searchlink);
   const [publication, setPublication] = useState(selectedRow?.publicationname);
-  const [selectedLanguages, setSelectedLanguages] = useState([]);
+  const [selectedLanguages, setSelectedLanguages] = useState("en");
   const [selectedCompanies, setSelectedCompanies] = useState("");
   const [dateNow, setDateNow] = useState(selectedRow?.feeddate);
   const [saveLoading, setSaveLoading] = useState(false);
+  const [languages, setLanguages] = useState([]);
+  const {
+    data: langs,
+    error: langsError,
+    // loading: langsLoading,
+  } = useFetchData(`${url}languagelist/`);
 
-  const classes = useStyle();
+  useEffect(() => {
+    if (langs.data) {
+      setLanguages(langs.data.languages);
+    } else {
+      console.log(langsError);
+    }
+  }, [langs, langsError]);
 
   function isDomainIncluded(url, domain) {
     const escapedDomain = domain.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
@@ -98,11 +110,12 @@ const Details = ({ selectedRow, type, articleURl, setArticleURL }) => {
       setSummary("");
       setImage("");
       setSelectedCompanies("");
-      setSelectedLanguages([]);
+      setSelectedLanguages("");
     } catch (error) {
       console.log(error);
     }
   };
+
   return (
     <Card className="w-full">
       <CardHeader
@@ -217,11 +230,24 @@ const Details = ({ selectedRow, type, articleURl, setArticleURL }) => {
                 Language:
               </Typography>
               <div className="ml-2">
-                <Languages
+                {/* <Languages
                   language={selectedLanguages}
                   setLanguage={setSelectedLanguages}
                   classes={classes}
-                />
+                /> */}
+                <select
+                  className="border border-gray-400 rounded-[3px]"
+                  value={selectedLanguages}
+                  onChange={(e) => setSelectedLanguages(e.target.value)}
+                >
+                  {Object.entries(languages).map(
+                    ([languagename, languagecode]) => (
+                      <option key={languagecode} value={languagecode}>
+                        {languagename}
+                      </option>
+                    )
+                  )}
+                </select>
               </div>
             </Box>
           </Box>
