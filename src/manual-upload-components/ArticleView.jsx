@@ -16,8 +16,15 @@ const ArticleView = ({ link }) => {
         href={link}
         target="_blank"
         rel="noreferrer"
+        fontFamily="nunito"
       >
-        Article View <FaExternalLinkAlt style={{ fontSize: "1.2em" }} />
+        Article View{" "}
+        <FaExternalLinkAlt
+          style={{
+            fontSize: "1.2em",
+            fontFamily: "nunito",
+          }}
+        />
       </Typography>
       {link && (
         <iframe

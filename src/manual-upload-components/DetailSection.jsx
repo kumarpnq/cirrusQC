@@ -120,7 +120,7 @@ const Details = ({ selectedRow, type, articleURl, setArticleURL }) => {
     <Card className="w-full">
       <CardHeader
         title={
-          <Typography variant="h6" fontSize={"0.9em"}>
+          <Typography variant="h6" fontSize={"0.9em"} fontFamily="nunito">
             Basic Details
           </Typography>
         }
@@ -236,7 +236,7 @@ const Details = ({ selectedRow, type, articleURl, setArticleURL }) => {
                   classes={classes}
                 /> */}
                 <select
-                  className="border border-gray-400 rounded-[3px]"
+                  className="border border-gray-400 rounded-[3px] text-[0.9em]"
                   value={selectedLanguages}
                   onChange={(e) => setSelectedLanguages(e.target.value)}
                 >

@@ -45,20 +45,23 @@ const Qc2Table = ({
   const handleMasterCheckboxChange = () => {
     setMasterCheckBoxLoading(true);
     setTimeout(() => {
-      const allSelected = selectedItems.length === qc2PrintTableData.length;
+      const allSelected =
+        selectedItems.length === searchedData.length > 0
+          ? searchedData
+          : qc2PrintTableData;
 
       if (searchedData.length > 0) {
         const allSearchedSelected =
           selectedItems.length === searchedData.length;
 
         if (allSearchedSelected) {
-          // If all rows in searchedData are already selected, remove them from selectedRowData
           setSelectedItems((prevSelectedRows) =>
             prevSelectedRows.filter(
               (row) =>
                 !searchedData.some(
                   (searchedRow) =>
-                    searchedRow.social_feed_id === row.social_feed_id
+                    searchedRow.article_id === row.article_id &&
+                    searchedRow.company_id === row.company_id
                 )
             )
           );
@@ -70,7 +73,8 @@ const Qc2Table = ({
               (searchedRow) =>
                 !prevSelectedRows.some(
                   (selectedRow) =>
-                    selectedRow.social_feed_id === searchedRow.social_feed_id
+                    selectedRow.article_id === searchedRow.article_id &&
+                    selectedRow.company_id === selectedRow.company_id
                 )
             ),
           ]);
@@ -82,7 +86,7 @@ const Qc2Table = ({
     }, 0);
     setMasterCheckBoxLoading(false);
   };
-  const handleCheckboxChange = (items) => {
+  const handleCheckboxChange = (item) => {
     setCheckBoxLoading(true);
 
     setTimeout(() => {
@@ -91,22 +95,29 @@ const Qc2Table = ({
           prev = [];
         }
         const isSelected = prev.some(
-          (row) => row.article_id === items.article_id
+          (row) =>
+            row.article_id === item.article_id &&
+            row.company_id === item.company_id
         );
         if (isSelected) {
-          return prev.filter((row) => row.article_id !== items.article_id);
+          return prev.filter(
+            (row) =>
+              !(
+                row.article_id === item.article_id &&
+                row.company_id === item.company_id
+              )
+          );
         } else {
           if (searchedData.length > 0) {
-            if (searchedData.includes(items)) {
-              return [...prev, items];
+            if (searchedData.includes(item)) {
+              return [...prev, item];
             }
           } else {
-            return [...prev, items];
+            return [...prev, item];
           }
         }
         return prev;
       });
-      // Set checkBoxLoading to false after the asynchronous operations are completed
       setCheckBoxLoading(false);
     }, 0);
   };
@@ -196,9 +207,7 @@ const Qc2Table = ({
                     ) : (
                       <input
                         type="checkbox"
-                        checked={
-                          selectedItems?.length === qc2PrintTableData.length
-                        }
+                        checked={selectedItems?.length === dataToRender.length}
                         onChange={handleMasterCheckboxChange}
                       />
                     )}

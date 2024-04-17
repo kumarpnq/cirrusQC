@@ -344,6 +344,7 @@ const DDComp = () => {
             companyData={companyData}
             companies={companies}
             setCompanies={setCompanies}
+            isMt={true}
           />
         </div>
         <div className="h-[25px] flex items-center justify-center">

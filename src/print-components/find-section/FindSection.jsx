@@ -240,11 +240,10 @@ export const FindSection = ({
         toast.warning("No results found. Showing all data.", {
           autoClose: 2000,
         });
-        output = qc2PrintTableData; // Show all data when no matching rows are found
+        output = qc2PrintTableData;
       }
     }
 
-    // Set the output to searchedData and handle loading state
     setSearchedData(output);
     setTableLoading(false);
   };
