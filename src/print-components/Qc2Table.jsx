@@ -45,15 +45,9 @@ const Qc2Table = ({
   const handleMasterCheckboxChange = () => {
     setMasterCheckBoxLoading(true);
     setTimeout(() => {
-      const allSelected =
-        selectedItems.length === searchedData.length > 0
-          ? searchedData
-          : qc2PrintTableData;
-
       if (searchedData.length > 0) {
         const allSearchedSelected =
           selectedItems.length === searchedData.length;
-
         if (allSearchedSelected) {
           setSelectedItems((prevSelectedRows) =>
             prevSelectedRows.filter(
@@ -66,7 +60,6 @@ const Qc2Table = ({
             )
           );
         } else {
-          // Add all rows in searchedData to selectedRowData
           setSelectedItems((prevSelectedRows) => [
             ...prevSelectedRows,
             ...searchedData.filter(
@@ -74,18 +67,22 @@ const Qc2Table = ({
                 !prevSelectedRows.some(
                   (selectedRow) =>
                     selectedRow.article_id === searchedRow.article_id &&
-                    selectedRow.company_id === selectedRow.company_id
+                    selectedRow.company_id === searchedRow.company_id
                 )
             ),
           ]);
         }
       } else {
-        // Toggle selection for all rows in tableData
-        setSelectedItems(allSelected ? [] : [...qc2PrintTableData]);
+        setSelectedItems((selectedItems) =>
+          selectedItems.length === qc2PrintTableData.length
+            ? []
+            : [...qc2PrintTableData]
+        );
       }
+      setMasterCheckBoxLoading(false);
     }, 0);
-    setMasterCheckBoxLoading(false);
   };
+
   const handleCheckboxChange = (item) => {
     setCheckBoxLoading(true);
 
@@ -201,7 +198,7 @@ const Qc2Table = ({
                     className="sticky left-0 px-6 py-3 text-xs font-medium tracking-wider text-left uppercase cursor-pointer bg-primary"
                   >
                     {masterCheckBoxLoading ? (
-                      <div className="absolute mt-1 ml-3 loading-spinner">
+                      <div className="absolute mb-3 mr-2 loading-spinner">
                         <AiOutlineLoading />
                       </div>
                     ) : (
