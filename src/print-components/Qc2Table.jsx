@@ -278,7 +278,11 @@ const Qc2Table = ({
                     <td className="px-3 py-4 whitespace-nowrap">
                       <div className="truncate w-28">{items.company}</div>
                     </td>
-                    <Tooltip placement="top" title={items.headline}>
+                    <Tooltip
+                      placement="top"
+                      title={items.headline}
+                      enterDelay={1000}
+                    >
                       <td className="px-3 py-4">
                         <div
                           className="w-60"
@@ -344,7 +348,11 @@ const Qc2Table = ({
                         {items.keyword}
                       </div>
                     </td>
-                    <Tooltip placement="top" title={items.detail_summary}>
+                    <Tooltip
+                      placement="top"
+                      title={items.detail_summary}
+                      enterDelay={1000}
+                    >
                       <td className="px-3 py-4 overflow-hidden">
                         <div
                           className="w-60"
@@ -369,7 +377,11 @@ const Qc2Table = ({
                     <td className="px-3 py-4 whitespace-nowrap">
                       {items.city_name}
                     </td>
-                    <Tooltip placement="top" title={items.head_summary}>
+                    <Tooltip
+                      placement="top"
+                      title={items.head_summary}
+                      enterDelay={1000}
+                    >
                       <td className="px-2 py-4 ">
                         <div
                           className="w-60"
