@@ -151,6 +151,7 @@ const DDComp = () => {
       return;
     }
     setPrintTableData([]);
+
     try {
       setIsTableDataLoading(true);
       const requestData = {
