@@ -82,6 +82,7 @@ const Details = ({ selectedRow, type, articleURl, setArticleURL }) => {
       };
       const request_data = {
         url: articleURl,
+        searchurl: searchURl,
         companyid: selectedCompanies.value,
         article_datetime: dateNow,
         publication: publication,
@@ -181,7 +182,7 @@ const Details = ({ selectedRow, type, articleURl, setArticleURL }) => {
             <Typography sx={{ fontSize: "0.9em" }}>SearchURL:</Typography>
             <TextField
               size="small"
-              disabled
+              // disabled
               fullWidth
               sx={{ ml: 0.5 }}
               value={searchURl}
