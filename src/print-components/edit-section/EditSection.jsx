@@ -205,6 +205,7 @@ const EditSection = ({
         setSelectedItems([]);
         setHighlightRows([]);
         setSaveLoading(false);
+        setSearchedData([]);
         setRetrieveAfterSave((prev) => !prev);
         setUpdatedData([]);
       } else {
