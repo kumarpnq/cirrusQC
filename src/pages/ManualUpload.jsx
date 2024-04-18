@@ -41,7 +41,12 @@ const ManualUpload = () => {
   const [errorList, setErrorList] = useState([]);
   const [totalRecords, setTotalRecords] = useState(0);
   const [fetchingUsingPrevNext, setFetchingUsingPrevNext] = useState(false);
+  const [fetchAfterSave, setFetchAfterSave] = useState(false);
+  const [isArticleSaved, setIsArticleSaved] = useState(false);
   const [modalType, setModalType] = useState();
+
+  // article number after save the article automatically get next article
+  const [articleNumber, setArticleNumber] = useState(0);
 
   // sort
   const [sortBy, setSortBy] = useState(null);
@@ -90,14 +95,16 @@ const ManualUpload = () => {
     } finally {
       setErrorListLoading(false);
       setFetchingUsingPrevNext(false);
+      setFetchAfterSave(false);
+      setIsArticleSaved(false);
     }
   };
 
   useEffect(() => {
-    if (fetchingUsingPrevNext) {
+    if (fetchingUsingPrevNext || fetchAfterSave) {
       fetchErrorList();
     }
-  }, [fetchingUsingPrevNext]);
+  }, [fetchingUsingPrevNext, fetchAfterSave]);
   // modal
   const [selectedRow, setSelectedRow] = useState(null);
   const [link, setLink] = useState(selectedRow?.articlelink);
@@ -106,7 +113,11 @@ const ManualUpload = () => {
     setLink(selectedRow?.articlelink);
   }, [selectedRow]);
 
-  const handleClose = () => setOpen((prev) => !prev);
+  const handleClose = () => {
+    setOpen((prev) => !prev);
+    setFetchAfterSave(isArticleSaved ? true : false);
+    setArticleNumber(0);
+  };
   const handleRowClick = (row) => {
     setModalType(0);
     setOpen(!open);
@@ -116,7 +127,6 @@ const ManualUpload = () => {
     setModalType(1);
     setOpen((prev) => !prev);
   };
-
   return (
     <div className="mx-4">
       <Box display="flex" alignItems="center" gap={2} height={50}>
@@ -163,7 +173,7 @@ const ManualUpload = () => {
             <TableContainer component={Paper} style={{ maxHeight: 600 }}>
               <Table aria-label="simple table">
                 <TableHead
-                  className="bg-primary sticky top-0"
+                  className="sticky top-0 bg-primary"
                   style={{ position: "sticky", top: 0, zIndex: 1 }}
                 >
                   <TableRow>
@@ -277,6 +287,10 @@ const ManualUpload = () => {
         type={modalType}
         link={link}
         setLink={setLink}
+        setIsArticleSaved={setIsArticleSaved}
+        errorList={errorList}
+        articleNumber={articleNumber}
+        setArticleNumber={setArticleNumber}
       />
     </div>
   );

@@ -23,8 +23,20 @@ import { url } from "../constants/baseUrl";
 import DebounceSearch from "../print-components/dropdowns/DebounceSearch";
 import useFetchData from "../hooks/useFetchData";
 
-const Details = ({ selectedRow, type, articleURl, setArticleURL }) => {
+const Details = ({
+  type,
+  articleURl,
+  setArticleURL,
+  setIsArticleSaved,
+  errorList,
+  articleNumber,
+  setArticleNumber,
+}) => {
   const { userToken } = useContext(ResearchContext);
+  const [selectedRow, setSelectedRow] = useState(errorList[articleNumber]);
+  useEffect(() => {
+    setSelectedRow(errorList.length > 0 ? errorList[articleNumber] : null);
+  }, [articleNumber, errorList]);
 
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
@@ -60,7 +72,8 @@ const Details = ({ selectedRow, type, articleURl, setArticleURL }) => {
     if (
       !articleURl ||
       !searchURl ||
-      (!selectedCompanies.value && !dateNow) ||
+      !selectedCompanies.value ||
+      !dateNow ||
       !title ||
       !summary ||
       !content ||
@@ -96,6 +109,10 @@ const Details = ({ selectedRow, type, articleURl, setArticleURL }) => {
       const isFail = response.data?.result?.errors?.length;
       if (isSuccess) {
         toast.success("Updated successfully");
+
+        setArticleNumber((prev) => prev + 1);
+        setSelectedRow(errorList[articleNumber]);
+        setIsArticleSaved(true);
       } else if (isFail) {
         toast.warning("Something wrong");
       }
@@ -110,6 +127,19 @@ const Details = ({ selectedRow, type, articleURl, setArticleURL }) => {
       console.log(error);
     }
   };
+  useEffect(() => {
+    if (selectedRow) {
+      setTitle("");
+      setContent("");
+      setSummary("");
+      setImage("");
+      setSelectedLanguages("en");
+      setSearchURL(selectedRow.searchlink);
+      setArticleURL(selectedRow.articlelink);
+      setPublication(selectedRow.publicationname);
+      setDateNow(selectedRow.feeddate);
+    }
+  }, [selectedRow, setArticleURL]);
 
   return (
     <Card className="w-full">
@@ -304,5 +334,9 @@ Details.propTypes = {
   type: PropTypes.number.isRequired,
   articleURl: PropTypes.string.isRequired,
   setArticleURL: PropTypes.func.isRequired,
+  setIsArticleSaved: PropTypes.func.isRequired,
+  errorList: PropTypes.array.isRequired,
+  articleNumber: PropTypes.number.isRequired,
+  setArticleNumber: PropTypes.func.isRequired,
 };
 export default Details;

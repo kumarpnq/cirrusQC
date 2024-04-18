@@ -31,6 +31,10 @@ const UploadDialog = ({
   type,
   link,
   setLink,
+  setIsArticleSaved,
+  errorList,
+  articleNumber,
+  setArticleNumber,
 }) => {
   return (
     <Modal open={open} onClose={handleClose}>
@@ -50,6 +54,10 @@ const UploadDialog = ({
               type={type}
               articleURl={link}
               setArticleURL={setLink}
+              setIsArticleSaved={setIsArticleSaved}
+              errorList={errorList}
+              articleNumber={articleNumber}
+              setArticleNumber={setArticleNumber}
             />
             <ArticleView link={link} />
           </Box>
@@ -66,6 +74,10 @@ UploadDialog.propTypes = {
   type: PropTypes.number.isRequired,
   link: PropTypes.string.isRequired,
   setLink: PropTypes.func.isRequired,
+  setIsArticleSaved: PropTypes.func.isRequired,
+  errorList: PropTypes.array.isRequired,
+  articleNumber: PropTypes.number.isRequired,
+  setArticleNumber: PropTypes.func.isRequired,
 };
 
 export default UploadDialog;
