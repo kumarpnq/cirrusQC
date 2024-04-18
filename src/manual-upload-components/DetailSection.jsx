@@ -7,7 +7,6 @@ import {
   TextField,
   CardHeader,
 } from "@mui/material";
-import { makeStyles } from "@mui/styles";
 
 import Button from "../components/custom/Button";
 import { useContext, useEffect, useState } from "react";
@@ -24,21 +23,6 @@ import { url } from "../constants/baseUrl";
 import DebounceSearch from "../print-components/dropdowns/DebounceSearch";
 import useFetchData from "../hooks/useFetchData";
 
-const useStyle = makeStyles(() => ({
-  dropDowns: {
-    height: 25,
-    fontSize: "0.8em",
-  },
-
-  clientForm: {
-    width: 300,
-  },
-  menuPaper: {
-    maxHeight: 200,
-    width: 200,
-    background: "#d4c8c7",
-  },
-}));
 const Details = ({ selectedRow, type, articleURl, setArticleURL }) => {
   const { userToken } = useContext(ResearchContext);
 
@@ -58,7 +42,6 @@ const Details = ({ selectedRow, type, articleURl, setArticleURL }) => {
     error: langsError,
     // loading: langsLoading,
   } = useFetchData(`${url}languagelist/`);
-
   useEffect(() => {
     if (langs.data) {
       setLanguages(langs.data.languages);
@@ -74,6 +57,17 @@ const Details = ({ selectedRow, type, articleURl, setArticleURL }) => {
   }
   const handleSave = async () => {
     const isBothUrlSame = isDomainIncluded(articleURl, publication);
+    if (
+      !articleURl ||
+      !searchURl ||
+      (!selectedCompanies.value && !dateNow) ||
+      !title ||
+      !summary ||
+      !content ||
+      !selectedLanguages
+    ) {
+      return toast.warning("Some fields are empty!");
+    }
     if (!isBothUrlSame) return toast.warning("Url not match with publication");
     try {
       setSaveLoading(true);
@@ -182,7 +176,7 @@ const Details = ({ selectedRow, type, articleURl, setArticleURL }) => {
             <Typography sx={{ fontSize: "0.9em" }}>SearchURL:</Typography>
             <TextField
               size="small"
-              // disabled
+              disabled
               fullWidth
               sx={{ ml: 0.5 }}
               value={searchURl}
