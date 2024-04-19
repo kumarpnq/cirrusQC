@@ -43,9 +43,8 @@ const EditSection = ({
   setHighlightRows,
   setRetrieveAfterSave,
 }) => {
-  const { name } = useContext(ResearchContext);
+  const { name, userToken } = useContext(ResearchContext);
   const classes = useStyles();
-  let userToken = "hajsdhjd8787wwrjebnbweweoccsc@o4";
 
   const [editRow, setEditRow] = useState("");
   const [editValue, setEditValue] = useState("");
