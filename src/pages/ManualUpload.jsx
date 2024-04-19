@@ -118,7 +118,8 @@ const ManualUpload = () => {
     setFetchAfterSave(isArticleSaved ? true : false);
     setArticleNumber(0);
   };
-  const handleRowClick = (row) => {
+  const handleRowClick = (row, index) => {
+    setArticleNumber(index);
     setModalType(0);
     setOpen(!open);
     setSelectedRow((prev) => (prev === row ? null : row));
@@ -226,7 +227,7 @@ const ManualUpload = () => {
                   </TableRow>
                 </TableHead>
                 <TableBody className="text-[0.8em]">
-                  {sortedErrorList.map((row) => (
+                  {sortedErrorList.map((row, index) => (
                     <TableRow
                       key={row.articlelink}
                       sx={{
@@ -244,7 +245,7 @@ const ManualUpload = () => {
                       >
                         <EditAttributesOutlined
                           className="text-primary"
-                          onClick={() => handleRowClick(row)}
+                          onClick={() => handleRowClick(row, index)}
                         />
                       </TableCell>
                       <TableCell
@@ -288,7 +289,7 @@ const ManualUpload = () => {
         link={link}
         setLink={setLink}
         setIsArticleSaved={setIsArticleSaved}
-        errorList={errorList}
+        errorList={sortedErrorList}
         articleNumber={articleNumber}
         setArticleNumber={setArticleNumber}
       />
