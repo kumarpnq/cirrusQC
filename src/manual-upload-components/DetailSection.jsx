@@ -22,6 +22,7 @@ import { url } from "../constants/baseUrl";
 
 import DebounceSearch from "../print-components/dropdowns/DebounceSearch";
 import useFetchData from "../hooks/useFetchData";
+import { formattedDate } from "../constants/dates";
 
 const Details = ({
   type,
@@ -129,17 +130,29 @@ const Details = ({
   };
   useEffect(() => {
     if (selectedRow) {
-      setTitle("");
-      setContent("");
-      setSummary("");
-      setImage("");
-      setSelectedLanguages("en");
-      setSearchURL(selectedRow.searchlink);
-      setArticleURL(selectedRow.articlelink);
-      setPublication(selectedRow.publicationname);
-      setDateNow(selectedRow.feeddate);
+      if (type === 0) {
+        setTitle("");
+        setContent("");
+        setSummary("");
+        setImage("");
+        setSelectedLanguages("en");
+        setSearchURL(selectedRow.searchlink);
+        setArticleURL(selectedRow.articlelink);
+        setPublication(selectedRow.publicationname);
+        setDateNow(selectedRow.feeddate);
+      } else {
+        setTitle("");
+        setContent("");
+        setSummary("");
+        setImage("");
+        setSelectedLanguages("");
+        setSearchURL("");
+        setArticleURL("");
+        setPublication("");
+        setDateNow(formattedDate);
+      }
     }
-  }, [selectedRow, setArticleURL]);
+  }, [selectedRow, setArticleURL, type]);
 
   return (
     <Card className="w-full">
