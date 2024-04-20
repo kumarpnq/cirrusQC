@@ -152,6 +152,7 @@ const EditSection = ({
       setApplyLoading(false);
       setSelectedItems([]);
       setReportingTone("");
+      setProminence("");
       setSubject("");
       setCategory("");
     }, 0);
