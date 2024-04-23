@@ -109,13 +109,19 @@ const JobDetails = ({ URI, rows }) => {
                 </TableCell>
                 <TableCell
                   size="small"
-                  sx={{ fontFamily: "Nunito", fontSize: "0.8rem" }}
+                  sx={{
+                    fontFamily: "Nunito",
+                    fontSize: "0.8rem",
+                    color: "blue",
+                    textDecoration: "underline",
+                  }}
                 >
                   {" "}
                   <a
-                    href={`${URI + row.filelink}`}
+                    href={!!row.filelink && `${URI + row.filelink}`}
                     target="_blank"
                     rel="noopener noreferrer"
+                    className="underline"
                   >
                     {"link"}
                   </a>
