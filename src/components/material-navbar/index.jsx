@@ -83,11 +83,10 @@ export default function MainNav() {
   const location = useLocation();
   const isMenuOpen = Boolean(anchorEl);
   const isMobileMenuOpen = Boolean(mobileMoreAnchorEl);
-  const test = true;
   const navList = [
     { id: 1, title: "Online", path: "/", icon: <HiStatusOnline /> },
     { id: 2, title: "Print", path: "/print", icon: <FaPrint /> },
-    ...(test
+    ...(dumpAccess
       ? [{ id: 3, title: "Dump", path: "/dump", icon: <FaDumpster /> }]
       : []),
     {
