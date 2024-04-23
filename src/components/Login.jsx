@@ -54,7 +54,7 @@ const Login = () => {
       });
 
       const data = JSON.parse(res.config.data);
-      const isAccess = res.data.dum_access;
+      const isAccess = res.data.dump_access;
       const loginname = data.loginname;
       if (res.status === 200) {
         setDumpAccess(isAccess);
