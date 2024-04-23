@@ -4,6 +4,9 @@ import { useNavigate } from "react-router-dom";
 
 export const ResearchContext = createContext(null);
 const ContextProvider = ({ children }) => {
+  // page access
+  const [dumpAccess, setDumpAccess] = useState(false);
+
   const navigate = useNavigate();
   // auto logout
   const [logoutTimer, setLogoutTimer] = useState(null);
@@ -65,6 +68,8 @@ const ContextProvider = ({ children }) => {
   return (
     <ResearchContext.Provider
       value={{
+        dumpAccess,
+        setDumpAccess,
         handleLogout,
         researchOpen,
         setResearchOpen,

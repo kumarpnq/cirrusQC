@@ -41,7 +41,7 @@ const useStyles = makeStyles(() => ({
 
 const Login = () => {
   const classes = useStyles();
-  const { name, setName, password, setPassword, setUserToken } =
+  const { name, setName, password, setPassword, setUserToken, setDumpAccess } =
     useContext(ResearchContext);
   const navigate = useNavigate();
 
@@ -54,8 +54,10 @@ const Login = () => {
       });
 
       const data = JSON.parse(res.config.data);
+      const isAccess = res.data.dum_access;
       const loginname = data.loginname;
       if (res.status === 200) {
+        setDumpAccess(isAccess);
         localStorage.setItem("user", res.data.access_token);
         sessionStorage.setItem("user", true);
         setUserToken(localStorage.getItem("user"));

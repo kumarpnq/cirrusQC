@@ -72,17 +72,6 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
   },
 }));
 
-const navList = [
-  { id: 1, title: "Online", path: "/", icon: <HiStatusOnline /> },
-  { id: 2, title: "Print", path: "/print", icon: <FaPrint /> },
-  { id: 3, title: "Dump", path: "/dump", icon: <FaDumpster /> },
-  {
-    id: 3,
-    title: "Manual-upload",
-    path: "/manual-upload",
-    icon: <UploadFileIcon />,
-  },
-];
 export default function MainNav() {
   const navigate = useNavigate();
   const [anchorEl, setAnchorEl] = React.useState(null);
@@ -90,11 +79,23 @@ export default function MainNav() {
   const [open, setOpen] = React.useState(false);
   const [searchValue, setSearchValue] = React.useState();
   const [filteredNavItems, setFilteredNavItems] = React.useState([]);
-  const { userToken, handleLogout } = useContext(ResearchContext);
+  const { userToken, handleLogout, dumpAccess } = useContext(ResearchContext);
   const location = useLocation();
-
   const isMenuOpen = Boolean(anchorEl);
   const isMobileMenuOpen = Boolean(mobileMoreAnchorEl);
+  const navList = [
+    { id: 1, title: "Online", path: "/", icon: <HiStatusOnline /> },
+    { id: 2, title: "Print", path: "/print", icon: <FaPrint /> },
+    ...(dumpAccess
+      ? [{ id: 3, title: "Dump", path: "/dump", icon: <FaDumpster /> }]
+      : []),
+    {
+      id: 4,
+      title: "Manual-upload",
+      path: "/manual-upload",
+      icon: <UploadFileIcon />,
+    },
+  ];
 
   const handleProfileMenuOpen = (event) => {
     setAnchorEl(event.currentTarget);
@@ -140,7 +141,7 @@ export default function MainNav() {
       } else if (searchValue === "print") {
         navigate("/print");
       } else if (searchValue === "dump") {
-        navigate("/dump");
+        dumpAccess ? navigate("/dump") : toast.error("No such page found.");
       } else if (searchValue === "manual-upload") {
         navigate("/manual-upload");
       } else {
