@@ -129,16 +129,14 @@ export default function AlertDialogSlide(props) {
       // window.URL.revokeObjectURL(urls);
       setDumpLoading((prev) => !prev);
       if (response) {
+        setFetchDumpData(true);
         setOpen(false);
         toast.success(response.data.message);
         setSelectedColumnsForDump([]);
-        setFetchDumpData(true);
       }
     } catch (error) {
       toast.error(error?.message || "Error while dump.");
       setDumpLoading((prev) => !prev);
-    } finally {
-      setFetchDumpData(false);
     }
   };
 

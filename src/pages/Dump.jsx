@@ -72,6 +72,20 @@ const Dump = () => {
   const [jobData, setJobData] = useState([]);
   const [fetchDumpData, setFetchDumpData] = useState(false);
 
+  // selectedDate must be less than 62 days
+  useEffect(() => {
+    const startDate = new Date(fromDate);
+    const endDate = new Date(toDate);
+    const timeDifference = Math.abs(endDate.getTime() - startDate.getTime());
+    const dayDifference = Math.ceil(timeDifference / (1000 * 3600 * 24));
+
+    if (dayDifference > 62) {
+      toast.error("Date range cannot exceed 62 days");
+      setFromDate(formattedDate);
+      setToDate(formattedNextDay);
+    }
+  }, [fromDate, toDate]);
+
   // clients
   const {
     data: clientList,
@@ -135,6 +149,7 @@ const Dump = () => {
           }
         );
         setJobData(response.data.job_list);
+        setFetchDumpData(false);
       } catch (error) {
         console.log(error);
       }
