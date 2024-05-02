@@ -75,13 +75,13 @@ export default function EditModal({
         `${url}articleheader/?article_id=${articleId}`,
         { headers }
       );
-      console.log(response.data);
       setFetchedArticleHeader(response.data.article[0]);
     };
     fetchArticleHeader();
   }, [selectedArticle, articleId, userToken]);
 
   const classes = useStyle();
+  console.log(selectedArticle.link);
   return (
     <div style={{ height: "800px !important", overflow: "scroll" }}>
       <Modal
@@ -119,7 +119,7 @@ export default function EditModal({
               {selectedArticle && selectedArticle.link && (
                 <iframe
                   title="PDF Viewer"
-                  src={`${url}${selectedArticle.link}`}
+                  src={`${selectedArticle.link.replace(/^'|'$/g, "")}`}
                   className={classes.iframe}
                 />
               )}

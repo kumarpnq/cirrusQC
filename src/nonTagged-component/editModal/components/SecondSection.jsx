@@ -48,7 +48,7 @@ const SecondSection = (props) => {
 
   const [storedData, setStoredData] = useState({});
 
-  const articleId = !!selectedArticle && selectedArticle?.article_id;
+  const articleId = !!selectedArticle && selectedArticle?.articleid;
 
   useEffect(() => {
     const fetchTagDetails = async () => {

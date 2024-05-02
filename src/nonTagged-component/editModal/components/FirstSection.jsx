@@ -1,16 +1,14 @@
 import PropTypes from "prop-types";
-// import YesOrNo from "../../../@core/YesOrNo";
-// import { yesOrNo } from "../../../constants/dataArray";
-// import FormWithLabelTextField from "../../../@core/FormWithLabel";
+
 import { useEffect, useState } from "react";
 import FormWithLabelTextField from "../../../@core/FormWithLabel";
 import CustomDebounceDropdown from "../../../@core/CustomDebounceDropdown";
 import YesOrNo from "../../../@core/YesOrNo";
 import { yesOrNo } from "../../../constants/dataArray";
-// import CustomDebounceDropdown from "../../../@core/CustomDebounceDropdown";
 
 const FirstSection = (props) => {
   const { classes, selectedArticle, setEditedSingleArticle } = props;
+  console.log(selectedArticle);
   const [focusedTextFields, setFocusedTextField] = useState({
     isHeadline: false,
     isSummary: false,
@@ -30,6 +28,21 @@ const FirstSection = (props) => {
   const [articleSummary, setArticleSummary] = useState(
     selectedArticle?.head_summary
   );
+  useEffect(() => {
+    if (selectedArticle) {
+      setHeadline(selectedArticle?.headline);
+      setSelectedPublication(selectedArticle.publication);
+      setJournalist(selectedArticle?.author);
+      setBox(selectedArticle?.box);
+      setPhoto(selectedArticle?.photo);
+      setPageNumber(selectedArticle?.page_number);
+      setSpace(selectedArticle?.space);
+      setQc1By(selectedArticle?.qc1_by);
+      setQc2By(selectedArticle?.qc2_by);
+      setArticleSummary(selectedArticle?.qc2_by);
+      setArticleSummary(selectedArticle?.head_summary);
+    }
+  }, [selectedArticle]);
   useEffect(() => {
     if (selectedArticle) {
       const data = {
