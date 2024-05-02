@@ -13,8 +13,7 @@ import {
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import axios from "axios";
-// import { url } from "../../constants/baseUrl";
-// import useFetchData from "../../hooks/useFetchData";
+
 import { toast } from "react-toastify";
 import useProtectedRequest from "../../hooks/useProtectedRequest";
 import { url } from "../../constants/baseUrl";
@@ -102,10 +101,23 @@ const ClientSection = ({ selectedArticle, userToken }) => {
       newData[index] = updatedRow;
       return newData;
     });
-    setModifiedRows((prevRows) => [...prevRows, updatedRow]);
+
+    setModifiedRows((prevRows) => {
+      const existingIndex = prevRows.findIndex(
+        (row) => row.socialfeed_id === updatedRow.socialfeed_id
+      );
+
+      if (existingIndex !== -1) {
+        const newRows = [...prevRows];
+        newRows[existingIndex] = updatedRow;
+        return newRows;
+      } else {
+        return [...prevRows, updatedRow];
+      }
+    });
   };
+
   const handleAddCompanies = async () => {
-    const rowData = editableTagData.length > 0 && editableTagData[0];
     if (selectedCompany) {
       try {
         const header = {
@@ -114,17 +126,17 @@ const ClientSection = ({ selectedArticle, userToken }) => {
         const requestData = [
           {
             UPDATETYPE: "I",
-            SOCIALFEEDID: rowData.socialfeed_id,
+            SOCIALFEEDID: selectedArticle?.social_feed_id,
             COMPANYID: selectedCompany.value,
             COMPANYNAME: selectedCompany.label,
-            KEYWORD: rowData.keyword,
+            KEYWORD: null,
             // AUTHOR: rowData.author,
-            REPORTINGTONE: rowData.reporting_tone,
-            REPORTINGSUBJECT: rowData.reporting_subject,
-            SUBCATEGORY: rowData.subcategory,
-            PROMINENCE: rowData.prominence,
-            SUMMARY: rowData.detail_summary,
-            QC2REMARK: rowData.remarks,
+            REPORTINGTONE: null,
+            REPORTINGSUBJECT: null,
+            SUBCATEGORY: null,
+            PROMINENCE: null,
+            SUMMARY: null,
+            QC2REMARK: null,
           },
         ];
 
@@ -135,19 +147,21 @@ const ClientSection = ({ selectedArticle, userToken }) => {
             headers: header,
           }
         );
+
         const successOrError =
           (response.data.result.success.length && "company added") ||
           (response.data.result.errors.length && "something went wrong");
-
+        const errorMessage = response.data.result.errors
+          .map((i) => i.error)
+          .join(", ");
         if (successOrError === "company added") {
           toast.success(successOrError);
           setFetchTagDataAfterChange(true);
         } else if (successOrError === "something went wrong") {
-          toast.warning(successOrError);
+          toast.warning(errorMessage);
         }
       } catch (error) {
         toast.error(error.message);
-        console.log(error);
       }
     } else {
       toast.warning("No company Selected");
@@ -203,6 +217,7 @@ const ClientSection = ({ selectedArticle, userToken }) => {
     if (modifiedRows.length < 0) {
       return toast.warning("No data");
     }
+
     const invalidRows = modifiedRows.filter((row) =>
       [
         "reporting_tone",
@@ -211,6 +226,7 @@ const ClientSection = ({ selectedArticle, userToken }) => {
         // "header_space",
       ].some((field) => row[field] === null || row[field] === "Unknown")
     );
+    console.log(modifiedRows);
     if (invalidRows.length > 0) {
       toast.warning(
         "Some rows have null values in tone, prominence, or subject."

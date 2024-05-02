@@ -1,4 +1,4 @@
-import { useContext, useState, Fragment } from "react";
+import { useContext, useState, Fragment, useEffect } from "react";
 import {
   Box,
   FormGroup,
@@ -42,8 +42,14 @@ const NonTagged = () => {
   const [topPublication, setTopPublication] = useState(true);
   const [nonTagged, setNonTagged] = useState(true);
   const [searchLink, setSearchLink] = useState("");
+  const [isFirstRender, setIsFirstRender] = useState(true);
+
+  useEffect(() => {
+    setIsFirstRender(false);
+  }, []);
 
   const handleDataFetch = async () => {
+    if (isFirstRender) return;
     try {
       setTableDataLoading(true);
       const headers = {
@@ -82,12 +88,18 @@ const NonTagged = () => {
       setTableData(data);
       setTotalRecords(totalRecord);
       setTableDataLoading(false);
+      setFetchingUsingPrevNext(false);
     } catch (error) {
       setTableDataLoading(false);
       toast.error(error.message);
     }
   };
-
+  useEffect(() => {
+    if (fetchUsingPrevNext) {
+      handleDataFetch();
+    }
+    handleDataFetch();
+  }, [fetchUsingPrevNext]);
   //for edit modal
   const [open, setOpen] = useState(false);
   const [editedSingleArticle, setEditedSingleArticle] = useState(null);

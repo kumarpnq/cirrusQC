@@ -235,7 +235,6 @@ const SecondSection = (props) => {
   };
 
   const handleAddCompanies = async () => {
-    const rowData = editableTagData.length > 0 && editableTagData[0];
     if (selectedCompany) {
       try {
         const header = {
@@ -243,18 +242,18 @@ const SecondSection = (props) => {
         };
         const requestData = [
           {
-            ARTICLEID: rowData.article_id,
+            ARTICLEID: selectedArticle.articleid,
             COMPANYID: selectedCompany.value,
             COMPANYNAME: selectedCompany.title,
-            MANUALPROMINENCE: rowData.manual_prominence,
-            HEADERSPACE: rowData.header_space,
-            SPACE: rowData.space,
-            REPORTINGTONE: rowData.reporting_tone,
-            REPORTINGSUBJECT: rowData.reporting_subject,
-            SUBCATEGORY: rowData.subcategory,
-            KEYWORD: rowData.keyword,
-            QC2REMARK: rowData.qc2_remark,
-            DETAILSUMMARY: rowData.detail_summary,
+            MANUALPROMINENCE: null,
+            HEADERSPACE: null,
+            SPACE: null,
+            REPORTINGTONE: null,
+            REPORTINGSUBJECT: null,
+            SUBCATEGORY: null,
+            KEYWORD: null,
+            QC2REMARK: null,
+            DETAILSUMMARY: null,
           },
         ];
         const response = await axios.post(
@@ -315,7 +314,6 @@ const SecondSection = (props) => {
   const handleClose = () => {
     setOpen(false);
   };
-
   const requestData = checkedRows.map((item) => ({
     UPDATETYPE: "D",
     ARTICLEID: item.article_id,

@@ -56,7 +56,6 @@ export default function EditModal({
   editedSingleArticle,
   setEditedSingleArticle,
 }) {
-  console.log(selectedArticle);
   const articleId = selectedArticle?.articleid;
   const { userToken } = useContext(ResearchContext);
   // first section states
@@ -81,7 +80,6 @@ export default function EditModal({
   }, [selectedArticle, articleId, userToken]);
 
   const classes = useStyle();
-  console.log(selectedArticle.link);
   return (
     <div style={{ height: "800px !important", overflow: "scroll" }}>
       <Modal
@@ -119,7 +117,7 @@ export default function EditModal({
               {selectedArticle && selectedArticle.link && (
                 <iframe
                   title="PDF Viewer"
-                  src={`${selectedArticle.link.replace(/^'|'$/g, "")}`}
+                  src={`${selectedArticle?.link.replace(/^'|'$/g, "")}`}
                   className={classes.iframe}
                 />
               )}

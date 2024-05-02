@@ -108,6 +108,7 @@ const Details = ({
       );
       const isSuccess = response.data?.result?.success?.length;
       const isFail = response.data?.result?.errors?.length;
+      const erMessage = response.data?.result?.errors?.map((i) => i.errors);
       if (isSuccess) {
         toast.success("Updated successfully");
 
@@ -115,7 +116,7 @@ const Details = ({
         setSelectedRow(errorList[articleNumber]);
         setIsArticleSaved(true);
       } else if (isFail) {
-        toast.warning("Something wrong");
+        toast.warning(erMessage);
       }
       setSaveLoading(false);
       setTitle("");

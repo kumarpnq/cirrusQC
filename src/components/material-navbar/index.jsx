@@ -15,6 +15,7 @@ import MenuIcon from "@mui/icons-material/Menu";
 import SearchIcon from "@mui/icons-material/Search";
 import AccountCircle from "@mui/icons-material/AccountCircle";
 import UploadFileIcon from "@mui/icons-material/UploadFile";
+import BookmarkBorderIcon from "@mui/icons-material/BookmarkBorder";
 
 import MoreIcon from "@mui/icons-material/MoreVert";
 import Drawer from "@mui/material/Drawer";
@@ -99,7 +100,7 @@ export default function MainNav() {
       id: 4,
       title: "Non-Tagged",
       path: "/non-tagged",
-      icon: <UploadFileIcon />,
+      icon: <BookmarkBorderIcon />,
     },
   ];
 
