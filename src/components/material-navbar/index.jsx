@@ -95,6 +95,12 @@ export default function MainNav() {
       path: "/manual-upload",
       icon: <UploadFileIcon />,
     },
+    {
+      id: 4,
+      title: "Non-Tagged",
+      path: "/non-tagged",
+      icon: <UploadFileIcon />,
+    },
   ];
 
   const handleProfileMenuOpen = (event) => {
@@ -144,6 +150,8 @@ export default function MainNav() {
         dumpAccess ? navigate("/dump") : toast.error("No such page found.");
       } else if (searchValue === "manual-upload") {
         navigate("/manual-upload");
+      } else if (searchValue === "non-tagged") {
+        navigate("/non-tagged");
       } else {
         toast.error("No such page found.");
       }
