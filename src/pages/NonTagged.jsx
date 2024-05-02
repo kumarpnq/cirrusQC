@@ -143,7 +143,7 @@ const NonTagged = () => {
                 sx={{ mt: 2 }}
                 label={
                   <Typography variant="h6" fontSize={"0.9em"}>
-                    With link
+                    Non Tagged
                   </Typography>
                 }
                 control={
