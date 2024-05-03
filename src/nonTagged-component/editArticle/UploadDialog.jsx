@@ -29,7 +29,12 @@ const style = {
   flexDirection: "column",
 };
 
-const UploadDialog = ({ open, handleClose, selectedRow }) => {
+const UploadDialog = ({
+  open,
+  handleClose,
+  selectedRow,
+  setFetchAfterSave,
+}) => {
   const { userToken } = useContext(ResearchContext);
   const socialfeedId = selectedRow?.socialfeedid;
   const [fetchedHeader, setFetchedHeader] = useState(null);
@@ -72,6 +77,7 @@ const UploadDialog = ({ open, handleClose, selectedRow }) => {
             <ClientSection
               selectedArticle={fetchedHeader}
               userToken={userToken}
+              setFetchAfterSave={setFetchAfterSave}
             />
           </Box>
         </DialogContent>
@@ -83,6 +89,7 @@ const UploadDialog = ({ open, handleClose, selectedRow }) => {
 UploadDialog.propTypes = {
   open: PropTypes.bool.isRequired,
   handleClose: PropTypes.func.isRequired,
+  setFetchAfterSave: PropTypes.func.isRequired,
   selectedRow: PropTypes.object.isRequired,
 };
 

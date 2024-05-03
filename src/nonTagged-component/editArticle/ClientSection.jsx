@@ -22,7 +22,7 @@ import { convertKeys } from "../../constants/convertKeys";
 import DebounceSearch from "../../print-components/dropdowns/DebounceSearch";
 import CustomButton from "../../@core/CustomButton";
 
-const ClientSection = ({ selectedArticle, userToken }) => {
+const ClientSection = ({ selectedArticle, userToken, setFetchAfterSave }) => {
   const [selectedCompany, setSelectedCompany] = useState("");
   const [tableDataList, setTableDataList] = useState([]);
   const [tableDataLoading, setTableDataLoading] = useState(false);
@@ -208,8 +208,10 @@ const ClientSection = ({ selectedArticle, userToken }) => {
       toast.success("Article deleted successfully.");
       setOpen(false);
       setPassword("");
+      setEditableTagData([]);
       setFetchTagDataAfterChange(true);
       setSelectedRowForDelete(null);
+      setFetchAfterSave(true);
     }
   };
 
@@ -226,7 +228,6 @@ const ClientSection = ({ selectedArticle, userToken }) => {
         // "header_space",
       ].some((field) => row[field] === null || row[field] === "Unknown")
     );
-    console.log(modifiedRows);
     if (invalidRows.length > 0) {
       toast.warning(
         "Some rows have null values in tone, prominence, or subject."
@@ -244,7 +245,9 @@ const ClientSection = ({ selectedArticle, userToken }) => {
       if (response.data.result.success.length > 0) {
         toast.success("Updated successfully");
         setModifiedRows([]);
+
         setFetchTagDataAfterChange(true);
+        setFetchAfterSave(true);
       } else {
         toast.error("Something went wrong");
       }
@@ -278,16 +281,16 @@ const ClientSection = ({ selectedArticle, userToken }) => {
         </button>
       </Box>
       <Card>
-        <table>
+        <table className="w-full">
           <thead className="text-[0.9em] bg-primary text-white">
             <tr>
-              <th>Action</th>
-              <th>Company</th>
-              <th>Subject</th>
-              <th>Prominence</th>
-              <th>Tone</th>
-              <th>Summary</th>
-              <th>Remarks</th>
+              <th className="text-left">Action</th>
+              <th className="text-left">Company</th>
+              <th className="text-left">Subject</th>
+              <th className="text-left">Prominence</th>
+              <th className="text-left">Tone</th>
+              <th className="text-left">Summary</th>
+              <th className="text-left">Remarks</th>
             </tr>
           </thead>
           <tbody className="text-[0.9em]">

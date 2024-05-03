@@ -35,6 +35,7 @@ const NonTagged = () => {
   const { userToken, pageNumber, recordsPerPage } = useContext(ResearchContext);
   const [activeTab, setActiveTab] = useState(0);
   const [fetchUsingPrevNext, setFetchingUsingPrevNext] = useState(false);
+  const [fetchAfterSave, setFetchAfterSave] = useState(false);
   const [tableData, setTableData] = useState([]);
   const [totalRecords, setTotalRecords] = useState(0);
   const [tableDataLoading, setTableDataLoading] = useState(false);
@@ -91,17 +92,18 @@ const NonTagged = () => {
       setTotalRecords(totalRecord);
       setTableDataLoading(false);
       setFetchingUsingPrevNext(false);
+      setFetchAfterSave(false);
     } catch (error) {
       setTableDataLoading(false);
       toast.error(error.message);
     }
   };
   useEffect(() => {
-    if (fetchUsingPrevNext) {
+    if (fetchUsingPrevNext || fetchAfterSave) {
       handleDataFetch();
     }
     handleDataFetch();
-  }, [fetchUsingPrevNext]);
+  }, [fetchUsingPrevNext, fetchAfterSave]);
 
   const [sortDirection, setSortDirection] = useState("asc");
 
@@ -226,7 +228,7 @@ const NonTagged = () => {
         />
       )}
       <Divider sx={{ mt: 1 }} />
-      {tableData.length && (
+      {!!tableData.length && (
         <>
           {" "}
           <Pagination
@@ -380,6 +382,7 @@ const NonTagged = () => {
           open={open}
           handleClose={handleClose}
           selectedRow={selectedArticle}
+          setFetchAfterSave={setFetchAfterSave}
         />
       ) : (
         <EditModal

@@ -348,6 +348,7 @@ const SecondSection = (props) => {
       toast.success("Article deleted successfully.");
       setOpen(false);
       setPassword("");
+      setEditableTagData([]);
       setFetchTagDataAfterChange(true);
       setCheckedRows([]);
     }
