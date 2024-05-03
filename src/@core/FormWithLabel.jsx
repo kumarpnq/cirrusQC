@@ -10,6 +10,7 @@ const FormWithLabelTextField = ({
   placeholder,
   width,
   isDisabled,
+  tClasses,
 }) => {
   return (
     <FormControl
@@ -21,14 +22,16 @@ const FormWithLabelTextField = ({
       }}
     >
       <FormLabel sx={{ fontSize: "0.8em" }}>{label}:</FormLabel>
-      <CustomTextField
-        placeholder={placeholder}
-        width={width}
-        type={type}
-        value={value}
-        setValue={setValue}
-        isDisabled={isDisabled}
-      />
+      <div className={tClasses}>
+        <CustomTextField
+          placeholder={placeholder}
+          width={width}
+          type={type}
+          value={value}
+          setValue={setValue}
+          isDisabled={isDisabled}
+        />
+      </div>
     </FormControl>
   );
 };
@@ -43,5 +46,6 @@ FormWithLabelTextField.propTypes = {
   isIncrease: PropTypes.bool,
   customHeight: PropTypes.number,
   isDisabled: PropTypes.bool,
+  tClasses: PropTypes.string,
 };
 export default FormWithLabelTextField;

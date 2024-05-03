@@ -13,6 +13,8 @@ import {
   TableRow,
   Paper,
   Divider,
+  Link,
+  Tooltip,
 } from "@mui/material";
 import { makeStyles } from "@mui/styles";
 import { EditAttributesOutlined } from "@mui/icons-material";
@@ -180,7 +182,6 @@ const NonTagged = () => {
     setOpen(true);
     setSelectedArticle((prev) => (prev === item ? null : item));
   };
-
   const classes = useStyle();
   return (
     <div className="h-screen px-3">
@@ -337,6 +338,12 @@ const NonTagged = () => {
                     size="small"
                     sx={{ color: "white", fontFamily: "nunito" }}
                   >
+                    Headline
+                  </TableCell>
+                  <TableCell
+                    size="small"
+                    sx={{ color: "white", fontFamily: "nunito" }}
+                  >
                     Link
                   </TableCell>
                 </TableRow>
@@ -355,27 +362,62 @@ const NonTagged = () => {
                         </TableCell>
                         <TableCell
                           size="small"
-                          sx={{ fontFamily: "nunito", whiteSpace: "nowrap" }}
+                          sx={{
+                            fontFamily: "nunito",
+                            whiteSpace: "nowrap",
+                            fontSize: "0.8em",
+                          }}
                         >
                           {row.publication}
                         </TableCell>
                         <TableCell
                           size="small"
-                          sx={{ fontFamily: "nunito", whiteSpace: "nowrap" }}
+                          sx={{
+                            fontFamily: "nunito",
+                            whiteSpace: "nowrap",
+                            fontSize: "0.8em",
+                          }}
                         >
                           {row.feeddate.split("T")[0]}
                         </TableCell>
                         <TableCell
                           size="small"
-                          sx={{ fontFamily: "nunito", whiteSpace: "nowrap" }}
+                          sx={{
+                            fontFamily: "nunito",
+                            whiteSpace: "nowrap",
+                            fontSize: "0.8em",
+                          }}
                         >
                           {row.socialfeedid}
                         </TableCell>
                         <TableCell
                           size="small"
-                          sx={{ fontFamily: "nunito", whiteSpace: "nowrap" }}
+                          sx={{
+                            fontFamily: "nunito",
+                            whiteSpace: "nowrap",
+                            overflow: "hidden",
+                            textOverflow: "ellipsis",
+                            maxWidth: 300,
+                            fontSize: "0.8em",
+                          }}
                         >
-                          {row.link}
+                          <Tooltip title={row.headline}>{row.headline}</Tooltip>
+                        </TableCell>
+                        <TableCell
+                          size="small"
+                          sx={{
+                            fontFamily: "nunito",
+                            whiteSpace: "nowrap",
+                            fontSize: "0.8em",
+                          }}
+                        >
+                          <Link
+                            href={row.link}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                          >
+                            {row.link}
+                          </Link>
                         </TableCell>
                       </TableRow>
                     ) : (
@@ -389,27 +431,65 @@ const NonTagged = () => {
                         </TableCell>
                         <TableCell
                           size="small"
-                          sx={{ fontFamily: "nunito", whiteSpace: "nowrap" }}
+                          sx={{
+                            fontFamily: "nunito",
+                            whiteSpace: "nowrap",
+                            fontSize: "0.8em",
+                          }}
                         >
                           {row.publication}
                         </TableCell>
                         <TableCell
                           size="small"
-                          sx={{ fontFamily: "nunito", whiteSpace: "nowrap" }}
+                          sx={{
+                            fontFamily: "nunito",
+                            whiteSpace: "nowrap",
+                            fontSize: "0.8em",
+                          }}
                         >
-                          {row.articledate.split("T")[0]}
+                          {row.articledate?.split("T")[0]}
                         </TableCell>
                         <TableCell
                           size="small"
-                          sx={{ fontFamily: "nunito", whiteSpace: "nowrap" }}
+                          sx={{
+                            fontFamily: "nunito",
+                            whiteSpace: "nowrap",
+                            fontSize: "0.8em",
+                          }}
                         >
                           {row.articleid}
                         </TableCell>
                         <TableCell
                           size="small"
-                          sx={{ fontFamily: "nunito", whiteSpace: "nowrap" }}
+                          sx={{
+                            fontFamily: "nunito",
+                            whiteSpace: "nowrap",
+                            overflow: "hidden",
+                            textOverflow: "ellipsis",
+                            maxWidth: 300,
+                            fontSize: "0.8em",
+                          }}
                         >
-                          {row.link}
+                          <Tooltip title={row.headline}>
+                            {" "}
+                            {row.headline}
+                          </Tooltip>
+                        </TableCell>
+                        <TableCell
+                          size="small"
+                          sx={{
+                            fontFamily: "nunito",
+                            whiteSpace: "nowrap",
+                            fontSize: "0.8em",
+                          }}
+                        >
+                          <Link
+                            href={row.link?.slice(1, -1)}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                          >
+                            {row.link.slice(1, -1)}
+                          </Link>
                         </TableCell>
                       </TableRow>
                     )}

@@ -18,6 +18,7 @@ const ArticleView = ({ selectedArticle }) => {
         href={link}
         target="_blank"
         rel="noreferrer"
+        className="underline text-primary"
       >
         Article View <FaExternalLinkAlt style={{ fontSize: "1.2em" }} />
       </Typography>

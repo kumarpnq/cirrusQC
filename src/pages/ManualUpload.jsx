@@ -5,6 +5,7 @@ import {
   FormGroup,
   FormControlLabel,
   Typography,
+  Link,
 } from "@mui/material";
 import Table from "@mui/material/Table";
 import TableBody from "@mui/material/TableBody";
@@ -240,7 +241,7 @@ const ManualUpload = () => {
                           position: "sticky",
                           left: 0,
                           background: "white",
-                          fontSize: "0.9rem",
+                          fontSize: "0.8rem",
                         }}
                       >
                         <EditAttributesOutlined
@@ -254,7 +255,7 @@ const ManualUpload = () => {
                           whiteSpace: "nowrap",
                           overflow: "hidden",
                           textOverflow: "ellipsis",
-                          fontSize: "0.9rem",
+                          fontSize: "0.8rem",
                           fontFamily: "nunito",
                         }}
                       >
@@ -262,15 +263,21 @@ const ManualUpload = () => {
                       </TableCell>
                       <TableCell
                         size="small"
-                        sx={{ fontSize: "0.9rem", fontFamily: "nunito" }}
+                        sx={{ fontSize: "0.8rem", fontFamily: "nunito" }}
                       >
                         {row.publicationname}
                       </TableCell>
                       <TableCell
                         size="small"
-                        sx={{ fontSize: "0.9rem", fontFamily: "nunito" }}
+                        sx={{ fontSize: "0.8rem", fontFamily: "nunito" }}
                       >
-                        {row.searchlink}
+                        <Link
+                          href={row.searchlink}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                        >
+                          {row.searchlink}
+                        </Link>
                       </TableCell>
                     </TableRow>
                   ))}

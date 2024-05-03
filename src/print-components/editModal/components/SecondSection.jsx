@@ -31,6 +31,7 @@ import { toast } from "react-toastify";
 import axios from "axios";
 import PropTypes from "prop-types";
 import { convertKeys } from "../../../constants/convertKeys";
+import DebounceSearchCompany from "../../../@core/DebounceSearchCompany";
 
 const SecondSection = (props) => {
   const { selectedClient, selectedArticle, editedSingleArticle } = props;
@@ -384,11 +385,11 @@ const SecondSection = (props) => {
         alignItems={"center"}
         justifyContent={"space-between"}
       >
-        <DebounceSearch
+        {/* <DebounceSearch
           selectedCompany={selectedCompany}
           setSelectedCompany={setSelectedCompany}
-        />
-
+        /> */}
+        <DebounceSearchCompany setSelectedCompany={setSelectedCompany} />
         <button
           onClick={handleAddCompanies}
           className="px-6 text-white uppercase rounded-md bg-primary"
@@ -437,7 +438,7 @@ const SecondSection = (props) => {
       <TableContainer component={Paper} sx={{ maxHeight: 400 }}>
         <Table sx={{ overflow: "scroll" }} aria-label="simple table">
           <TableHead
-            sx={{ position: "sticky", top: 0, zIndex: 50, color: "white" }}
+            sx={{ position: "sticky", top: 0, zIndex: 10, color: "white" }}
             className="bg-primary"
           >
             <TableRow sx={{ fontSize: "0.8em" }}>

@@ -20,6 +20,8 @@ import useProtectedRequest from "../../hooks/useProtectedRequest";
 import CustomButton from "../../@core/CustomButton";
 import DebounceSearch from "../../print-components/dropdowns/DebounceSearch";
 import { convertKeys } from "../../constants/convertKeys";
+import DebounceSearchCompany from "../../@core/DebounceSearchCompany";
+import Button from "../custom/Button";
 
 const ClientSection = ({ selectedArticle, userToken }) => {
   const [selectedCompany, setSelectedCompany] = useState("");
@@ -236,17 +238,20 @@ const ClientSection = ({ selectedArticle, userToken }) => {
   };
   return (
     <>
-      <Box display="flex" alignItems="center" my={1}>
+      <Box display="flex" alignItems="center" my={1} gap={1}>
         <Box display="flex" alignItems="center">
-          <Typography sx={{ fontSize: "0.9em" }}>Company:</Typography>
+          <Typography sx={{ fontSize: "0.9em", mt: 1 }}>Company:</Typography>
           <div className="z-50 ml-4">
-            <DebounceSearch
+            {/* <DebounceSearch
               selectedCompany={selectedCompany}
               setSelectedCompany={setSelectedCompany}
-            />
+            /> */}
+            <DebounceSearchCompany setSelectedCompany={setSelectedCompany} />
           </div>
         </Box>
-        <button
+        <Button btnText="Add" onClick={handleAddCompanies} />
+        <Button btnText="Save" onClick={handleSave} />
+        {/* <button
           className="text-white uppercase bg-primary rounded-[3px] px-4 py-1 mt-1 ml-4"
           onClick={handleAddCompanies}
         >
@@ -257,7 +262,7 @@ const ClientSection = ({ selectedArticle, userToken }) => {
           onClick={handleSave}
         >
           Save
-        </button>
+        </button> */}
       </Box>
       <Card>
         <table>

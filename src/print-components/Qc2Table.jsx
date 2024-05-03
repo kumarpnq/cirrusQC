@@ -336,8 +336,15 @@ const Qc2Table = ({
                       </div>
                     </td>
 
-                    <td className="px-3 py-4 whitespace-nowrap">
-                      {items.reporting_subject}
+                    <td>
+                      <div
+                        className={`px-3 whitespace-nowrap ${
+                          items.reporting_subject === "Unknown" &&
+                          "bg-[#FF7F7F] text-white"
+                        }`}
+                      >
+                        {items.reporting_subject}
+                      </div>
                     </td>
                     <td className="px-3 py-4 whitespace-nowrap">
                       {items.remark}

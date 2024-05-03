@@ -189,6 +189,20 @@ const MainTable = ({
                         WebkitBoxOrient: "vertical",
                         WebkitLineClamp: 2,
                         fontSize: "0.8em",
+                        backgroundColor:
+                          header === "REPORTING SUBJECT" &&
+                          rowData[
+                            "REPORTING SUBJECT".toLowerCase().replace(/ /g, "_")
+                          ] === "Unknown"
+                            ? "#FF7F7F"
+                            : "transparent",
+                        color:
+                          header === "REPORTING SUBJECT" &&
+                          rowData[
+                            "REPORTING SUBJECT".toLowerCase().replace(/ /g, "_")
+                          ] === "Unknown"
+                            ? "#fff"
+                            : "black",
                       }}
                       className={`text-xs w-26 text-black overflow-hidden whitespace-normal" ${
                         (header === "REPORTING SUBJECT" && "w-16") ||

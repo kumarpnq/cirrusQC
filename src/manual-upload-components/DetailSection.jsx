@@ -23,6 +23,7 @@ import { url } from "../constants/baseUrl";
 import DebounceSearch from "../print-components/dropdowns/DebounceSearch";
 import useFetchData from "../hooks/useFetchData";
 import { formattedDate } from "../constants/dates";
+import DebounceSearchCompany from "../@core/DebounceSearchCompany";
 
 const Details = ({
   type,
@@ -257,9 +258,12 @@ const Details = ({
           >
             <Box display="flex" alignItems="center">
               <Typography sx={{ fontSize: "0.9em" }}>Company:</Typography>
-              <div className="ml-4">
-                <DebounceSearch
+              <div className="ml-5">
+                {/* <DebounceSearch
                   selectedCompany={selectedCompanies}
+                  setSelectedCompany={setSelectedCompanies}
+                /> */}
+                <DebounceSearchCompany
                   setSelectedCompany={setSelectedCompanies}
                 />
               </div>

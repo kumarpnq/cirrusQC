@@ -19,8 +19,10 @@ import useProtectedRequest from "../../hooks/useProtectedRequest";
 import { url } from "../../constants/baseUrl";
 import useFetchData from "../../hooks/useFetchData";
 import { convertKeys } from "../../constants/convertKeys";
-import DebounceSearch from "../../print-components/dropdowns/DebounceSearch";
+// import DebounceSearch from "../../print-components/dropdowns/DebounceSearch";
 import CustomButton from "../../@core/CustomButton";
+import DebounceSearchCompany from "../../@core/DebounceSearchCompany";
+import Button from "../../components/custom/Button";
 
 const ClientSection = ({ selectedArticle, userToken, setFetchAfterSave }) => {
   const [selectedCompany, setSelectedCompany] = useState("");
@@ -257,28 +259,19 @@ const ClientSection = ({ selectedArticle, userToken, setFetchAfterSave }) => {
   };
   return (
     <>
-      <Box display="flex" alignItems="center" my={1}>
+      <Box display="flex" alignItems="center" my={1} gap={1}>
         <Box display="flex" alignItems="center">
-          <Typography sx={{ fontSize: "0.9em" }}>Company:</Typography>
+          <Typography sx={{ fontSize: "0.9em", mt: 1 }}>Company:</Typography>
           <div className="z-50 ml-4">
-            <DebounceSearch
+            <DebounceSearchCompany setSelectedCompany={setSelectedCompany} />
+            {/* <DebounceSearch
               selectedCompany={selectedCompany}
               setSelectedCompany={setSelectedCompany}
-            />
+            /> */}
           </div>
         </Box>
-        <button
-          className="text-white uppercase bg-primary rounded-[3px] px-4 py-1 mt-1 ml-4"
-          onClick={handleAddCompanies}
-        >
-          Add
-        </button>
-        <button
-          className="text-white uppercase bg-primary rounded-[3px] px-4 py-1 mt-1 ml-4 cursor-pointer"
-          onClick={handleSave}
-        >
-          Save
-        </button>
+        <Button btnText="Add" onClick={handleAddCompanies} />
+        <Button btnText="Save" onClick={handleSave} />
       </Box>
       <Card>
         <table className="w-full">

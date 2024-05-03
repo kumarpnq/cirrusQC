@@ -8,7 +8,6 @@ import { yesOrNo } from "../../../constants/dataArray";
 
 const FirstSection = (props) => {
   const { classes, selectedArticle, setEditedSingleArticle } = props;
-  console.log(selectedArticle);
   const [focusedTextFields, setFocusedTextField] = useState({
     isHeadline: false,
     isSummary: false,
@@ -106,7 +105,7 @@ const FirstSection = (props) => {
             name=""
             id=""
             className="outline-none border border-gray-400 text-[0.9em] rounded-[3px]"
-            cols="72"
+            cols="100"
             rows={focusedTextFields.isHeadline ? 3 : 1}
             onFocus={() =>
               setFocusedTextField((prevState) => ({
@@ -131,7 +130,7 @@ const FirstSection = (props) => {
           </label>
           <textarea
             className="outline-none border border-gray-400 text-[0.9em] rounded-[3px]"
-            cols="72"
+            cols="100"
             rows={focusedTextFields.isArticleSummary ? 3 : 1}
             onFocus={() =>
               setFocusedTextField((prevState) => ({
@@ -156,6 +155,7 @@ const FirstSection = (props) => {
           value={journalist}
           setValue={setJournalist}
           width={200}
+          tClasses={"ml-2"}
         />
         <div className="flex items-center gap-1">
           <label className="text-[0.8em]">Publication:</label>
@@ -169,14 +169,16 @@ const FirstSection = (props) => {
         <div className="flex flex-wrap items-center gap-2">
           <div className="flex items-center gap-2">
             <label className="text-[0.8em]">Box:</label>
-            <YesOrNo
-              classes={classes}
-              placeholder="Box"
-              mapValue={yesOrNo}
-              value={box}
-              setValue={setBox}
-              width={100}
-            />
+            <div className="ml-10">
+              <YesOrNo
+                classes={classes}
+                placeholder="Box"
+                mapValue={yesOrNo}
+                value={box}
+                setValue={setBox}
+                width={100}
+              />
+            </div>
           </div>
           <div className="flex items-center gap-2">
             <label className="text-[0.8em]">Photo:</label>
@@ -217,6 +219,7 @@ const FirstSection = (props) => {
             setValue={setQc1By}
             width={100}
             isDisabled={true}
+            tClasses={"ml-5"}
           />
           <FormWithLabelTextField
             label="Qc2 By"

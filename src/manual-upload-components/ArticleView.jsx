@@ -17,6 +17,7 @@ const ArticleView = ({ link }) => {
         target="_blank"
         rel="noreferrer"
         fontFamily="nunito"
+        className="underline text-primary"
       >
         Article View{" "}
         <FaExternalLinkAlt

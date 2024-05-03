@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Modal, Box, Typography, Button } from "@mui/material";
 import { makeStyles } from "@mui/styles";
+import { FaExternalLinkAlt } from "react-icons/fa";
 
 // ** components
 import FirstSection from "./components/FirstSection";
@@ -78,7 +79,7 @@ export default function EditModal({
             </Typography>
             <Button onClick={handleClose}>close</Button>
           </Box>
-          <div className="flex">
+          <div className="flex gap-1">
             <Box sx={{ width: "60%" }}>
               <FirstSection
                 classes={classes}
@@ -93,6 +94,21 @@ export default function EditModal({
               />
             </Box>
             <Box sx={{ width: "50%" }}>
+              <Typography
+                variant="h6"
+                component={"a"}
+                display="flex"
+                alignItems="center"
+                gap={1}
+                fontSize={"0.9em"}
+                href={`${url + selectedArticle?.link}`}
+                target="_blank"
+                rel="noreferrer"
+                className="underline text-primary"
+              >
+                View
+                <FaExternalLinkAlt style={{ fontSize: "1.2em" }} />
+              </Typography>
               {selectedArticle && selectedArticle.link && (
                 <iframe
                   title="PDF Viewer"

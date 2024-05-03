@@ -31,6 +31,7 @@ import CustomButton from "../../../@core/CustomButton";
 import { toast } from "react-toastify";
 import axios from "axios";
 import PropTypes from "prop-types";
+import DebounceSearchCompany from "../../../@core/DebounceSearchCompany";
 
 const SecondSection = (props) => {
   const { selectedClient, selectedArticle, editedSingleArticle } = props;
@@ -383,10 +384,11 @@ const SecondSection = (props) => {
         alignItems={"center"}
         justifyContent={"space-between"}
       >
-        <DebounceSearch
+        <DebounceSearchCompany setSelectedCompany={setSelectedCompany} />
+        {/* <DebounceSearch
           selectedCompany={selectedCompany}
           setSelectedCompany={setSelectedCompany}
-        />
+        /> */}
 
         <button
           onClick={handleAddCompanies}
@@ -433,10 +435,10 @@ const SecondSection = (props) => {
           Copy
         </button>
       </Box>
-      <TableContainer component={Paper} sx={{ maxHeight: 400 }}>
+      <TableContainer component={Paper} sx={{ maxHeight: 400, mt: 0 }}>
         <Table sx={{ overflow: "scroll" }} aria-label="simple table">
           <TableHead
-            sx={{ position: "sticky", top: 0, zIndex: 50, color: "white" }}
+            sx={{ position: "sticky", top: 0, zIndex: 10, color: "white" }}
             className="bg-primary"
           >
             <TableRow sx={{ fontSize: "0.8em" }}>
