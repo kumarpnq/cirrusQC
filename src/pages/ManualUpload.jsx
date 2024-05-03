@@ -20,15 +20,15 @@ import FromDate from "../components/research-dropdowns/FromDate";
 import { formattedDate, formattedNextDay } from "../constants/dates";
 import ToDate from "../components/research-dropdowns/ToDate";
 import TextFields from "../components/TextFields/TextField";
+import { url } from "../constants/baseUrl";
+import { ResearchContext } from "../context/ContextProvider";
+import Pagination from "../components/pagination/Pagination";
 
 //  ** third party imports
 import { EditAttributesOutlined } from "@mui/icons-material";
 import { IoIosArrowRoundDown, IoIosArrowRoundUp } from "react-icons/io";
 import axios from "axios";
 import { toast } from "react-toastify";
-import { url } from "../constants/baseUrl";
-import { ResearchContext } from "../context/ContextProvider";
-import Pagination from "../components/pagination/Pagination";
 
 const ManualUpload = () => {
   const { userToken, recordsPerPage, pageNumber } = useContext(ResearchContext);

@@ -12,6 +12,7 @@ import {
   TableHead,
   TableRow,
   Paper,
+  Divider,
 } from "@mui/material";
 import { EditAttributesOutlined } from "@mui/icons-material";
 import BasicTabs from "../dump-components/customTabPanel";
@@ -28,6 +29,7 @@ import CustomTextField from "../@core/CutsomTextField";
 import Pagination from "../components/pagination/Pagination";
 import EditModal from "../nonTagged-component/editModal/editModal";
 import UploadDialog from "../nonTagged-component/editArticle/UploadDialog";
+import { IoIosArrowRoundDown, IoIosArrowRoundUp } from "react-icons/io";
 
 const NonTagged = () => {
   const { userToken, pageNumber, recordsPerPage } = useContext(ResearchContext);
@@ -100,6 +102,46 @@ const NonTagged = () => {
     }
     handleDataFetch();
   }, [fetchUsingPrevNext]);
+
+  const [sortDirection, setSortDirection] = useState("asc");
+
+  const handleFilterItems = () => {
+    const fromDateObj = new Date(fromDate.split(" ")[0]);
+    const toDateObj = new Date(toDate.split(" ")[0]);
+
+    const sortedData = [...tableData].sort((a, b) => {
+      let dateA, dateB;
+      if (!activeTab) {
+        dateA = new Date(a.feeddate);
+        dateB = new Date(b.feeddate);
+      } else {
+        dateA = new Date(a.articledate);
+        dateB = new Date(b.articledate);
+      }
+      if (sortDirection === "asc") {
+        return dateA - dateB;
+      } else {
+        return dateB - dateA;
+      }
+    });
+
+    const filteredData = sortedData.filter((item) => {
+      let itemDate;
+      if (!activeTab) {
+        itemDate = new Date(item.feeddate.split("T")[0]);
+      } else {
+        itemDate = new Date(item.articledate.split("T")[0]);
+      }
+      return itemDate >= fromDateObj && itemDate <= toDateObj;
+    });
+
+    setTableData(filteredData);
+  };
+
+  const handleSortDirectionChange = () => {
+    setSortDirection(sortDirection === "asc" ? "desc" : "asc");
+  };
+
   //for edit modal
   const [open, setOpen] = useState(false);
   const [editedSingleArticle, setEditedSingleArticle] = useState(null);
@@ -183,110 +225,156 @@ const NonTagged = () => {
           width={900}
         />
       )}
-      <Pagination
-        tableData={tableData}
-        totalRecordsCount={totalRecords}
-        setFetchingUsingPrevNext={setFetchingUsingPrevNext}
-      />
+      <Divider sx={{ mt: 1 }} />
+      {tableData.length && (
+        <>
+          {" "}
+          <Pagination
+            tableData={tableData}
+            totalRecordsCount={totalRecords}
+            setFetchingUsingPrevNext={setFetchingUsingPrevNext}
+          />
+          <TableContainer component={Paper} sx={{ mt: 1, maxHeight: 600 }}>
+            <Table
+              sx={{ minWidth: 650, maxHeight: 500, overflow: "scroll" }}
+              aria-label="simple table"
+            >
+              <TableHead style={{ position: "sticky", top: 0, zIndex: 1 }}>
+                <TableRow className="bg-primary">
+                  <TableCell
+                    size="small"
+                    sx={{ color: "white", fontFamily: "nunito" }}
+                  >
+                    Edit
+                  </TableCell>
+                  <TableCell
+                    size="small"
+                    sx={{ color: "white", fontFamily: "nunito" }}
+                  >
+                    Publication
+                  </TableCell>
+                  <TableCell
+                    size="small"
+                    sx={{
+                      color: "white",
+                      fontFamily: "nunito",
+                      display: "flex",
+                      alignItems: "center",
+                      cursor: "pointer",
+                    }}
+                    onClick={() => {
+                      handleSortDirectionChange();
+                      handleFilterItems();
+                    }}
+                  >
+                    <span className="flex items-center text-white">
+                      <IoIosArrowRoundDown
+                        className={`${
+                          sortDirection === "asc" && "text-red-500"
+                        }`}
+                      />
+                      <IoIosArrowRoundUp
+                        className={`${
+                          sortDirection === "desc" && "text-red-500"
+                        }`}
+                      />
+                    </span>
+                    {!activeTab ? "FeedDate" : "ArticleDate"}
+                  </TableCell>
+                  <TableCell
+                    size="small"
+                    sx={{ color: "white", fontFamily: "nunito" }}
+                  >
+                    {!activeTab ? "SocialFeedId" : "ArticleId"}
+                  </TableCell>
+                  <TableCell
+                    size="small"
+                    sx={{ color: "white", fontFamily: "nunito" }}
+                  >
+                    Link
+                  </TableCell>
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {tableData.map((row, index) => (
+                  <Fragment key={index}>
+                    {!activeTab ? (
+                      <TableRow key={row.id}>
+                        <TableCell
+                          size="small"
+                          sx={{ color: "#0a4f7d" }}
+                          onClick={() => tableRowClick(row)}
+                        >
+                          <EditAttributesOutlined />
+                        </TableCell>
+                        <TableCell
+                          size="small"
+                          sx={{ fontFamily: "nunito", whiteSpace: "nowrap" }}
+                        >
+                          {row.publication}
+                        </TableCell>
+                        <TableCell
+                          size="small"
+                          sx={{ fontFamily: "nunito", whiteSpace: "nowrap" }}
+                        >
+                          {row.feeddate.split("T")[0]}
+                        </TableCell>
+                        <TableCell
+                          size="small"
+                          sx={{ fontFamily: "nunito", whiteSpace: "nowrap" }}
+                        >
+                          {row.socialfeedid}
+                        </TableCell>
+                        <TableCell
+                          size="small"
+                          sx={{ fontFamily: "nunito", whiteSpace: "nowrap" }}
+                        >
+                          {row.link}
+                        </TableCell>
+                      </TableRow>
+                    ) : (
+                      <TableRow key={row.id}>
+                        <TableCell
+                          size="small"
+                          sx={{ color: "#0a4f7d" }}
+                          onClick={() => tableRowClick(row)}
+                        >
+                          <EditAttributesOutlined />
+                        </TableCell>
+                        <TableCell
+                          size="small"
+                          sx={{ fontFamily: "nunito", whiteSpace: "nowrap" }}
+                        >
+                          {row.publication}
+                        </TableCell>
+                        <TableCell
+                          size="small"
+                          sx={{ fontFamily: "nunito", whiteSpace: "nowrap" }}
+                        >
+                          {row.articledate.split("T")[0]}
+                        </TableCell>
+                        <TableCell
+                          size="small"
+                          sx={{ fontFamily: "nunito", whiteSpace: "nowrap" }}
+                        >
+                          {row.articleid}
+                        </TableCell>
+                        <TableCell
+                          size="small"
+                          sx={{ fontFamily: "nunito", whiteSpace: "nowrap" }}
+                        >
+                          {row.link}
+                        </TableCell>
+                      </TableRow>
+                    )}
+                  </Fragment>
+                ))}
+              </TableBody>
+            </Table>
+          </TableContainer>
+        </>
+      )}
 
-      <TableContainer component={Paper} sx={{ mt: 1, maxHeight: 600 }}>
-        <Table
-          sx={{ minWidth: 650, maxHeight: 500, overflow: "scroll" }}
-          aria-label="simple table"
-        >
-          <TableHead style={{ position: "sticky", top: 0, zIndex: 1 }}>
-            <TableRow className="bg-primary">
-              <TableCell
-                size="small"
-                sx={{ color: "white", fontFamily: "nunito" }}
-              >
-                Edit
-              </TableCell>
-              <TableCell
-                size="small"
-                sx={{ color: "white", fontFamily: "nunito" }}
-              >
-                Publication
-              </TableCell>
-              <TableCell
-                size="small"
-                sx={{ color: "white", fontFamily: "nunito" }}
-              >
-                {!activeTab ? "FeedDate" : "ArticleDate"}
-              </TableCell>
-              <TableCell
-                size="small"
-                sx={{ color: "white", fontFamily: "nunito" }}
-              >
-                {!activeTab ? "SocialFeedId" : "ArticleId"}
-              </TableCell>
-              <TableCell
-                size="small"
-                sx={{ color: "white", fontFamily: "nunito" }}
-              >
-                Link
-              </TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {tableData.map((row, index) => (
-              <Fragment key={index}>
-                {!activeTab ? (
-                  <TableRow key={row.id}>
-                    <TableCell
-                      size="small"
-                      sx={{ color: "#0a4f7d" }}
-                      onClick={() => tableRowClick(row)}
-                    >
-                      <EditAttributesOutlined />
-                    </TableCell>
-                    <TableCell
-                      size="small"
-                      sx={{ fontFamily: "nunito", whiteSpace: "nowrap" }}
-                    >
-                      {row.publication}
-                    </TableCell>
-                    <TableCell
-                      size="small"
-                      sx={{ fontFamily: "nunito", whiteSpace: "nowrap" }}
-                    >
-                      {row.feeddate.split("T")[0]}
-                    </TableCell>
-                    <TableCell
-                      size="small"
-                      sx={{ fontFamily: "nunito", whiteSpace: "nowrap" }}
-                    >
-                      {row.socialfeedid}
-                    </TableCell>
-                    <TableCell
-                      size="small"
-                      sx={{ fontFamily: "nunito", whiteSpace: "nowrap" }}
-                    >
-                      {row.link}
-                    </TableCell>
-                  </TableRow>
-                ) : (
-                  <TableRow key={row.id}>
-                    <TableCell
-                      size="small"
-                      sx={{ color: "#0a4f7d" }}
-                      onClick={() => tableRowClick(row)}
-                    >
-                      <EditAttributesOutlined />
-                    </TableCell>
-                    <TableCell size="small">{row.publication}</TableCell>
-                    <TableCell size="small">
-                      {row.articledate.split("T")[0]}
-                    </TableCell>
-                    <TableCell size="small">{row.articleid}</TableCell>
-                    <TableCell size="small">{row.link}</TableCell>
-                  </TableRow>
-                )}
-              </Fragment>
-            ))}
-          </TableBody>
-        </Table>
-      </TableContainer>
       {!activeTab ? (
         <UploadDialog
           open={open}
