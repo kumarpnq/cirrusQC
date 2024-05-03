@@ -312,18 +312,28 @@ const Qc2Table = ({
                     <td className="px-6 py-4 whitespace-nowrap">
                       {items.header_space}
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      {items.m_prom}
+                    <td>
+                      <div
+                        className={`px-6 whitespace-nowrap ${
+                          items.m_prom === "Unknown" &&
+                          "bg-[#FF7F7F] text-white"
+                        }`}
+                      >
+                        {items.m_prom}
+                      </div>
                     </td>
                     <td className="px-3 py-4 whitespace-nowrap">
                       {items.space}
                     </td>
-                    <td
-                      className={`px-3 py-4 whitespace-nowrap ${
-                        items.reporting_tone === "Unknown" && "text-[#FF7F7F]"
-                      }`}
-                    >
-                      {items.reporting_tone}
+                    <td>
+                      <div
+                        className={`px-3 whitespace-nowrap ${
+                          items.reporting_tone === "Unknown" &&
+                          "bg-[#FF7F7F] text-white"
+                        }`}
+                      >
+                        {items.reporting_tone}
+                      </div>
                     </td>
 
                     <td className="px-3 py-4 whitespace-nowrap">

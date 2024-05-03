@@ -54,7 +54,7 @@ const UploadDialog = ({
       }
     };
     fetchHeaderData();
-  }, [selectedRow]);
+  }, [selectedRow, socialfeedId, userToken]);
   return (
     <Modal open={open} onClose={handleClose}>
       <Box sx={style}>

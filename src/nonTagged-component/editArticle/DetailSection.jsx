@@ -60,13 +60,13 @@ const Details = ({ selectedRow, userToken }) => {
           HASVIDEO: vAlignment,
         },
       ];
-      const response = axios.post(
+      const response = await axios.post(
         `${url}updatesocialfeedheader/`,
         request_data,
         { headers }
       );
       console.log(response);
-      if (response) {
+      if (response.status == 200) {
         toast.success("Updated Successfully.");
       }
     } catch (error) {
@@ -80,13 +80,7 @@ const Details = ({ selectedRow, userToken }) => {
         <Typography variant="h2" fontSize={"0.9em"} ml={2}>
           Edit
         </Typography>
-        {/* <CardHeader
-        title={
-          <Typography variant="h6" fontSize={"0.9em"}>
-            Edit
-          </Typography>
-        }
-      /> */}
+
         <CardContent sx={{ mx: 1 }}>
           <FormControl>
             <Box mb={1} display="flex" alignItems="center">
@@ -94,7 +88,7 @@ const Details = ({ selectedRow, userToken }) => {
               <Typography
                 sx={{ fontSize: "0.9em", fontWeight: "bold", ml: 1.7 }}
               >
-                {selectedRow?.link?.props?.href}
+                {selectedRow?.link}
               </Typography>
             </Box>
             <Box mb={1} display="flex" alignItems="center" width={580}>

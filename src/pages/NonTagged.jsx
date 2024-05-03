@@ -14,6 +14,7 @@ import {
   Paper,
   Divider,
 } from "@mui/material";
+import { makeStyles } from "@mui/styles";
 import { EditAttributesOutlined } from "@mui/icons-material";
 import BasicTabs from "../dump-components/customTabPanel";
 import { formattedDate, formattedNextDay } from "../constants/dates";
@@ -30,6 +31,24 @@ import Pagination from "../components/pagination/Pagination";
 import EditModal from "../nonTagged-component/editModal/editModal";
 import UploadDialog from "../nonTagged-component/editArticle/UploadDialog";
 import { IoIosArrowRoundDown, IoIosArrowRoundUp } from "react-icons/io";
+import Publication from "../print-components/dropdowns/Publication";
+
+const useStyle = makeStyles(() => ({
+  dropDowns: {
+    height: 25,
+    fontSize: "0.8em",
+    marginTop: "1em",
+  },
+
+  clientForm: {
+    width: 300,
+  },
+  menuPaper: {
+    maxHeight: 200,
+    width: 200,
+    background: "#d4c8c7",
+  },
+}));
 
 const NonTagged = () => {
   const { userToken, pageNumber, recordsPerPage } = useContext(ResearchContext);
@@ -42,6 +61,8 @@ const NonTagged = () => {
   const [fromDate, setFromDate] = useState(formattedDate);
   const [toDate, setToDate] = useState(formattedNextDay);
   const [publication, setPublication] = useState("");
+  const [debouncePub, setDebouncePub] = useState("");
+  const [publicationGroup, setPublicationGroup] = useState("");
   const [topPublication, setTopPublication] = useState(true);
   const [nonTagged, setNonTagged] = useState(true);
   const [searchLink, setSearchLink] = useState("");
@@ -73,7 +94,7 @@ const NonTagged = () => {
         to_date: toDate.split(" ")[0],
         page: pageNumber,
         items_per_page: recordsPerPage,
-        search_publication: publication,
+        search_publication: publicationGroup,
       };
       const request_data = !activeTab ? requestData_online : requestData_print;
       const endpoint = !activeTab
@@ -160,6 +181,7 @@ const NonTagged = () => {
     setSelectedArticle((prev) => (prev === item ? null : item));
   };
 
+  const classes = useStyle();
   return (
     <div className="h-screen px-3">
       <BasicTabs
@@ -170,11 +192,33 @@ const NonTagged = () => {
       <Box display="flex" alignItems="center" gap={1}>
         <FromDate fromDate={fromDate} setFromDate={setFromDate} />
         <ToDate dateNow={toDate} setDateNow={setToDate} isMargin />
-        <CustomDebounceDropdown
-          publicationGroup={publication}
-          setPublicationGroup={setPublication}
-          m="mt-3"
-        />
+        {!activeTab && (
+          <div className="mt-3">
+            <CustomTextField
+              placeholder={"publication"}
+              value={publication}
+              setValue={setPublication}
+            />
+          </div>
+        )}
+
+        {!!activeTab && (
+          <>
+            <CustomDebounceDropdown
+              publicationGroup={debouncePub}
+              setPublicationGroup={setDebouncePub}
+              m="mt-3"
+            />
+            <Publication
+              publicationGroup={debouncePub}
+              publication={publicationGroup}
+              setPublication={setPublicationGroup}
+              classes={classes}
+              width={150}
+            />{" "}
+          </>
+        )}
+
         {!activeTab && (
           <>
             {" "}
