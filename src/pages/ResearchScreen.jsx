@@ -268,9 +268,12 @@ const ReasearchScreen = () => {
               },
             }
           );
+          console.log(response);
           if (response) {
-            const updatedData = response.data.feed_data.map((item) => {
-              return {
+            const localeV = response.data.feed_data;
+            if (localeV && localeV.length > 0) {
+              // Check if localeV is not null or undefined
+              const updatedData = localeV.map((item) => ({
                 ...item,
                 link: (
                   <a
@@ -282,25 +285,24 @@ const ReasearchScreen = () => {
                     Link
                   </a>
                 ),
-              };
-            });
-            // if (!fetchingUsingPrevNext) {
-            //   setTotalRecords(
-            //     response.data.feed_count.map((item) => item.total_rows)
-            //   );
-            // }
-            setTableData(updatedData);
-            const localeV = response.data.feed_data;
-            setTableHeaders(
-              Object.keys(localeV[0]).map((header) =>
-                header.toUpperCase().replace(/_/g, " ")
-              )
-            );
+              }));
+              setTableData(updatedData);
+              setTableHeaders(
+                Object.keys(localeV[0]).map((header) =>
+                  header.toUpperCase().replace(/_/g, " ")
+                )
+              );
+            } else {
+              setTableData([]);
+              setTableHeaders([]); // Reset table headers
+            }
           }
+
           setTableDataLoading(false);
           // setIsRetrieveAfterSave(false);
           // if (!fetchingUsingPrevNext) setPageNumber(1);
         } catch (error) {
+          console.log(error);
           console.log(error);
           toast.error(error.message);
           setTableDataLoading(false);
