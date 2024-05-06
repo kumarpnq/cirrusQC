@@ -1,11 +1,10 @@
 import { useState } from "react";
-import Table from "@mui/material/Table";
-import TableBody from "@mui/material/TableBody";
-import TableCell from "@mui/material/TableCell";
-import TableContainer from "@mui/material/TableContainer";
-import TableHead from "@mui/material/TableHead";
-import TableRow from "@mui/material/TableRow";
-import Paper from "@mui/material/Paper";
+// import Table from "@mui/material/Table";
+// import TableBody from "@mui/material/TableBody";
+// import TableCell from "@mui/material/TableCell";
+// import TableContainer from "@mui/material/TableContainer";
+// import TableHead from "@mui/material/TableHead";
+// import TableRow from "@mui/material/TableRow";
 import PropTypes from "prop-types";
 import { IoIosArrowRoundDown, IoIosArrowRoundUp } from "react-icons/io";
 
@@ -32,110 +31,69 @@ const JobDetails = ({ URI, rows }) => {
   });
 
   return (
-    <div style={{ overflowY: "scroll", height: 600 }}>
-      <TableContainer component={Paper}>
-        <Table sx={{ minWidth: 650 }} aria-label="simple table">
-          <TableHead
-            sx={{
-              fontFamily: "Nunito",
-            }}
-            className="sticky top-0 z-50 bg-primary"
-          >
-            <TableRow className="bg-primary">
-              <TableCell size="small" sx={{ color: "white" }}>
-                Job Name
-              </TableCell>
-              <TableCell
-                size="small"
-                sx={{
-                  color: "white",
-                  display: "flex",
-                  alignItems: "center",
-                  cursor: "pointer",
+    <div style={{ overflowY: "scroll", height: 400 }}>
+      <table className="w-full">
+        <thead className="sticky top-0 text-sm font-thin text-white bg-primary">
+          <tr>
+            <th className="py-2 text-left">Job Name</th>
+            <th
+              onClick={() => handleSort("date")}
+              className="flex py-2 text-left cursor-pointer"
+            >
+              Job Date
+              {sortBy === "date" && (
+                <span className="flex">
+                  <IoIosArrowRoundUp
+                    style={{
+                      color: sortOrder === "asc" ? "green" : "red",
+                    }}
+                  />
+                  <IoIosArrowRoundDown
+                    style={{
+                      color: sortOrder === "asc" ? "red" : "green",
+                    }}
+                  />
+                </span>
+              )}
+            </th>
+            <th className="py-2">Job Status</th>
+            <th className="py-2 text-left pl-14">Job Link</th>
+          </tr>
+        </thead>
+        <tbody className="text-[0.8em]">
+          {sortedRows.map((row) => (
+            <tr key={row.name} className="border">
+              <td className="py-2">{row.filename}</td>
+              <td className="py-2">{row.requested_date.replace("T", " ")}</td>
+              <td
+                className="py-2"
+                style={{
+                  backgroundColor:
+                    row.status === "Processing"
+                      ? "#fffd8f"
+                      : row.status === "Failed"
+                      ? "#f77b52"
+                      : row.status === "Completed" && "#b0faa2",
+                  fontFamily: "Nunito",
+                  fontSize: "0.8rem",
                 }}
-                onClick={() => handleSort("date")}
               >
-                Job Date
-                {sortBy === "date" && (
-                  <span className="flex">
-                    <IoIosArrowRoundUp
-                      style={{
-                        color: sortOrder === "asc" ? "green" : "red",
-                      }}
-                    />
-                    <IoIosArrowRoundDown
-                      style={{
-                        color: sortOrder === "asc" ? "red" : "green",
-                      }}
-                    />
-                  </span>
-                )}
-              </TableCell>
-              <TableCell size="small" sx={{ color: "white" }}>
-                Job Status
-              </TableCell>
-              <TableCell size="small" sx={{ color: "white" }}>
-                Job Link
-              </TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {sortedRows.map((row) => (
-              <TableRow
-                key={row.name}
-                sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
-              >
-                <TableCell
-                  size="small"
-                  sx={{ fontFamily: "Nunito", fontSize: "0.8rem" }}
+                {row.status}
+              </td>
+              <td className="py-2 pl-20">
+                <a
+                  href={!!row.filelink && `${URI + row.filelink}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="italic underline"
                 >
-                  {row.filename}
-                </TableCell>
-                <TableCell
-                  size="small"
-                  sx={{ fontFamily: "Nunito", fontSize: "0.8rem" }}
-                >
-                  {row.requested_date.replace("T", " ")}
-                </TableCell>
-                <TableCell
-                  size="small"
-                  sx={{
-                    bgcolor:
-                      row.status === "Processing"
-                        ? "#fffd8f"
-                        : row.status === "Failed"
-                        ? "#f77b52"
-                        : row.status === "Completed" && "#b0faa2",
-                    fontFamily: "Nunito",
-                    fontSize: "0.8rem",
-                  }}
-                >
-                  {row.status}
-                </TableCell>
-                <TableCell
-                  size="small"
-                  sx={{
-                    fontFamily: "Nunito",
-                    fontSize: "0.8rem",
-                    color: "blue",
-                    textDecoration: "underline",
-                  }}
-                >
-                  {" "}
-                  <a
-                    href={!!row.filelink && `${URI + row.filelink}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="underline"
-                  >
-                    {"link"}
-                  </a>
-                </TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </TableContainer>
+                  link
+                </a>
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
     </div>
   );
 };
