@@ -182,7 +182,7 @@ const EditSection = ({
 
     const invalidRows = updatedData.filter((row) =>
       ["reporting_tone", "m_prom", "reporting_subject"].some(
-        (field) => row[field] === null
+        (field) => row[field] === "Unknown"
       )
     );
 

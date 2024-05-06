@@ -1,4 +1,5 @@
 import axios from "axios";
+import { toast } from "react-toastify";
 
 const handlePostData = async (
   updatedRows,
@@ -26,7 +27,6 @@ const handlePostData = async (
 ) => {
   setSavedSuccess(true);
   setPostingLoading(true);
-
   const dataToSending = updatedRows.map((row) => ({
     COMPANYID: row.company_id,
     DETAILSUMMARY: row.detail_summary,
@@ -43,7 +43,19 @@ const handlePostData = async (
     AUTHOR: row.author_name,
     REMARKS: row.remarks,
   }));
+  const invalidRows = updatedRows.filter((row) =>
+    ["reporting_tone", "prominence", "reporting_subject"].some(
+      (field) => row[field] === "Unknown"
+    )
+  );
 
+  if (invalidRows.length > 0) {
+    toast.warning(
+      "Some rows have null values in reporting_tone, manual_prominence, or subject."
+    );
+    setPostingLoading(false);
+    return;
+  }
   try {
     const url = `${import.meta.env.VITE_BASE_URL}update2databaseTemp/`; //update2database
     if (dataToSending.length > 0) {
@@ -64,7 +76,7 @@ const handlePostData = async (
       setTableData(newTableData);
       setUpdatedRows([]);
       setPostingLoading(false);
-      setSuccessMessage("Data updated successfully!");
+      toast.success("Data updated successfully!");
       setSelectedRowData([]);
       setHighlightUpdatedRows([]);
       setSearchedData([]);
