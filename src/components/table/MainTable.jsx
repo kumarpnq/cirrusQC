@@ -1,7 +1,7 @@
 import { makeStyles } from "@mui/styles";
 import { IoIosArrowRoundDown, IoIosArrowRoundUp } from "react-icons/io";
 import getHeaderAbbreviation from "../../constants/concatHeader";
-import React, { memo, useContext, useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import PropTypes from "prop-types";
 import { TableCell, TableRow, Tooltip } from "@mui/material";
 import { ResearchContext } from "../../context/ContextProvider";
@@ -403,4 +403,4 @@ MainTable.propTypes = {
   setSortColumn: PropTypes.func,
   highlightUpdatedRows: PropTypes.array,
 };
-export default memo(MainTable);
+export default MainTable;

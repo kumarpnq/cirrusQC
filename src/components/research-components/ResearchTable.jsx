@@ -19,6 +19,8 @@ import SubjectSearchable from "../research-dropdowns/table-dropdowns/SubjectSear
 import SearchableCategory from "../research-dropdowns/table-dropdowns/SearchableCategory";
 
 import { url } from "../../constants/baseUrl";
+import Delete from "../deleteData/popupModal/Delete";
+import CustomButton from "../../@core/CustomButton";
 // import FilteredRowCount from "../filtered-rows/FilteredRowCount";
 
 const useStyles = makeStyles(() => ({
@@ -459,6 +461,12 @@ const ResearchTable = ({
     }
   }, [savedSuccess]);
   const loadingLoader = sortLoading || tableLoading || tableDataLoading;
+
+  // * for delete box
+  const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
+  const handleDialogOpen = () => {
+    setOpenDeleteDialog((prev) => !prev);
+  };
   return (
     <div className="relative">
       {loadingLoader && (
@@ -574,6 +582,13 @@ const ResearchTable = ({
         >
           {postingLoading ? "Loading..." : "Save"}
         </button>
+        {!!selectedRowData.length && (
+          <CustomButton
+            btnText="Delete"
+            onClick={handleDialogOpen}
+            bg="bg-red-500"
+          />
+        )}
         {/* {selectedRowData.length > 0 && <DeleteTableData />} */}
         {/* saved or not */}
         <div>
@@ -624,6 +639,14 @@ const ResearchTable = ({
         tableData={tableData}
         updatedRows={updatedRows}
         highlightUpdatedRows={highlightUpdatedRows}
+      />
+      <Delete
+        open={openDeleteDialog}
+        setOpen={setOpenDeleteDialog}
+        selectedArticles={selectedRowData}
+        setSelectedArticles={setSelectedRowData}
+        qc2PrintTableData={tableData}
+        setQc2PrintTableData={setTableData}
       />
     </div>
   );

@@ -1,5 +1,5 @@
 import { useState } from "react";
-import Modal from "./popupModal/Modal";
+import Delete from "./popupModal/Delete";
 
 const DeleteTableData = () => {
   const [isPopup, setIsPopup] = useState(false);
@@ -9,12 +9,12 @@ const DeleteTableData = () => {
   return (
     <div>
       <button
-        className="border-gray-400 rounded px-10 mt-3 uppercase tracking-wider text-white shadow-md bg-red-500"
+        className="px-10 mt-3 tracking-wider text-white uppercase bg-red-500 border-gray-400 rounded shadow-md"
         onClick={handleDeletePopup}
       >
         Delete
       </button>
-      {isPopup && <Modal setIsPopup={setIsPopup} isPopup={isPopup} />}
+      {isPopup && <Delete open={open} setOpen={setIsPopup} />}
     </div>
   );
 };
