@@ -32,10 +32,15 @@ const JobDetails = ({ URI, rows }) => {
   });
 
   return (
-    <div style={{ maxHeight: "400px", overflowY: "auto" }}>
+    <div style={{ overflowY: "scroll", height: 600 }}>
       <TableContainer component={Paper}>
         <Table sx={{ minWidth: 650 }} aria-label="simple table">
-          <TableHead sx={{ fontFamily: "Nunito" }}>
+          <TableHead
+            sx={{
+              fontFamily: "Nunito",
+            }}
+            className="sticky top-0 z-50 bg-primary"
+          >
             <TableRow className="bg-primary">
               <TableCell size="small" sx={{ color: "white" }}>
                 Job Name

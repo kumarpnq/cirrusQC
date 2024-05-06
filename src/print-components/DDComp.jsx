@@ -52,13 +52,8 @@ const useStyle = makeStyles(() => ({
   },
 }));
 const DDComp = () => {
-  const {
-    userToken,
-    pageNumber,
-    recordsPerPage,
-    fetchAfterSave,
-    setFetchAfterSave,
-  } = useContext(ResearchContext);
+  const { userToken, pageNumber, recordsPerPage, setFetchAfterSave } =
+    useContext(ResearchContext);
   // main table data
   const [printTableData, setPrintTableData] = useState([]);
   const printTableRef = useRef(null);
@@ -466,14 +461,7 @@ const DDComp = () => {
             classes={classes}
           />
         </div>
-        {/* <div className="h-[25px] flex items-center justify-center w-[95px]">
-          <TextFields
-            placeholder="Prominence"
-            type={"number"}
-            value={mProm}
-            setValue={setMProm}
-          />
-        </div> */}
+
         <div className="h-[25px] flex items-center justify-center w-[95px]">
           <TextFields
             placeholder="Page"

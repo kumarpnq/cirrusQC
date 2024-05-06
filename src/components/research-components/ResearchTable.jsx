@@ -19,7 +19,7 @@ import SubjectSearchable from "../research-dropdowns/table-dropdowns/SubjectSear
 import SearchableCategory from "../research-dropdowns/table-dropdowns/SearchableCategory";
 
 import { url } from "../../constants/baseUrl";
-import FilteredRowCount from "../filtered-rows/FilteredRowCount";
+// import FilteredRowCount from "../filtered-rows/FilteredRowCount";
 
 const useStyles = makeStyles(() => ({
   dropDowns: {
@@ -609,9 +609,9 @@ const ResearchTable = ({
             totalRecordsCount={totalRecordsCount}
           />
         )} */}
-        {searchedData.length > 0 && (
+        {/* {searchedData.length > 0 && (
           <FilteredRowCount filterRowCount={searchedData} />
-        )}
+        )} */}
       </div>
       <MainTable
         searchedData={searchedData}

@@ -56,6 +56,8 @@ export default function EditModal({
   selectedArticle,
   editedSingleArticle,
   setEditedSingleArticle,
+  tableData,
+  setTableData,
 }) {
   const articleId = selectedArticle?.articleid;
   const { userToken } = useContext(ResearchContext);
@@ -112,6 +114,8 @@ export default function EditModal({
                 setSelectedClient={setSelectedClient}
                 selectedArticle={selectedArticle}
                 editedSingleArticle={editedSingleArticle}
+                tableData={tableData}
+                setTableData={setTableData}
               />
             </Box>
             <Box sx={{ width: "50%" }}>
@@ -151,4 +155,6 @@ EditModal.propTypes = {
   selectedArticle: PropTypes.array.isRequired,
   editedSingleArticle: PropTypes.array.isRequired,
   setEditedSingleArticle: PropTypes.func.isRequired,
+  tableData: PropTypes.array.isRequired,
+  setTableData: PropTypes.func.isRequired,
 };

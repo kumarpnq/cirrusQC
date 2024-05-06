@@ -302,6 +302,8 @@ const EditSection = ({
         setOpen={setOpenDeleteDialog}
         selectedArticles={selectedItems}
         setSelectedArticles={setSelectedItems}
+        qc2PrintTableData={qc2PrintTableData}
+        setQc2PrintTableData={setQc2PrintTableData}
       />
     </>
   );

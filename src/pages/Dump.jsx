@@ -172,7 +172,7 @@ const Dump = () => {
 
   const classes = useStyle();
   return (
-    <div className="h-screen mx-3 mt-1 ">
+    <div className="mx-3 mt-1 ">
       <BasicTabs
         value={tabValue}
         setValue={setTabValue}

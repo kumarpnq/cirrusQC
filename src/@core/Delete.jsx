@@ -18,11 +18,21 @@ import axios from "axios";
 import { toast } from "react-toastify";
 import useProtectedRequest from "../hooks/useProtectedRequest";
 
-const Delete = ({ open, setOpen, selectedArticles, setSelectedArticles }) => {
+const Delete = ({
+  open,
+  setOpen,
+  selectedArticles,
+  setSelectedArticles,
+  qc2PrintTableData,
+  setQc2PrintTableData,
+}) => {
   const [password, setPassword] = useState("");
   const [verificationLoading, setVerificationLoading] = useState(false);
-  const { userToken, setFetchAfterSave } = useContext(ResearchContext);
-  const { loading, error, data, makeRequest } = useProtectedRequest(userToken);
+  const { userToken } = useContext(ResearchContext);
+  const { loading, error, data, makeRequest } = useProtectedRequest(
+    userToken,
+    "updatearticletagdetails/"
+  );
   const requestData = selectedArticles.map((item) => ({
     UPDATETYPE: "D",
     ARTICLEID: item.article_id,
@@ -54,11 +64,22 @@ const Delete = ({ open, setOpen, selectedArticles, setSelectedArticles }) => {
     if (error) {
       toast.error("An error occurred while deleting the articles.");
     } else {
+      const updatedQc2PrintTableData = qc2PrintTableData.filter((article) => {
+        // Check if the current article exists in selectedArticles based on both company_id and article_id
+        const exists = selectedArticles.some(
+          (selectedArticle) =>
+            selectedArticle.article_id === article.article_id &&
+            selectedArticle.company_id === article.company_id
+        );
+        // If exists, filter it out
+        return !exists;
+      });
       toast.success("Article deleted successfully.");
       setOpen(false);
       setPassword("");
       setSelectedArticles([]);
-      setFetchAfterSave(true);
+      // setFetchAfterSave(true);
+      setQc2PrintTableData(updatedQc2PrintTableData);
     }
   };
 
@@ -101,6 +122,8 @@ Delete.propTypes = {
   setOpen: PropTypes.func.isRequired,
   selectedArticles: PropTypes.array.isRequired,
   setSelectedArticles: PropTypes.array.isRequired,
+  qc2PrintTableData: PropTypes.array.isRequired,
+  setQc2PrintTableData: PropTypes.func.isRequired,
 };
 
 export default Delete;

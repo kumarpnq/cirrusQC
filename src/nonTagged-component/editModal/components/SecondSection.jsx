@@ -24,7 +24,6 @@ import useFetchData from "../../../hooks/useFetchData";
 import { url } from "../../../constants/baseUrl";
 import { convertKeys } from "../../../constants/convertKeys";
 import useProtectedRequest from "../../../hooks/useProtectedRequest";
-import DebounceSearch from "../../../print-components/dropdowns/DebounceSearch";
 import CustomButton from "../../../@core/CustomButton";
 
 // ** third party imports
@@ -34,7 +33,13 @@ import PropTypes from "prop-types";
 import DebounceSearchCompany from "../../../@core/DebounceSearchCompany";
 
 const SecondSection = (props) => {
-  const { selectedClient, selectedArticle, editedSingleArticle } = props;
+  const {
+    selectedClient,
+    selectedArticle,
+    editedSingleArticle,
+    tableData,
+    setTableData,
+  } = props;
   const { userToken } = useContext(ResearchContext);
   const [selectedCompany, setSelectedCompany] = useState(null);
   const [tagData, setTagData] = useState([]);
@@ -212,6 +217,10 @@ const SecondSection = (props) => {
         );
 
         if (res.data) {
+          const latestData = tableData.filter(
+            (item) => articleId !== item.articleid
+          );
+          setTableData(latestData);
           toast.success("Successfully saved changes!");
           setFetchTagDataAfterChange(true);
         }
@@ -427,13 +436,13 @@ const SecondSection = (props) => {
         <Typography sx={{ fontSize: "0.9em", my: 1 }}>
           ClientName: {selectedClient ? selectedClient : "No client selected"}
         </Typography>
-        <button
+        {/* <button
           className="px-6 text-white uppercase rounded-md bg-primary"
           style={{ fontSize: "0.8em" }}
           onClick={handleCopy}
         >
           Copy
-        </button>
+        </button> */}
       </Box>
       <TableContainer component={Paper} sx={{ maxHeight: 400, mt: 0 }}>
         <Table sx={{ overflow: "scroll" }} aria-label="simple table">
@@ -638,5 +647,7 @@ SecondSection.propTypes = {
   selectedClient: PropTypes.string.isRequired,
   selectedArticle: PropTypes.array.isRequired,
   editedSingleArticle: PropTypes.array.isRequired,
+  tableData: PropTypes.array.isRequired,
+  setTableData: PropTypes.func.isRequired,
 };
 export default SecondSection;

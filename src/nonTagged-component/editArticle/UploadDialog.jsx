@@ -34,6 +34,8 @@ const UploadDialog = ({
   handleClose,
   selectedRow,
   setFetchAfterSave,
+  tableData,
+  setTableData,
 }) => {
   const { userToken } = useContext(ResearchContext);
   const socialfeedId = selectedRow?.socialfeedid;
@@ -78,6 +80,8 @@ const UploadDialog = ({
               selectedArticle={fetchedHeader}
               userToken={userToken}
               setFetchAfterSave={setFetchAfterSave}
+              tableData={tableData}
+              setTableData={setTableData}
             />
           </Box>
         </DialogContent>
@@ -91,6 +95,8 @@ UploadDialog.propTypes = {
   handleClose: PropTypes.func.isRequired,
   setFetchAfterSave: PropTypes.func.isRequired,
   selectedRow: PropTypes.object.isRequired,
+  tableData: PropTypes.array.isRequired,
+  setTableData: PropTypes.func.isRequired,
 };
 
 export default UploadDialog;

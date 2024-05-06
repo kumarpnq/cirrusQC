@@ -29,11 +29,12 @@ import { toast } from "react-toastify";
 import { ResearchContext } from "../context/ContextProvider";
 import { url } from "../constants/baseUrl";
 import CustomTextField from "../@core/CutsomTextField";
-import Pagination from "../components/pagination/Pagination";
 import EditModal from "../nonTagged-component/editModal/editModal";
 import UploadDialog from "../nonTagged-component/editArticle/UploadDialog";
 import { IoIosArrowRoundDown, IoIosArrowRoundUp } from "react-icons/io";
 import Publication from "../print-components/dropdowns/Publication";
+import { TableVirtuoso } from "react-virtuoso";
+import TotalRecordsCard from "../@core/TotalRecords";
 
 const useStyle = makeStyles(() => ({
   dropDowns: {
@@ -55,10 +56,8 @@ const useStyle = makeStyles(() => ({
 const NonTagged = () => {
   const { userToken, pageNumber, recordsPerPage } = useContext(ResearchContext);
   const [activeTab, setActiveTab] = useState(0);
-  const [fetchUsingPrevNext, setFetchingUsingPrevNext] = useState(false);
   const [fetchAfterSave, setFetchAfterSave] = useState(false);
   const [tableData, setTableData] = useState([]);
-  const [totalRecords, setTotalRecords] = useState(0);
   const [tableDataLoading, setTableDataLoading] = useState(false);
   const [fromDate, setFromDate] = useState(formattedDate);
   const [toDate, setToDate] = useState(formattedNextDay);
@@ -108,25 +107,14 @@ const NonTagged = () => {
       const data = !activeTab
         ? response.data.tagless_socialfeeds
         : response.data.tagless_articles;
-      const totalRecord = !activeTab
-        ? response.data.socialfeed_count
-        : response.data.article_count;
+
       setTableData(data);
-      setTotalRecords(totalRecord);
       setTableDataLoading(false);
-      setFetchingUsingPrevNext(false);
-      setFetchAfterSave(false);
     } catch (error) {
       setTableDataLoading(false);
       toast.error(error.message);
     }
   };
-  useEffect(() => {
-    if (fetchUsingPrevNext || fetchAfterSave) {
-      handleDataFetch();
-    }
-    handleDataFetch();
-  }, [fetchUsingPrevNext, fetchAfterSave]);
 
   const [sortDirection, setSortDirection] = useState("asc");
 
@@ -274,19 +262,14 @@ const NonTagged = () => {
       )}
       <Divider sx={{ mt: 1 }} />
       {!!tableData.length && (
-        <>
+        <div className="relative">
           {" "}
-          <Pagination
-            tableData={tableData}
-            totalRecordsCount={totalRecords}
-            setFetchingUsingPrevNext={setFetchingUsingPrevNext}
-          />
-          <TableContainer component={Paper} sx={{ mt: 1, maxHeight: 600 }}>
-            <Table
-              sx={{ minWidth: 650, maxHeight: 500, overflow: "scroll" }}
-              aria-label="simple table"
-            >
-              <TableHead style={{ position: "sticky", top: 0, zIndex: 1 }}>
+          <TotalRecordsCard totalRecords={tableData.length} tClass="top-[7%]" />
+          <TableVirtuoso
+            style={{ height: 600 }}
+            data={tableData}
+            fixedHeaderContent={() => (
+              <TableHead>
                 <TableRow className="bg-primary">
                   <TableCell
                     size="small"
@@ -296,7 +279,7 @@ const NonTagged = () => {
                   </TableCell>
                   <TableCell
                     size="small"
-                    sx={{ color: "white", fontFamily: "nunito" }}
+                    sx={{ color: "white", fontFamily: "nunito", width: 150 }}
                   >
                     Publication
                   </TableCell>
@@ -308,6 +291,7 @@ const NonTagged = () => {
                       display: "flex",
                       alignItems: "center",
                       cursor: "pointer",
+                      width: 150,
                     }}
                     onClick={() => {
                       handleSortDirectionChange();
@@ -342,147 +326,161 @@ const NonTagged = () => {
                   </TableCell>
                   <TableCell
                     size="small"
-                    sx={{ color: "white", fontFamily: "nunito" }}
+                    sx={{
+                      color: "white",
+                      fontFamily: "nunito",
+                      pl: 30,
+                      width: 1000,
+                    }}
                   >
                     Link
                   </TableCell>
                 </TableRow>
               </TableHead>
+            )}
+            itemContent={(index, row) => (
               <TableBody>
-                {tableData.map((row, index) => (
-                  <Fragment key={index}>
-                    {!activeTab ? (
-                      <TableRow key={row.id}>
-                        <TableCell
-                          size="small"
-                          sx={{ color: "#0a4f7d" }}
-                          onClick={() => tableRowClick(row)}
-                        >
-                          <EditAttributesOutlined />
-                        </TableCell>
-                        <TableCell
-                          size="small"
-                          sx={{
-                            fontFamily: "nunito",
-                            whiteSpace: "nowrap",
-                            fontSize: "0.8em",
-                          }}
-                        >
-                          {row.publication}
-                        </TableCell>
-                        <TableCell
-                          size="small"
-                          sx={{
-                            fontFamily: "nunito",
-                            whiteSpace: "nowrap",
-                            fontSize: "0.8em",
-                          }}
-                        >
+                <Fragment key={index}>
+                  {!activeTab ? (
+                    <TableRow key={row.id}>
+                      <TableCell
+                        size="small"
+                        sx={{ color: "#0a4f7d" }}
+                        onClick={() => tableRowClick(row)}
+                      >
+                        <EditAttributesOutlined />
+                      </TableCell>
+                      <TableCell
+                        size="small"
+                        sx={{
+                          fontFamily: "nunito",
+                          whiteSpace: "nowrap",
+                          fontSize: "0.8em",
+                          width: 100,
+                        }}
+                      >
+                        <div className="truncate w-28">{row.publication}</div>
+                      </TableCell>
+                      <TableCell
+                        size="small"
+                        sx={{
+                          fontFamily: "nunito",
+                          whiteSpace: "nowrap",
+                          fontSize: "0.8em",
+                          width: 100,
+                        }}
+                      >
+                        <div className="w-20 ml-4">
                           {row.feeddate.split("T")[0]}
-                        </TableCell>
-                        <TableCell
-                          size="small"
-                          sx={{
-                            fontFamily: "nunito",
-                            whiteSpace: "nowrap",
-                            fontSize: "0.8em",
-                          }}
+                        </div>
+                      </TableCell>
+                      <TableCell
+                        size="small"
+                        sx={{
+                          fontFamily: "nunito",
+                          whiteSpace: "nowrap",
+                          fontSize: "0.8em",
+                          width: 100,
+                        }}
+                      >
+                        <div className="w-20 ml-6">{row.socialfeedid}</div>
+                      </TableCell>
+                      <TableCell
+                        size="small"
+                        sx={{
+                          fontFamily: "nunito",
+                          whiteSpace: "nowrap",
+                          overflow: "hidden",
+                          textOverflow: "ellipsis",
+                          width: 300,
+                          fontSize: "0.8em",
+                        }}
+                      >
+                        <Tooltip title={row.headline}>
+                          <div className="truncate w-72">{row.headline}</div>
+                        </Tooltip>
+                      </TableCell>
+                      <TableCell
+                        size="small"
+                        sx={{
+                          fontFamily: "nunito",
+                          whiteSpace: "nowrap",
+                          fontSize: "0.8em",
+                          width: 600,
+                        }}
+                      >
+                        <Link
+                          href={row.link}
+                          target="_blank"
+                          rel="noopener noreferrer"
                         >
-                          {row.socialfeedid}
-                        </TableCell>
-                        <TableCell
-                          size="small"
-                          sx={{
-                            fontFamily: "nunito",
-                            whiteSpace: "nowrap",
-                            overflow: "hidden",
-                            textOverflow: "ellipsis",
-                            maxWidth: 300,
-                            fontSize: "0.8em",
-                          }}
-                        >
-                          <Tooltip title={row.headline}>{row.headline}</Tooltip>
-                        </TableCell>
-                        <TableCell
-                          size="small"
-                          sx={{
-                            fontFamily: "nunito",
-                            whiteSpace: "nowrap",
-                            fontSize: "0.8em",
-                          }}
-                        >
-                          <Link
-                            href={row.link}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                          >
-                            {row.link}
-                          </Link>
-                        </TableCell>
-                      </TableRow>
-                    ) : (
-                      <TableRow key={row.id}>
-                        <TableCell
-                          size="small"
-                          sx={{ color: "#0a4f7d" }}
-                          onClick={() => tableRowClick(row)}
-                        >
-                          <EditAttributesOutlined />
-                        </TableCell>
-                        <TableCell
-                          size="small"
-                          sx={{
-                            fontFamily: "nunito",
-                            whiteSpace: "nowrap",
-                            fontSize: "0.8em",
-                          }}
-                        >
-                          {row.publication}
-                        </TableCell>
-                        <TableCell
-                          size="small"
-                          sx={{
-                            fontFamily: "nunito",
-                            whiteSpace: "nowrap",
-                            fontSize: "0.8em",
-                          }}
-                        >
-                          {row.articledate?.split("T")[0]}
-                        </TableCell>
-                        <TableCell
-                          size="small"
-                          sx={{
-                            fontFamily: "nunito",
-                            whiteSpace: "nowrap",
-                            fontSize: "0.8em",
-                          }}
-                        >
-                          {row.articleid}
-                        </TableCell>
-                        <TableCell
-                          size="small"
-                          sx={{
-                            fontFamily: "nunito",
-                            whiteSpace: "nowrap",
-                            overflow: "hidden",
-                            textOverflow: "ellipsis",
-                            maxWidth: 300,
-                            fontSize: "0.8em",
-                          }}
-                        >
-                          <Tooltip title={row.headline}>
-                            {" "}
-                            {row.headline}
-                          </Tooltip>
-                        </TableCell>
-                        <TableCell
-                          size="small"
-                          sx={{
-                            fontFamily: "nunito",
-                            whiteSpace: "nowrap",
-                            fontSize: "0.8em",
-                          }}
-                        >
+                          {row.link}
+                        </Link>
+                      </TableCell>
+                    </TableRow>
+                  ) : (
+                    <TableRow key={row.id}>
+                      <TableCell
+                        size="small"
+                        sx={{ color: "#0a4f7d" }}
+                        onClick={() => tableRowClick(row)}
+                      >
+                        <EditAttributesOutlined />
+                      </TableCell>
+                      <TableCell
+                        size="small"
+                        sx={{
+                          fontFamily: "nunito",
+                          whiteSpace: "nowrap",
+                          fontSize: "0.8em",
+                        }}
+                      >
+                        <div className="truncate w-36">{row.publication}</div>
+                      </TableCell>
+                      <TableCell
+                        size="small"
+                        sx={{
+                          fontFamily: "nunito",
+                          whiteSpace: "nowrap",
+                          fontSize: "0.8em",
+                        }}
+                      >
+                        {row.articledate?.split("T")[0]}
+                      </TableCell>
+                      <TableCell
+                        size="small"
+                        sx={{
+                          fontFamily: "nunito",
+                          whiteSpace: "nowrap",
+                          fontSize: "0.8em",
+                        }}
+                      >
+                        {row.articleid}
+                      </TableCell>
+                      <TableCell
+                        size="small"
+                        sx={{
+                          fontFamily: "nunito",
+                          whiteSpace: "nowrap",
+                          overflow: "hidden",
+                          textOverflow: "ellipsis",
+                          maxWidth: 300,
+                          fontSize: "0.8em",
+                        }}
+                      >
+                        <Tooltip title={row.headline}>
+                          <div className="truncate w-96">{row.headline}</div>
+                        </Tooltip>
+                      </TableCell>
+                      <TableCell
+                        size="small"
+                        sx={{
+                          fontFamily: "nunito",
+                          whiteSpace: "nowrap",
+                          fontSize: "0.8em",
+                        }}
+                      >
+                        <div className="truncate w-96">
                           <Link
                             href={row.link?.slice(1, -1)}
                             target="_blank"
@@ -490,15 +488,15 @@ const NonTagged = () => {
                           >
                             {row.link.slice(1, -1)}
                           </Link>
-                        </TableCell>
-                      </TableRow>
-                    )}
-                  </Fragment>
-                ))}
+                        </div>
+                      </TableCell>
+                    </TableRow>
+                  )}
+                </Fragment>
               </TableBody>
-            </Table>
-          </TableContainer>
-        </>
+            )}
+          />
+        </div>
       )}
 
       {!activeTab ? (
@@ -507,6 +505,8 @@ const NonTagged = () => {
           handleClose={handleClose}
           selectedRow={selectedArticle}
           setFetchAfterSave={setFetchAfterSave}
+          tableData={tableData}
+          setTableData={setTableData}
         />
       ) : (
         <EditModal
@@ -515,6 +515,8 @@ const NonTagged = () => {
           selectedArticle={selectedArticle}
           editedSingleArticle={editedSingleArticle}
           setEditedSingleArticle={setEditedSingleArticle}
+          tableData={tableData}
+          setTableData={setTableData}
         />
       )}
     </div>

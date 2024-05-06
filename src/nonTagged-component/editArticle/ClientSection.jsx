@@ -13,6 +13,7 @@ import {
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import axios from "axios";
+import PropTypes from "prop-types";
 
 import { toast } from "react-toastify";
 import useProtectedRequest from "../../hooks/useProtectedRequest";
@@ -24,7 +25,13 @@ import CustomButton from "../../@core/CustomButton";
 import DebounceSearchCompany from "../../@core/DebounceSearchCompany";
 import Button from "../../components/custom/Button";
 
-const ClientSection = ({ selectedArticle, userToken, setFetchAfterSave }) => {
+const ClientSection = ({
+  selectedArticle,
+  userToken,
+  setFetchAfterSave,
+  tableData,
+  setTableData,
+}) => {
   const [selectedCompany, setSelectedCompany] = useState("");
   const [tableDataList, setTableDataList] = useState([]);
   const [tableDataLoading, setTableDataLoading] = useState(false);
@@ -245,6 +252,10 @@ const ClientSection = ({ selectedArticle, userToken, setFetchAfterSave }) => {
         { headers }
       );
       if (response.data.result.success.length > 0) {
+        const latestRows = tableData.filter(
+          (item) => selectedArticle.social_feed_id !== item.socialfeedid
+        );
+        setTableData(latestRows);
         toast.success("Updated successfully");
         setModifiedRows([]);
 
@@ -257,6 +268,7 @@ const ClientSection = ({ selectedArticle, userToken, setFetchAfterSave }) => {
       toast.error(error.message);
     }
   };
+
   return (
     <>
       <Box display="flex" alignItems="center" my={1} gap={1}>
@@ -424,4 +436,11 @@ const ClientSection = ({ selectedArticle, userToken, setFetchAfterSave }) => {
   );
 };
 
+ClientSection.propTypes = {
+  selectedArticle: PropTypes.object.isRequired,
+  userToken: PropTypes.string.isRequired,
+  setFetchAfterSave: PropTypes.func.isRequired,
+  tableData: PropTypes.array.isRequired,
+  setTableData: PropTypes.func.isRequired,
+};
 export default ClientSection;
