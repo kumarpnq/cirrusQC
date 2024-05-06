@@ -10,8 +10,8 @@ const handlePostData = async (
   setUpdatedRows,
   setSuccessMessage,
   setSelectedRowData,
-  setReportingTone,
   setSearchedData,
+  setReportingTone,
   setSubject,
   setCategory,
   setProminence,
@@ -20,8 +20,6 @@ const handlePostData = async (
   setEditRow,
   userToken,
   setHighlightUpdatedRows,
-  setIsRetrieveAfterSave,
-  setPageNumber,
   tableData,
   setTableData
 ) => {
@@ -73,10 +71,8 @@ const handlePostData = async (
           !updatedSocialFeedIds.includes(row.social_feed_id) ||
           !updatedCompanyIds.includes(row.company_id)
       );
-      setTableData(newTableData);
       setUpdatedRows([]);
       setPostingLoading(false);
-      toast.success("Data updated successfully!");
       setSelectedRowData([]);
       setHighlightUpdatedRows([]);
       setSearchedData([]);
@@ -88,6 +84,8 @@ const handlePostData = async (
       setUnsavedChanges(false);
       setEditValue("");
       setEditRow("");
+      setTableData(newTableData);
+      toast.success("Data updated successfully!");
     } else {
       setSuccessMessage("No data to save.");
       setPostingLoading(false);

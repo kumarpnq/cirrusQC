@@ -21,8 +21,6 @@ import SearchableCategory from "../research-dropdowns/table-dropdowns/Searchable
 import { url } from "../../constants/baseUrl";
 import Delete from "../deleteData/popupModal/Delete";
 import CustomButton from "../../@core/CustomButton";
-import TotalRecordsCard from "../../@core/TotalRecords";
-// import FilteredRowCount from "../filtered-rows/FilteredRowCount";
 
 const useStyles = makeStyles(() => ({
   dropDowns: {
@@ -47,13 +45,11 @@ const ResearchTable = ({
   tableDataLoading,
   tableData,
   setTableData,
-  setIsRetrieveAfterSave,
   setFetchingUsingPrevNext,
 }) => {
   const classes = useStyles();
   // context values
-  const { name, userToken, setUnsavedChanges, setPageNumber } =
-    useContext(ResearchContext);
+  const { name, userToken, setUnsavedChanges } = useContext(ResearchContext);
 
   // state variables for posting data to database
   const [currentDateWithTime, setCurrentDateWithTime] = useState("");
@@ -195,61 +191,62 @@ const ResearchTable = ({
     setEditValue("");
   };
   //updating tabledata
+
   const handleApplyChanges = () => {
-    if (selectedRowData.length <= 0)
+    if (selectedRowData.length < 0)
       return toast.warning("Please select at least one item to update", {
         autoClose: 3000,
       });
 
     setApplyLoading(true);
-    setTimeout(() => {
-      if (selectedRowData.length > 0) {
-        const updatedSelectedRows = selectedRowData.map((row) => ({
-          ...row,
-          reporting_tone: reportingTone || row.reporting_tone,
-          reporting_subject: subject || row.reporting_subject,
-          subcategory: category || row.subcategory,
-          prominence: prominence || row.prominence,
-          detail_summary:
-            (editRow === "detail_summary" && editValue) || row.detail_summary,
-          headline: (editRow === "headline" && editValue) || row.headline,
-          headsummary:
-            (editRow === "headsummary" && editValue) || row.headsummary,
-          author_name:
-            (editRow === "author_name" && editValue) || row.author_name,
-          keyword: (editRow === "keyword" && editValue) || row.keyword,
-          remarks: (editRow === "remarks" && editValue) || row.remarks,
-        }));
+    // setTimeout(() => {
+    if (selectedRowData.length > 0) {
+      const updatedSelectedRows = selectedRowData.map((row) => ({
+        ...row,
+        reporting_tone: reportingTone || row.reporting_tone,
+        reporting_subject: subject || row.reporting_subject,
+        subcategory: category || row.subcategory,
+        prominence: prominence || row.prominence,
+        detail_summary:
+          (editRow === "detail_summary" && editValue) || row.detail_summary,
+        headline: (editRow === "headline" && editValue) || row.headline,
+        headsummary:
+          (editRow === "headsummary" && editValue) || row.headsummary,
+        author_name:
+          (editRow === "author_name" && editValue) || row.author_name,
+        keyword: (editRow === "keyword" && editValue) || row.keyword,
+        remarks: (editRow === "remarks" && editValue) || row.remarks,
+      }));
 
-        const updatedTableData = tableData.map((row) => {
-          const updatedRow = updatedSelectedRows.find(
-            (selectedRow) =>
-              selectedRow.social_feed_id === row.social_feed_id &&
-              selectedRow.company_id === row.company_id
-          );
-          return updatedRow || row;
-        });
+      const updatedTableData = tableData.map((row) => {
+        const updatedRow = updatedSelectedRows.find(
+          (selectedRow) =>
+            selectedRow.social_feed_id === row.social_feed_id &&
+            selectedRow.company_id === row.company_id
+        );
+        return updatedRow || row;
+      });
 
-        // Update only the items that exist in selectedRowData in both searchedData and tableData
-        const updatedSearchedData = searchedData.map((row) => {
-          const updatedRow = updatedSelectedRows.find(
-            (selectedRow) =>
-              selectedRow.social_feed_id === row.social_feed_id &&
-              selectedRow.company_id === row.company_id
-          );
-          return updatedRow || row;
-        });
+      // Update only the items that exist in selectedRowData in both searchedData and tableData
+      const updatedSearchedData = searchedData.map((row) => {
+        const updatedRow = updatedSelectedRows.find(
+          (selectedRow) =>
+            selectedRow.social_feed_id === row.social_feed_id &&
+            selectedRow.company_id === row.company_id
+        );
+        return updatedRow || row;
+      });
 
-        setUpdatedRows((prev) => [...prev, ...updatedSelectedRows]);
-        setHighlightUpdatedRows((prev) => [...prev, ...updatedSelectedRows]);
+      setUpdatedRows((prev) => [...prev, ...updatedSelectedRows]);
+      setHighlightUpdatedRows((prev) => [...prev, ...updatedSelectedRows]);
 
-        setTableData(updatedTableData);
-        setSearchedData(updatedSearchedData);
-        setUnsavedChanges(true);
-      }
-      setApplyLoading(false);
-      setSelectedRowData([]);
-    }, 0);
+      setTableData(updatedTableData);
+      setSearchedData(updatedSearchedData);
+      setUnsavedChanges(true);
+    }
+    setSelectedRowData([]);
+    setApplyLoading(false);
+    // }, 0);
   };
   const handleSearch = () => {
     if (selectedRowData.length > 0) {
@@ -573,8 +570,6 @@ const ResearchTable = ({
               setEditRow,
               userToken,
               setHighlightUpdatedRows,
-              setIsRetrieveAfterSave,
-              setPageNumber,
               tableData,
               setTableData
             );
@@ -590,8 +585,6 @@ const ResearchTable = ({
             bg="bg-red-500"
           />
         )}
-        {/* {selectedRowData.length > 0 && <DeleteTableData />} */}
-        {/* saved or not */}
         <div>
           {savedSuccess && (
             <Typography className="text-primary" sx={{ fontSize: "0.8em" }}>
@@ -616,19 +609,7 @@ const ResearchTable = ({
           />
         </span>
       </div>
-      {/* pagination & total records */}
-      <div className="flex items-center gap-2">
-        {/* {tableData.length > 0 && (
-          <Pagination
-            tableData={tableData}
-            setFetchingUsingPrevNext={setFetchingUsingPrevNext}
-            totalRecordsCount={totalRecordsCount}
-          />
-        )} */}
-        {/* {searchedData.length > 0 && (
-          <FilteredRowCount filterRowCount={searchedData} />
-        )} */}
-      </div>
+
       <MainTable
         searchedData={searchedData}
         selectedRowData={selectedRowData}
@@ -658,7 +639,6 @@ ResearchTable.propTypes = {
   tableData: PropTypes.array.isRequired,
   setTableData: PropTypes.func.isRequired,
   setIsRetrieveAfterSave: PropTypes.func,
-  totalRecordsCount: PropTypes.number,
   setFetchingUsingPrevNext: PropTypes.func,
 };
 export default ResearchTable;
