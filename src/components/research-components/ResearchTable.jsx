@@ -21,6 +21,7 @@ import SearchableCategory from "../research-dropdowns/table-dropdowns/Searchable
 import { url } from "../../constants/baseUrl";
 import Delete from "../deleteData/popupModal/Delete";
 import CustomButton from "../../@core/CustomButton";
+import TotalRecordsCard from "../../@core/TotalRecords";
 // import FilteredRowCount from "../filtered-rows/FilteredRowCount";
 
 const useStyles = makeStyles(() => ({
@@ -468,7 +469,7 @@ const ResearchTable = ({
     setOpenDeleteDialog((prev) => !prev);
   };
   return (
-    <div className="relative">
+    <div>
       {loadingLoader && (
         <div className="absolute top-0 left-0 z-50 flex items-center justify-center w-full h-full bg-gray-200 bg-opacity-50">
           <Loader />
