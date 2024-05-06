@@ -254,7 +254,7 @@ const ClientSection = ({ selectedArticle, userToken, setFetchAfterSave }) => {
         toast.error("Something went wrong");
       }
     } catch (error) {
-      console.log(error);
+      toast.error(error.message);
     }
   };
   return (
@@ -264,10 +264,6 @@ const ClientSection = ({ selectedArticle, userToken, setFetchAfterSave }) => {
           <Typography sx={{ fontSize: "0.9em", mt: 1 }}>Company:</Typography>
           <div className="z-50 ml-4">
             <DebounceSearchCompany setSelectedCompany={setSelectedCompany} />
-            {/* <DebounceSearch
-              selectedCompany={selectedCompany}
-              setSelectedCompany={setSelectedCompany}
-            /> */}
           </div>
         </Box>
         <Button btnText="Add" onClick={handleAddCompanies} />
@@ -303,14 +299,14 @@ const ClientSection = ({ selectedArticle, userToken, setFetchAfterSave }) => {
                   >
                     <CloseIcon />
                   </td>
-                  <td>{item.company_name}</td>
+                  <td className="px-2 text-[0.9em]">{item.company_name}</td>
                   <td>
                     <select
                       value={item.reporting_subject}
                       onChange={(e) =>
                         handleChange(index, "reporting_subject", e.target.value)
                       }
-                      className="border border-black w-28"
+                      className="px-2 border border-black w-28"
                     >
                       <option value={null}>select</option>
                       {subjects.map((subject) => (
@@ -323,7 +319,7 @@ const ClientSection = ({ selectedArticle, userToken, setFetchAfterSave }) => {
                       ))}
                     </select>
                   </td>
-                  <td>
+                  <td className="px-2">
                     <select
                       value={item.prominence}
                       onChange={(e) => {
@@ -342,7 +338,7 @@ const ClientSection = ({ selectedArticle, userToken, setFetchAfterSave }) => {
                       ))}
                     </select>
                   </td>
-                  <td>
+                  <td className="px-2">
                     <select
                       value={item.reporting_tone}
                       onChange={(e) =>
@@ -363,6 +359,7 @@ const ClientSection = ({ selectedArticle, userToken, setFetchAfterSave }) => {
                   </td>
                   <Tooltip title={item.detail_summary}>
                     <td
+                      className="px-2"
                       style={{
                         display: "-webkit-box",
                         WebkitBoxOrient: "vertical",
@@ -374,7 +371,7 @@ const ClientSection = ({ selectedArticle, userToken, setFetchAfterSave }) => {
                     </td>
                   </Tooltip>
 
-                  <td>
+                  <td className="px-2">
                     <input
                       type="text"
                       className="border border-black outline-none w-14"

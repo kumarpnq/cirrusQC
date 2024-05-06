@@ -73,7 +73,6 @@ const Details = ({
     const isBothUrlSame = isDomainIncluded(articleURl, publication);
     if (
       !articleURl ||
-      !searchURl ||
       !selectedCompanies.value ||
       !dateNow ||
       !title ||

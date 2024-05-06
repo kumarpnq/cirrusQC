@@ -100,9 +100,9 @@ const ReasearchScreen = () => {
     setTableHeaders,
     unsavedChanges,
     setUnsavedChanges,
-    pageNumber,
+    // pageNumber,
     setPageNumber,
-    recordsPerPage,
+    // recordsPerPage,
   } = useContext(ResearchContext);
   const researchTableRef = useRef(null);
   useEffect(() => {
@@ -219,8 +219,8 @@ const ReasearchScreen = () => {
             // continent: "Asia", //optional using condition
             // country: "India",  //optional using condition
             // language: langsTostring, //optional using condition
-            page: pageNumber,
-            items_per_page: recordsPerPage,
+            // page: pageNumber,
+            // items_per_page: recordsPerPage,
             // count:'Y',   //optional using condition
           };
           // eslint-disable-next-line no-inner-declarations
@@ -255,7 +255,7 @@ const ReasearchScreen = () => {
             "language",
             langsToString
           );
-          addPropertyIfConditionIsTrue(!fetchingUsingPrevNext, "count", "Y");
+          // addPropertyIfConditionIsTrue(!fetchingUsingPrevNext, "count", "Y");
 
           const requestDataJSON = JSON.stringify(requestData);
           const response = await axios.post(
@@ -284,11 +284,11 @@ const ReasearchScreen = () => {
                 ),
               };
             });
-            if (!fetchingUsingPrevNext) {
-              setTotalRecords(
-                response.data.feed_count.map((item) => item.total_rows)
-              );
-            }
+            // if (!fetchingUsingPrevNext) {
+            //   setTotalRecords(
+            //     response.data.feed_count.map((item) => item.total_rows)
+            //   );
+            // }
             setTableData(updatedData);
             const localeV = response.data.feed_data;
             setTableHeaders(
@@ -298,13 +298,14 @@ const ReasearchScreen = () => {
             );
           }
           setTableDataLoading(false);
-          setIsRetrieveAfterSave(false);
-          if (!fetchingUsingPrevNext) setPageNumber(1);
+          // setIsRetrieveAfterSave(false);
+          // if (!fetchingUsingPrevNext) setPageNumber(1);
         } catch (error) {
           console.log(error);
+          toast.error(error.message);
           setTableDataLoading(false);
           setTableData([]);
-          setIsRetrieveAfterSave(false);
+          // setIsRetrieveAfterSave(false);
         }
       }
     } else {
@@ -313,14 +314,14 @@ const ReasearchScreen = () => {
       });
     }
   };
-  // call for the pagination
-  useEffect(() => {
-    tableData.length > 0 && handleSearch();
-  }, [pageNumber, recordsPerPage]);
+  // // call for the pagination
+  // useEffect(() => {
+  //   tableData.length > 0 && handleSearch();
+  // }, [pageNumber, recordsPerPage]);
   // call after data save
-  useEffect(() => {
-    isRetrieveAfterSave && handleSearch();
-  }, [isRetrieveAfterSave]);
+  // useEffect(() => {
+  //   isRetrieveAfterSave && handleSearch();
+  // }, [isRetrieveAfterSave]);
   return (
     <div className="h-full pl-4">
       {/* Category dropdowns filter out */}

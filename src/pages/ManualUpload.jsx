@@ -7,13 +7,10 @@ import {
   Typography,
   Link,
 } from "@mui/material";
-import Table from "@mui/material/Table";
-import TableBody from "@mui/material/TableBody";
+
 import TableCell from "@mui/material/TableCell";
-import TableContainer from "@mui/material/TableContainer";
 import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
-import Paper from "@mui/material/Paper";
 
 import UploadDialog from "../manual-upload-components/UploadDialog";
 import Button from "../components/custom/Button";
@@ -23,16 +20,17 @@ import ToDate from "../components/research-dropdowns/ToDate";
 import TextFields from "../components/TextFields/TextField";
 import { url } from "../constants/baseUrl";
 import { ResearchContext } from "../context/ContextProvider";
-import Pagination from "../components/pagination/Pagination";
 
 //  ** third party imports
 import { EditAttributesOutlined } from "@mui/icons-material";
 import { IoIosArrowRoundDown, IoIosArrowRoundUp } from "react-icons/io";
 import axios from "axios";
 import { toast } from "react-toastify";
+import { TableVirtuoso } from "react-virtuoso";
+import TotalRecordsCard from "../@core/TotalRecords";
 
 const ManualUpload = () => {
-  const { userToken, recordsPerPage, pageNumber } = useContext(ResearchContext);
+  const { userToken } = useContext(ResearchContext);
   const [open, setOpen] = useState(false);
   const [fromDate, setFromDate] = useState(formattedDate);
   const [dateNow, setDateNow] = useState(formattedNextDay);
@@ -40,8 +38,8 @@ const ManualUpload = () => {
   const [topPublication, setTopPublication] = useState(false);
   const [errorListLoading, setErrorListLoading] = useState(false);
   const [errorList, setErrorList] = useState([]);
-  const [totalRecords, setTotalRecords] = useState(0);
-  const [fetchingUsingPrevNext, setFetchingUsingPrevNext] = useState(false);
+  // const [totalRecords, setTotalRecords] = useState(0);
+  // const [fetchingUsingPrevNext, setFetchingUsingPrevNext] = useState(false);
   const [fetchAfterSave, setFetchAfterSave] = useState(false);
   const [isArticleSaved, setIsArticleSaved] = useState(false);
   const [modalType, setModalType] = useState();
@@ -70,14 +68,13 @@ const ManualUpload = () => {
     }
     return 0;
   });
+
   const fetchErrorList = async () => {
     try {
       const headers = { Authorization: `Bearer ${userToken}` };
       const requestData = {
         from_date: fromDate,
         to_date: dateNow,
-        page: pageNumber,
-        items_per_page: recordsPerPage,
         search_publication: publicationValue,
         top_publication: Number(topPublication),
       };
@@ -90,22 +87,19 @@ const ManualUpload = () => {
         }
       );
       setErrorList(response.data.download_errors);
-      setTotalRecords(response.data.errors_count);
     } catch (error) {
       toast.error(error.message);
     } finally {
       setErrorListLoading(false);
-      setFetchingUsingPrevNext(false);
       setFetchAfterSave(false);
       setIsArticleSaved(false);
     }
   };
-
   useEffect(() => {
-    if (fetchingUsingPrevNext || fetchAfterSave) {
+    if (fetchAfterSave) {
       fetchErrorList();
     }
-  }, [fetchingUsingPrevNext, fetchAfterSave]);
+  }, [fetchAfterSave]);
   // modal
   const [selectedRow, setSelectedRow] = useState(null);
   const [link, setLink] = useState(selectedRow?.articlelink);
@@ -163,129 +157,136 @@ const ManualUpload = () => {
         <Button btnText={"Other link"} onClick={handleUploadURL} />
       </Box>
       {errorList.length > 0 && (
-        <>
-          <Box>
-            <Pagination
-              tableData={errorList}
-              totalRecordsCount={totalRecords}
-              setFetchingUsingPrevNext={setFetchingUsingPrevNext}
-            />
-          </Box>
-          <Box mt={2} sx={{ minWidth: 650, height: 800, overflow: "auto" }}>
-            <TableContainer component={Paper} style={{ maxHeight: 600 }}>
-              <Table aria-label="simple table">
-                <TableHead
-                  className="sticky top-0 bg-primary"
-                  style={{ position: "sticky", top: 0, zIndex: 1 }}
-                >
-                  <TableRow>
-                    <TableCell
-                      size="small"
-                      sx={{
-                        color: "white",
-                        position: "sticky",
-                        left: 0,
-                      }}
-                      className="bg-primary"
-                    >
-                      Edit
-                    </TableCell>
-                    <TableCell
-                      size="small"
-                      sx={{
-                        color: "white",
-                        display: "flex",
-                        alignItems: "center",
-                        cursor: "pointer",
-                      }}
-                      onClick={() => handleSort("date")}
-                    >
-                      Date
-                      {sortBy === "date" && (
-                        <span className="flex">
-                          <IoIosArrowRoundUp
-                            style={{
-                              color: sortOrder === "asc" ? "green" : "red",
-                            }}
-                          />
-                          <IoIosArrowRoundDown
-                            style={{
-                              color: sortOrder === "asc" ? "red" : "green",
-                            }}
-                          />
-                        </span>
-                      )}
-                    </TableCell>
-                    <TableCell
-                      size="small"
-                      sx={{ color: "white", fontSize: "0.9rem" }}
-                    >
-                      Publication
-                    </TableCell>
-                    <TableCell size="small" sx={{ color: "white" }}>
-                      link
-                    </TableCell>
-                  </TableRow>
-                </TableHead>
-                <TableBody className="text-[0.8em]">
-                  {sortedErrorList.map((row, index) => (
-                    <TableRow
-                      key={row.articlelink}
-                      sx={{
-                        "&:last-child td, &:last-child th": { border: 0 },
-                      }}
-                    >
-                      <TableCell
-                        size="small"
-                        sx={{
-                          position: "sticky",
-                          left: 0,
-                          background: "white",
-                          fontSize: "0.8rem",
-                        }}
-                      >
-                        <EditAttributesOutlined
-                          className="text-primary"
-                          onClick={() => handleRowClick(row, index)}
+        <div className="relative">
+          <TotalRecordsCard
+            totalRecords={errorList.length}
+            tClass="top-[10%]"
+          />
+          <TableVirtuoso
+            style={{ height: 600 }}
+            data={sortedErrorList}
+            fixedHeaderContent={() => (
+              <TableHead
+                className="sticky top-0 bg-primary"
+                style={{ position: "sticky", top: 0, zIndex: 1, width: "100%" }}
+              >
+                <TableRow>
+                  <TableCell
+                    size="small"
+                    sx={{
+                      color: "white",
+                      position: "sticky",
+                      left: 0,
+                    }}
+                    className="bg-primary"
+                  >
+                    Edit
+                  </TableCell>
+                  <TableCell
+                    size="small"
+                    sx={{
+                      color: "white",
+                      display: "flex",
+                      alignItems: "center",
+                      cursor: "pointer",
+                      width: 150,
+                    }}
+                    onClick={() => handleSort("date")}
+                  >
+                    Date
+                    {sortBy === "date" && (
+                      <span className="flex">
+                        <IoIosArrowRoundUp
+                          style={{
+                            color: sortOrder === "asc" ? "green" : "red",
+                          }}
                         />
-                      </TableCell>
-                      <TableCell
-                        size="small"
-                        sx={{
-                          whiteSpace: "nowrap",
-                          overflow: "hidden",
-                          textOverflow: "ellipsis",
-                          fontSize: "0.8rem",
-                          fontFamily: "nunito",
-                        }}
-                      >
-                        <span>{row.feeddate.replace("T", " ")}</span>
-                      </TableCell>
-                      <TableCell
-                        size="small"
-                        sx={{ fontSize: "0.8rem", fontFamily: "nunito" }}
-                      >
-                        {row.publicationname}
-                      </TableCell>
-                      <TableCell
-                        size="small"
-                        sx={{ fontSize: "0.8rem", fontFamily: "nunito" }}
-                      >
-                        <Link
-                          href={row.searchlink}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                        >
-                          {row.searchlink}
-                        </Link>
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </TableContainer>
-          </Box>
-        </>
+                        <IoIosArrowRoundDown
+                          style={{
+                            color: sortOrder === "asc" ? "red" : "green",
+                          }}
+                        />
+                      </span>
+                    )}
+                  </TableCell>
+                  <TableCell
+                    size="small"
+                    sx={{ color: "white", fontSize: "0.9rem", width: 200 }}
+                  >
+                    Publication
+                  </TableCell>
+                  <TableCell size="small" sx={{ color: "white", width: 1200 }}>
+                    link
+                  </TableCell>
+                </TableRow>
+              </TableHead>
+            )}
+            itemContent={(index, row) => (
+              <TableRow key={row.articlelink}>
+                <TableCell
+                  size="small"
+                  sx={{
+                    position: "sticky",
+                    left: 0,
+                    background: "white",
+                    fontSize: "0.8rem",
+                  }}
+                >
+                  <EditAttributesOutlined
+                    className="text-primary"
+                    onClick={() => handleRowClick(row, index)}
+                  />
+                </TableCell>
+                <TableCell
+                  size="small"
+                  sx={{
+                    whiteSpace: "nowrap",
+                    overflow: "hidden",
+                    textOverflow: "ellipsis",
+                    fontSize: "0.8rem",
+                    fontFamily: "nunito",
+                    width: 150,
+                  }}
+                >
+                  <span>{row.feeddate.replace("T", " ")}</span>
+                </TableCell>
+                <TableCell
+                  size="small"
+                  sx={{
+                    fontSize: "0.8rem",
+                    fontFamily: "nunito",
+                    width: 200,
+                    whiteSpace: "nowrap", // Prevent text wrapping
+                    overflow: "hidden", // Hide overflow text
+                    textOverflow: "ellipsis",
+                  }}
+                >
+                  {row.publicationname}
+                </TableCell>
+                <TableCell
+                  size="small"
+                  sx={{
+                    fontSize: "0.8rem",
+                    fontFamily: "nunito",
+                    maxWidth: 1000,
+                    whiteSpace: "nowrap", // Prevent text wrapping
+                    overflow: "hidden", // Hide overflow text
+                    textOverflow: "ellipsis",
+                  }}
+                >
+                  <Link
+                    href={row.searchlink}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    {/* link */}
+                    {row.searchlink}
+                  </Link>
+                </TableCell>
+              </TableRow>
+            )}
+          />
+        </div>
       )}
 
       <UploadDialog

@@ -174,7 +174,7 @@ const Details = ({ selectedRow, userToken }) => {
             <Box mb={1} display="flex" alignItems="center">
               <Typography sx={{ fontSize: "0.9em" }}>Summary:</Typography>
               <textarea
-                className="ml-3 w-full outline-none border border-gray-400 rounded-[3px] text-[0.9em] px-2 font-normal text-black placeholder:font-black"
+                className="ml-3 w-full outline-none border border-gray-400 rounded-[3px] text-[0.8em] px-2 font-normal text-black placeholder:font-black"
                 rows={4}
                 value={summary}
                 onChange={(e) => setSummary(e.target.value)}
@@ -186,29 +186,6 @@ const Details = ({ selectedRow, userToken }) => {
           </FormControl>
         </CardContent>
       </Card>
-      {/* <Box display="flex" alignItems="center">
-        <Box display="flex" alignItems="center">
-          <Typography sx={{ fontSize: "0.9em" }}>Company:</Typography>
-          <div className="z-50 ml-4">
-            <DebounceSearch
-              selectedCompany={selectedCompany}
-              setSelectedCompany={setSelectedCompany}
-            />
-          </div>
-        </Box>
-        <button
-          className="text-white uppercase bg-primary rounded-[3px] px-4 py-1 mt-1 ml-4"
-          // onClick={handleHeaderUpdate}
-        >
-          Add
-        </button>
-        <button
-          className="text-white uppercase bg-primary rounded-[3px] px-4 py-1 mt-1 ml-4 cursor-pointer"
-          onClick={handleHeaderUpdate}
-        >
-          Save
-        </button>
-      </Box> */}
     </Container>
   );
 };

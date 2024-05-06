@@ -41,7 +41,7 @@ const EditSection = ({
   searchedData,
   setSearchedData,
   setHighlightRows,
-  setRetrieveAfterSave,
+  // setRetrieveAfterSave,
 }) => {
   const { name, userToken } = useContext(ResearchContext);
   const classes = useStyles();
@@ -203,11 +203,20 @@ const EditSection = ({
           },
         });
         res.statusText === "OK" && toast.success("Row Updated");
+        const updatedTableData = qc2PrintTableData.filter(
+          (row) =>
+            !updatedData.some(
+              (updatedRow) =>
+                updatedRow.article_id === row.article_id &&
+                updatedRow.company_id === row.company_id
+            )
+        );
+        setQc2PrintTableData(updatedTableData);
         setSelectedItems([]);
         setHighlightRows([]);
         setSaveLoading(false);
         setSearchedData([]);
-        setRetrieveAfterSave((prev) => !prev);
+        // setRetrieveAfterSave((prev) => !prev);
         setUpdatedData([]);
       } else {
         toast.warning("No Data to Save.");

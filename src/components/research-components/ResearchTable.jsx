@@ -17,8 +17,7 @@ import SecondFind from "../research-dropdowns/table-dropdowns/SecondFind";
 import HeaderForEdits from "../research-dropdowns/table-dropdowns/HeaderForEdits";
 import SubjectSearchable from "../research-dropdowns/table-dropdowns/SubjectSearchable";
 import SearchableCategory from "../research-dropdowns/table-dropdowns/SearchableCategory";
-// import DeleteTableData from "../deleteData/DeleteTableData";
-import Pagination from "../../components/pagination/Pagination";
+
 import { url } from "../../constants/baseUrl";
 import FilteredRowCount from "../filtered-rows/FilteredRowCount";
 
@@ -46,7 +45,6 @@ const ResearchTable = ({
   tableData,
   setTableData,
   setIsRetrieveAfterSave,
-  totalRecordsCount,
   setFetchingUsingPrevNext,
 }) => {
   const classes = useStyles();
@@ -567,7 +565,9 @@ const ResearchTable = ({
               userToken,
               setHighlightUpdatedRows,
               setIsRetrieveAfterSave,
-              setPageNumber
+              setPageNumber,
+              tableData,
+              setTableData
             );
             setFetchingUsingPrevNext(false);
           }}
@@ -602,13 +602,13 @@ const ResearchTable = ({
       </div>
       {/* pagination & total records */}
       <div className="flex items-center gap-2">
-        {tableData.length > 0 && (
+        {/* {tableData.length > 0 && (
           <Pagination
             tableData={tableData}
             setFetchingUsingPrevNext={setFetchingUsingPrevNext}
             totalRecordsCount={totalRecordsCount}
           />
-        )}
+        )} */}
         {searchedData.length > 0 && (
           <FilteredRowCount filterRowCount={searchedData} />
         )}

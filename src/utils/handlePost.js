@@ -20,7 +20,9 @@ const handlePostData = async (
   userToken,
   setHighlightUpdatedRows,
   setIsRetrieveAfterSave,
-  setPageNumber
+  setPageNumber,
+  tableData,
+  setTableData
 ) => {
   setSavedSuccess(true);
   setPostingLoading(true);
@@ -51,6 +53,15 @@ const handlePostData = async (
           Authorization: "Bearer " + userToken,
         },
       });
+      // Remove updated rows from table data
+      const updatedSocialFeedIds = updatedRows.map((row) => row.social_feed_id);
+      const updatedCompanyIds = updatedRows.map((row) => row.company_id);
+      const newTableData = tableData.filter(
+        (row) =>
+          !updatedSocialFeedIds.includes(row.social_feed_id) ||
+          !updatedCompanyIds.includes(row.company_id)
+      );
+      setTableData(newTableData);
       setUpdatedRows([]);
       setPostingLoading(false);
       setSuccessMessage("Data updated successfully!");
@@ -65,8 +76,6 @@ const handlePostData = async (
       setUnsavedChanges(false);
       setEditValue("");
       setEditRow("");
-      setPageNumber(1);
-      setIsRetrieveAfterSave(true);
     } else {
       setSuccessMessage("No data to save.");
       setPostingLoading(false);

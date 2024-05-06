@@ -18,10 +18,10 @@ import useFetchData from "../../hooks/useFetchData";
 import { toast } from "react-toastify";
 import useProtectedRequest from "../../hooks/useProtectedRequest";
 import CustomButton from "../../@core/CustomButton";
-import DebounceSearch from "../../print-components/dropdowns/DebounceSearch";
 import { convertKeys } from "../../constants/convertKeys";
 import DebounceSearchCompany from "../../@core/DebounceSearchCompany";
 import Button from "../custom/Button";
+import PropTypes from "prop-types";
 
 const ClientSection = ({ selectedArticle, userToken }) => {
   const [selectedCompany, setSelectedCompany] = useState("");
@@ -233,7 +233,7 @@ const ClientSection = ({ selectedArticle, userToken }) => {
         toast.error("Something went wrong");
       }
     } catch (error) {
-      console.log(error);
+      toast.error(error.message);
     }
   };
   return (
@@ -251,22 +251,10 @@ const ClientSection = ({ selectedArticle, userToken }) => {
         </Box>
         <Button btnText="Add" onClick={handleAddCompanies} />
         <Button btnText="Save" onClick={handleSave} />
-        {/* <button
-          className="text-white uppercase bg-primary rounded-[3px] px-4 py-1 mt-1 ml-4"
-          onClick={handleAddCompanies}
-        >
-          Add
-        </button>
-        <button
-          className="text-white uppercase bg-primary rounded-[3px] px-4 py-1 mt-1 ml-4 cursor-pointer"
-          onClick={handleSave}
-        >
-          Save
-        </button> */}
       </Box>
       <Card>
         <table>
-          <thead className="text-[0.9em] bg-primary text-white">
+          <thead className="text-[0.9em] bg-primary text-white h-[600] overflow-y-scroll">
             <tr>
               <th>Action</th>
               <th>Company</th>
@@ -277,7 +265,7 @@ const ClientSection = ({ selectedArticle, userToken }) => {
               <th>Remarks</th>
             </tr>
           </thead>
-          <tbody className="text-[0.9em]">
+          <tbody className="text-[0.8em]">
             {tableDataLoading ? (
               <Box width={200}>
                 <CircularProgress />
@@ -294,8 +282,8 @@ const ClientSection = ({ selectedArticle, userToken }) => {
                   >
                     <CloseIcon />
                   </td>
-                  <td>{item.company_name}</td>
-                  <td>
+                  <td className="text-[0.9em]">{item.company_name}</td>
+                  <td className="px-1">
                     <select
                       value={item.reporting_subject}
                       onChange={(e) =>
@@ -314,7 +302,7 @@ const ClientSection = ({ selectedArticle, userToken }) => {
                       ))}
                     </select>
                   </td>
-                  <td>
+                  <td className="px-1">
                     <select
                       value={item.prominence}
                       onChange={(e) => {
@@ -333,7 +321,7 @@ const ClientSection = ({ selectedArticle, userToken }) => {
                       ))}
                     </select>
                   </td>
-                  <td>
+                  <td className="px-1">
                     <select
                       value={item.reporting_tone}
                       onChange={(e) =>
@@ -354,6 +342,7 @@ const ClientSection = ({ selectedArticle, userToken }) => {
                   </td>
                   <Tooltip title={item.detail_summary}>
                     <td
+                      className="mx-2"
                       style={{
                         display: "-webkit-box",
                         WebkitBoxOrient: "vertical",
@@ -365,7 +354,7 @@ const ClientSection = ({ selectedArticle, userToken }) => {
                     </td>
                   </Tooltip>
 
-                  <td>
+                  <td className="px-1">
                     <input
                       type="text"
                       className="border border-black outline-none w-14"
@@ -416,6 +405,11 @@ const ClientSection = ({ selectedArticle, userToken }) => {
       </Card>
     </>
   );
+};
+
+ClientSection.propTypes = {
+  selectedArticle: PropTypes.object.isRequired,
+  userToken: PropTypes.string.isRequired,
 };
 
 export default ClientSection;

@@ -159,8 +159,8 @@ const DDComp = () => {
         from_date: fromDate,
         to_date: dateNow,
         date_type: dateType,
-        items_per_page: recordsPerPage,
-        page: pageNumber,
+        // items_per_page: 50000,
+        // page: pageNumber,
         count: "Y",
       };
 
@@ -316,9 +316,9 @@ const DDComp = () => {
     setFetchAfterSave,
   ]);
 
-  useEffect(() => {
-    handleSearchPrintData();
-  }, [fetchingUsingPrevNext, retrieveAfterSave, fetchAfterSave]);
+  // useEffect(() => {
+  //   handleSearchPrintData();
+  // }, [fetchingUsingPrevNext, retrieveAfterSave, fetchAfterSave]);
   const classes = useStyle();
   return (
     <div className="flex flex-col h-screen px-4">
