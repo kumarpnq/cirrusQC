@@ -191,7 +191,6 @@ const ResearchTable = ({
     setEditValue("");
   };
   //updating tabledata
-
   const handleApplyChanges = () => {
     if (selectedRowData.length < 0)
       return toast.warning("Please select at least one item to update", {
@@ -237,7 +236,18 @@ const ResearchTable = ({
         return updatedRow || row;
       });
 
-      setUpdatedRows((prev) => [...prev, ...updatedSelectedRows]);
+      setUpdatedRows((prev) => {
+        const filteredPrev = prev.filter((prevRow) => {
+          return !updatedSelectedRows.some((updatedRow) => {
+            return (
+              updatedRow.social_feed_id === prevRow.social_feed_id &&
+              updatedRow.company_id === prevRow.company_id
+            );
+          });
+        });
+        return [...filteredPrev, ...updatedSelectedRows];
+      });
+
       setHighlightUpdatedRows((prev) => [...prev, ...updatedSelectedRows]);
 
       setTableData(updatedTableData);

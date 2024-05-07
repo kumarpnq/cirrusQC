@@ -192,7 +192,7 @@ const Qc2Table = ({
       {isTableDataLoading || tableLoading ? (
         <Loader />
       ) : (
-        <div className="overflow-scroll border border-gray-200 shadow h-[550px] sm:rounded-lg mt-2">
+        <div className="mt-2 border border-gray-200 sm:rounded-lg">
           {dataToRender.length ? (
             <TableVirtuoso
               style={{ height: 600 }}

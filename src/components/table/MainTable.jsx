@@ -169,7 +169,7 @@ const MainTable = ({
                 </th>
               )}
               {!!dataToRender.length && (
-                <th className="text-white text-[0.9em] sticky bg-primary pl-3 left-8">
+                <th className="text-white text-[0.9em] sticky bg-primary pl-3 left-8 tracking-widest font-thin pt-2">
                   Edit
                 </th>
               )}
