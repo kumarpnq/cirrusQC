@@ -80,7 +80,7 @@ export default function EditModal({
             <Button onClick={handleClose}>close</Button>
           </Box>
           <div className="flex gap-1">
-            <Box sx={{ width: "60%" }}>
+            <Box sx={{ width: "60%", overflow: "hidden" }}>
               <FirstSection
                 classes={classes}
                 selectedArticle={selectedArticle}

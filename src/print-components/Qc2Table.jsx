@@ -357,7 +357,10 @@ const Qc2Table = ({
                       </div>
                     </td>
                     <td className="py-2" style={{ width: "100px" }}>
-                      <div style={{ width: "100px" }} className="text-left">
+                      <div
+                        style={{ width: "100px" }}
+                        className="pr-12 text-right"
+                      >
                         {items.header_space}
                       </div>
                     </td>
@@ -377,7 +380,9 @@ const Qc2Table = ({
                     {/* </div> */}
 
                     <td className="px-3 py-2 whitespace-nowrap">
-                      <div style={{ width: 100 }}>{items.space}</div>
+                      <div style={{ width: 100 }} className="text-right pr-14">
+                        {items.space}
+                      </div>
                     </td>
                     <td>
                       <div

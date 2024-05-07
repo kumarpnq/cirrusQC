@@ -97,15 +97,14 @@ const FirstSection = (props) => {
   return (
     <form>
       <div className="flex flex-wrap items-center gap-2">
-        <div className="flex items-center gap-2">
+        <div className="flex items-center w-full gap-2">
           <label htmlFor="summary" className="text-[0.9em] text-gray-500">
             Headlines:
           </label>
           <textarea
             name=""
             id=""
-            className="outline-none border border-gray-400 text-[0.9em] rounded-[3px]"
-            cols="100"
+            className="outline-none border border-gray-400 text-[0.9em] rounded-[3px] w-full"
             rows={focusedTextFields.isHeadline ? 3 : 1}
             onFocus={() =>
               setFocusedTextField((prevState) => ({
@@ -124,13 +123,12 @@ const FirstSection = (props) => {
           />
         </div>
 
-        <div className="flex items-center gap-2">
+        <div className="flex items-center w-full gap-2">
           <label htmlFor="summary" className="text-[0.9em] text-gray-500">
             Summary:
           </label>
           <textarea
-            className="outline-none border border-gray-400 text-[0.9em] rounded-[3px]"
-            cols="100"
+            className="outline-none border border-gray-400 text-[0.9em] rounded-[3px] w-full"
             rows={focusedTextFields.isArticleSummary ? 3 : 1}
             onFocus={() =>
               setFocusedTextField((prevState) => ({
