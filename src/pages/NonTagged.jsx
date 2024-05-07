@@ -83,11 +83,11 @@ const NonTagged = () => {
       const requestData_online = {
         from_date: fromDate.split(" ")[0],
         to_date: toDate.split(" ")[0],
-        page: pageNumber,
-        items_per_page: recordsPerPage,
+        // page: pageNumber,
+        // items_per_page: recordsPerPage,
         search_publication: publication,
         top_publication: Number(topPublication),
-        search_link: "",
+        search_link: searchLink,
         non_tagged: Number(nonTagged),
       };
       const requestData_print = {

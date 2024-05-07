@@ -6,6 +6,7 @@ import {
   FormControlLabel,
   Typography,
   Link,
+  Divider,
 } from "@mui/material";
 
 import TableCell from "@mui/material/TableCell";
@@ -20,6 +21,7 @@ import ToDate from "../components/research-dropdowns/ToDate";
 import TextFields from "../components/TextFields/TextField";
 import { url } from "../constants/baseUrl";
 import { ResearchContext } from "../context/ContextProvider";
+import CustomTextField from "../@core/CutsomTextField";
 
 //  ** third party imports
 import { EditAttributesOutlined } from "@mui/icons-material";
@@ -38,6 +40,7 @@ const ManualUpload = () => {
   const [topPublication, setTopPublication] = useState(false);
   const [errorListLoading, setErrorListLoading] = useState(false);
   const [errorList, setErrorList] = useState([]);
+  const [searchLink, setSearchLink] = useState("");
   // const [totalRecords, setTotalRecords] = useState(0);
   // const [fetchingUsingPrevNext, setFetchingUsingPrevNext] = useState(false);
   const [fetchAfterSave, setFetchAfterSave] = useState(false);
@@ -77,6 +80,7 @@ const ManualUpload = () => {
         to_date: dateNow,
         search_publication: publicationValue,
         top_publication: Number(topPublication),
+        search_link: searchLink,
       };
       setErrorListLoading(true);
       const response = await axios.post(
@@ -156,6 +160,13 @@ const ManualUpload = () => {
         />
         <Button btnText={"Other link"} onClick={handleUploadURL} />
       </Box>
+      <CustomTextField
+        value={searchLink}
+        setValue={setSearchLink}
+        placeholder={"link"}
+        width={800}
+      />
+      <Divider sx={{ mt: 1 }} />
       {errorList.length > 0 && (
         <div className="relative">
           <TotalRecordsCard
