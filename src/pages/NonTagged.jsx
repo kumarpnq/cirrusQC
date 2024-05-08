@@ -54,9 +54,9 @@ const useStyle = makeStyles(() => ({
 }));
 
 const NonTagged = () => {
-  const { userToken, pageNumber, recordsPerPage } = useContext(ResearchContext);
+  const { userToken } = useContext(ResearchContext);
   const [activeTab, setActiveTab] = useState(0);
-  const [fetchAfterSave, setFetchAfterSave] = useState(false);
+  const [setFetchAfterSave] = useState(false);
   const [tableData, setTableData] = useState([]);
   const [tableDataLoading, setTableDataLoading] = useState(false);
   const [fromDate, setFromDate] = useState(formattedDate);
@@ -93,8 +93,8 @@ const NonTagged = () => {
       const requestData_print = {
         from_date: fromDate.split(" ")[0],
         to_date: toDate.split(" ")[0],
-        page: pageNumber,
-        items_per_page: recordsPerPage,
+        // page: pageNumber,
+        // items_per_page: recordsPerPage,
         search_publication: publicationGroup,
       };
       const request_data = !activeTab ? requestData_online : requestData_print;
