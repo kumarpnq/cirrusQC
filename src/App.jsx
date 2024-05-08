@@ -16,9 +16,10 @@ import Dump from "./pages/Dump";
 import MainNav from "./components/material-navbar";
 import ManualUpload from "./pages/ManualUpload";
 import NonTagged from "./pages/NonTagged";
+import ArticleView from "./pages/unprotected/ArticleView";
 
 function App() {
-  const { userToken, setUserToken } = useContext(ResearchContext);
+  const { userToken, setUserToken, dumpAccess } = useContext(ResearchContext);
   let sessionValid = sessionStorage.getItem("user");
   if (!sessionValid) {
     localStorage.removeItem("user");
@@ -26,7 +27,6 @@ function App() {
   useEffect(() => {
     checkUserAuthenticate(setUserToken);
   }, []);
-
   return (
     <div className="bg-secondory" style={{ fontFamily: "Nunito" }}>
       <ToastContainer />
@@ -41,7 +41,10 @@ function App() {
           <>
             <Route path="/" element={<Home />} />
             <Route path="/print" element={<Qc2Print />} />
-            <Route path="/dump" element={<Dump />} />
+            <Route
+              path="/dump"
+              element={dumpAccess ? <Dump /> : <NotFound />}
+            />
             <Route path="/manual-upload" element={<ManualUpload />} />
             <Route path="/non-tagged" element={<NonTagged />} />
           </>
@@ -50,6 +53,11 @@ function App() {
         )}
 
         <Route path="*" element={userToken ? <NotFound /> : <Login />} />
+        {/* unprotected routes */}
+        <Route
+          path="/articleview/download-file/:id"
+          element={<ArticleView />}
+        />
       </Routes>
     </div>
   );

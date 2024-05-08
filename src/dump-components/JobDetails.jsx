@@ -7,6 +7,7 @@ import { useState } from "react";
 // import TableRow from "@mui/material/TableRow";
 import PropTypes from "prop-types";
 import { IoIosArrowRoundDown, IoIosArrowRoundUp } from "react-icons/io";
+import { Link } from "react-router-dom";
 
 const JobDetails = ({ URI, rows }) => {
   const [sortBy, setSortBy] = useState(null);
@@ -29,7 +30,7 @@ const JobDetails = ({ URI, rows }) => {
     }
     return 0;
   });
-
+  console.log(sortedRows);
   return (
     <div style={{ overflowY: "scroll", height: 400 }}>
       <table className="w-full">
@@ -58,6 +59,7 @@ const JobDetails = ({ URI, rows }) => {
             </th>
             <th className="py-2">Job Status</th>
             <th className="py-2 text-left pl-14">Job Link</th>
+            <th className="py-2 text-left pl-14">Article View</th>
           </tr>
         </thead>
         <tbody className="text-[0.8em]">
@@ -80,7 +82,7 @@ const JobDetails = ({ URI, rows }) => {
               >
                 {row.status}
               </td>
-              <td className="py-2 pl-20">
+              <td className="py-3 pl-20">
                 <a
                   href={!!row.filelink && `${URI + row.filelink}`}
                   target="_blank"
@@ -89,6 +91,11 @@ const JobDetails = ({ URI, rows }) => {
                 >
                   link
                 </a>
+              </td>
+              <td className="py-2 italic underline pl-14">
+                <Link to={`/articleview/${row?.filelink}`} target="_blank">
+                  Article View
+                </Link>
               </td>
             </tr>
           ))}

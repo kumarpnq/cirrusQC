@@ -54,6 +54,9 @@ const ContextProvider = ({ children }) => {
   const [qc2PrintTableData, setQc2PrintTableData] = useState([]);
   const [fetchAfterSave, setFetchAfterSave] = useState(false);
 
+  // unprotected route
+  const [isValidNavigation, setIsValidNavigation] = useState(false);
+
   const handleLogout = () => {
     if (logoutTimer) {
       clearTimeout(logoutTimer);
@@ -105,6 +108,9 @@ const ContextProvider = ({ children }) => {
         setQc2PrintTableData,
         fetchAfterSave,
         setFetchAfterSave,
+        // unprotected route
+        isValidNavigation,
+        setIsValidNavigation,
       }}
     >
       {children}
