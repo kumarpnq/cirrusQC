@@ -242,11 +242,11 @@ const ArticleView = () => {
           </Tooltip>
         </Box>
       </Card>
-      <Card className="flex items-center justify-center mt-1">
+      <Card className="flex items-center justify-center mt-1 border">
         <iframe
           src={framePath}
           frameBorder="0"
-          style={{ width: "800px", minHeight: "800px" }}
+          style={{ width: "100%", minHeight: "800px" }}
         />
       </Card>
     </div>
