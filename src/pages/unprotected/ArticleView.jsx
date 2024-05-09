@@ -50,11 +50,22 @@ const ArticleView = () => {
   const handleChange = (event, newValue) => {
     setValue(newValue);
   };
+  const tabValue = (type) => {
+    let value;
+    if (type === "jpg") {
+      value = 0;
+    } else if (type === "htm") {
+      value = 1;
+    } else if (type === "pdf") {
+      value = 2;
+    }
+    return value;
+  };
   useEffect(() => {
     const getArticleHeader = async () => {
       try {
         const testId =
-          "Z0FBQUFBQm1PemF1bm1rQlZVcWdXbUk1b1NIQmExTklSanRKWjZYc3FlUjRXdGF2WGtQcW5nNUJtaHV0TzBXdzNHcVBVOEUxOW9rWjdRaXBIZHdHMWplN0sxZlhmZHhULXc9PQ==";
+          "Z0FBQUFBQm1QR3V3ZU9SZGFERjlUbV9idnMyNnpwQXNRdElyZVVpanNSa21OdHdDTUR3NFYzY2p6bk00Y3JWSkI5T2dRaU9UTlNha3RxLTdkbllRTm80b0dsNGFtdFVWVkE9PQ==";
         const response = await axios.get(
           `http://51.68.220.77:8000/articleview/`,
           {
@@ -63,13 +74,15 @@ const ArticleView = () => {
             },
           }
         );
+
         if (response.status === 200) {
           setArticleData(response.data);
+          const type = tabValue(response.data.default_type);
+          setValue(type);
         } else {
           console.error(`Error: ${response.status}`);
         }
       } catch (error) {
-        console.log(error);
         console.error("Error fetching data:", error);
       }
     };
@@ -93,7 +106,7 @@ const ArticleView = () => {
   }, []);
 
   useEffect(() => {
-    document.title = articleData?.headlines;
+    document.title = articleData ? articleData?.headlines : "Research screen";
   }, [articleData]);
   const handlePrint = () => {
     window.print();
@@ -122,20 +135,6 @@ const ArticleView = () => {
     (value === 1 && articleData?.HTMLPATH) ||
     (value === 2 && articleData?.PDFPATH);
 
-  useEffect(() => {
-    if (value === 0) {
-      window.open(articleData?.JPGPATH, "_blank");
-    } else if (value === 1) {
-      window.open(articleData?.HTMLPATH, "_blank");
-    } else if (value === 2) {
-      window.open(articleData?.PDFPATH, "_blank");
-    }
-  }, [
-    value,
-    articleData?.PDFPATH,
-    articleData?.JPGPATH,
-    articleData?.HTMLPATH,
-  ]);
   return (
     <div className="h-screen px-4">
       {/* header part */}
@@ -248,7 +247,7 @@ const ArticleView = () => {
       </Card>
       <Card className="flex items-center justify-center mt-1">
         <iframe
-          src={articleData?.JPGPATH}
+          src={framePath}
           frameBorder="0"
           style={{ width: "800px", minHeight: "800px" }}
         />

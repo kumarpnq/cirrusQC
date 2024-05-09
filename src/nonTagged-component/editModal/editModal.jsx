@@ -1,4 +1,5 @@
 import { useContext, useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 import { Modal, Box, Typography, Button } from "@mui/material";
 import { makeStyles } from "@mui/styles";
 import { FaExternalLinkAlt } from "react-icons/fa";
@@ -83,6 +84,8 @@ export default function EditModal({
   }, [selectedArticle, articleId, userToken]);
 
   const classes = useStyle();
+  console.log(selectedArticle);
+
   return (
     <div style={{ height: "800px !important", overflow: "scroll" }}>
       <Modal
@@ -126,18 +129,24 @@ export default function EditModal({
                 alignItems="center"
                 gap={1}
                 fontSize={"0.9em"}
-                href={selectedArticle?.link.replace(/^'|'$/g, "")}
-                target="_blank"
-                rel="noreferrer"
+                // href={selectedArticle?.link.replace(/^'|'$/g, "")}
+                // target="_blank"
+                // rel="noreferrer"
                 className="underline text-primary"
               >
                 {" "}
-                PDF View <FaExternalLinkAlt style={{ fontSize: "1.2em" }} />
+                <Link
+                  to={`/articleview/download-file/${selectedArticle?.link}`}
+                  target="_blank"
+                  className="flex"
+                >
+                  PDF View <FaExternalLinkAlt style={{ fontSize: "1.2em" }} />
+                </Link>
               </Typography>
-              {selectedArticle && selectedArticle.link && (
+              {selectedArticle && selectedArticle.default_link && (
                 <iframe
                   title="PDF Viewer"
-                  src={`${selectedArticle?.link.replace(/^'|'$/g, "")}`}
+                  src={`${selectedArticle.default_link.slice(1, -1)}`}
                   className={classes.iframe}
                 />
               )}

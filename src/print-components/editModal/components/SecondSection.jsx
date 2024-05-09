@@ -442,15 +442,31 @@ const SecondSection = (props) => {
             className="bg-primary"
           >
             <TableRow sx={{ fontSize: "0.8em" }}>
-              <TableCell>CompanyName</TableCell>
-              <TableCell size="small">Subject</TableCell>
-              <TableCell size="small">HeaderSpace</TableCell>
-              <TableCell size="small">Prominence</TableCell>
-              <TableCell size="small">Space</TableCell>
-              <TableCell size="small">Tone</TableCell>
-              <TableCell size="small">Delete</TableCell>
-              <TableCell size="small">SubCategory</TableCell>
-              <TableCell size="small">Remarks</TableCell>
+              <TableCell sx={{ color: "white" }}>CompanyName</TableCell>
+              <TableCell size="small" sx={{ color: "white" }}>
+                Subject
+              </TableCell>
+              <TableCell size="small" sx={{ color: "white" }}>
+                HeaderSpace
+              </TableCell>
+              <TableCell size="small" sx={{ color: "white" }}>
+                Prominence
+              </TableCell>
+              <TableCell size="small" sx={{ color: "white" }}>
+                Space
+              </TableCell>
+              <TableCell size="small" sx={{ color: "white" }}>
+                Tone
+              </TableCell>
+              <TableCell size="small" sx={{ color: "white" }}>
+                Delete
+              </TableCell>
+              <TableCell size="small" sx={{ color: "white" }}>
+                SubCategory
+              </TableCell>
+              <TableCell size="small" sx={{ color: "white" }}>
+                Remarks
+              </TableCell>
             </TableRow>
           </TableHead>
           <TableBody>

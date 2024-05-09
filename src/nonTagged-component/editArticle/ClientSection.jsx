@@ -48,6 +48,7 @@ const ClientSection = ({
 
   const handleClose = () => {
     setOpen(false);
+    setTableDataList([]);
   };
   useEffect(() => {
     const fetchData = async () => {
@@ -63,7 +64,8 @@ const ClientSection = ({
             headers: headers,
           }
         );
-        setTableDataList(response.data.socialfeed_details);
+        const data = response.data ? response.data.socialfeed_details : [];
+        setTableDataList(data);
         setTableDataLoading(false);
         setFetchTagDataAfterChange(false);
       } catch (error) {

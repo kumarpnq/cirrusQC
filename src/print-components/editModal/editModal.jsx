@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Link } from "react-router-dom";
 import { Modal, Box, Typography, Button } from "@mui/material";
 import { makeStyles } from "@mui/styles";
 import { FaExternalLinkAlt } from "react-icons/fa";
@@ -56,7 +57,6 @@ export default function EditModal({
   setEditedSingleArticle,
 }) {
   // first section states
-
   // second section states
   const [selectedClient, setSelectedClient] = useState("");
   const classes = useStyle();
@@ -101,18 +101,24 @@ export default function EditModal({
                 alignItems="center"
                 gap={1}
                 fontSize={"0.9em"}
-                href={`${url + selectedArticle?.link}`}
-                target="_blank"
-                rel="noreferrer"
+                // href={`${url + selectedArticle?.link}`}
+                // target="_blank"
+                // rel="noreferrer"
                 className="underline text-primary"
               >
-                View
-                <FaExternalLinkAlt style={{ fontSize: "1.2em" }} />
+                <Link
+                  to={`/articleview/download-file/${selectedArticle?.link}`}
+                  target="_blank"
+                  className="flex"
+                >
+                  View
+                  <FaExternalLinkAlt style={{ fontSize: "1.2em" }} />
+                </Link>
               </Typography>
-              {selectedArticle && selectedArticle.link && (
+              {selectedArticle && selectedArticle.default_link && (
                 <iframe
                   title="PDF Viewer"
-                  src={`${url}${selectedArticle.link}`}
+                  src={`${url}${selectedArticle.default_link}`}
                   className={classes.iframe}
                 />
               )}

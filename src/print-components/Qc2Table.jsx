@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 import { Tooltip } from "@mui/material";
 import PropTypes from "prop-types";
 import { FindSection } from "./find-section/FindSection";
@@ -8,7 +9,6 @@ import { AiOutlineLoading } from "react-icons/ai";
 // import Pagination from "../components/pagination/Pagination";
 import { IoIosArrowRoundDown, IoIosArrowRoundUp } from "react-icons/io";
 import EditModal from "./editModal/editModal";
-import { url } from "../constants/baseUrl";
 import { EditAttributesOutlined } from "@mui/icons-material";
 import { TableVirtuoso } from "react-virtuoso";
 import TotalRecordsCard from "../@core/TotalRecords";
@@ -161,7 +161,7 @@ const Qc2Table = ({
     setOpen(true);
     setSelectedArticle((prev) => (prev === item ? null : item));
   };
-
+  console.log(dataToRender);
   return (
     <div className="relative">
       <FindSection
@@ -193,7 +193,7 @@ const Qc2Table = ({
         <Loader />
       ) : (
         <div className="mt-2 border border-gray-200 sm:rounded-lg">
-          {dataToRender.length ? (
+          {!!dataToRender.length && (
             <TableVirtuoso
               style={{ height: 600 }}
               data={dataToRender}
@@ -340,13 +340,12 @@ const Qc2Table = ({
                       </div>
                     </td>
                     <td className="w-10 px-3 py-2 underline whitespace-nowrap">
-                      <a
-                        href={`${url}${items.link}`}
+                      <Link
+                        to={`/articleview/download-file/${items?.link}`}
                         target="_blank"
-                        rel="noreferrer"
                       >
                         link
-                      </a>
+                      </Link>
                     </td>
                     <td
                       className="px-3 py-2 truncate"
@@ -526,8 +525,6 @@ const Qc2Table = ({
                 </tbody>
               )}
             />
-          ) : (
-            <span>No data</span>
           )}
         </div>
       )}

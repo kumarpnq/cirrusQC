@@ -1,19 +1,16 @@
 import { useContext, useState, Fragment, useEffect } from "react";
+import { Link } from "react-router-dom";
 import {
   Box,
   FormGroup,
   FormControlLabel,
   Typography,
   Checkbox,
-  Table,
   TableBody,
   TableCell,
-  TableContainer,
   TableHead,
   TableRow,
-  Paper,
   Divider,
-  Link,
   Tooltip,
 } from "@mui/material";
 import { makeStyles } from "@mui/styles";
@@ -409,13 +406,13 @@ const NonTagged = () => {
                           width: 600,
                         }}
                       >
-                        <Link
+                        <a
                           href={row.link}
                           target="_blank"
                           rel="noopener noreferrer"
                         >
                           {row.link}
-                        </Link>
+                        </a>
                       </TableCell>
                     </TableRow>
                   ) : (
@@ -482,11 +479,14 @@ const NonTagged = () => {
                       >
                         <div className="truncate w-96">
                           <Link
-                            href={row.link?.slice(1, -1)}
+                            to={`/articleview/download-file/${row?.link.slice(
+                              1,
+                              -1
+                            )}`}
                             target="_blank"
-                            rel="noopener noreferrer"
+                            className="italic underline"
                           >
-                            {row.link.slice(1, -1)}
+                            {row.display_value}
                           </Link>
                         </div>
                       </TableCell>
