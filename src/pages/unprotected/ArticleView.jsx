@@ -46,7 +46,6 @@ const ArticleView = () => {
   const [value, setValue] = useState(null);
   const [scrolled, setScrolled] = useState(false);
   const { id } = useParams();
-
   const handleChange = (event, newValue) => {
     setValue(newValue);
   };
@@ -64,13 +63,11 @@ const ArticleView = () => {
   useEffect(() => {
     const getArticleHeader = async () => {
       try {
-        const testId =
-          "Z0FBQUFBQm1QR3V3ZU9SZGFERjlUbV9idnMyNnpwQXNRdElyZVVpanNSa21OdHdDTUR3NFYzY2p6bk00Y3JWSkI5T2dRaU9UTlNha3RxLTdkbllRTm80b0dsNGFtdFVWVkE9PQ==";
         const response = await axios.get(
           `http://51.68.220.77:8000/articleview/`,
           {
             params: {
-              article_code: testId,
+              article_code: id,
             },
           }
         );

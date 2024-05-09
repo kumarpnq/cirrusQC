@@ -479,10 +479,7 @@ const NonTagged = () => {
                       >
                         <div className="truncate w-96">
                           <Link
-                            to={`/articleview/download-file/${row?.link.slice(
-                              1,
-                              -1
-                            )}`}
+                            to={`/articleview/download-file/${row?.link}`}
                             target="_blank"
                             className="italic underline"
                           >
