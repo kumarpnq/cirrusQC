@@ -136,8 +136,7 @@ const MainTable = ({
         fixedHeaderContent={() => (
           <thead>
             <tr className="bg-primary">
-              {" "}
-              {tableHeaders?.length > 0 && !!dataToRender.length && (
+              {tableHeaders?.length > 0 && (
                 <th
                   style={{
                     display: "flex",

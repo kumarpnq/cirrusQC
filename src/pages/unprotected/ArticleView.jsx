@@ -43,7 +43,7 @@ function a11yProps(index) {
 
 const ArticleView = () => {
   const [articleData, setArticleData] = useState(null);
-  const [value, setValue] = useState(0);
+  const [value, setValue] = useState(null);
   const [scrolled, setScrolled] = useState(false);
   const { id } = useParams();
 
@@ -121,6 +121,21 @@ const ArticleView = () => {
     (value === 0 && articleData?.JPGPATH) ||
     (value === 1 && articleData?.HTMLPATH) ||
     (value === 2 && articleData?.PDFPATH);
+
+  useEffect(() => {
+    if (value === 0) {
+      window.open(articleData?.JPGPATH, "_blank");
+    } else if (value === 1) {
+      window.open(articleData?.HTMLPATH, "_blank");
+    } else if (value === 2) {
+      window.open(articleData?.PDFPATH, "_blank");
+    }
+  }, [
+    value,
+    articleData?.PDFPATH,
+    articleData?.JPGPATH,
+    articleData?.HTMLPATH,
+  ]);
   return (
     <div className="h-screen px-4">
       {/* header part */}
@@ -138,7 +153,6 @@ const ArticleView = () => {
         <Typography variant="h4">
           C<span className="text-red-500">i</span>rrus
         </Typography>
-        <Typography>Logo2</Typography>
         <Typography variant="h4">
           C<span className="text-red-500">i</span>rrus
         </Typography>
@@ -234,7 +248,7 @@ const ArticleView = () => {
       </Card>
       <Card className="flex items-center justify-center mt-1">
         <iframe
-          src={framePath}
+          src={articleData?.JPGPATH}
           frameBorder="0"
           style={{ width: "800px", minHeight: "800px" }}
         />
