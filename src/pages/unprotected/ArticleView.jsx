@@ -45,6 +45,8 @@ const ArticleView = () => {
   const [articleData, setArticleData] = useState(null);
   const [value, setValue] = useState(null);
   const [scrolled, setScrolled] = useState(false);
+  const [textContent, setTextContent] = useState("");
+
   const { id } = useParams();
   const handleChange = (event, newValue) => {
     setValue(newValue);
@@ -127,6 +129,19 @@ const ArticleView = () => {
       console.error("Error generating thumbnail:", error);
     }
   };
+
+  useEffect(() => {
+    if (value === 3 && articleData?.TXTPATH) {
+      axios
+        .get(articleData.TXTPATH)
+        .then((response) => {
+          setTextContent(response.data);
+        })
+        .catch((error) => {
+          console.error("Error fetching text content:", error);
+        });
+    }
+  }, [value, articleData]);
 
   const framePath =
     (value === 0 && articleData?.JPGPATH) ||
@@ -245,11 +260,37 @@ const ArticleView = () => {
         </Box>
       </Card>
       <Card className="flex items-center justify-center mt-1 border">
-        <iframe
-          src={framePath}
-          frameBorder="0"
-          style={{ width: "100%", minHeight: "800px" }}
-        />
+        {value === 3 ? (
+          <div
+            style={{
+              width: "100%",
+              minHeight: "800px",
+              backgroundColor: "white",
+              color: "black",
+              padding: "16px",
+              overflowY: "auto",
+            }}
+          >
+            <pre>{textContent}</pre>
+          </div>
+        ) : (
+          <iframe
+            src={
+              value === 0
+                ? articleData?.JPGPATH
+                : value === 1
+                ? articleData?.HTMLPATH
+                : value === 2
+                ? articleData?.PDFPATH
+                : ""
+            }
+            frameBorder="0"
+            style={{
+              width: "100%",
+              minHeight: "800px",
+            }}
+          />
+        )}
       </Card>
     </div>
   );
