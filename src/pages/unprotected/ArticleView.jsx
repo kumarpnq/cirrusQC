@@ -132,7 +132,7 @@ const ArticleView = () => {
     (value === 0 && articleData?.JPGPATH) ||
     (value === 1 && articleData?.HTMLPATH) ||
     (value === 2 && articleData?.PDFPATH) ||
-    (value === 3 && articleData?.TEXTPATH);
+    (value === 3 && articleData?.TXTPATH);
 
   return (
     <div className="h-screen px-4">
