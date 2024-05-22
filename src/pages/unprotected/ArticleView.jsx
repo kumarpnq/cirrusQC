@@ -127,10 +127,12 @@ const ArticleView = () => {
       console.error("Error generating thumbnail:", error);
     }
   };
+
   const framePath =
     (value === 0 && articleData?.JPGPATH) ||
     (value === 1 && articleData?.HTMLPATH) ||
-    (value === 2 && articleData?.PDFPATH);
+    (value === 2 && articleData?.PDFPATH) ||
+    (value === 3 && articleData?.TEXTPATH);
 
   return (
     <div className="h-screen px-4">
