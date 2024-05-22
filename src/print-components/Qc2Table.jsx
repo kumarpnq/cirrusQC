@@ -125,8 +125,11 @@ const Qc2Table = ({
     setSortedColumn(header);
     setSortedAscending((prev) => (header === sortedColumn ? !prev : true));
 
-    if (qc2PrintTableData?.length > 0) {
-      const sortedData = [...qc2PrintTableData].sort((a, b) => {
+    // Determine which data set to sort
+    const data = searchedData.length > 0 ? searchedData : qc2PrintTableData;
+
+    if (data.length > 0) {
+      const sortedData = [...data].sort((a, b) => {
         const valueA =
           typeof a[header] === "string" ? a[header] : String(a[header]);
         const valueB =
@@ -140,7 +143,13 @@ const Qc2Table = ({
           return sortedAscending ? valueA - valueB : valueB - valueA;
         }
       });
-      setQc2PrintTableData(sortedData);
+
+      // Set the sorted data back to the appropriate state
+      if (searchedData.length > 0) {
+        setSearchedData(sortedData);
+      } else {
+        setQc2PrintTableData(sortedData);
+      }
     }
   };
 
@@ -161,7 +170,7 @@ const Qc2Table = ({
     setOpen(true);
     setSelectedArticle((prev) => (prev === item ? null : item));
   };
-  console.log(dataToRender);
+
   return (
     <div className="relative">
       <FindSection
