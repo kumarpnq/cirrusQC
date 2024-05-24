@@ -54,6 +54,7 @@ const ClientSection = ({
     const fetchData = async () => {
       try {
         setTableDataLoading(true);
+        setEditableTagData([]);
         const headers = {
           Authorization: `Bearer ${userToken}`,
         };
