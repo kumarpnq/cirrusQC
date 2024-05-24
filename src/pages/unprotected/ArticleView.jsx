@@ -263,15 +263,23 @@ const ArticleView = () => {
         {value === 3 ? (
           <div
             style={{
-              width: "100%",
               minHeight: "800px",
               backgroundColor: "white",
               color: "black",
               padding: "16px",
-              overflowY: "auto",
             }}
           >
-            <pre>{textContent}</pre>
+            <pre
+              style={{
+                minHeight: "800px",
+                backgroundColor: "white",
+                color: "black",
+                padding: "16px",
+                whiteSpace: "pre-wrap",
+              }}
+            >
+              {textContent}
+            </pre>
           </div>
         ) : (
           <iframe
