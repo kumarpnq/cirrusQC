@@ -45,37 +45,43 @@ const ClientSection = ({
     "updatesocialfeedtagdetails/"
   );
   const [open, setOpen] = useState(false);
+  const [isFirstRender, setIsFirstRender] = useState(false);
+  useEffect(() => {
+    setIsFirstRender((prev) => !prev);
+  }, []);
 
   const handleClose = () => {
     setOpen(false);
     setTableDataList([]);
   };
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        setTableDataLoading(true);
-        setEditableTagData([]);
-        const headers = {
-          Authorization: `Bearer ${userToken}`,
-        };
+    if (isFirstRender || fetchTagDataAfterChange) {
+      const fetchData = async () => {
+        try {
+          setTableDataLoading(true);
+          setEditableTagData([]);
+          const headers = {
+            Authorization: `Bearer ${userToken}`,
+          };
 
-        const response = await axios.get(
-          `${url}socialfeedtagdetails/?socialfeed_id=${selectedArticle.social_feed_id}`,
-          {
-            headers: headers,
-          }
-        );
-        const data = response.data ? response.data.socialfeed_details : [];
-        setTableDataList(data);
-        setTableDataLoading(false);
-        setFetchTagDataAfterChange(false);
-      } catch (error) {
-        console.error("Error fetching data:", error);
-      }
-    };
+          const response = await axios.get(
+            `${url}socialfeedtagdetails/?socialfeed_id=${selectedArticle.social_feed_id}`,
+            {
+              headers: headers,
+            }
+          );
+          const data = response.data ? response.data.socialfeed_details : [];
+          setTableDataList(data);
+          setTableDataLoading(false);
+          setFetchTagDataAfterChange(false);
+        } catch (error) {
+          console.error("Error fetching data:", error);
+        }
+      };
 
-    fetchData();
-  }, [userToken, selectedArticle, fetchTagDataAfterChange]);
+      fetchData();
+    }
+  }, [userToken, selectedArticle, fetchTagDataAfterChange, isFirstRender]);
   const [subjects, setSubjects] = useState([]);
 
   const { data: subjectLists } = useFetchData(`${url}reportingsubjectlist`);
