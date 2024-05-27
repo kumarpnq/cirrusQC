@@ -21,6 +21,7 @@ import ArticleView from "./pages/unprotected/ArticleView";
 function App() {
   const { userToken, setUserToken, dumpAccess } = useContext(ResearchContext);
   let sessionValid = sessionStorage.getItem("user");
+  const isDumpAccess = localStorage.getItem("isDMP");
   if (!sessionValid) {
     localStorage.removeItem("user");
   }
@@ -43,7 +44,7 @@ function App() {
             <Route path="/print" element={<Qc2Print />} />
             <Route
               path="/dump"
-              element={dumpAccess ? <Dump /> : <NotFound />}
+              element={dumpAccess || isDumpAccess ? <Dump /> : <NotFound />}
             />
             <Route path="/manual-upload" element={<ManualUpload />} />
             <Route path="/non-tagged" element={<NonTagged />} />

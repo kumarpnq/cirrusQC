@@ -59,6 +59,7 @@ const Login = () => {
       if (res.status === 200) {
         setDumpAccess(isAccess);
         localStorage.setItem("user", res.data.access_token);
+        localStorage.setItem("isDMP", isAccess);
         sessionStorage.setItem("user", true);
         setUserToken(localStorage.getItem("user"));
         navigate("/");

@@ -63,6 +63,7 @@ const ContextProvider = ({ children }) => {
     }
     setUserToken("");
     localStorage.removeItem("user");
+    localStorage.removeItem("isDMP");
     setUnsavedChanges(false);
     setPageNumber(1);
     navigate("/login");
