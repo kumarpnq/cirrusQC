@@ -22,6 +22,7 @@ function App() {
   const { userToken, setUserToken, dumpAccess } = useContext(ResearchContext);
   let sessionValid = sessionStorage.getItem("user");
   const isDumpAccess = localStorage.getItem("isDMP");
+  const isValidUser = localStorage.getItem("user");
   if (!sessionValid) {
     localStorage.removeItem("user");
   }
@@ -38,7 +39,7 @@ function App() {
 
       {/* <Navigation /> */}
       <Routes>
-        {userToken ? (
+        {isValidUser ? (
           <>
             <Route path="/" element={<Home />} />
             <Route path="/print" element={<Qc2Print />} />
