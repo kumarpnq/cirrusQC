@@ -10,7 +10,6 @@ import { checkUserAuthenticate } from "./auth/auth";
 
 // **component import
 import AutoTokenRefresh from "./auth/autoToken";
-// import Navigation from "./components/Navigation";
 import Qc2Print from "./pages/Qc2Print";
 import Dump from "./pages/Dump";
 import MainNav from "./components/material-navbar";
