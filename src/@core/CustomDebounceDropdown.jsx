@@ -34,6 +34,23 @@ const CustomDebounceDropdown = ({
     }
   };
 
+  useEffect(() => {
+    if (!value) {
+      const fetchOnLoad = async () => {
+        try {
+          const response = await axios.get(`${url}publicationgroups/`, {
+            headers,
+            params: { search_term: value },
+          });
+          setPublicationGroups(response.data.publication_groups);
+        } catch (error) {
+          console.log(error);
+        }
+      };
+      fetchOnLoad();
+    }
+  }, [value]);
+
   const handleFetchPublications = async () => {
     try {
       const response = await axios.get(`${url}publicationgroups/`, {
