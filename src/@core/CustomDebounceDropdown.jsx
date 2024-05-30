@@ -3,8 +3,9 @@ import { url } from "../constants/baseUrl";
 import { ResearchContext } from "../context/ContextProvider";
 import axios from "axios";
 import { IoMdArrowDropup, IoMdArrowDropdown } from "react-icons/io";
-import { debounce } from "lodash";
 import PropTypes from "prop-types";
+import SearchIcon from "@mui/icons-material/Search";
+import { IconButton } from "@mui/material";
 
 const CustomDebounceDropdown = ({
   publicationGroup,
@@ -16,7 +17,6 @@ const CustomDebounceDropdown = ({
   const [value, setValue] = useState("");
   const [publicationGroups, setPublicationGroups] = useState([]);
   const [pubTitleForShow, setPubTitleForShow] = useState("");
-  const [isFirstFetch, setIsFirstFetch] = useState(false);
   const { userToken } = useContext(ResearchContext);
   const headers = { Authorization: `Bearer ${userToken}` };
   const dropdownRef = useRef(null);
@@ -34,46 +34,21 @@ const CustomDebounceDropdown = ({
     }
   };
 
-  const fetchData = async (query) => {
+  const handleFetchPublications = async () => {
     try {
-      let response;
-      if (query) {
-        const queryResponse = await axios.get(`${url}publicationgroups/`, {
-          headers,
-          params: { search_term: query },
-        });
-        response = queryResponse;
-      }
-
+      const response = await axios.get(`${url}publicationgroups/`, {
+        headers,
+        params: { search_term: value },
+      });
       setPublicationGroups(response.data.publication_groups);
     } catch (error) {
-      console.error("Error fetching data:", error);
+      console.log(error);
     }
   };
-
-  useEffect(() => {
-    if (value < 3 || isFirstFetch) {
-      const headers = { Authorization: `Bearer ${userToken}` };
-      const fetchDataOnLoad = async () => {
-        const response = await axios.get(`${url}publicationgroups/`, {
-          headers,
-        });
-        setPublicationGroups(response.data.publication_groups);
-        setIsFirstFetch(false);
-      };
-      fetchDataOnLoad();
-    }
-  }, [value, userToken, isFirstFetch]);
-  const debouncedFetchData = debounce(fetchData, 3000);
 
   const handleSearchTermChange = (event) => {
     const newValue = event.target.value;
     setValue(newValue);
-    if (newValue.length >= 3) {
-      debouncedFetchData(newValue);
-    } else {
-      setIsFirstFetch(true);
-    }
   };
 
   const handleMenuItemClick = (id) => {
@@ -109,15 +84,18 @@ const CustomDebounceDropdown = ({
         </span>
       </div>
       {isShowList && (
-        <ul className=" w-[200px] h-[200px] absolute bg-white z-30 shadow-lg rounded-md overflow-y-scroll">
-          <li className="sticky top-0">
+        <ul className=" w-[230px] h-[200px] absolute bg-white z-30 shadow-lg rounded-md overflow-y-scroll">
+          <li className="sticky top-0 flex">
             <input
               type="text"
-              className="outline-none border border-gray-400 rounded-[3px] bg-secondory h-[18] px-2 py-[2px] placeholder-black placeholder-opacity-75 placeholder-italic text-sm  hover:border-black"
+              className="outline-none border border-gray-400 rounded-[3px] bg-secondory h-[30px] px-2 py-[2px] placeholder-black placeholder-opacity-75 placeholder-italic text-sm  hover:border-black"
               placeholder="Type here for search"
               value={value}
               onChange={handleSearchTermChange}
             />
+            <IconButton onClick={handleFetchPublications} className="h-[30px]">
+              <SearchIcon />
+            </IconButton>
           </li>
           <li
             className="italic text-gray-400 text-[0.8em] ml-1 cursor-pointer"
