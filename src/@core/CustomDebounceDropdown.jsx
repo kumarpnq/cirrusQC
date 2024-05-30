@@ -64,7 +64,7 @@ const CustomDebounceDropdown = ({
       fetchDataOnLoad();
     }
   }, [value, userToken, isFirstFetch]);
-  const debouncedFetchData = debounce(fetchData, 500);
+  const debouncedFetchData = debounce(fetchData, 3000);
 
   const handleSearchTermChange = (event) => {
     const newValue = event.target.value;

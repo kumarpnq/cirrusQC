@@ -171,6 +171,8 @@ const Qc2Table = ({
     setSelectedArticle((prev) => (prev === item ? null : item));
   };
 
+  console.log(dataToRender);
+
   return (
     <div className="relative">
       <FindSection
