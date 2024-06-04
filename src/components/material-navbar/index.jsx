@@ -260,7 +260,9 @@ export default function MainNav() {
                 },
               }}
             >
-              Research
+              <span className="text-black">PERCEPTION</span>
+              <span className="text-red-500">&</span>
+              <span className="text-gray-500">QUANT</span>
             </Typography>
             <Search>
               <SearchIconWrapper>
