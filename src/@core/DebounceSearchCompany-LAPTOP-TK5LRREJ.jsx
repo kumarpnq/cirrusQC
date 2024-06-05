@@ -3,17 +3,17 @@ import axios from "axios";
 import { debounce } from "lodash";
 import { IoMdArrowDropup, IoMdArrowDropdown } from "react-icons/io";
 import PropTypes from "prop-types";
-import { url } from "../../../constants/baseUrl";
+import { url } from "../constants/baseUrl";
 
 const DebounceSearchCompany = ({ setSelectedCompany }) => {
+  const userToken = localStorage.getItem("user");
   const [searchResults, setSearchResults] = useState([]);
   const [selectedOption, setSelectedOption] = useState(null);
   const [showResults, setShowResults] = useState(false); // State to manage visibility
-  const userToken = localStorage.getItem("user");
+
   const containerRef = useRef(null);
 
   const headers = { Authorization: `Bearer ${userToken}` };
-
   useEffect(() => {
     // Event listener to detect clicks outside the component
     const handleClickOutside = (event) => {
@@ -56,9 +56,8 @@ const DebounceSearchCompany = ({ setSelectedCompany }) => {
     if (newValue.length >= 3) {
       debouncedFetchData(newValue);
       setShowResults(true); // Show results when typing
-    } else {
-      setShowResults(false); // Hide results when input is empty
     }
+    // Do not hide the results when input is empty
   };
 
   const handleSelectOption = (option) => {
@@ -75,17 +74,20 @@ const DebounceSearchCompany = ({ setSelectedCompany }) => {
   return (
     <div
       style={{ width: "300px" }}
-      className="relative mt-2"
+      className="relative z-50 mt-2"
       ref={containerRef}
     >
-      <div className="flex items-center pr-8 border border-gray-400 rounded-sm">
-        <input
-          className="border-none outline-none text-[0.8em] flex-1 py-1 pl-1"
-          type="text"
-          placeholder="Search companies..."
-          onChange={(e) => handleSearchTermChange(e.target.value)}
-          onFocus={() => setShowResults(true)} // Show results when input is focused
-        />
+      <div className="flex items-center pr-8 border border-gray-400 rounded-sm ">
+        <h2
+          className="text-[0.9em] flex-1 ml-1 "
+          onClick={() => setShowResults(!showResults)}
+        >
+          {selectedOption ? (
+            selectedOption.label
+          ) : (
+            <span className="italic text-gray-500">Company</span>
+          )}
+        </h2>
         <div onClick={() => setShowResults(!showResults)}>
           {showResults ? (
             <IoMdArrowDropup className="text-gray-400 cursor-pointer" />
@@ -94,8 +96,19 @@ const DebounceSearchCompany = ({ setSelectedCompany }) => {
           )}
         </div>
       </div>
+
       {showResults && (
-        <ul className="absolute left-0 right-0 px-2 py-2 text-gray-600 bg-white border border-gray-400 rounded-sm shadow-md top-full">
+        <ul className="absolute left-0 right-0 px-2 py-2 text-gray-600 bg-white border border-gray-400 rounded-sm shadow-md top-6 h-[250] overflow-y-scroll z-50">
+          <li>
+            <input
+              className="border border-gray-500 w-full rounded-sm outline-none text-[0.8em]  py-1 pl-1"
+              type="text"
+              placeholder="Search companies..."
+              onChange={(e) => handleSearchTermChange(e.target.value)}
+              //   onFocus={() => setShowResults(true)} // Show results when input is focused
+            />
+          </li>
+
           {searchResults.length ? (
             searchResults.map((option) => (
               <li

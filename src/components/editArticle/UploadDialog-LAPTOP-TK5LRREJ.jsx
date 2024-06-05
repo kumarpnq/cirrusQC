@@ -7,10 +7,7 @@ import Details from "./DetailSection";
 import ArticleView from "./ArticleView";
 import Box from "@mui/material/Box";
 import Modal from "@mui/material/Modal";
-import { useEffect, useState } from "react";
 import ClientSection from "./ClientSection";
-import axios from "axios";
-import { url } from "../../constants/baseUrl";
 
 const style = {
   position: "absolute",
@@ -28,34 +25,8 @@ const style = {
   flexDirection: "column",
 };
 
-const UploadDialog = ({
-  open,
-  handleClose,
-  selectedRow,
-  setFetchAfterSave,
-  tableData,
-  setTableData,
-}) => {
+const UploadDialog = ({ open, handleClose, selectedRow }) => {
   const userToken = localStorage.getItem("user");
-  const socialfeedId = selectedRow?.socialfeedid;
-  const [fetchedHeader, setFetchedHeader] = useState(null);
-  useEffect(() => {
-    const fetchHeaderData = async () => {
-      try {
-        const headers = {
-          Authorization: `Bearer ${userToken}`,
-        };
-        const response = await axios.get(
-          `${url}socialfeedheader?socialfeed_id=${socialfeedId}`,
-          { headers }
-        );
-        setFetchedHeader(response.data.socialfeed[0]);
-      } catch (error) {
-        console.log(error);
-      }
-    };
-    fetchHeaderData();
-  }, [selectedRow, socialfeedId, userToken]);
   return (
     <Modal open={open} onClose={handleClose}>
       <Box sx={style}>
@@ -70,17 +41,14 @@ const UploadDialog = ({
         <DialogContent>
           <Box sx={{ display: "flex", flexDirection: "column" }}>
             <div className="flex">
-              <Details selectedRow={fetchedHeader} userToken={userToken} />
-              <ArticleView selectedArticle={fetchedHeader} />
+              <Details selectedRow={selectedRow} userToken={userToken} />
+              <ArticleView selectedArticle={selectedRow} />
             </div>
 
             {/* client section */}
             <ClientSection
-              selectedArticle={fetchedHeader}
+              selectedArticle={selectedRow}
               userToken={userToken}
-              setFetchAfterSave={setFetchAfterSave}
-              tableData={tableData}
-              setTableData={setTableData}
             />
           </Box>
         </DialogContent>
@@ -92,10 +60,7 @@ const UploadDialog = ({
 UploadDialog.propTypes = {
   open: PropTypes.bool.isRequired,
   handleClose: PropTypes.func.isRequired,
-  setFetchAfterSave: PropTypes.func.isRequired,
   selectedRow: PropTypes.object.isRequired,
-  tableData: PropTypes.array.isRequired,
-  setTableData: PropTypes.func.isRequired,
 };
 
 export default UploadDialog;

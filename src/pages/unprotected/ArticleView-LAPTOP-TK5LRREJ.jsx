@@ -7,6 +7,7 @@ import Tabs from "@mui/material/Tabs";
 import Tab from "@mui/material/Tab";
 import LocalPrintshopIcon from "@mui/icons-material/LocalPrintshop";
 import BlurLinearIcon from "@mui/icons-material/BlurLinear";
+import { url } from "../../constants/baseUrl";
 
 function CustomTabPanel(props) {
   const { children, value, index, ...other } = props;
@@ -65,14 +66,12 @@ const ArticleView = () => {
   useEffect(() => {
     const getArticleHeader = async () => {
       try {
-        const response = await axios.get(
-          `http://51.68.220.77:8000/articleview/`,
-          {
-            params: {
-              article_code: id,
-            },
-          }
-        );
+        const response = await axios.get(`${url}articleview/`, {
+          params: {
+            article_code: id,
+          },
+        });
+
         if (response.status === 200) {
           setArticleData(response.data);
           const type = tabValue(response.data.default_type);
@@ -106,7 +105,7 @@ const ArticleView = () => {
   useEffect(() => {
     document.title = articleData
       ? articleData?.headlines
-      : "PERCEPTION & QUANT";
+      : "Perception & Quant";
   }, [articleData]);
   const handlePrint = () => {
     window.print();
@@ -165,10 +164,22 @@ const ArticleView = () => {
         }`}
       >
         <Typography variant="h4">
-          C<span className="text-red-500">i</span>rrus
+          <img
+            src="https://perceptionandquant.com/logo2.png"
+            alt="logo"
+            height={50}
+            width={170}
+            className="ml-2"
+          />
         </Typography>
         <Typography variant="h4">
-          C<span className="text-red-500">i</span>rrus
+          <img
+            src="https://perceptionandquant.com/logo2.png"
+            alt="logo"
+            height={50}
+            width={170}
+            className="ml-2"
+          />
         </Typography>
       </Box>
       {/* mid information section */}

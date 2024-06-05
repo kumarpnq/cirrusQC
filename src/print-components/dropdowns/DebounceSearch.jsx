@@ -1,14 +1,13 @@
-import { useState, useContext } from "react";
+import { useState } from "react";
 import Select from "react-select";
 import axios from "axios";
 import { debounce } from "lodash";
-import { ResearchContext } from "../../context/ContextProvider";
 import { url } from "../../constants/baseUrl";
 import PropTypes from "prop-types";
 
 const DebounceSearch = ({ selectedCompany, setSelectedCompany }) => {
   const [companies, setCompanies] = useState([]);
-  const { userToken } = useContext(ResearchContext);
+  const userToken = localStorage.getItem("user");
 
   const headers = { Authorization: `Bearer ${userToken}` };
 

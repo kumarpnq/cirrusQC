@@ -19,7 +19,6 @@ import {
 } from "@mui/material";
 
 // ** custom imports
-import { ResearchContext } from "../../../context/ContextProvider";
 import useFetchData from "../../../hooks/useFetchData";
 import { url } from "../../../constants/baseUrl";
 import { convertKeys } from "../../../constants/convertKeys";
@@ -40,7 +39,7 @@ const SecondSection = (props) => {
     tableData,
     setTableData,
   } = props;
-  const { userToken } = useContext(ResearchContext);
+  const userToken = localStorage.getItem("user");
   const [selectedCompany, setSelectedCompany] = useState(null);
   const [tagData, setTagData] = useState([]);
   const [tagDataLoading, setTagDataLoading] = useState(false);
@@ -363,28 +362,28 @@ const SecondSection = (props) => {
       setCheckedRows([]);
     }
   };
-  const handleCopy = () => {
-    const copiedData = editableTagData.map((row) => {
-      const updatedRow = { ...row };
-      for (const key in storedData.data) {
-        if (key !== "space" && key !== "company_id" && key !== "company_name") {
-          // Exclude company_id
-          updatedRow[key] = storedData.data[key];
-        }
-      }
-      const manualProminenceValue = parseFloat(
-        updatedRow.manual_prominence?.match(/\d+(\.\d+)?/)?.[0] || "0"
-      );
+  // const handleCopy = () => {
+  //   const copiedData = editableTagData.map((row) => {
+  //     const updatedRow = { ...row };
+  //     for (const key in storedData.data) {
+  //       if (key !== "space" && key !== "company_id" && key !== "company_name") {
+  //         // Exclude company_id
+  //         updatedRow[key] = storedData.data[key];
+  //       }
+  //     }
+  //     const manualProminenceValue = parseFloat(
+  //       updatedRow.manual_prominence?.match(/\d+(\.\d+)?/)?.[0] || "0"
+  //     );
 
-      updatedRow.space = Number(
-        (updatedRow.header_space * manualProminenceValue).toFixed(2)
-      );
+  //     updatedRow.space = Number(
+  //       (updatedRow.header_space * manualProminenceValue).toFixed(2)
+  //     );
 
-      return updatedRow;
-    });
-    setEditableTagData(copiedData);
-    setStoredData({});
-  };
+  //     return updatedRow;
+  //   });
+  //   setEditableTagData(copiedData);
+  //   setStoredData({});
+  // };
 
   return (
     <div className="px-2 mt-2 border border-black">

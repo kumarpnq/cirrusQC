@@ -7,15 +7,15 @@ import {
   CircularProgress,
 } from "@mui/material";
 import { useState } from "react";
+import Button from "../components/custom/Button"; // Assuming this is the correct import for your Button component
+import { url } from "../constants/baseUrl";
+import CustomButton from "./CustomButton";
 
 //**  third party imports
 import PropTypes from "prop-types";
 import axios from "axios";
 import { toast } from "react-toastify";
-import { url } from "../../../constants/baseUrl";
-import useProtectedRequest from "../../../hooks/useProtectedRequest";
-import Button from "../../custom/Button";
-import CustomButton from "../../../@core/CustomButton";
+import useProtectedRequest from "../hooks/useProtectedRequest";
 
 const Delete = ({
   open,
@@ -30,11 +30,11 @@ const Delete = ({
   const [verificationLoading, setVerificationLoading] = useState(false);
   const { loading, error, data, makeRequest } = useProtectedRequest(
     userToken,
-    "updatesocialfeedtagdetails/"
+    "updatearticletagdetails/"
   );
   const requestData = selectedArticles.map((item) => ({
     UPDATETYPE: "D",
-    SOCIALFEEDID: item.social_feed_id,
+    ARTICLEID: item.article_id,
     COMPANYID: item.company_id,
   }));
 
@@ -67,7 +67,7 @@ const Delete = ({
         // Check if the current article exists in selectedArticles based on both company_id and article_id
         const exists = selectedArticles.some(
           (selectedArticle) =>
-            selectedArticle.social_feed_id === article.social_feed_id &&
+            selectedArticle.article_id === article.article_id &&
             selectedArticle.company_id === article.company_id
         );
         // If exists, filter it out
