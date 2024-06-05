@@ -44,7 +44,8 @@ const useStyles = makeStyles(() => ({
 const ResearchTable = ({ tableDataLoading, tableData, setTableData }) => {
   const classes = useStyles();
   // context values
-  const { name, userToken, setUnsavedChanges } = useContext(ResearchContext);
+  const { name, setUnsavedChanges } = useContext(ResearchContext);
+  const userToken = localStorage.getItem("user");
 
   // state variables for posting data to database
   const [currentDateWithTime, setCurrentDateWithTime] = useState("");

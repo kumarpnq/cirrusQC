@@ -7,9 +7,7 @@ import Details from "./DetailSection";
 import ArticleView from "./ArticleView";
 import Box from "@mui/material/Box";
 import Modal from "@mui/material/Modal";
-import { useContext, useState } from "react";
 import ClientSection from "./ClientSection";
-import { ResearchContext } from "../../context/ContextProvider";
 
 const style = {
   position: "absolute",
@@ -28,7 +26,7 @@ const style = {
 };
 
 const UploadDialog = ({ open, handleClose, selectedRow }) => {
-  const { userToken } = useContext(ResearchContext);
+  const userToken = localStorage.getItem("user");
   return (
     <Modal open={open} onClose={handleClose}>
       <Box sx={style}>

@@ -22,7 +22,8 @@ import { toast } from "react-toastify";
 import { url } from "../../constants/baseUrl";
 import Button from "../custom/Button";
 
-const Details = ({ selectedRow, userToken }) => {
+const Details = ({ selectedRow }) => {
+  const userToken = localStorage.getItem("user");
   const [headline, setHeadline] = useState(selectedRow?.headline);
   const [journalist, setJournalist] = useState(selectedRow?.author_name);
   const [summary, setSummary] = useState(selectedRow?.headsummary);

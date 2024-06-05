@@ -3,14 +3,9 @@ import { NavLink } from "react-router-dom";
 import { ResearchContext } from "../context/ContextProvider";
 
 const Navigation = () => {
-  const {
-    researchOpen,
-    setResearchOpen,
-    qc2Open,
-    setQc2Open,
-    handleLogout,
-    userToken,
-  } = useContext(ResearchContext);
+  const { researchOpen, setResearchOpen, qc2Open, setQc2Open, handleLogout } =
+    useContext(ResearchContext);
+  const userToken = localStorage.getItem("user");
 
   const handleResearchScreenClick = () => {
     if (!researchOpen) {

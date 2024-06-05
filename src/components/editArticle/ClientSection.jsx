@@ -23,7 +23,8 @@ import DebounceSearchCompany from "../../@core/DebounceSearchCompany";
 import Button from "../custom/Button";
 import PropTypes from "prop-types";
 
-const ClientSection = ({ selectedArticle, userToken }) => {
+const ClientSection = ({ selectedArticle }) => {
+  const userToken = localStorage.getItem("user");
   const [selectedCompany, setSelectedCompany] = useState("");
   const [tableDataList, setTableDataList] = useState([]);
   const [tableDataLoading, setTableDataLoading] = useState(false);
