@@ -48,10 +48,10 @@ const CustomDebounceDropdown = ({
           headers,
         });
       }
-    }catch(error){
-      console.log(error)
+    } catch (error) {
+      console.log(error);
     }
-  }
+  };
   useEffect(() => {
     if (!value) {
       const fetchOnLoad = async () => {
@@ -68,7 +68,7 @@ const CustomDebounceDropdown = ({
       fetchOnLoad();
     }
   }, [value]);
-s
+
   const handleFetchPublications = async () => {
     try {
       const response = await axios.get(`${url}publicationgroups/`, {
@@ -84,15 +84,8 @@ s
   useEffect(() => {
     fetchData();
   }, [value]);
-  const debouncedFetchData = debounce(fetchData, 500);
 
   const handleSearchTermChange = (event) => {
-    const newValue = event.target.value;
-    setValue(newValue);
-    if (newValue.length >= 3) {
-      debouncedFetchData(newValue);
-    }
- const handleSearchTermChange = (event) => {
     const newValue = event.target.value;
     setValue(newValue);
   };
