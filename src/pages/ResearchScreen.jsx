@@ -84,12 +84,9 @@ const ReasearchScreen = () => {
   const [countriesToString, setCountriesToString] = useState("");
   const [qc1byuserToString, setQc1byuserToString] = useState("");
   const [qc2byuserToString, setQc2byuserToString] = useState("");
-  // retrieve dat after save
-  const [isRetrieveAfterSave, setIsRetrieveAfterSave] = useState(false);
-  const [fetchingUsingPrevNext, setFetchingUsingPrevNext] = useState(false);
+
   // main data
   const [tableData, setTableData] = useState([]);
-  const [totalRecords, setTotalRecords] = useState(0);
   const {
     fromDate,
     setFromDate,
@@ -100,9 +97,6 @@ const ReasearchScreen = () => {
     setTableHeaders,
     unsavedChanges,
     setUnsavedChanges,
-    // pageNumber,
-    setPageNumber,
-    // recordsPerPage,
   } = useContext(ResearchContext);
   const researchTableRef = useRef(null);
   useEffect(() => {
@@ -255,7 +249,6 @@ const ReasearchScreen = () => {
             "language",
             langsToString
           );
-          // addPropertyIfConditionIsTrue(!fetchingUsingPrevNext, "count", "Y");
 
           const requestDataJSON = JSON.stringify(requestData);
           const response = await axios.post(
@@ -268,7 +261,6 @@ const ReasearchScreen = () => {
               },
             }
           );
-          console.log(response);
           if (response) {
             const localeV = response.data.feed_data;
             if (localeV && localeV.length > 0) {
@@ -299,15 +291,10 @@ const ReasearchScreen = () => {
           }
 
           setTableDataLoading(false);
-          // setIsRetrieveAfterSave(false);
-          // if (!fetchingUsingPrevNext) setPageNumber(1);
         } catch (error) {
-          console.log(error);
-          console.log(error);
           toast.error(error.message);
           setTableDataLoading(false);
           setTableData([]);
-          // setIsRetrieveAfterSave(false);
         }
       }
     } else {
@@ -316,144 +303,128 @@ const ReasearchScreen = () => {
       });
     }
   };
-  // // call for the pagination
-  // useEffect(() => {
-  //   tableData.length > 0 && handleSearch();
-  // }, [pageNumber, recordsPerPage]);
-  // call after data save
-  // useEffect(() => {
-  //   isRetrieveAfterSave && handleSearch();
-  // }, [isRetrieveAfterSave]);
+
   return (
     <div className="h-full pl-4">
       {/* Category dropdowns filter out */}
       {/* client */}
-      {isLoading ? (
-        <Loader />
-      ) : (
-        <>
-          <div className="flex flex-wrap items-center gap-1 mt-2">
-            <div className="flex items-center mt-1" style={{ height: 25 }}>
-              <SearchableDropDown
-                options={clients}
-                setTestClient={setClientId}
-                testclient={clientId}
-                label={"Clients"}
-                width={300}
-              />
-            </div>
-            {/* comapany */}
-            <CustomAutocomplete
-              companies={companies}
-              setCompanies={setCompanies}
-              company={company}
-            />
-            {/* Datetype */}
-            <Datetype
-              dateType={dateType}
-              classes={classes}
-              dateTypes={dateTypes}
-              setDateType={setDateType}
-            />
-            {/* date filter from date */}
-            <FromDate fromDate={fromDate} setFromDate={setFromDate} />
-            {/* date filter to now date */}
-            <ToDate dateNow={dateNow} setDateNow={setDateNow} isMargin={true} />
-            {/* qc1 done */}
-            <Qc1All
-              qc1done={qc1done}
-              setQc1done={setQc1done}
-              classes={classes}
-              qc1Array={qc1Array}
-            />
-            {/* qc2 done */}
-            <Qc2All
-              qc2done={qc2done}
-              setQc2done={setQc2done}
-              classes={classes}
-              qc2Array={qc2Array}
-            />
-            {/* qc1 by */}
-            <Qc1By
-              qcUsersData={qcUsersData}
-              qc1by={qc1by}
-              setQc1by={setQc1by}
-              classes={classes}
-            />
-            {/* qc2 by */}
-            <Qc2By
-              qcUsersData={qcUsersData}
-              classes={classes}
-              qc2by={qc2by}
-              setQc2by={setQc2by}
-            />
-            {/* image checkbox */}
-            <div className="flex items-center" style={{ height: 20 }}>
-              <div className="mt-4">
-                <CheckboxComp
-                  value={isImage}
-                  setValue={setIsImage}
-                  label={"Image"}
-                />
-              </div>
-              {/* video checkbox */}
-              <div className="mt-4">
-                <CheckboxComp
-                  value={isVideo}
-                  setValue={setIsVideo}
-                  label={"Video"}
-                />
-              </div>
-            </div>
-            {/* languages */}
-            <Languages
-              language={language}
-              setLanguage={setLanguage}
-              classes={classes}
-            />
-            {/* continents */}
-            <Continents
-              continent={continent}
-              countriesByContinent={countriesByContinent}
-              setContinent={setContinent}
-              setFilteredCountries={setFilteredCountries}
-              continents={continents}
-              classes={classes}
-            />
-            {/* countries */}
-            <Countries
-              country={country}
-              setCountry={setCountry}
-              classes={classes}
-              filteredCountries={filteredCountries}
-            />
-            <button
-              onClick={() => {
-                handleSearch();
-                setFetchingUsingPrevNext(false);
-              }}
-              className={`bg-primary border border-gray-400 rounded px-10 mt-3 uppercase text-white text-[0.9em] ${
-                tableDataLoading ? "text-yellow-300" : "text-white"
-              }`}
-            >
-              {tableDataLoading ? "Loading..." : "Search"}
-            </button>
-          </div>
-          {/* divider */}
-          <Divider sx={{ marginTop: 1 }} />
-          {/* table */}
-          <div ref={researchTableRef}>
-            <ResearchTable
-              tableDataLoading={tableDataLoading}
-              tableData={tableData}
-              setTableData={setTableData}
-              setIsRetrieveAfterSave={setIsRetrieveAfterSave}
-              totalRecordsCount={totalRecords}
-              setFetchingUsingPrevNext={setFetchingUsingPrevNext}
+      <div className="flex flex-wrap items-center gap-1 mt-2">
+        <div className="flex items-center mt-1" style={{ height: 25 }}>
+          <SearchableDropDown
+            options={clients}
+            setTestClient={setClientId}
+            testclient={clientId}
+            label={"Clients"}
+            width={300}
+          />
+        </div>
+        {/* comapany */}
+        <CustomAutocomplete
+          companies={companies}
+          setCompanies={setCompanies}
+          company={company}
+        />
+        {/* Datetype */}
+        <Datetype
+          dateType={dateType}
+          classes={classes}
+          dateTypes={dateTypes}
+          setDateType={setDateType}
+        />
+        {/* date filter from date */}
+        <FromDate fromDate={fromDate} setFromDate={setFromDate} />
+        {/* date filter to now date */}
+        <ToDate dateNow={dateNow} setDateNow={setDateNow} isMargin={true} />
+        {/* qc1 done */}
+        <Qc1All
+          qc1done={qc1done}
+          setQc1done={setQc1done}
+          classes={classes}
+          qc1Array={qc1Array}
+        />
+        {/* qc2 done */}
+        <Qc2All
+          qc2done={qc2done}
+          setQc2done={setQc2done}
+          classes={classes}
+          qc2Array={qc2Array}
+        />
+        {/* qc1 by */}
+        <Qc1By
+          qcUsersData={qcUsersData}
+          qc1by={qc1by}
+          setQc1by={setQc1by}
+          classes={classes}
+        />
+        {/* qc2 by */}
+        <Qc2By
+          qcUsersData={qcUsersData}
+          classes={classes}
+          qc2by={qc2by}
+          setQc2by={setQc2by}
+        />
+        {/* image checkbox */}
+        <div className="flex items-center" style={{ height: 20 }}>
+          <div className="mt-4">
+            <CheckboxComp
+              value={isImage}
+              setValue={setIsImage}
+              label={"Image"}
             />
           </div>
-        </>
-      )}
+          {/* video checkbox */}
+          <div className="mt-4">
+            <CheckboxComp
+              value={isVideo}
+              setValue={setIsVideo}
+              label={"Video"}
+            />
+          </div>
+        </div>
+        {/* languages */}
+        <Languages
+          language={language}
+          setLanguage={setLanguage}
+          classes={classes}
+        />
+        {/* continents */}
+        <Continents
+          continent={continent}
+          countriesByContinent={countriesByContinent}
+          setContinent={setContinent}
+          setFilteredCountries={setFilteredCountries}
+          continents={continents}
+          classes={classes}
+        />
+        {/* countries */}
+        <Countries
+          country={country}
+          setCountry={setCountry}
+          classes={classes}
+          filteredCountries={filteredCountries}
+        />
+        <button
+          onClick={() => {
+            handleSearch();
+            setFetchingUsingPrevNext(false);
+          }}
+          className={`bg-primary border border-gray-400 rounded px-10 mt-3 uppercase text-white text-[0.9em] ${
+            tableDataLoading ? "text-yellow-300" : "text-white"
+          }`}
+        >
+          {tableDataLoading ? "Loading..." : "Search"}
+        </button>
+      </div>
+      {/* divider */}
+      <Divider sx={{ marginTop: 1 }} />
+      {/* table */}
+      <div ref={researchTableRef}>
+        <ResearchTable
+          tableDataLoading={tableDataLoading}
+          tableData={tableData}
+          setTableData={setTableData}
+        />
+      </div>
     </div>
   );
 };

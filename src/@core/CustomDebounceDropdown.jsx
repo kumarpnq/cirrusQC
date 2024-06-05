@@ -1,6 +1,5 @@
-import { useContext, useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect } from "react";
 import { url } from "../constants/baseUrl";
-import { ResearchContext } from "../context/ContextProvider";
 import axios from "axios";
 import { IoMdArrowDropup, IoMdArrowDropdown } from "react-icons/io";
 import PropTypes from "prop-types";
@@ -17,7 +16,7 @@ const CustomDebounceDropdown = ({
   const [value, setValue] = useState("");
   const [publicationGroups, setPublicationGroups] = useState([]);
   const [pubTitleForShow, setPubTitleForShow] = useState("");
-  const { userToken } = useContext(ResearchContext);
+  const userToken = localStorage.getItem("user");
   const headers = { Authorization: `Bearer ${userToken}` };
   const dropdownRef = useRef(null);
 

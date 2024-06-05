@@ -81,7 +81,8 @@ export default function MainNav() {
   const [open, setOpen] = React.useState(false);
   const [searchValue, setSearchValue] = React.useState();
   const [filteredNavItems, setFilteredNavItems] = React.useState([]);
-  const { userToken, handleLogout, dumpAccess } = useContext(ResearchContext);
+  const { handleLogout, dumpAccess } = useContext(ResearchContext);
+  const userToken = localStorage.getItem("user");
   const location = useLocation();
   const isSmallScreen = useMediaQuery("(max-width:600px)");
   const isMenuOpen = Boolean(anchorEl);
@@ -292,24 +293,6 @@ export default function MainNav() {
 
             <Box sx={{ flexGrow: 1 }} />
             <Box sx={{ display: { xs: "none", md: "flex" } }}>
-              {/* <IconButton
-              size="large"
-              aria-label="show 4 new mails"
-              color="inherit"
-            >
-              <Badge badgeContent={4} color="error">
-                <MailIcon />
-              </Badge>
-            </IconButton>
-            <IconButton
-              size="large"
-              aria-label="show 17 new notifications"
-              color="inherit"
-            >
-              <Badge badgeContent={17} color="error">
-                <NotificationsIcon />
-              </Badge>
-            </IconButton> */}
               <IconButton
                 size="large"
                 edge="end"

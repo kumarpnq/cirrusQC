@@ -16,7 +16,6 @@ import PropTypes from "prop-types";
 import { toast } from "react-toastify";
 import axios from "axios";
 import { url } from "../constants/baseUrl";
-import { ResearchContext } from "../context/ContextProvider";
 import CustomButton from "../components/custom/Button";
 
 const Transition = React.forwardRef(function Transition(props, ref) {
@@ -44,7 +43,7 @@ export default function AlertDialogSlide(props) {
     setFetchDumpData,
   } = props;
   const endPoint = !tabValue ? "onlinedump/" : "printdump/";
-  const { userToken } = React.useContext(ResearchContext);
+  const userToken = localStorage.getItem("user");
   const [dumpLoading, setDumpLoading] = React.useState(false);
   const handleClose = () => {
     setOpen(false);

@@ -20,7 +20,6 @@ import axios from "axios";
 import { toast } from "react-toastify";
 import { url } from "../constants/baseUrl";
 
-import DebounceSearch from "../print-components/dropdowns/DebounceSearch";
 import useFetchData from "../hooks/useFetchData";
 import { formattedDate } from "../constants/dates";
 import DebounceSearchCompany from "../@core/DebounceSearchCompany";
@@ -34,7 +33,7 @@ const Details = ({
   articleNumber,
   setArticleNumber,
 }) => {
-  const { userToken } = useContext(ResearchContext);
+  const userToken = localStorage.getItem("user");
   const [selectedRow, setSelectedRow] = useState(errorList[articleNumber]);
   useEffect(() => {
     setSelectedRow(errorList.length > 0 ? errorList[articleNumber] : null);

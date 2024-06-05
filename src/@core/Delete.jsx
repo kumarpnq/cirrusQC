@@ -28,7 +28,7 @@ const Delete = ({
 }) => {
   const [password, setPassword] = useState("");
   const [verificationLoading, setVerificationLoading] = useState(false);
-  const { userToken } = useContext(ResearchContext);
+  const userToken = localStorage.getItem("user");
   const { loading, error, data, makeRequest } = useProtectedRequest(
     userToken,
     "updatearticletagdetails/"

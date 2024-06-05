@@ -10,7 +10,6 @@ import { checkUserAuthenticate } from "./auth/auth";
 
 // **component import
 import AutoTokenRefresh from "./auth/autoToken";
-// import Navigation from "./components/Navigation";
 import Qc2Print from "./pages/Qc2Print";
 import Dump from "./pages/Dump";
 import MainNav from "./components/material-navbar";
@@ -19,15 +18,33 @@ import NonTagged from "./pages/NonTagged";
 import ArticleView from "./pages/unprotected/ArticleView";
 
 function App() {
-  const { userToken, setUserToken } = useContext(ResearchContext);
+  const { setUserToken } = useContext(ResearchContext);
   let sessionValid = sessionStorage.getItem("user");
   const isDumpAccess = localStorage.getItem("isDMP");
+  const userToken = localStorage.getItem("user");
   if (!sessionValid) {
     localStorage.removeItem("user");
   }
   useEffect(() => {
     checkUserAuthenticate(setUserToken);
   }, []);
+
+  // * warning sign while refreshing
+  useEffect(() => {
+    const handleBeforeUnload = (event) => {
+      const message =
+        "Make sure You're saving latest changes.Are you sure you want to leave?";
+      event.returnValue = message;
+      return message;
+    };
+
+    window.addEventListener("beforeunload", handleBeforeUnload);
+
+    return () => {
+      window.removeEventListener("beforeunload", handleBeforeUnload);
+    };
+  }, []);
+
   return (
     <div className="bg-secondory" style={{ fontFamily: "Nunito" }}>
       <ToastContainer />

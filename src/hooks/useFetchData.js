@@ -1,9 +1,8 @@
 import axios from "axios";
-import { useEffect, useState, useContext } from "react";
-import { ResearchContext } from "../context/ContextProvider";
+import { useEffect, useState } from "react";
 
 const useFetchData = (url, options = {}) => {
-  const { userToken } = useContext(ResearchContext);
+  const userToken = localStorage.getItem("user");
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");

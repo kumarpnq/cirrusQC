@@ -1,16 +1,15 @@
-import { useState, useContext, useRef, useEffect } from "react";
+import { useState, useRef, useEffect } from "react";
 import axios from "axios";
 import { debounce } from "lodash";
 import { IoMdArrowDropup, IoMdArrowDropdown } from "react-icons/io";
 import PropTypes from "prop-types";
-import { ResearchContext } from "../context/ContextProvider";
 import { url } from "../constants/baseUrl";
 
 const DebounceSearchCompany = ({ setSelectedCompany }) => {
   const [searchResults, setSearchResults] = useState([]);
   const [selectedOption, setSelectedOption] = useState(null);
   const [showResults, setShowResults] = useState(false); // State to manage visibility
-  const { userToken } = useContext(ResearchContext);
+  const userToken = localStorage.get("user");
   const containerRef = useRef(null);
 
   const headers = { Authorization: `Bearer ${userToken}` };

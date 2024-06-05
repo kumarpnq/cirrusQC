@@ -41,12 +41,7 @@ const useStyles = makeStyles(() => ({
     color: "white",
   },
 }));
-const ResearchTable = ({
-  tableDataLoading,
-  tableData,
-  setTableData,
-  setFetchingUsingPrevNext,
-}) => {
+const ResearchTable = ({ tableDataLoading, tableData, setTableData }) => {
   const classes = useStyles();
   // context values
   const { name, userToken, setUnsavedChanges } = useContext(ResearchContext);
@@ -583,7 +578,6 @@ const ResearchTable = ({
               tableData,
               setTableData
             );
-            setFetchingUsingPrevNext(false);
           }}
         >
           {postingLoading ? "Loading..." : "Save"}
