@@ -16,7 +16,6 @@ const CustomDebounceDropdown = ({
   const [value, setValue] = useState("");
   const [publicationGroups, setPublicationGroups] = useState([]);
   const [pubTitleForShow, setPubTitleForShow] = useState("");
-  const [isFirstFetch, setIsFirstFetch] = useState(false);
   const { userToken } = useContext(ResearchContext);
   const headers = { Authorization: `Bearer ${userToken}` };
   const dropdownRef = useRef(null);
@@ -43,6 +42,10 @@ const CustomDebounceDropdown = ({
           params: { search_term: query },
         });
         response = queryResponse;
+      } else {
+        response = await axios.get(`${url}publicationgroups/`, {
+          headers,
+        });
       }
 
       setPublicationGroups(response.data.publication_groups);
@@ -52,18 +55,8 @@ const CustomDebounceDropdown = ({
   };
 
   useEffect(() => {
-    if (value < 3 || isFirstFetch) {
-      const headers = { Authorization: `Bearer ${userToken}` };
-      const fetchDataOnLoad = async () => {
-        const response = await axios.get(`${url}publicationgroups/`, {
-          headers,
-        });
-        setPublicationGroups(response.data.publication_groups);
-        setIsFirstFetch(false);
-      };
-      fetchDataOnLoad();
-    }
-  }, [value, userToken, isFirstFetch]);
+    fetchData();
+  }, [value]);
   const debouncedFetchData = debounce(fetchData, 500);
 
   const handleSearchTermChange = (event) => {
@@ -71,8 +64,6 @@ const CustomDebounceDropdown = ({
     setValue(newValue);
     if (newValue.length >= 3) {
       debouncedFetchData(newValue);
-    } else {
-      setIsFirstFetch(true);
     }
   };
 

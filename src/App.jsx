@@ -10,6 +10,7 @@ import { checkUserAuthenticate } from "./auth/auth";
 
 // **component import
 import AutoTokenRefresh from "./auth/autoToken";
+// import Navigation from "./components/Navigation";
 import Qc2Print from "./pages/Qc2Print";
 import Dump from "./pages/Dump";
 import MainNav from "./components/material-navbar";
@@ -21,7 +22,6 @@ function App() {
   const { userToken, setUserToken, dumpAccess } = useContext(ResearchContext);
   let sessionValid = sessionStorage.getItem("user");
   const isDumpAccess = localStorage.getItem("isDMP");
-  const isValidUser = localStorage.getItem("user");
   if (!sessionValid) {
     localStorage.removeItem("user");
   }
@@ -38,7 +38,7 @@ function App() {
 
       {/* <Navigation /> */}
       <Routes>
-        {isValidUser ? (
+        {userToken ? (
           <>
             <Route path="/" element={<Home />} />
             <Route path="/print" element={<Qc2Print />} />
