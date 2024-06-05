@@ -19,7 +19,7 @@ import NonTagged from "./pages/NonTagged";
 import ArticleView from "./pages/unprotected/ArticleView";
 
 function App() {
-  const { userToken, setUserToken, dumpAccess } = useContext(ResearchContext);
+  const { userToken, setUserToken } = useContext(ResearchContext);
   let sessionValid = sessionStorage.getItem("user");
   const isDumpAccess = localStorage.getItem("isDMP");
   if (!sessionValid) {
@@ -44,7 +44,7 @@ function App() {
             <Route path="/print" element={<Qc2Print />} />
             <Route
               path="/dump"
-              element={dumpAccess || isDumpAccess ? <Dump /> : <NotFound />}
+              element={isDumpAccess ? <Dump /> : <NotFound />}
             />
             <Route path="/manual-upload" element={<ManualUpload />} />
             <Route path="/non-tagged" element={<NonTagged />} />

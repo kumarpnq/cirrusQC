@@ -24,6 +24,7 @@ import ListItem from "@mui/material/ListItem";
 import ListItemButton from "@mui/material/ListItemButton";
 import ListItemIcon from "@mui/material/ListItemIcon";
 import ListItemText from "@mui/material/ListItemText";
+import useMediaQuery from "@mui/material/useMediaQuery";
 
 //** react icons
 import { HiStatusOnline } from "react-icons/hi";
@@ -82,6 +83,7 @@ export default function MainNav() {
   const [filteredNavItems, setFilteredNavItems] = React.useState([]);
   const { userToken, handleLogout, dumpAccess } = useContext(ResearchContext);
   const location = useLocation();
+  const isSmallScreen = useMediaQuery("(max-width:600px)");
   const isMenuOpen = Boolean(anchorEl);
   const isMobileMenuOpen = Boolean(mobileMoreAnchorEl);
   const isDumpAccess = localStorage.getItem("isDMP");
@@ -260,7 +262,20 @@ export default function MainNav() {
                 },
               }}
             >
-              Research
+              {isSmallScreen ? (
+                <>
+                  <span className="text-black">P</span>
+                  <span className="text-red-500">&</span>
+                  <span className="text-gray-500">Q</span>
+                </>
+              ) : (
+                <>
+                  {" "}
+                  <span className="text-black">PERCEPTION</span>
+                  <span className="text-red-500">&</span>
+                  <span className="text-gray-500">QUANT</span>
+                </>
+              )}
             </Typography>
             <Search>
               <SearchIconWrapper>

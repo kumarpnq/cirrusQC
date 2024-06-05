@@ -7,6 +7,7 @@ import Tabs from "@mui/material/Tabs";
 import Tab from "@mui/material/Tab";
 import LocalPrintshopIcon from "@mui/icons-material/LocalPrintshop";
 import BlurLinearIcon from "@mui/icons-material/BlurLinear";
+import { url } from "../../constants/baseUrl";
 
 function CustomTabPanel(props) {
   const { children, value, index, ...other } = props;
@@ -73,6 +74,7 @@ const ArticleView = () => {
             },
           }
         );
+
         if (response.status === 200) {
           setArticleData(response.data);
           const type = tabValue(response.data.default_type);
@@ -104,9 +106,7 @@ const ArticleView = () => {
   }, []);
 
   useEffect(() => {
-    document.title = articleData
-      ? articleData?.headlines
-      : "PERCEPTION & QUANT";
+    document.title = articleData ? articleData?.headlines : "Research screen";
   }, [articleData]);
   const handlePrint = () => {
     window.print();
@@ -165,10 +165,22 @@ const ArticleView = () => {
         }`}
       >
         <Typography variant="h4">
-          C<span className="text-red-500">i</span>rrus
+          <img
+            src="https://perceptionandquant.com/logo2.png"
+            alt="logo"
+            height={50}
+            width={170}
+            className="ml-2"
+          />
         </Typography>
         <Typography variant="h4">
-          C<span className="text-red-500">i</span>rrus
+          <img
+            src="https://perceptionandquant.com/logo2.png"
+            alt="logo"
+            height={50}
+            width={170}
+            className="ml-2"
+          />
         </Typography>
       </Box>
       {/* mid information section */}
