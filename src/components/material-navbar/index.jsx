@@ -90,7 +90,14 @@ export default function MainNav() {
   const isMobileMenuOpen = Boolean(mobileMoreAnchorEl);
   const navList = [
     ...(screenPermissions["Online-QC2"]
-      ? [{ id: 1, title: "Online-QC2", path: "/", icon: <HiStatusOnline /> }]
+      ? [
+          {
+            id: 1,
+            title: "Online-QC2",
+            path: "/online",
+            icon: <HiStatusOnline />,
+          },
+        ]
       : []),
     ...(screenPermissions["Print-QC2"]
       ? [{ id: 2, title: "Print-QC2", path: "/print", icon: <FaPrint /> }]
