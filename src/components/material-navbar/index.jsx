@@ -1,6 +1,7 @@
 import * as React from "react";
 import { useContext } from "react";
 import { NavLink, useLocation, useNavigate } from "react-router-dom";
+
 import { toast } from "react-toastify";
 import { styled, alpha } from "@mui/material/styles";
 import AppBar from "@mui/material/AppBar";
@@ -225,7 +226,16 @@ export default function MainNav() {
               to={item.path}
               className={location.pathname === item.path && "bg-primary"}
             >
-              <ListItemButton>
+              <ListItemButton
+                onClick={(e) => {
+                  e.preventDefault();
+                  if (
+                    window.confirm("Are you sure you want to leave this page?")
+                  ) {
+                    navigate(item.path);
+                  }
+                }}
+              >
                 <ListItemIcon>{item.icon}</ListItemIcon>
                 <ListItemText primary={item.title} />
               </ListItemButton>

@@ -9,7 +9,7 @@ const DebounceSearchCompany = ({ setSelectedCompany }) => {
   const [searchResults, setSearchResults] = useState([]);
   const [selectedOption, setSelectedOption] = useState(null);
   const [showResults, setShowResults] = useState(false); // State to manage visibility
-  const userToken = localStorage.get("user");
+  const userToken = localStorage.getItem("user");
   const containerRef = useRef(null);
 
   const headers = { Authorization: `Bearer ${userToken}` };

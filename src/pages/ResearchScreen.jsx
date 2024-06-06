@@ -155,7 +155,6 @@ const ReasearchScreen = () => {
   }, [qcUserData, qcUserDataError]);
 
   // loading states
-  const isLoading = clientLoading || companyLoading;
 
   const arrayToString = (arr) => {
     if (Array.isArray(arr)) {
@@ -406,7 +405,6 @@ const ReasearchScreen = () => {
         <button
           onClick={() => {
             handleSearch();
-            setFetchingUsingPrevNext(false);
           }}
           className={`bg-primary border border-gray-400 rounded px-10 mt-3 uppercase text-white text-[0.9em] ${
             tableDataLoading ? "text-yellow-300" : "text-white"
