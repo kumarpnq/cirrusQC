@@ -52,12 +52,16 @@ function App() {
     );
   };
 
+  const isArticleView = location.pathname.startsWith("/articleview");
+
   return (
     <div className="bg-secondary" style={{ fontFamily: "Nunito" }}>
       <ToastContainer />
-      <div className="sticky top-0 z-50">
-        <MainNav />
-      </div>
+      {!isArticleView && (
+        <div className="sticky top-0 z-50">
+          <MainNav />
+        </div>
+      )}
       <AutoTokenRefresh />
 
       <Routes>

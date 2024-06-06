@@ -8,6 +8,7 @@ import Tab from "@mui/material/Tab";
 import LocalPrintshopIcon from "@mui/icons-material/LocalPrintshop";
 import BlurLinearIcon from "@mui/icons-material/BlurLinear";
 import { url } from "../../constants/baseUrl";
+import ImageCarousel from "../../unprotected-components/Carousel";
 
 function CustomTabPanel(props) {
   const { children, value, index, ...other } = props;
@@ -47,6 +48,7 @@ const ArticleView = () => {
   const [value, setValue] = useState(null);
   const [scrolled, setScrolled] = useState(false);
   const [textContent, setTextContent] = useState("");
+  const [multipleImages, setMultipleImages] = useState([]);
 
   const { id } = useParams();
   const handleChange = (event, newValue) => {
@@ -66,14 +68,11 @@ const ArticleView = () => {
   useEffect(() => {
     const getArticleHeader = async () => {
       try {
-        const response = await axios.get(
-          `http://51.68.220.77:8000/articleview/`,
-          {
-            params: {
-              article_code: id,
-            },
-          }
-        );
+        const response = await axios.get(`${url}articleview/`, {
+          params: {
+            article_code: id,
+          },
+        });
 
         if (response.status === 200) {
           setArticleData(response.data);
@@ -106,7 +105,9 @@ const ArticleView = () => {
   }, []);
 
   useEffect(() => {
-    document.title = articleData ? articleData?.headlines : "Research screen";
+    document.title = articleData
+      ? articleData?.headlines
+      : "Perception & Quant";
   }, [articleData]);
   const handlePrint = () => {
     window.print();
@@ -132,15 +133,25 @@ const ArticleView = () => {
   };
 
   useEffect(() => {
+    const fetchData = async (url, callback, type) => {
+      try {
+        const response = await axios.get(url);
+        if (type === 0) {
+          callback(response.data.imageUrls);
+        } else {
+          callback(response.data);
+        }
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
+    };
+
     if (value === 3 && articleData?.TXTPATH) {
-      axios
-        .get(articleData.TXTPATH)
-        .then((response) => {
-          setTextContent(response.data);
-        })
-        .catch((error) => {
-          console.error("Error fetching text content:", error);
-        });
+      fetchData(articleData.TXTPATH, setTextContent, 3);
+    }
+
+    if (value === 0 && articleData?.JPGPATH) {
+      fetchData(articleData.JPGPATH, setMultipleImages, 0);
     }
   }, [value, articleData]);
 
@@ -251,7 +262,7 @@ const ArticleView = () => {
         </Box>
       </Card>
       <Card className="flex items-center justify-between px-3 mt-1">
-        <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
+        <Box sx={{ borderBottom: 1, borderColor: "divider", display: "flex" }}>
           <Tabs value={value} onChange={handleChange} aria-label="type tabs">
             <Tab label="IMAGE" {...a11yProps(0)} />
             <Tab label="HTML" {...a11yProps(1)} />
@@ -259,6 +270,8 @@ const ArticleView = () => {
             <Tab label="TEXT" {...a11yProps(3)} />
           </Tabs>
         </Box>
+        {/* handling multiple images */}
+
         <Box sx={{ display: "flex", gap: 1 }}>
           <Tooltip title="print">
             <IconButton onClick={handlePrint}>
@@ -294,12 +307,12 @@ const ArticleView = () => {
               {textContent}
             </pre>
           </div>
+        ) : value === 0 && articleData?.JPGPATH ? (
+          <ImageCarousel images={multipleImages} />
         ) : (
           <iframe
             src={
-              value === 0
-                ? articleData?.JPGPATH
-                : value === 1
+              value === 1
                 ? articleData?.HTMLPATH
                 : value === 2
                 ? articleData?.PDFPATH
@@ -318,3 +331,5 @@ const ArticleView = () => {
 };
 
 export default ArticleView;
+
+// ) || value === 0(<ImageCarousel images={multipleImages} />)
