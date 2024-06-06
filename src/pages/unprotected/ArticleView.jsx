@@ -331,5 +331,3 @@ const ArticleView = () => {
 };
 
 export default ArticleView;
-
-// ) || value === 0(<ImageCarousel images={multipleImages} />)
