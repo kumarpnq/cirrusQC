@@ -1,10 +1,17 @@
-import { createContext, useState } from "react";
+import { createContext, useEffect, useState } from "react";
 import PropTypes from "prop-types";
 import { useNavigate } from "react-router-dom";
 
 export const ResearchContext = createContext(null);
 const ContextProvider = ({ children }) => {
   // page access
+  const [screenPermissions, setScreenPermissions] = useState({
+    "Online-QC2": false,
+    "Print-QC2": false,
+    Dump: false,
+    "Manual-upload": false,
+    "Non-Tagged": false,
+  });
   const [dumpAccess, setDumpAccess] = useState(false);
 
   const navigate = useNavigate();
@@ -69,9 +76,27 @@ const ContextProvider = ({ children }) => {
     navigate("/login");
   };
 
+  useEffect(() => {
+    const permissionData = sessionStorage.getItem("prmsn");
+
+    if (permissionData) {
+      const parsedPermissions = JSON.parse(permissionData);
+      // Map permission values to boolean
+      const mappedPermissions = Object.fromEntries(
+        Object.entries(parsedPermissions).map(([key, value]) => [
+          key,
+          value === "Yes",
+        ])
+      );
+      setScreenPermissions(mappedPermissions);
+    }
+  }, []);
+
   return (
     <ResearchContext.Provider
       value={{
+        screenPermissions,
+        setScreenPermissions,
         dumpAccess,
         setDumpAccess,
         handleLogout,

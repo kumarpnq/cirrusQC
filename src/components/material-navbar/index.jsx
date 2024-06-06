@@ -82,31 +82,42 @@ export default function MainNav() {
   const [open, setOpen] = React.useState(false);
   const [searchValue, setSearchValue] = React.useState();
   const [filteredNavItems, setFilteredNavItems] = React.useState([]);
-  const { handleLogout, dumpAccess } = useContext(ResearchContext);
+  const { handleLogout, screenPermissions } = useContext(ResearchContext);
   const userToken = localStorage.getItem("user");
   const location = useLocation();
   const isSmallScreen = useMediaQuery("(max-width:600px)");
   const isMenuOpen = Boolean(anchorEl);
   const isMobileMenuOpen = Boolean(mobileMoreAnchorEl);
-  const isDumpAccess = localStorage.getItem("isDMP");
   const navList = [
-    { id: 1, title: "Online", path: "/", icon: <HiStatusOnline /> },
-    { id: 2, title: "Print", path: "/print", icon: <FaPrint /> },
-    ...(dumpAccess || isDumpAccess
+    ...(screenPermissions["Online-QC2"]
+      ? [{ id: 1, title: "Online-QC2", path: "/", icon: <HiStatusOnline /> }]
+      : []),
+    ...(screenPermissions["Print-QC2"]
+      ? [{ id: 2, title: "Print-QC2", path: "/print", icon: <FaPrint /> }]
+      : []),
+    ...(screenPermissions.Dump
       ? [{ id: 3, title: "Dump", path: "/dump", icon: <FaDumpster /> }]
       : []),
-    {
-      id: 4,
-      title: "Manual-upload",
-      path: "/manual-upload",
-      icon: <UploadFileIcon />,
-    },
-    {
-      id: 4,
-      title: "Non-Tagged",
-      path: "/non-tagged",
-      icon: <BookmarkBorderIcon />,
-    },
+    ...(screenPermissions["Manual-upload"]
+      ? [
+          {
+            id: 4,
+            title: "Manual-upload",
+            path: "/manual-upload",
+            icon: <UploadFileIcon />,
+          },
+        ]
+      : []),
+    ...(screenPermissions["Non-Tagged"]
+      ? [
+          {
+            id: 5,
+            title: "Non-Tagged",
+            path: "/non-tagged",
+            icon: <BookmarkBorderIcon />,
+          },
+        ]
+      : []),
   ];
 
   const handleProfileMenuOpen = (event) => {
@@ -148,16 +159,11 @@ export default function MainNav() {
 
   const handleEnterKeyPress = (event) => {
     if (event.key === "Enter") {
-      if (searchValue === "online") {
-        navigate("/");
-      } else if (searchValue === "print") {
-        navigate("/print");
-      } else if (searchValue === "dump") {
-        dumpAccess ? navigate("/dump") : toast.error("No such page found.");
-      } else if (searchValue === "manual-upload") {
-        navigate("/manual-upload");
-      } else if (searchValue === "non-tagged") {
-        navigate("/non-tagged");
+      const foundItem = navList.find(
+        (item) => item.title.toLowerCase() === searchValue.toLowerCase()
+      );
+      if (foundItem) {
+        navigate(foundItem.path);
       } else {
         toast.error("No such page found.");
       }

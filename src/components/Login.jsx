@@ -41,8 +41,15 @@ const useStyles = makeStyles(() => ({
 
 const Login = () => {
   const classes = useStyles();
-  const { name, setName, password, setPassword, setUserToken, setDumpAccess } =
-    useContext(ResearchContext);
+  const {
+    name,
+    setName,
+    password,
+    setPassword,
+    setUserToken,
+    setDumpAccess,
+    setScreenPermissions,
+  } = useContext(ResearchContext);
   const navigate = useNavigate();
 
   const handleSubmit = async (event) => {
@@ -52,20 +59,39 @@ const Login = () => {
         loginname: name,
         password: password,
       });
-
       const data = JSON.parse(res.config.data);
       const isAccess = res.data.dump_access;
       const loginname = data.loginname;
       if (res.status === 200) {
         setDumpAccess(isAccess);
         localStorage.setItem("user", res.data.access_token);
-        localStorage.setItem("isDMP", isAccess);
+        const screen_access = res.data.screen_access;
+
+        sessionStorage.setItem("prmsn", JSON.stringify(screen_access));
         sessionStorage.setItem("user", true);
         setUserToken(localStorage.getItem("user"));
-        navigate("/");
-        toast.success(`Welcome ${loginname}`, {
-          autoClose: 3000,
-        });
+        const permissionData = sessionStorage.getItem("prmsn");
+
+        const parsedPermissions = JSON.parse(permissionData);
+        // Map permission values to boolean
+        const mappedPermissions = Object.fromEntries(
+          Object.entries(parsedPermissions).map(([key, value]) => [
+            key,
+            value === "Yes",
+          ])
+        );
+        const greenFlag = Object.values(mappedPermissions).some(
+          (permission) => permission
+        );
+        setScreenPermissions(mappedPermissions);
+        if (greenFlag) {
+          navigate("/");
+          toast.success(`Welcome ${loginname}`, {
+            autoClose: 3000,
+          });
+        } else {
+          toast.warning("You Don't Have a access");
+        }
       }
     } catch (error) {
       toast.error(error.message, {

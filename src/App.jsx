@@ -7,33 +7,23 @@ import Home from "./pages/Home";
 import NotFound from "./components/NotFound";
 import { ResearchContext } from "./context/ContextProvider";
 import { checkUserAuthenticate } from "./auth/auth";
-
-// **component import
 import AutoTokenRefresh from "./auth/autoToken";
-import Qc2Print from "./pages/Qc2Print";
-import Dump from "./pages/Dump";
 import MainNav from "./components/material-navbar";
-import ManualUpload from "./pages/ManualUpload";
-import NonTagged from "./pages/NonTagged";
 import ArticleView from "./pages/unprotected/ArticleView";
+import DynamicImport from "./DynamicImport";
 
 function App() {
-  const { setUserToken } = useContext(ResearchContext);
-  let sessionValid = sessionStorage.getItem("user");
-  const isDumpAccess = localStorage.getItem("isDMP");
+  const { setUserToken, screenPermissions } = useContext(ResearchContext);
   const userToken = localStorage.getItem("user");
-  if (!sessionValid) {
-    localStorage.removeItem("user");
-  }
+
   useEffect(() => {
     checkUserAuthenticate(setUserToken);
-  }, []);
+  }, [setUserToken]);
 
-  // * warning sign while refreshing
   useEffect(() => {
     const handleBeforeUnload = (event) => {
       const message =
-        "Make sure You're saving latest changes.Are you sure you want to leave?";
+        "Make sure you're saving latest changes. Are you sure you want to leave?";
       event.returnValue = message;
       return message;
     };
@@ -45,33 +35,45 @@ function App() {
     };
   }, []);
 
+  const renderRoute = (path, componentPath, permission) => {
+    return (
+      <Route
+        path={path}
+        element={
+          screenPermissions[permission] ? (
+            <DynamicImport
+              loadComponent={() => import(`./pages/${componentPath}`)}
+            />
+          ) : (
+            <NotFound />
+          )
+        }
+      />
+    );
+  };
+
   return (
-    <div className="bg-secondory" style={{ fontFamily: "Nunito" }}>
+    <div className="bg-secondary" style={{ fontFamily: "Nunito" }}>
       <ToastContainer />
       <div className="sticky top-0 z-50">
         <MainNav />
       </div>
       <AutoTokenRefresh />
 
-      {/* <Navigation /> */}
       <Routes>
         {userToken ? (
           <>
-            <Route path="/" element={<Home />} />
-            <Route path="/print" element={<Qc2Print />} />
-            <Route
-              path="/dump"
-              element={isDumpAccess ? <Dump /> : <NotFound />}
-            />
-            <Route path="/manual-upload" element={<ManualUpload />} />
-            <Route path="/non-tagged" element={<NonTagged />} />
+            <Route path="/" exact element={<Home />} />
+            {renderRoute("/online", "ResearchScreen", "Online-QC2")}
+            {renderRoute("/print", "Qc2Print", "Print-QC2")}
+            {renderRoute("/dump", "Dump", "Dump")}
+            {renderRoute("/manual-upload", "ManualUpload", "Manual-upload")}
+            {renderRoute("/non-tagged", "NonTagged", "Non-Tagged")}
           </>
         ) : (
           <Route path="/login" element={<Login />} />
         )}
-
         <Route path="*" element={userToken ? <NotFound /> : <Login />} />
-        {/* unprotected routes */}
         <Route
           path="/articleview/download-file/:id"
           element={<ArticleView />}
