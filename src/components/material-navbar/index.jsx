@@ -77,12 +77,17 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
 
 export default function MainNav() {
   const navigate = useNavigate();
+  const { handleLogout, screenPermissions, unsavedChanges } =
+    useContext(ResearchContext);
+
+  // ** state variables
   const [anchorEl, setAnchorEl] = React.useState(null);
   const [mobileMoreAnchorEl, setMobileMoreAnchorEl] = React.useState(null);
   const [open, setOpen] = React.useState(false);
   const [searchValue, setSearchValue] = React.useState();
   const [filteredNavItems, setFilteredNavItems] = React.useState([]);
-  const { handleLogout, screenPermissions } = useContext(ResearchContext);
+
+  // * vars
   const userToken = localStorage.getItem("user");
   const location = useLocation();
   const isSmallScreen = useMediaQuery("(max-width:600px)");
@@ -242,9 +247,15 @@ export default function MainNav() {
               <ListItemButton
                 onClick={(e) => {
                   e.preventDefault();
-                  if (
-                    window.confirm("Are you sure you want to leave this page?")
-                  ) {
+                  if (unsavedChanges) {
+                    if (
+                      window.confirm(
+                        "Are you sure you want to leave this page?"
+                      )
+                    ) {
+                      navigate(item.path);
+                    }
+                  } else {
                     navigate(item.path);
                   }
                 }}

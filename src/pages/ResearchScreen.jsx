@@ -13,7 +13,6 @@ import { ResearchContext } from "../context/ContextProvider";
 import useFetchData from "../hooks/useFetchData";
 import axios from "axios";
 import { toast } from "react-toastify";
-import Loader from "../components/loader/Loader";
 import SearchableDropDown from "../components/dropdowns/SearchableDropdown";
 import CheckboxComp from "../components/checkbox/Checkbox";
 import Datetype from "../components/research-dropdowns/Datetype";

@@ -71,6 +71,7 @@ const ResearchTable = ({ tableDataLoading, tableData, setTableData }) => {
   // data for the edit
   const [editValue, setEditValue] = useState("");
   const [updatedRows, setUpdatedRows] = useState([]);
+
   // for highlight purpose
   const [highlightUpdatedRows, setHighlightUpdatedRows] = useState([]);
   // saved success

@@ -1,7 +1,14 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import axios from "axios";
-import { Box, Typography, Card, Tooltip, IconButton } from "@mui/material";
+import {
+  Box,
+  Typography,
+  Card,
+  Tooltip,
+  IconButton,
+  CircularProgress,
+} from "@mui/material";
 import PropTypes from "prop-types";
 import Tabs from "@mui/material/Tabs";
 import Tab from "@mui/material/Tab";
@@ -45,14 +52,17 @@ function a11yProps(index) {
 
 const ArticleView = () => {
   const [articleData, setArticleData] = useState(null);
+  const [fetchArticleLoading, setFetchArticleLoading] = useState(false);
   const [value, setValue] = useState(null);
   const [scrolled, setScrolled] = useState(false);
   const [textContent, setTextContent] = useState("");
   const [multipleImages, setMultipleImages] = useState([]);
+  const [iframeLoading, setIframeLoading] = useState(true);
 
   const { id } = useParams();
   const handleChange = (event, newValue) => {
     setValue(newValue);
+    setIframeLoading(true);
   };
   const tabValue = (type) => {
     let value;
@@ -67,6 +77,7 @@ const ArticleView = () => {
   };
   useEffect(() => {
     const getArticleHeader = async () => {
+      setFetchArticleLoading(true);
       try {
         const response = await axios.get(`${url}articleview/`, {
           params: {
@@ -83,6 +94,8 @@ const ArticleView = () => {
         }
       } catch (error) {
         console.error("Error fetching data:", error);
+      } finally {
+        setFetchArticleLoading(false);
       }
     };
 
@@ -154,6 +167,10 @@ const ArticleView = () => {
       fetchData(articleData.JPGPATH, setMultipleImages, 0);
     }
   }, [value, articleData]);
+
+  const handleIframeLoad = () => {
+    setIframeLoading(false);
+  };
 
   const framePath =
     (value === 0 && articleData?.JPGPATH) ||
@@ -286,7 +303,9 @@ const ArticleView = () => {
         </Box>
       </Card>
       <Card className="flex items-center justify-center mt-1 border">
-        {value === 3 ? (
+        {fetchArticleLoading ? (
+          <CircularProgress />
+        ) : value === 3 ? (
           <div
             style={{
               minHeight: "800px",
@@ -310,20 +329,29 @@ const ArticleView = () => {
         ) : value === 0 && articleData?.JPGPATH ? (
           <ImageCarousel images={multipleImages} />
         ) : (
-          <iframe
-            src={
-              value === 1
-                ? articleData?.HTMLPATH
-                : value === 2
-                ? articleData?.PDFPATH
-                : ""
-            }
-            frameBorder="0"
-            style={{
-              width: "100%",
-              minHeight: "800px",
-            }}
-          />
+          <>
+            {iframeLoading && (
+              <div className="flex items-center justify-center h-full">
+                <CircularProgress />
+              </div>
+            )}
+            <iframe
+              src={
+                value === 1
+                  ? articleData?.HTMLPATH
+                  : value === 2
+                  ? articleData?.PDFPATH
+                  : ""
+              }
+              onLoad={handleIframeLoad}
+              frameBorder="0"
+              style={{
+                width: "100%",
+                minHeight: "800px",
+                display: iframeLoading ? "none" : "block",
+              }}
+            />
+          </>
         )}
       </Card>
     </div>

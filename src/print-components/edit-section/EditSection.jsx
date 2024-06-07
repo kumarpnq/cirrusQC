@@ -43,7 +43,7 @@ const EditSection = ({
   setHighlightRows,
   // setRetrieveAfterSave,
 }) => {
-  const { name, userToken } = useContext(ResearchContext);
+  const { name, userToken, setUnsavedChanges } = useContext(ResearchContext);
   const classes = useStyles();
 
   const [editRow, setEditRow] = useState("");
@@ -147,7 +147,7 @@ const EditSection = ({
 
         setQc2PrintTableData(updatedTableData);
         setSearchedData(updatedSearchedData);
-        // setUnsavedChanges(true);
+        setUnsavedChanges(true);
       }
       setApplyLoading(false);
       setSelectedItems([]);
@@ -216,6 +216,7 @@ const EditSection = ({
         setHighlightRows([]);
         setSaveLoading(false);
         setSearchedData([]);
+        setUnsavedChanges(false);
         // setRetrieveAfterSave((prev) => !prev);
         setUpdatedData([]);
       } else {
