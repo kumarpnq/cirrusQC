@@ -45,7 +45,7 @@ function App() {
               loadComponent={() => import(`./pages/${componentPath}`)}
             />
           ) : (
-            <NotFound />
+            <span>Loading...</span>
           )
         }
       />
