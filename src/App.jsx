@@ -42,7 +42,9 @@ function App() {
         element={
           screenPermissions[permission] ? (
             <DynamicImport
-              loadComponent={() => import(`./pages/${componentPath}`)}
+              loadComponent={() =>
+                /* @vite-ignore */ import(`./pages/${componentPath}`)
+              }
             />
           ) : (
             <span>Loading...</span>
