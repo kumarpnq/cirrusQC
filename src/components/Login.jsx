@@ -47,7 +47,6 @@ const Login = () => {
     password,
     setPassword,
     setUserToken,
-    setDumpAccess,
     setScreenPermissions,
   } = useContext(ResearchContext);
   const navigate = useNavigate();
@@ -60,10 +59,8 @@ const Login = () => {
         password: password,
       });
       const data = JSON.parse(res.config.data);
-      const isAccess = res.data.dump_access;
       const loginname = data.loginname;
       if (res.status === 200) {
-        setDumpAccess(isAccess);
         localStorage.setItem("user", res.data.access_token);
         const screen_access = res.data.screen_access;
 
