@@ -314,17 +314,21 @@ const ArticleView = () => {
               padding: "16px",
             }}
           >
-            <pre
-              style={{
-                minHeight: "800px",
-                backgroundColor: "white",
-                color: "black",
-                padding: "16px",
-                whiteSpace: "pre-wrap",
-              }}
-            >
-              {textContent}
-            </pre>
+            {textContent ? (
+              <pre
+                style={{
+                  minHeight: "800px",
+                  backgroundColor: "white",
+                  color: "black",
+                  padding: "16px",
+                  whiteSpace: "pre-wrap",
+                }}
+              >
+                {textContent}
+              </pre>
+            ) : (
+              <CircularProgress />
+            )}
           </div>
         ) : value === 0 && articleData?.JPGPATH ? (
           <ImageCarousel images={multipleImages} />

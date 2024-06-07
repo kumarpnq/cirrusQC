@@ -10,19 +10,25 @@ const ImageCarousel = ({ images }) => {
   const [loadedImages, setLoadedImages] = useState([]);
 
   useEffect(() => {
-    // Load all images and then set loading to false
+    setLoading(true); // Set loading to true when starting to fetch images
     const loadImages = async () => {
-      const promises = images.map((src) => {
-        return new Promise((resolve) => {
-          const img = new Image();
-          img.src = src;
-          img.onload = () => resolve(src);
+      try {
+        const promises = images.map((src) => {
+          return new Promise((resolve, reject) => {
+            const img = new Image();
+            img.src = src;
+            img.onload = () => resolve(src);
+            img.onerror = () => reject(new Error("Failed to load image"));
+          });
         });
-      });
 
-      const loaded = await Promise.all(promises);
-      setLoadedImages(loaded);
-      setLoading(false);
+        const loaded = await Promise.all(promises);
+        setLoadedImages(loaded);
+      } catch (error) {
+        console.error("Error loading images:", error);
+      } finally {
+        setLoading(false); // Set loading to false when all images are loaded or an error occurs
+      }
     };
 
     loadImages();
