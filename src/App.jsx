@@ -1,5 +1,5 @@
 import { useContext, useEffect } from "react";
-import { Routes, Route } from "react-router-dom";
+import { Routes, Route, useLocation } from "react-router-dom";
 import Login from "./components/Login";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -15,6 +15,16 @@ import DynamicImport from "./DynamicImport";
 function App() {
   const { setUserToken, screenPermissions } = useContext(ResearchContext);
   const userToken = localStorage.getItem("user");
+  const location = useLocation();
+
+  const componentMap = {
+    ResearchScreen: () => import("./pages/ResearchScreen"),
+    Qc2Print: () => import("./pages/Qc2Print"),
+    Dump: () => import("./pages/Dump"),
+    ManualUpload: () => import("./pages/ManualUpload"),
+    NonTagged: () => import("./pages/NonTagged"),
+    // Add other components as needed
+  };
 
   useEffect(() => {
     checkUserAuthenticate(setUserToken);
@@ -35,17 +45,13 @@ function App() {
     };
   }, []);
 
-  const renderRoute = (path, componentPath, permission) => {
+  const renderRoute = (path, componentName, permission) => {
     return (
       <Route
         path={path}
         element={
           screenPermissions[permission] ? (
-            <DynamicImport
-              loadComponent={() =>
-                /* @vite-ignore */ import(`./pages/${componentPath}`)
-              }
-            />
+            <DynamicImport loadComponent={componentMap[componentName]} />
           ) : (
             <span>Loading...</span>
           )

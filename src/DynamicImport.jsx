@@ -7,10 +7,15 @@ const DynamicImport = ({ loadComponent }) => {
 
   useEffect(() => {
     const load = async () => {
-      setIsLoading(true);
-      const { default: loadedComponent } = await loadComponent();
-      setComponent(() => loadedComponent);
-      setIsLoading(false);
+      try {
+        setIsLoading(true);
+        const { default: loadedComponent } = await loadComponent();
+        setComponent(() => loadedComponent);
+      } catch (error) {
+        console.error("Error loading component:", error);
+      } finally {
+        setIsLoading(false);
+      }
     };
 
     load();
