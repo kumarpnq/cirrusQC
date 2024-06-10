@@ -3,9 +3,9 @@ import Card from "@mui/material/Card";
 import Typography from "@mui/material/Typography";
 import { FaExternalLinkAlt } from "react-icons/fa";
 
-const ArticleView = ({ link }) => {
+const ArticleView = ({ link, isResponsive }) => {
   return (
-    <Card className="w-full h-[80vh]">
+    <Card className="h-[80vh]">
       <Typography
         variant="h6"
         component={"a"}
@@ -31,7 +31,7 @@ const ArticleView = ({ link }) => {
         <iframe
           src={link}
           title="Article"
-          width="100%"
+          width={isResponsive ? "610" : "100%"}
           height="100%"
           frameBorder="0"
         />
@@ -42,6 +42,7 @@ const ArticleView = ({ link }) => {
 
 ArticleView.propTypes = {
   link: PropTypes.string.isRequired,
+  isResponsive: PropTypes.bool.isRequired,
 };
 
 export default ArticleView;

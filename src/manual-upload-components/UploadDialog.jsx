@@ -7,6 +7,7 @@ import Details from "./DetailSection";
 import ArticleView from "./ArticleView";
 import Box from "@mui/material/Box";
 import Modal from "@mui/material/Modal";
+import { Grid, useMediaQuery } from "@mui/material";
 
 const style = {
   position: "absolute",
@@ -19,7 +20,6 @@ const style = {
   bgcolor: "background.paper",
   border: "2px solid #000",
   boxShadow: 24,
-  // p: 4,
   display: "flex",
   flexDirection: "column",
 };
@@ -36,6 +36,8 @@ const UploadDialog = ({
   articleNumber,
   setArticleNumber,
 }) => {
+  const isResponsive = useMediaQuery("(max-width: 1269px)");
+
   return (
     <Modal open={open} onClose={handleClose}>
       <Box sx={style}>
@@ -48,29 +50,58 @@ const UploadDialog = ({
           <Button onClick={handleClose}>Close</Button>
         </DialogTitle>
         <DialogContent>
-          <Box
-            display="flex"
-            flexDirection={{ xs: "column", md: "row" }}
+          <Grid
+            container
+            spacing={1}
             alignItems="center"
-            width="100%"
-            gap={1}
+            direction={isResponsive ? "column" : "row"}
           >
-            <Box flex={1}>
-              <Details
-                selectedRow={selectedRow}
-                type={type}
-                articleURL={link}
-                setArticleURL={setLink}
-                setIsArticleSaved={setIsArticleSaved}
-                errorList={errorList}
-                articleNumber={articleNumber}
-                setArticleNumber={setArticleNumber}
-              />
-            </Box>
-            <Box flex={1}>
-              <ArticleView link={link} />
-            </Box>
-          </Box>
+            {isResponsive ? (
+              <>
+                <Grid item xs={12}>
+                  <Box>
+                    <ArticleView link={link} isResponsive />
+                  </Box>
+                </Grid>
+                <Grid item xs={12}>
+                  <Box>
+                    <Details
+                      selectedRow={selectedRow}
+                      type={type}
+                      articleURL={link}
+                      setArticleURL={setLink}
+                      setIsArticleSaved={setIsArticleSaved}
+                      errorList={errorList}
+                      articleNumber={articleNumber}
+                      setArticleNumber={setArticleNumber}
+                    />
+                  </Box>
+                </Grid>
+              </>
+            ) : (
+              <>
+                <Grid item xs={12} md={6}>
+                  <Box>
+                    <Details
+                      selectedRow={selectedRow}
+                      type={type}
+                      articleURL={link}
+                      setArticleURL={setLink}
+                      setIsArticleSaved={setIsArticleSaved}
+                      errorList={errorList}
+                      articleNumber={articleNumber}
+                      setArticleNumber={setArticleNumber}
+                    />
+                  </Box>
+                </Grid>
+                <Grid item xs={12} md={6}>
+                  <Box>
+                    <ArticleView link={link} isResponsive={false} />
+                  </Box>
+                </Grid>
+              </>
+            )}
+          </Grid>
         </DialogContent>
       </Box>
     </Modal>

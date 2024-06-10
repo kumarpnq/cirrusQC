@@ -155,15 +155,8 @@ const Details = ({
   }, [selectedRow, setArticleURL, type]);
 
   return (
-    <Card className="w-full h-[80vh]">
-      <CardHeader
-        title={
-          <Typography variant="h6" fontSize={"0.9em"} fontFamily="nunito">
-            Basic Details
-          </Typography>
-        }
-      />
-      <CardContent sx={{ px: 2 }}>
+    <Box className="w-full h-[80vh] border shadow-md">
+      <Box sx={{ px: 2 }}>
         <FormControl>
           <Box mb={1} display="flex" alignItems="center" width={580}>
             <Typography sx={{ fontSize: "0.9em" }}>Title:</Typography>
@@ -256,11 +249,7 @@ const Details = ({
           >
             <Box display="flex" alignItems="center">
               <Typography sx={{ fontSize: "0.9em" }}>Company:</Typography>
-              <div className="ml-5">
-                {/* <DebounceSearch
-                  selectedCompany={selectedCompanies}
-                  setSelectedCompany={setSelectedCompanies}
-                /> */}
+              <div className="ml-">
                 <DebounceSearchCompany
                   setSelectedCompany={setSelectedCompanies}
                 />
@@ -330,8 +319,8 @@ const Details = ({
             />
           </Box>
         </FormControl>
-      </CardContent>
-    </Card>
+      </Box>
+    </Box>
   );
 };
 
