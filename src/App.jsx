@@ -1,4 +1,4 @@
-import { useContext, useEffect } from "react";
+import { useContext, useEffect, useState } from "react";
 import { Routes, Route, useLocation } from "react-router-dom";
 import Login from "./components/Login";
 import { ToastContainer } from "react-toastify";
@@ -21,15 +21,25 @@ function App() {
   const userToken = localStorage.getItem("user");
   const location = useLocation();
 
-  //* Vars
+  const [loading, setLoading] = useState(true);
+
   const onlinePermission = screenPermissions["Online-QC2"];
   const printPermission = screenPermissions["Print-QC2"];
   const dumpPermission = screenPermissions?.Dump;
   const manualPermission = screenPermissions["Manual-upload"];
   const nonTaggedPermission = screenPermissions["Non-Tagged"];
+
   useEffect(() => {
     checkUserAuthenticate(setUserToken);
   }, [setUserToken]);
+
+  useEffect(() => {
+    setLoading(true);
+    const timer = setTimeout(() => {
+      setLoading(false);
+    }, 2000);
+    return () => clearTimeout(timer);
+  }, []);
 
   useEffect(() => {
     const handleBeforeUnload = (event) => {
@@ -65,23 +75,65 @@ function App() {
             <Route
               path="/online"
               exact
-              element={onlinePermission ? <ResearchScreen /> : <NotFound />}
+              element={
+                onlinePermission ? (
+                  loading ? (
+                    "loading"
+                  ) : (
+                    <ResearchScreen />
+                  )
+                ) : (
+                  <NotFound />
+                )
+              }
             />
             <Route
               path="/print"
-              element={printPermission ? <DDComp /> : <NotFound />}
+              element={
+                printPermission ? (
+                  loading ? (
+                    "loading"
+                  ) : (
+                    <DDComp />
+                  )
+                ) : (
+                  <NotFound />
+                )
+              }
             />
             <Route
               path="/dump"
-              element={dumpPermission ? <Dump /> : <NotFound />}
+              element={
+                dumpPermission ? loading ? "loading" : <Dump /> : <NotFound />
+              }
             />
             <Route
               path="/manual-upload"
-              element={manualPermission ? <ManualUpload /> : <NotFound />}
+              element={
+                manualPermission ? (
+                  loading ? (
+                    "loading"
+                  ) : (
+                    <ManualUpload />
+                  )
+                ) : (
+                  <NotFound />
+                )
+              }
             />
             <Route
               path="/non-tagged"
-              element={nonTaggedPermission ? <NonTagged /> : <NotFound />}
+              element={
+                nonTaggedPermission ? (
+                  loading ? (
+                    "loading"
+                  ) : (
+                    <NonTagged />
+                  )
+                ) : (
+                  <NotFound />
+                )
+              }
             />
           </>
         ) : (
