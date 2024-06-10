@@ -1,11 +1,16 @@
-import { createContext, useEffect, useState } from "react";
+import {
+  createContext,
+  useEffect,
+  useState,
+  useMemo,
+  useCallback,
+} from "react";
 import PropTypes from "prop-types";
 import { useNavigate } from "react-router-dom";
 
 export const ResearchContext = createContext(null);
+
 const ContextProvider = ({ children }) => {
-  // page access
-  const [HomeComponent, setHomeComponent] = useState(null);
   const [screenPermissions, setScreenPermissions] = useState({
     "Online-QC2": false,
     "Print-QC2": false,
@@ -18,15 +23,13 @@ const ContextProvider = ({ children }) => {
   // auto logout
   const [logoutTimer, setLogoutTimer] = useState(null);
   const [userToken, setUserToken] = useState("");
-  //state for the login component
+  // state for the login component
   const [researchOpen, setResearchOpen] = useState(false);
   const [name, setName] = useState("");
   const [password, setPassword] = useState("");
   // for logout timer
   const [timerId, setTimerId] = useState(null);
   // loading state while fetching tableData
-  // table headers in uppercase
-  const [tableHeaders, setTableHeaders] = useState([]);
 
   const currentDate = new Date();
   currentDate.setHours(0, 0, 0, 0);
@@ -64,7 +67,7 @@ const ContextProvider = ({ children }) => {
   // unprotected route
   const [isValidNavigation, setIsValidNavigation] = useState(false);
 
-  const handleLogout = () => {
+  const handleLogout = useCallback(() => {
     if (logoutTimer) {
       clearTimeout(logoutTimer);
     }
@@ -74,7 +77,7 @@ const ContextProvider = ({ children }) => {
     setUnsavedChanges(false);
     setPageNumber(1);
     navigate("/login");
-  };
+  }, [logoutTimer, navigate]);
 
   useEffect(() => {
     const permissionData = sessionStorage.getItem("prmsn");
@@ -92,58 +95,93 @@ const ContextProvider = ({ children }) => {
     }
   }, []);
 
+  const contextValue = useMemo(
+    () => ({
+      screenPermissions,
+      setScreenPermissions,
+      handleLogout,
+      researchOpen,
+      setResearchOpen,
+      setLogoutTimer,
+      name,
+      setName,
+      password,
+      setPassword,
+      setUserToken,
+      userToken,
+      timerId,
+      setTimerId,
+      fromDate,
+      setFromDate,
+      dateNow,
+      setDateNow,
+      showTableData,
+      setShowTableData,
+      // data saved or not
+      unsavedChanges,
+      setUnsavedChanges,
+      // Pagination
+      pageNumber,
+      setPageNumber,
+      recordsPerPage,
+      setRecordsPerPage,
+      // qc2print
+      qc2Open,
+      setQc2Open,
+      qc2PrintTableData,
+      setQc2PrintTableData,
+      fetchAfterSave,
+      setFetchAfterSave,
+      // unprotected route
+      isValidNavigation,
+      setIsValidNavigation,
+    }),
+    [
+      screenPermissions,
+      handleLogout,
+      researchOpen,
+      setResearchOpen,
+      setLogoutTimer,
+      name,
+      setName,
+      password,
+      setPassword,
+      setUserToken,
+      userToken,
+      timerId,
+      setTimerId,
+      fromDate,
+      setFromDate,
+      dateNow,
+      setDateNow,
+      showTableData,
+      setShowTableData,
+      unsavedChanges,
+      setUnsavedChanges,
+      pageNumber,
+      setPageNumber,
+      recordsPerPage,
+      setRecordsPerPage,
+      qc2Open,
+      setQc2Open,
+      qc2PrintTableData,
+      setQc2PrintTableData,
+      fetchAfterSave,
+      setFetchAfterSave,
+      isValidNavigation,
+      setIsValidNavigation,
+    ]
+  );
+
   return (
-    <ResearchContext.Provider
-      value={{
-        HomeComponent,
-        setHomeComponent,
-        screenPermissions,
-        setScreenPermissions,
-        handleLogout,
-        researchOpen,
-        setResearchOpen,
-        setLogoutTimer,
-        name,
-        setName,
-        password,
-        setPassword,
-        setUserToken,
-        userToken,
-        timerId,
-        setTimerId,
-        fromDate,
-        setFromDate,
-        dateNow,
-        setDateNow,
-        showTableData,
-        setShowTableData,
-        tableHeaders,
-        setTableHeaders,
-        // data saved or not
-        unsavedChanges,
-        setUnsavedChanges,
-        // Pagination
-        pageNumber,
-        setPageNumber,
-        recordsPerPage,
-        setRecordsPerPage,
-        // qc2print
-        qc2Open,
-        setQc2Open,
-        qc2PrintTableData,
-        setQc2PrintTableData,
-        fetchAfterSave,
-        setFetchAfterSave,
-        // unprotected route
-        isValidNavigation,
-        setIsValidNavigation,
-      }}
-    >
+    <ResearchContext.Provider value={contextValue}>
       {children}
     </ResearchContext.Provider>
   );
 };
+
 ContextProvider.propTypes = {
   children: PropTypes.node.isRequired,
 };
+
 export default ContextProvider;

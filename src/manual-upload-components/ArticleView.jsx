@@ -5,7 +5,7 @@ import { FaExternalLinkAlt } from "react-icons/fa";
 
 const ArticleView = ({ link }) => {
   return (
-    <Card className="w-full ml-2">
+    <Card className="w-full h-[80vh]">
       <Typography
         variant="h6"
         component={"a"}

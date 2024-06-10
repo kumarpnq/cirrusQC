@@ -33,6 +33,7 @@ const useStyles = makeStyles(() => ({
 }));
 const MainTable = ({
   tableData,
+  tableHeaders,
   searchedData,
   selectedRowData,
   setSelectedRowData,
@@ -42,7 +43,7 @@ const MainTable = ({
   setSortColumn,
   highlightUpdatedRows,
 }) => {
-  const { tableHeaders, showTableData } = useContext(ResearchContext);
+  const { showTableData } = useContext(ResearchContext);
   const classes = useStyles();
   const [checkBoxLoading, setCheckBoxLoading] = useState(false);
 
@@ -172,56 +173,55 @@ const MainTable = ({
                   Edit
                 </th>
               )}
-              {showTableData &&
-                tableHeaders?.map((header) => (
-                  <th
-                    key={header}
-                    onClick={() =>
-                      handleSort(header.toLowerCase().replace(/ /g, "_"))
-                    }
-                    className={`text-white cursor-pointer font-thin text-xs tracking-widest px-4 ${
-                      (header === "COMPANY NAME" && "pl-10") ||
-                      (header === "HEADLINE" && "pl-6") ||
-                      (header === "PUBLICATION" && "pl-44") ||
-                      (header === "LINK" && "pl-10") ||
-                      (header === "REPORTING SUBJECT" && "pl-12") ||
-                      (header === "AUTHOR NAME" && "pl-[430px]") ||
-                      (header === "HEADSUMMARY" && "pl-8") ||
-                      (header === "QC1 DONE" && "pl-[290px]") ||
-                      (header === "COMPANY ID" && "pl-10") ||
-                      (header === "CITY" && "pl-14") ||
-                      (header === "LANGUAGE" && "pl-14") ||
-                      (header === "QC2 ON" && "pl-16") ||
-                      (header === "DETAIL SUMMARY" && "pl-[100PX]")
-                    }`}
-                  >
-                    <span className="flex items-center text-sm">
-                      <IoIosArrowRoundUp
-                        style={{
-                          fontSize: "x-small",
-                          color:
-                            sortColumn ===
-                              header.toLowerCase().replace(/ /g, "_") &&
-                            sortDirection === "asc"
-                              ? "red"
-                              : "#fff",
-                        }}
-                      />
-                      <IoIosArrowRoundDown
-                        style={{
-                          fontSize: "x-small",
-                          color:
-                            sortColumn ===
-                              header.toLowerCase().replace(/ /g, "_") &&
-                            sortDirection === "desc"
-                              ? "red"
-                              : "#fff",
-                        }}
-                      />
-                    </span>
-                    {getHeaderAbbreviation(header)}
-                  </th>
-                ))}
+              {tableHeaders?.map((header) => (
+                <th
+                  key={header}
+                  onClick={() =>
+                    handleSort(header.toLowerCase().replace(/ /g, "_"))
+                  }
+                  className={`text-white cursor-pointer font-thin text-xs tracking-widest px-4 ${
+                    (header === "COMPANY NAME" && "pl-10") ||
+                    (header === "HEADLINE" && "pl-6") ||
+                    (header === "PUBLICATION" && "pl-44") ||
+                    (header === "LINK" && "pl-10") ||
+                    (header === "REPORTING SUBJECT" && "pl-12") ||
+                    (header === "AUTHOR NAME" && "pl-[430px]") ||
+                    (header === "HEADSUMMARY" && "pl-8") ||
+                    (header === "QC1 DONE" && "pl-[290px]") ||
+                    (header === "COMPANY ID" && "pl-10") ||
+                    (header === "CITY" && "pl-14") ||
+                    (header === "LANGUAGE" && "pl-14") ||
+                    (header === "QC2 ON" && "pl-16") ||
+                    (header === "DETAIL SUMMARY" && "pl-[100PX]")
+                  }`}
+                >
+                  <span className="flex items-center text-sm">
+                    <IoIosArrowRoundUp
+                      style={{
+                        fontSize: "x-small",
+                        color:
+                          sortColumn ===
+                            header.toLowerCase().replace(/ /g, "_") &&
+                          sortDirection === "asc"
+                            ? "red"
+                            : "#fff",
+                      }}
+                    />
+                    <IoIosArrowRoundDown
+                      style={{
+                        fontSize: "x-small",
+                        color:
+                          sortColumn ===
+                            header.toLowerCase().replace(/ /g, "_") &&
+                          sortDirection === "desc"
+                            ? "red"
+                            : "#fff",
+                      }}
+                    />
+                  </span>
+                  {getHeaderAbbreviation(header)}
+                </th>
+              ))}
             </tr>
           </thead>
         )}
@@ -393,6 +393,7 @@ const MainTable = ({
 };
 MainTable.propTypes = {
   tableData: PropTypes.array,
+  tableHeaders: PropTypes.array,
   selectedRowData: PropTypes.array,
   sortColumn: PropTypes.string,
   sortDirection: PropTypes.oneOf(["asc", "desc"]),

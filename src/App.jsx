@@ -14,13 +14,19 @@ import Dump from "./pages/Dump";
 import ManualUpload from "./pages/ManualUpload";
 import NonTagged from "./pages/NonTagged";
 import DDComp from "./print-components/DDComp";
+import ResearchScreen from "./pages/ResearchScreen";
 
 function App() {
-  const { setUserToken, screenPermissions, HomeComponent } =
-    useContext(ResearchContext);
+  const { setUserToken, screenPermissions } = useContext(ResearchContext);
   const userToken = localStorage.getItem("user");
   const location = useLocation();
 
+  //* Vars
+  const onlinePermission = screenPermissions["Online-QC2"];
+  const printPermission = screenPermissions["Print-QC2"];
+  const dumpPermission = screenPermissions?.Dump;
+  const manualPermission = screenPermissions["Manual-upload"];
+  const nonTaggedPermission = screenPermissions["Non-Tagged"];
   useEffect(() => {
     checkUserAuthenticate(setUserToken);
   }, [setUserToken]);
@@ -56,10 +62,27 @@ function App() {
         {userToken ? (
           <>
             <Route path="/" exact element={<Home />} />
-            <Route path="/print" element={<DDComp />} />
-            <Route path="/dump" element={<Dump />} />
-            <Route path="/manual-upload" element={<ManualUpload />} />
-            <Route path="/non-tagged" element={<NonTagged />} />
+            <Route
+              path="/online"
+              exact
+              element={onlinePermission ? <ResearchScreen /> : <NotFound />}
+            />
+            <Route
+              path="/print"
+              element={printPermission ? <DDComp /> : <NotFound />}
+            />
+            <Route
+              path="/dump"
+              element={dumpPermission ? <Dump /> : <NotFound />}
+            />
+            <Route
+              path="/manual-upload"
+              element={manualPermission ? <ManualUpload /> : <NotFound />}
+            />
+            <Route
+              path="/non-tagged"
+              element={nonTaggedPermission ? <NonTagged /> : <NotFound />}
+            />
           </>
         ) : (
           <Route path="login" element={<Login />} />

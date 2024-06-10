@@ -155,7 +155,7 @@ const Details = ({
   }, [selectedRow, setArticleURL, type]);
 
   return (
-    <Card className="w-full">
+    <Card className="w-full h-[80vh]">
       <CardHeader
         title={
           <Typography variant="h6" fontSize={"0.9em"} fontFamily="nunito">
@@ -271,11 +271,6 @@ const Details = ({
                 Language:
               </Typography>
               <div className="ml-2">
-                {/* <Languages
-                  language={selectedLanguages}
-                  setLanguage={setSelectedLanguages}
-                  classes={classes}
-                /> */}
                 <select
                   className="border border-gray-400 rounded-[3px] text-[0.9em]"
                   value={selectedLanguages}

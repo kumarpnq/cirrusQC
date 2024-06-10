@@ -6,7 +6,6 @@ import useFetchData from "../../hooks/useFetchData";
 import { toast } from "react-toastify";
 import Button from "../custom/Button";
 import TableDropdown from "../dropdowns/TableDropdown";
-import Loader from "../loader/Loader";
 import TextFields from "../TextFields/TextField";
 import MainTable from "../table/MainTable";
 import PropTypes from "prop-types";
@@ -41,7 +40,12 @@ const useStyles = makeStyles(() => ({
     color: "white",
   },
 }));
-const ResearchTable = ({ tableDataLoading, tableData, setTableData }) => {
+const ResearchTable = ({
+  tableDataLoading,
+  tableData,
+  tableHeaders,
+  setTableData,
+}) => {
   const classes = useStyles();
   // context values
   const { name, setUnsavedChanges } = useContext(ResearchContext);
@@ -465,7 +469,6 @@ const ResearchTable = ({ tableDataLoading, tableData, setTableData }) => {
       return () => clearTimeout(timeoutId);
     }
   }, [savedSuccess]);
-  // const loadingLoader = sortLoading || tableLoading || tableDataLoading;
 
   // * for delete box
   const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
@@ -474,11 +477,6 @@ const ResearchTable = ({ tableDataLoading, tableData, setTableData }) => {
   };
   return (
     <div>
-      {/* {loadingLoader && (
-        <div className="absolute top-0 left-0 z-50 flex items-center justify-center w-full h-full bg-gray-200 bg-opacity-50">
-          <Loader />
-        </div>
-      )} */}
       {/* filters for editing the cells */}
       <div className="flex flex-wrap items-center gap-2">
         {/* first find */}
@@ -625,6 +623,7 @@ const ResearchTable = ({ tableDataLoading, tableData, setTableData }) => {
         setSortDirection={setSortDirection}
         setSortColumn={setSortColumn}
         tableData={tableData}
+        tableHeaders={tableHeaders}
         updatedRows={updatedRows}
         highlightUpdatedRows={highlightUpdatedRows}
       />
@@ -643,8 +642,7 @@ const ResearchTable = ({ tableDataLoading, tableData, setTableData }) => {
 ResearchTable.propTypes = {
   tableDataLoading: PropTypes.bool.isRequired,
   tableData: PropTypes.array.isRequired,
+  tableHeaders: PropTypes.array.isRequired,
   setTableData: PropTypes.func.isRequired,
-  setIsRetrieveAfterSave: PropTypes.func,
-  setFetchingUsingPrevNext: PropTypes.func,
 };
 export default ResearchTable;

@@ -74,6 +74,7 @@ const ResearchScreen = () => {
   const [qc1by, setQc1by] = useState([]);
   // qc2by
   const [qc2by, setQc2by] = useState([]);
+  const [tableHeaders, setTableHeaders] = useState([]);
   const [qcUsersData, setQcUsersData] = useState([]);
   const [filteredCountries, setFilteredCountries] = useState([]);
   // loading state for the tableData fetching
@@ -93,8 +94,6 @@ const ResearchScreen = () => {
     dateNow,
     setDateNow,
     setShowTableData,
-
-    setTableHeaders,
     unsavedChanges,
     setUnsavedChanges,
   } = useContext(ResearchContext);
@@ -185,6 +184,7 @@ const ResearchScreen = () => {
     setQc1byuserToString(qc1_userV);
     setQc2byuserToString(qc2_userV);
   }, [language, continent, country, qc1by, qc2by]);
+
   // searching the tabledata using multiple parameters
   const handleSearch = async () => {
     if (clientId) {
@@ -285,7 +285,6 @@ const ResearchScreen = () => {
               );
             } else {
               setTableData([]);
-              setTableHeaders([]); // Reset table headers
             }
           }
 
@@ -420,6 +419,7 @@ const ResearchScreen = () => {
         <ResearchTable
           tableDataLoading={tableDataLoading}
           tableData={tableData}
+          tableHeaders={tableHeaders}
           setTableData={setTableData}
         />
       </div>

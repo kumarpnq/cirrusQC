@@ -93,77 +93,77 @@ export default function MainNav() {
   const isSmallScreen = useMediaQuery("(max-width:600px)");
   const isMenuOpen = Boolean(anchorEl);
   const isMobileMenuOpen = Boolean(mobileMoreAnchorEl);
-  // const navList = [
-  //   ...(screenPermissions["Online-QC2"]
-  //     ? [
-  //         {
-  //           id: 1,
-  //           title: "Online-QC2",
-  //           path: "/",
-  //           icon: <HiStatusOnline />,
-  //         },
-  //       ]
-  //     : []),
-  //   ...(screenPermissions["Print-QC2"]
-  //     ? [{ id: 2, title: "Print-QC2", path: "/print", icon: <FaPrint /> }]
-  //     : []),
-  //   ...(screenPermissions.Dump
-  //     ? [{ id: 3, title: "Dump", path: "/dump", icon: <FaDumpster /> }]
-  //     : []),
-  //   ...(screenPermissions["Manual-upload"]
-  //     ? [
-  //         {
-  //           id: 4,
-  //           title: "Manual-upload",
-  //           path: "/manual-upload",
-  //           icon: <UploadFileIcon />,
-  //         },
-  //       ]
-  //     : []),
-  //   ...(screenPermissions["Non-Tagged"]
-  //     ? [
-  //         {
-  //           id: 5,
-  //           title: "Non-Tagged",
-  //           path: "/non-tagged",
-  //           icon: <BookmarkBorderIcon />,
-  //         },
-  //       ]
-  //     : []),
-  // ];
-
   const navList = [
-    {
-      id: 1,
-      title: "Online-QC2",
-      path: "/",
-      icon: <HiStatusOnline />,
-    },
-    {
-      id: 2,
-      title: "Print-QC2",
-      path: "/print",
-      icon: <FaPrint />,
-    },
-    {
-      id: 3,
-      title: "Dump",
-      path: "/dump",
-      icon: <FaDumpster />,
-    },
-    {
-      id: 4,
-      title: "Manual-upload",
-      path: "/manual-upload",
-      icon: <UploadFileIcon />,
-    },
-    {
-      id: 5,
-      title: "Non-Tagged",
-      path: "/non-tagged",
-      icon: <BookmarkBorderIcon />,
-    },
+    ...(screenPermissions["Online-QC2"]
+      ? [
+          {
+            id: 1,
+            title: "Online-QC2",
+            path: "/online",
+            icon: <HiStatusOnline />,
+          },
+        ]
+      : []),
+    ...(screenPermissions["Print-QC2"]
+      ? [{ id: 2, title: "Print-QC2", path: "/print", icon: <FaPrint /> }]
+      : []),
+    ...(screenPermissions.Dump
+      ? [{ id: 3, title: "Dump", path: "/dump", icon: <FaDumpster /> }]
+      : []),
+    ...(screenPermissions["Manual-upload"]
+      ? [
+          {
+            id: 4,
+            title: "Manual-upload",
+            path: "/manual-upload",
+            icon: <UploadFileIcon />,
+          },
+        ]
+      : []),
+    ...(screenPermissions["Non-Tagged"]
+      ? [
+          {
+            id: 5,
+            title: "Non-Tagged",
+            path: "/non-tagged",
+            icon: <BookmarkBorderIcon />,
+          },
+        ]
+      : []),
   ];
+
+  // const navList = [
+  //   {
+  //     id: 1,
+  //     title: "Online-QC2",
+  //     path: "/online",
+  //     icon: <HiStatusOnline />,
+  //   },
+  //   {
+  //     id: 2,
+  //     title: "Print-QC2",
+  //     path: "/print",
+  //     icon: <FaPrint />,
+  //   },
+  //   {
+  //     id: 3,
+  //     title: "Dump",
+  //     path: "/dump",
+  //     icon: <FaDumpster />,
+  //   },
+  //   {
+  //     id: 4,
+  //     title: "Manual-upload",
+  //     path: "/manual-upload",
+  //     icon: <UploadFileIcon />,
+  //   },
+  //   {
+  //     id: 5,
+  //     title: "Non-Tagged",
+  //     path: "/non-tagged",
+  //     icon: <BookmarkBorderIcon />,
+  //   },
+  // ];
 
   const handleProfileMenuOpen = (event) => {
     setAnchorEl(event.currentTarget);

@@ -48,18 +48,28 @@ const UploadDialog = ({
           <Button onClick={handleClose}>Close</Button>
         </DialogTitle>
         <DialogContent>
-          <Box sx={{ display: "flex" }}>
-            <Details
-              selectedRow={selectedRow}
-              type={type}
-              articleURl={link}
-              setArticleURL={setLink}
-              setIsArticleSaved={setIsArticleSaved}
-              errorList={errorList}
-              articleNumber={articleNumber}
-              setArticleNumber={setArticleNumber}
-            />
-            <ArticleView link={link} />
+          <Box
+            display="flex"
+            flexDirection={{ xs: "column", md: "row" }}
+            alignItems="center"
+            width="100%"
+            gap={1}
+          >
+            <Box flex={1}>
+              <Details
+                selectedRow={selectedRow}
+                type={type}
+                articleURL={link}
+                setArticleURL={setLink}
+                setIsArticleSaved={setIsArticleSaved}
+                errorList={errorList}
+                articleNumber={articleNumber}
+                setArticleNumber={setArticleNumber}
+              />
+            </Box>
+            <Box flex={1}>
+              <ArticleView link={link} />
+            </Box>
           </Box>
         </DialogContent>
       </Box>
