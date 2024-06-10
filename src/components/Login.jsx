@@ -87,11 +87,12 @@ const Login = () => {
             autoClose: 3000,
           });
         } else {
-          toast.warning("You Don't Have a access");
+          localStorage.removeItem("user");
+          throw new Error();
         }
       }
     } catch (error) {
-      toast.error(error.message, {
+      toast.error("Name or Password Not match with our Records.", {
         autoClose: 3000,
       });
     }
