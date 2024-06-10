@@ -5,6 +5,7 @@ import { useNavigate } from "react-router-dom";
 export const ResearchContext = createContext(null);
 const ContextProvider = ({ children }) => {
   // page access
+  const [HomeComponent, setHomeComponent] = useState(null);
   const [screenPermissions, setScreenPermissions] = useState({
     "Online-QC2": false,
     "Print-QC2": false,
@@ -94,6 +95,8 @@ const ContextProvider = ({ children }) => {
   return (
     <ResearchContext.Provider
       value={{
+        HomeComponent,
+        setHomeComponent,
         screenPermissions,
         setScreenPermissions,
         handleLogout,

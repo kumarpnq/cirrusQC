@@ -44,8 +44,9 @@ const useStyle = makeStyles(() => ({
     background: "#d4c8c7",
   },
 }));
-const ReasearchScreen = () => {
+const ResearchScreen = () => {
   const classes = useStyle();
+  const userToken = localStorage.getItem("user");
   const [clients, setClients] = useState([]);
   const [company, setCompany] = useState([]);
   const [companies, setCompanies] = useState([]);
@@ -92,7 +93,7 @@ const ReasearchScreen = () => {
     dateNow,
     setDateNow,
     setShowTableData,
-    userToken,
+
     setTableHeaders,
     unsavedChanges,
     setUnsavedChanges,
@@ -426,4 +427,4 @@ const ReasearchScreen = () => {
   );
 };
 
-export default ReasearchScreen;
+export default ResearchScreen;

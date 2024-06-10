@@ -465,7 +465,7 @@ const ResearchTable = ({ tableDataLoading, tableData, setTableData }) => {
       return () => clearTimeout(timeoutId);
     }
   }, [savedSuccess]);
-  const loadingLoader = sortLoading || tableLoading || tableDataLoading;
+  // const loadingLoader = sortLoading || tableLoading || tableDataLoading;
 
   // * for delete box
   const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
@@ -474,11 +474,11 @@ const ResearchTable = ({ tableDataLoading, tableData, setTableData }) => {
   };
   return (
     <div>
-      {loadingLoader && (
+      {/* {loadingLoader && (
         <div className="absolute top-0 left-0 z-50 flex items-center justify-center w-full h-full bg-gray-200 bg-opacity-50">
           <Loader />
         </div>
-      )}
+      )} */}
       {/* filters for editing the cells */}
       <div className="flex flex-wrap items-center gap-2">
         {/* first find */}

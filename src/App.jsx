@@ -10,21 +10,16 @@ import { checkUserAuthenticate } from "./auth/auth";
 import AutoTokenRefresh from "./auth/autoToken";
 import MainNav from "./components/material-navbar";
 import ArticleView from "./pages/unprotected/ArticleView";
-import DynamicImport from "./DynamicImport";
+import Dump from "./pages/Dump";
+import ManualUpload from "./pages/ManualUpload";
+import NonTagged from "./pages/NonTagged";
+import DDComp from "./print-components/DDComp";
 
 function App() {
-  const { setUserToken, screenPermissions } = useContext(ResearchContext);
+  const { setUserToken, screenPermissions, HomeComponent } =
+    useContext(ResearchContext);
   const userToken = localStorage.getItem("user");
   const location = useLocation();
-
-  const componentMap = {
-    ResearchScreen: () => import("./pages/ResearchScreen"),
-    Qc2Print: () => import("./pages/Qc2Print"),
-    Dump: () => import("./pages/Dump"),
-    ManualUpload: () => import("./pages/ManualUpload"),
-    NonTagged: () => import("./pages/NonTagged"),
-    // Add other components as needed
-  };
 
   useEffect(() => {
     checkUserAuthenticate(setUserToken);
@@ -45,21 +40,6 @@ function App() {
     };
   }, []);
 
-  const renderRoute = (path, componentName, permission) => {
-    return (
-      <Route
-        path={path}
-        element={
-          screenPermissions[permission] ? (
-            <DynamicImport loadComponent={componentMap[componentName]} />
-          ) : (
-            <span>Loading...</span>
-          )
-        }
-      />
-    );
-  };
-
   const isArticleView = location.pathname.startsWith("/articleview");
 
   return (
@@ -76,14 +56,13 @@ function App() {
         {userToken ? (
           <>
             <Route path="/" exact element={<Home />} />
-            {renderRoute("/online", "ResearchScreen", "Online-QC2")}
-            {renderRoute("/print", "Qc2Print", "Print-QC2")}
-            {renderRoute("/dump", "Dump", "Dump")}
-            {renderRoute("/manual-upload", "ManualUpload", "Manual-upload")}
-            {renderRoute("/non-tagged", "NonTagged", "Non-Tagged")}
+            <Route path="/print" element={<DDComp />} />
+            <Route path="/dump" element={<Dump />} />
+            <Route path="/manual-upload" element={<ManualUpload />} />
+            <Route path="/non-tagged" element={<NonTagged />} />
           </>
         ) : (
-          <Route path="/login" element={<Login />} />
+          <Route path="login" element={<Login />} />
         )}
         <Route path="*" element={userToken ? <NotFound /> : <Login />} />
         <Route
