@@ -12,7 +12,7 @@ export const qc1Array = [
   {
     id: 2,
     option: "No",
-    value: 0,
+    value: "0",
   },
   {
     id: 3,
@@ -29,7 +29,7 @@ export const qc2Array = [
   {
     id: 2,
     option: "No",
-    value: 0,
+    value: "0",
   },
   {
     id: 3,
