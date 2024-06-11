@@ -84,6 +84,7 @@ const EditSection = ({
 
   // * imp state for differ when saving to the db
   const [differData, setDifferData] = useState([]);
+  console.log(editRow, editValue);
 
   //updating tabledata
   const handleApplyChanges = () => {
@@ -103,65 +104,75 @@ const EditSection = ({
     let dataForDiffer = [...selectedItems];
     setDifferData((prev) => prev.concat(dataForDiffer));
 
-    setTimeout(() => {
-      if (selectedItems.length > 0) {
-        const updatedSelectedRows = selectedItems.map((row) => ({
-          ...row,
-          reporting_tone: reportingTone || row.reporting_tone,
-          reporting_subject: subject || row.reporting_subject,
-          subcategory: category || row.subcategory,
-          m_prom: prominence || row.m_prom,
-          space:
-            (
-              prominenceInNumber *
-              Number(editValue ? Number(editValue) : row.header_space)
-            ).toFixed(2) || row.space,
-          detail_summary:
-            (editRow === "detail_summary" && editValue) || row.detail_summary,
-          headline: (editRow === "headline" && editValue) || row.headline,
-          head_summary:
-            (editRow === "head_summary" && editValue) || row.head_summary,
-          author: (editRow === "author_name" && editValue) || row.author,
-          keyword: (editRow === "keyword" && editValue) || row.keyword,
-          remark: (editRow === "remarks" && editValue) || row.remark,
-          header_space:
-            (editRow === "header_space" && editValue) || row.header_space,
-        }));
+    // setTimeout(() => {
+    if (selectedItems.length > 0) {
+      const updatedSelectedRows = selectedItems.map((row) => ({
+        ...row,
+        reporting_tone: reportingTone || row.reporting_tone,
+        reporting_subject: subject || row.reporting_subject,
+        subcategory: category || row.subcategory,
+        m_prom: prominence || row.m_prom,
+        space:
+          Number(editValue ? editValue : row.header_space) *
+            prominenceInNumber || row.space,
+        detail_summary:
+          (editRow === "detail_summary" && editValue) || row.detail_summary,
+        headline: (editRow === "headline" && editValue) || row.headline,
+        head_summary:
+          (editRow === "head_summary" && editValue) || row.head_summary,
+        author: (editRow === "author_name" && editValue) || row.author,
+        keyword: (editRow === "keyword" && editValue) || row.keyword,
+        remark: (editRow === "remarks" && editValue) || row.remark,
+        header_space:
+          (editRow === "header_space" && editValue) || row.header_space,
+      }));
 
-        const updatedTableData = qc2PrintTableData.map((row) => {
-          const updatedRow = updatedSelectedRows.find(
-            (selectedRow) =>
-              selectedRow.article_id === row.article_id &&
-              selectedRow.company_id === row.company_id
-          );
-          return updatedRow || row;
-        });
+      // Prevent duplicates in updatedData
+      const newUpdatedData = [...updatedData];
+      updatedSelectedRows.forEach((updatedRow) => {
+        const index = newUpdatedData.findIndex(
+          (row) =>
+            row.article_id === updatedRow.article_id &&
+            row.company_id === updatedRow.company_id
+        );
+        if (index > -1) {
+          newUpdatedData[index] = updatedRow;
+        } else {
+          newUpdatedData.push(updatedRow);
+        }
+      });
 
-        // Update only the items that exist in selectedRowData in both searchedData and tableData
-        const updatedSearchedData = searchedData.map((row) => {
-          const updatedRow = updatedSelectedRows.find(
-            (selectedRow) =>
-              selectedRow.article_id === row.article_id &&
-              selectedRow.company_id === row.company_id
-          );
-          return updatedRow || row;
-        });
+      const updatedTableData = qc2PrintTableData.map((row) => {
+        const updatedRow = updatedSelectedRows.find(
+          (selectedRow) =>
+            selectedRow.article_id === row.article_id &&
+            selectedRow.company_id === row.company_id
+        );
+        return updatedRow || row;
+      });
 
-        setUpdatedData((prev) => [...prev, ...updatedSelectedRows]);
-        // hightlight purpose(setHighlightUPdatedRows)
-        setHighlightRows((prev) => [...prev, ...updatedSelectedRows]);
+      const updatedSearchedData = searchedData.map((row) => {
+        const updatedRow = updatedSelectedRows.find(
+          (selectedRow) =>
+            selectedRow.article_id === row.article_id &&
+            selectedRow.company_id === row.company_id
+        );
+        return updatedRow || row;
+      });
 
-        setQc2PrintTableData(updatedTableData);
-        setSearchedData(updatedSearchedData);
-        setUnsavedChanges(true);
-      }
-      setApplyLoading(false);
-      setSelectedItems([]);
-      setReportingTone("");
-      setProminence("");
-      setSubject("");
-      setCategory("");
-    }, 0);
+      setUpdatedData(newUpdatedData);
+      setHighlightRows((prev) => [...prev, ...updatedSelectedRows]);
+      setQc2PrintTableData(updatedTableData);
+      setSearchedData(updatedSearchedData);
+      setUnsavedChanges(true);
+    }
+    setApplyLoading(false);
+    setSelectedItems([]);
+    setReportingTone("");
+    setProminence("");
+    setSubject("");
+    setCategory("");
+    // }, 0);
   };
 
   const handleSave = async () => {
