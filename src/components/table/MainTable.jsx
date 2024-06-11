@@ -1,10 +1,9 @@
 import { makeStyles } from "@mui/styles";
 import { IoIosArrowRoundDown, IoIosArrowRoundUp } from "react-icons/io";
 import getHeaderAbbreviation from "../../constants/concatHeader";
-import React, { useContext, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import PropTypes from "prop-types";
 import { TableCell, TableRow, Tooltip } from "@mui/material";
-import { ResearchContext } from "../../context/ContextProvider";
 import TableRowCheckBox from "./TableRow";
 import { AiOutlineLoading } from "react-icons/ai";
 import { EditAttributesOutlined } from "@mui/icons-material";
@@ -43,7 +42,7 @@ const MainTable = ({
   setSortColumn,
   highlightUpdatedRows,
 }) => {
-  const { showTableData } = useContext(ResearchContext);
+  console.log(tableHeaders);
   const classes = useStyles();
   const [checkBoxLoading, setCheckBoxLoading] = useState(false);
 
@@ -311,10 +310,11 @@ const MainTable = ({
                           (header === "REPORTING SUBJECT" && "w-16") ||
                           (header === "HEADLINE" && "w-64") ||
                           (header === "DETAIL SUMMARY" && "w-[25rem]") ||
-                          (header === "HEADSUMMARY" && "w-[25rem] ml-7") ||
+                          (header === "HEADSUMMARY" && "w-[25rem] ml-20") ||
                           (header === "KEYWORD" && "w-40") ||
                           (header === "PUBLICATION" && "w-28") ||
-                          (header === "AUTHOR NAME" && "w-10 ml-24")
+                          (header === "AUTHOR NAME" && "w-10 ml-24") ||
+                          (header === "SUBCATEGORY" && "ml-36")
                         }`}
                       >
                         {rowData[header.toLowerCase().replace(/ /g, "_")]}
@@ -338,7 +338,8 @@ const MainTable = ({
                           (header === "QC2 DONE" && "w-4") ||
                           (header === "QC1 DONE" && "w-4") ||
                           (header === "HAS VIDEO" && "w-6") ||
-                          (header === "HAS IMAGE" && "w-6")
+                          (header === "HAS IMAGE" && "w-6") ||
+                          (header === "SUBCATEGORY" && "w-6 text-red-500")
                         }`}
                         style={{
                           display: "-webkit-box",

@@ -191,13 +191,18 @@ const ResearchTable = ({
     setEditRow(value);
     setEditValue("");
   };
+
+  // * imp state for differ when saving to the db
+  const [differData, setDifferData] = useState([]);
+
   //updating tabledata
   const handleApplyChanges = () => {
     if (selectedRowData.length < 0)
       return toast.warning("Please select at least one item to update", {
         autoClose: 3000,
       });
-
+    let dataForDiffer = [...selectedRowData];
+    setDifferData((prev) => prev.concat(dataForDiffer));
     setApplyLoading(true);
     // setTimeout(() => {
     if (selectedRowData.length > 0) {
@@ -257,6 +262,10 @@ const ResearchTable = ({
     }
     setSelectedRowData([]);
     setApplyLoading(false);
+    setReportingTone("");
+    setProminence("");
+    setSubject("");
+    setCategory("");
     // }, 0);
   };
   const handleSearch = () => {
@@ -576,7 +585,9 @@ const ResearchTable = ({
               userToken,
               setHighlightUpdatedRows,
               tableData,
-              setTableData
+              setTableData,
+              differData,
+              setDifferData
             );
           }}
         >

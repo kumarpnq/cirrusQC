@@ -48,11 +48,13 @@ const Login = () => {
     setPassword,
     setUserToken,
     setScreenPermissions,
+    setPermissionLoading,
   } = useContext(ResearchContext);
   const navigate = useNavigate();
 
   const handleSubmit = async (event) => {
     event.preventDefault();
+    setPermissionLoading(true);
     try {
       const res = await axios.post(`${url}authenticate/`, {
         loginname: name,
@@ -81,7 +83,9 @@ const Login = () => {
           (permission) => permission
         );
         setScreenPermissions(mappedPermissions);
+
         if (greenFlag) {
+          sessionStorage.setItem("userName", loginname);
           navigate("/");
           toast.success(`Welcome ${loginname}`, {
             autoClose: 3000,
@@ -95,6 +99,8 @@ const Login = () => {
       toast.error("Name or Password Not match with our Records.", {
         autoClose: 3000,
       });
+    } finally {
+      setPermissionLoading(false);
     }
   };
 

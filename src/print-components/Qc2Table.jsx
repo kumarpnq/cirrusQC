@@ -187,15 +187,11 @@ const Qc2Table = ({
         setQc2PrintTableData={setQc2PrintTableData}
         searchedData={searchedData}
         setSearchedData={setSearchedData}
+        highlightRows={highlightRows}
         setHighlightRows={setHighlightRows}
         setRetrieveAfterSave={setRetrieveAfterSave}
         selectedArticle={selectedArticle}
       />
-      {/* <Pagination
-        tableData={qc2PrintTableData}
-        setFetchingUsingPrevNext={setFetchingUsingPrevNext}
-        totalRecordsCount={totalRecordsCount}
-      /> */}
 
       <TotalRecordsCard totalRecords={dataToRender.length} tClass="top-[27%]" />
       {isTableDataLoading || tableLoading ? (

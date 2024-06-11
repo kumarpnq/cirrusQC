@@ -18,6 +18,7 @@ const ContextProvider = ({ children }) => {
     "Manual-upload": false,
     "Non-Tagged": false,
   });
+  const [permissionLoading, setPermissionLoading] = useState(false);
 
   const navigate = useNavigate();
   // auto logout
@@ -99,6 +100,8 @@ const ContextProvider = ({ children }) => {
     () => ({
       screenPermissions,
       setScreenPermissions,
+      permissionLoading,
+      setPermissionLoading,
       handleLogout,
       researchOpen,
       setResearchOpen,
@@ -138,6 +141,7 @@ const ContextProvider = ({ children }) => {
     }),
     [
       screenPermissions,
+      permissionLoading,
       handleLogout,
       researchOpen,
       setResearchOpen,

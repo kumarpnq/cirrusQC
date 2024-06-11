@@ -1,45 +1,82 @@
-import { useContext, useEffect, useState } from "react";
+import {
+  useContext,
+  useEffect,
+  lazy,
+  Suspense,
+  useState,
+  useLayoutEffect,
+} from "react";
 import { Routes, Route, useLocation } from "react-router-dom";
-import Login from "./components/Login";
+
+import axios from "axios";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import Home from "./pages/Home";
-import NotFound from "./components/NotFound";
-import { ResearchContext } from "./context/ContextProvider";
-import { checkUserAuthenticate } from "./auth/auth";
+// * third party import
+
+// * comp & urls
 import AutoTokenRefresh from "./auth/autoToken";
 import MainNav from "./components/material-navbar";
 import ArticleView from "./pages/unprotected/ArticleView";
-import Dump from "./pages/Dump";
-import ManualUpload from "./pages/ManualUpload";
-import NonTagged from "./pages/NonTagged";
-import DDComp from "./print-components/DDComp";
-import ResearchScreen from "./pages/ResearchScreen";
+import NotFound from "./components/NotFound";
+import { ResearchContext } from "./context/ContextProvider";
+import { checkUserAuthenticate } from "./auth/auth";
+import { url } from "./constants/baseUrl";
+
+// Lazy load the components
+const Home = lazy(() => import("./pages/Home"));
+const Dump = lazy(() => import("./pages/Dump"));
+const ManualUpload = lazy(() => import("./pages/ManualUpload"));
+const NonTagged = lazy(() => import("./pages/NonTagged"));
+const DDComp = lazy(() => import("./print-components/DDComp"));
+const ResearchScreen = lazy(() => import("./pages/ResearchScreen"));
+const Login = lazy(() => import("./components/Login"));
 
 function App() {
   const { setUserToken, screenPermissions } = useContext(ResearchContext);
   const userToken = localStorage.getItem("user");
   const location = useLocation();
+  const [permissions, setPermissions] = useState({
+    online: false,
+    print: false,
+    dump: false,
+    manual: false,
+    nonTagged: false,
+  });
+  const [loading, setLoading] = useState(false);
 
-  const [loading, setLoading] = useState(true);
+  useLayoutEffect(() => {
+    const getPermission = async () => {
+      setLoading(true);
+      try {
+        const response = await axios.get(`${url}refreshpermission/`, {
+          headers: {
+            Authorization: `Bearer ${userToken}`,
+          },
+        });
+        const screen_access = response.data.screen_access;
+        sessionStorage.setItem("prmsn", JSON.stringify(screen_access));
+      } catch (error) {
+        console.log(error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    getPermission();
+  }, [userToken]);
 
-  const onlinePermission = screenPermissions["Online-QC2"];
-  const printPermission = screenPermissions["Print-QC2"];
-  const dumpPermission = screenPermissions?.Dump;
-  const manualPermission = screenPermissions["Manual-upload"];
-  const nonTaggedPermission = screenPermissions["Non-Tagged"];
+  useEffect(() => {
+    setPermissions({
+      online: screenPermissions["Online-QC2"],
+      print: screenPermissions["Print-QC2"],
+      dump: screenPermissions?.Dump,
+      manual: screenPermissions["Manual-upload"],
+      nonTagged: screenPermissions["Non-Tagged"],
+    });
+  }, [screenPermissions]);
 
   useEffect(() => {
     checkUserAuthenticate(setUserToken);
   }, [setUserToken]);
-
-  useEffect(() => {
-    setLoading(true);
-    const timer = setTimeout(() => {
-      setLoading(false);
-    }, 2000);
-    return () => clearTimeout(timer);
-  }, []);
 
   useEffect(() => {
     const handleBeforeUnload = (event) => {
@@ -68,83 +105,81 @@ function App() {
       )}
       <AutoTokenRefresh />
 
-      <Routes>
-        {userToken ? (
-          <>
-            <Route path="/" exact element={<Home />} />
-            <Route
-              path="/online"
-              exact
-              element={
-                onlinePermission ? (
-                  loading ? (
-                    "loading"
-                  ) : (
+      <Suspense fallback={<div>Loading...</div>}>
+        <Routes>
+          {userToken ? (
+            <>
+              <Route path="/" exact element={<Home />} />
+              <Route
+                path="/online"
+                exact
+                element={
+                  permissions.online ? (
                     <ResearchScreen />
-                  )
-                ) : (
-                  <NotFound />
-                )
-              }
-            />
-            <Route
-              path="/print"
-              element={
-                printPermission ? (
-                  loading ? (
-                    "loading"
                   ) : (
+                    <div>Loading...</div>
+                  )
+                }
+              />
+              <Route
+                path="/print"
+                element={
+                  permissions.print ? (
                     <DDComp />
-                  )
-                ) : (
-                  <NotFound />
-                )
-              }
-            />
-            <Route
-              path="/dump"
-              element={
-                dumpPermission ? loading ? "loading" : <Dump /> : <NotFound />
-              }
-            />
-            <Route
-              path="/manual-upload"
-              element={
-                manualPermission ? (
-                  loading ? (
-                    "loading"
+                  ) : loading ? (
+                    <div>Loading...</div>
                   ) : (
+                    <NotFound />
+                  )
+                }
+              />
+              <Route
+                path="/dump"
+                element={
+                  permissions.dump ? (
+                    <Dump />
+                  ) : loading ? (
+                    <div>Loading...</div>
+                  ) : (
+                    <NotFound />
+                  )
+                }
+              />
+              <Route
+                path="/manual-upload"
+                element={
+                  permissions.manual ? (
                     <ManualUpload />
-                  )
-                ) : (
-                  <NotFound />
-                )
-              }
-            />
-            <Route
-              path="/non-tagged"
-              element={
-                nonTaggedPermission ? (
-                  loading ? (
-                    "loading"
+                  ) : loading ? (
+                    <div>Loading...</div>
                   ) : (
-                    <NonTagged />
+                    <NotFound />
                   )
-                ) : (
-                  <NotFound />
-                )
-              }
-            />
-          </>
-        ) : (
-          <Route path="login" element={<Login />} />
-        )}
-        <Route path="*" element={userToken ? <NotFound /> : <Login />} />
-        <Route
-          path="/articleview/download-file/:id"
-          element={<ArticleView />}
-        />
-      </Routes>
+                }
+              />
+              <Route
+                path="/non-tagged"
+                element={
+                  permissions.nonTagged ? (
+                    <NonTagged />
+                  ) : loading ? (
+                    <div>Loading...</div>
+                  ) : (
+                    <NotFound />
+                  )
+                }
+              />
+            </>
+          ) : (
+            <Route path="login" element={<Login />} />
+          )}
+          <Route path="*" element={userToken ? <NotFound /> : <Login />} />
+          <Route
+            path="/articleview/download-file/:id"
+            element={<ArticleView />}
+          />
+        </Routes>
+      </Suspense>
     </div>
   );
 }

@@ -21,26 +21,65 @@ const handlePostData = async (
   userToken,
   setHighlightUpdatedRows,
   tableData,
-  setTableData
+  setTableData,
+  differData,
+  setDifferData
 ) => {
   setSavedSuccess(true);
   setPostingLoading(true);
-  const dataToSending = updatedRows.map((row) => ({
-    COMPANYID: row.company_id,
-    DETAILSUMMARY: row.detail_summary,
-    KEYWORD: row.keyword,
-    MODIFIEDBY: name,
-    MODIFIEDON: currentDateWithTime,
-    PROMINENCE: row.prominence,
-    REPORTINGSUBJECT: row.reporting_subject,
-    REPORTINGTONE: row.reporting_tone,
-    SOCIALFEEDID: row.social_feed_id,
-    SUBCATEGORY: row.subcategory,
-    HEADLINE: row.headline,
-    HEADSUMMARY: row.headsummary,
-    AUTHOR: row.author_name,
-    REMARKS: row.remarks,
-  }));
+
+  const dataToSending = differData.map((selectedItem) => {
+    const updatedData = updatedRows.filter(
+      (row) =>
+        row.social_feed_id === selectedItem.social_feed_id &&
+        row.company_id === selectedItem.company_id
+    );
+
+    let modifiedFields = {};
+
+    updatedData.forEach((updatedRow) => {
+      const modifiedFieldsForRow = {};
+
+      // Compare each field with the selected row
+      if (updatedRow.prominence !== selectedItem.prominence) {
+        modifiedFieldsForRow.PROMINENCE = updatedRow.prominence;
+      }
+      if (updatedRow.reporting_subject !== selectedItem.reporting_subject) {
+        modifiedFieldsForRow.REPORTINGSUBJECT = updatedRow.reporting_subject;
+      }
+      if (updatedRow.reporting_tone !== selectedItem.reporting_tone) {
+        modifiedFieldsForRow.REPORTINGTONE = updatedRow.reporting_tone;
+      }
+      if (updatedRow.sub_category !== selectedItem.sub_category) {
+        modifiedFieldsForRow.SUBCATEGORY = updatedRow.sub_category;
+      }
+      if (updatedRow.headline !== selectedItem.headline) {
+        modifiedFieldsForRow.HEADLINE = updatedRow.headline;
+      }
+      if (updatedRow.headsummary !== selectedItem.headsummary) {
+        modifiedFieldsForRow.HEADSUMMARY = updatedRow.headsummary;
+      }
+      if (updatedRow.author_name !== selectedItem.author_name) {
+        modifiedFieldsForRow.AUTHOR = updatedRow.author_name;
+      }
+      if (updatedRow.remarks !== selectedItem.remarks) {
+        modifiedFieldsForRow.REMARKS = updatedRow.remarks;
+      }
+
+      // Merge modified fields for this row with overall modified fields
+      modifiedFields = { ...modifiedFields, ...modifiedFieldsForRow };
+    });
+
+    // Return only the modified fields
+    return {
+      ARTICLEID: selectedItem.article_id,
+      COMPANYID: selectedItem.company_id,
+      MODIFIEDBY: name,
+      MODIFIEDON: currentDateWithTime,
+      ...modifiedFields,
+    };
+  });
+
   const invalidRows = updatedRows.filter((row) =>
     ["reporting_tone", "prominence", "reporting_subject"].some(
       (field) => row[field] === "Unknown"
@@ -76,6 +115,7 @@ const handlePostData = async (
       setSelectedRowData([]);
       setHighlightUpdatedRows([]);
       setSearchedData([]);
+      setDifferData([]);
       // Clearing the dropdown values
       setReportingTone("");
       setSubject("");
@@ -91,6 +131,7 @@ const handlePostData = async (
       setPostingLoading(false);
     }
   } catch (error) {
+    console.log(error);
     if (error.message === "Network Error") {
       setSuccessMessage("Please check your internet connection.");
       setPostingLoading(false);

@@ -43,7 +43,7 @@ const EditSection = ({
   setHighlightRows,
   // setRetrieveAfterSave,
 }) => {
-  const { name, userToken, setUnsavedChanges } = useContext(ResearchContext);
+  const { userToken, setUnsavedChanges } = useContext(ResearchContext);
   const classes = useStyles();
 
   const [editRow, setEditRow] = useState("");
@@ -82,6 +82,9 @@ const EditSection = ({
     setEditRow(e.target.value);
   };
 
+  // * imp state for differ when saving to the db
+  const [differData, setDifferData] = useState([]);
+
   //updating tabledata
   const handleApplyChanges = () => {
     if (selectedItems.length <= 0)
@@ -96,6 +99,9 @@ const EditSection = ({
       let match;
       return (match = text.match(/\(([\d.]+)\)/)) ? match[1] : 0;
     })(text);
+
+    let dataForDiffer = [...selectedItems];
+    setDifferData((prev) => prev.concat(dataForDiffer));
 
     setTimeout(() => {
       if (selectedItems.length > 0) {
@@ -114,7 +120,7 @@ const EditSection = ({
             (editRow === "detail_summary" && editValue) || row.detail_summary,
           headline: (editRow === "headline" && editValue) || row.headline,
           head_summary:
-            (editRow === "headsummary" && editValue) || row.head_summary,
+            (editRow === "head_summary" && editValue) || row.head_summary,
           author: (editRow === "author_name" && editValue) || row.author,
           keyword: (editRow === "keyword" && editValue) || row.keyword,
           remark: (editRow === "remarks" && editValue) || row.remark,
@@ -141,7 +147,7 @@ const EditSection = ({
           return updatedRow || row;
         });
 
-        setUpdatedData(updatedSelectedRows);
+        setUpdatedData((prev) => [...prev, ...updatedSelectedRows]);
         // hightlight purpose(setHighlightUPdatedRows)
         setHighlightRows((prev) => [...prev, ...updatedSelectedRows]);
 
@@ -157,28 +163,72 @@ const EditSection = ({
       setCategory("");
     }, 0);
   };
+
   const handleSave = async () => {
     const dateNow = new Date();
     const formattedDate = dateNow.toISOString().slice(0, 19).replace("T", " ");
-    const userName = name;
-    const dataToSending = updatedData.map((row) => ({
-      ARTICLEID: row.article_id,
-      COMPANYID: row.company_id,
-      DETAILSUMMARY: row.detail_summary,
-      KEYWORD: row.keyword,
-      MODIFIEDBY: userName,
-      MODIFIEDON: formattedDate,
-      PROMINENCE: row.m_prom,
-      REPORTINGSUBJECT: row.reporting_subject,
-      REPORTINGTONE: row.reporting_tone,
-      SOCIALFEEDID: row.social_feed_id,
-      SUBCATEGORY: row.sub_category,
-      HEADLINE: row.headline,
-      HEADSUMMARY: row.head_summary,
-      AUTHOR: row.author,
-      REMARKS: row.remark,
-      TOTALSPACE: row.space,
-    }));
+    const userName = sessionStorage.getItem("userName");
+
+    const dataToSending = differData.map((selectedItem) => {
+      const updatedRows = updatedData.filter(
+        (row) =>
+          row.article_id === selectedItem.article_id &&
+          row.company_id === selectedItem.company_id
+      );
+
+      let modifiedFields = {};
+
+      updatedRows.forEach((updatedRow) => {
+        const modifiedFieldsForRow = {};
+
+        // Compare each field with the selected row
+        if (updatedRow.head_summary !== selectedItem.head_summary) {
+          modifiedFieldsForRow.HEADSUMMARY = updatedRow.head_summary;
+        }
+        if (updatedRow.author !== selectedItem.author) {
+          modifiedFieldsForRow.AUTHOR = updatedRow.author;
+        }
+        if (updatedRow.detail_summary !== selectedItem.detail_summary) {
+          modifiedFieldsForRow.DETAILSUMMARY = updatedRow.detail_summary;
+        }
+        if (updatedRow.keyword !== selectedItem.keyword) {
+          modifiedFieldsForRow.KEYWORD = updatedRow.keyword;
+        }
+        if (updatedRow.m_prom !== selectedItem.m_prom) {
+          modifiedFieldsForRow.PROMINENCE = updatedRow.m_prom;
+        }
+        if (updatedRow.reporting_subject !== selectedItem.reporting_subject) {
+          modifiedFieldsForRow.REPORTINGSUBJECT = updatedRow.reporting_subject;
+        }
+        if (updatedRow.reporting_tone !== selectedItem.reporting_tone) {
+          modifiedFieldsForRow.REPORTINGTONE = updatedRow.reporting_tone;
+        }
+        if (updatedRow.social_feed_id !== selectedItem.social_feed_id) {
+          modifiedFieldsForRow.SOCIALFEEDID = updatedRow.social_feed_id;
+        }
+        if (updatedRow.sub_category !== selectedItem.sub_category) {
+          modifiedFieldsForRow.SUBCATEGORY = updatedRow.sub_category;
+        }
+        if (updatedRow.remark !== selectedItem.remark) {
+          modifiedFieldsForRow.REMARKS = updatedRow.remark;
+        }
+        if (updatedRow.space !== selectedItem.space) {
+          modifiedFieldsForRow.TOTALSPACE = updatedRow.space;
+        }
+
+        // Merge modified fields for this row with overall modified fields
+        modifiedFields = { ...modifiedFields, ...modifiedFieldsForRow };
+      });
+
+      // Return only the modified fields
+      return {
+        ARTICLEID: selectedItem.article_id,
+        COMPANYID: selectedItem.company_id,
+        MODIFIEDBY: userName,
+        MODIFIEDON: formattedDate,
+        ...modifiedFields,
+      };
+    });
 
     const invalidRows = updatedData.filter((row) =>
       ["reporting_tone", "m_prom", "reporting_subject"].some(
@@ -219,6 +269,7 @@ const EditSection = ({
         setUnsavedChanges(false);
         // setRetrieveAfterSave((prev) => !prev);
         setUpdatedData([]);
+        setDifferData([]);
       } else {
         toast.warning("No Data to Save.");
       }
@@ -316,6 +367,7 @@ EditSection.propTypes = {
   setQc2PrintTableData: PropTypes.func.isRequired,
   searchedData: PropTypes.array.isRequired,
   setSearchedData: PropTypes.func.isRequired,
+  highlightRows: PropTypes.array.isRequired,
   setHighlightRows: PropTypes.func.isRequired,
   setRetrieveAfterSave: PropTypes.func.isRequired,
 };
