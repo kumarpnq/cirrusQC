@@ -32,7 +32,8 @@ const ResearchScreen = lazy(() => import("./pages/ResearchScreen"));
 const Login = lazy(() => import("./components/Login"));
 
 function App() {
-  const { setUserToken, screenPermissions } = useContext(ResearchContext);
+  const { setUserToken, screenPermissions, setScreenPermissions } =
+    useContext(ResearchContext);
   const userToken = localStorage.getItem("user");
   const location = useLocation();
   const [permissions, setPermissions] = useState({
@@ -55,6 +56,19 @@ function App() {
         });
         const screen_access = response.data.screen_access;
         sessionStorage.setItem("prmsn", JSON.stringify(screen_access));
+        const permissionData = sessionStorage.getItem("prmsn");
+
+        if (permissionData) {
+          const parsedPermissions = JSON.parse(permissionData);
+          // Map permission values to boolean
+          const mappedPermissions = Object.fromEntries(
+            Object.entries(parsedPermissions).map(([key, value]) => [
+              key,
+              value === "Yes",
+            ])
+          );
+          setScreenPermissions(mappedPermissions);
+        }
       } catch (error) {
         console.log(error);
       } finally {
@@ -62,7 +76,7 @@ function App() {
       }
     };
     getPermission();
-  }, [userToken]);
+  }, []);
 
   useEffect(() => {
     setPermissions({
