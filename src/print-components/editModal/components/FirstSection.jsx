@@ -78,6 +78,7 @@ const FirstSection = (props) => {
     // summary,
     setEditedSingleArticle,
   ]);
+
   return (
     <form>
       <div className="flex flex-wrap items-center gap-2">
@@ -220,6 +221,7 @@ const FirstSection = (props) => {
 FirstSection.propTypes = {
   classes: PropTypes.object.isRequired,
   selectedArticle: PropTypes.object,
+  editedSingleArticle: PropTypes.object,
   setEditedSingleArticle: PropTypes.func.isRequired,
 };
 

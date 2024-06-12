@@ -84,6 +84,7 @@ export default function EditModal({
               <FirstSection
                 classes={classes}
                 selectedArticle={selectedArticle}
+                editedSingleArticle={editedSingleArticle}
                 setEditedSingleArticle={setEditedSingleArticle}
               />
               <SecondSection
@@ -91,6 +92,7 @@ export default function EditModal({
                 setSelectedClient={setSelectedClient}
                 selectedArticle={selectedArticle}
                 editedSingleArticle={editedSingleArticle}
+                setEditedSingleArticle={setEditedSingleArticle}
               />
             </Box>
             <Box sx={{ width: "50%" }}>

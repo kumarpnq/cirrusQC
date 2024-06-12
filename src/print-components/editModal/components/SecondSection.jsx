@@ -33,7 +33,12 @@ import DebounceSearchCompany from "../../../@core/DebounceSearchCompany";
 
 const SecondSection = (props) => {
   const userToken = localStorage.getItem("user");
-  const { selectedClient, selectedArticle, editedSingleArticle } = props;
+  const {
+    selectedClient,
+    selectedArticle,
+    editedSingleArticle,
+    setEditedSingleArticle,
+  } = props;
   const [selectedCompany, setSelectedCompany] = useState(null);
   const [tagData, setTagData] = useState([]);
   const [tagDataLoading, setTagDataLoading] = useState(false);
@@ -221,8 +226,7 @@ const SecondSection = (props) => {
         });
         if (resp.data) {
           toast.success("Successfully saved changes!");
-          setEditableTagData([]);
-          setModifiedRows([]);
+          setEditedSingleArticle(null);
         }
       }
 
@@ -332,7 +336,8 @@ const SecondSection = (props) => {
       setVerificationLoading(false);
       return response.data.valid_user;
     } catch (error) {
-      console.log("Error:", error.message);
+      toast.error(error.message);
+      setVerificationLoading(false);
     }
   };
 
@@ -652,5 +657,6 @@ SecondSection.propTypes = {
   selectedClient: PropTypes.string.isRequired,
   selectedArticle: PropTypes.array.isRequired,
   editedSingleArticle: PropTypes.array.isRequired,
+  setEditedSingleArticle: PropTypes.func.isRequired,
 };
 export default SecondSection;
