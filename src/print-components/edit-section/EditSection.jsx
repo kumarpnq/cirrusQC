@@ -84,7 +84,6 @@ const EditSection = ({
 
   // * imp state for differ when saving to the db
   const [differData, setDifferData] = useState([]);
-  console.log(editRow, editValue);
 
   //updating tabledata
   const handleApplyChanges = () => {
@@ -113,8 +112,9 @@ const EditSection = ({
         subcategory: category || row.subcategory,
         m_prom: prominence || row.m_prom,
         space:
-          Number(editValue ? editValue : row.header_space) *
-            prominenceInNumber || row.space,
+          Number(
+            editValue ? editValue : row.header_space * prominenceInNumber
+          ).toFixed(2) || row.space,
         detail_summary:
           (editRow === "detail_summary" && editValue) || row.detail_summary,
         headline: (editRow === "headline" && editValue) || row.headline,
