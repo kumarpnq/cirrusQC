@@ -180,30 +180,8 @@ const EditSection = ({
     const formattedDate = dateNow.toISOString().slice(0, 19).replace("T", " ");
     const userName = sessionStorage.getItem("userName");
 
-    // Filter out invalid rows
-    const validUpdatedData = updatedData.filter(
-      (row) =>
-        !["reporting_tone", "m_prom", "reporting_subject"].some(
-          (field) => row[field] === "Unknown"
-        )
-    );
-    console.log("agag", validUpdatedData);
-
-    // const invalidRows = updatedData.filter((row) =>
-    //   ["reporting_tone", "m_prom", "reporting_subject"].some(
-    //     (field) => row[field] === "Unknown"
-    //   )
-    // );
-
-    if (!validUpdatedData.length) {
-      toast.warning(
-        "Some rows have null values in reporting_tone, manual_prominence, or subject."
-      );
-      return;
-    }
-
     const dataToSending = differData.map((selectedItem) => {
-      const updatedRows = validUpdatedData.filter(
+      const updatedRows = updatedData.filter(
         (row) =>
           row.article_id === selectedItem.article_id &&
           row.company_id === selectedItem.company_id
@@ -263,6 +241,18 @@ const EditSection = ({
       };
     });
 
+    const invalidRows = updatedData.filter((row) =>
+      ["reporting_tone", "m_prom", "reporting_subject"].some(
+        (field) => row[field] === "Unknown"
+      )
+    );
+
+    if (invalidRows.length > 0) {
+      toast.warning(
+        "Some rows have null values in reporting_tone, manual_prominence, or subject."
+      );
+      return;
+    }
     try {
       const url = `${import.meta.env.VITE_BASE_URL}updatePrint2database/`;
       if (dataToSending.length > 0) {
@@ -295,7 +285,6 @@ const EditSection = ({
         toast.warning("No Data to Save.");
       }
     } catch (error) {
-      console.log(error);
       toast.warning(error.message);
       setSaveLoading(false);
     }
