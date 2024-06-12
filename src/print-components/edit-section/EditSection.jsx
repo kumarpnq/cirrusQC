@@ -124,8 +124,7 @@ const EditSection = ({
         keyword: (editRow === "keyword" && editValue) || row.keyword,
         remark: (editRow === "remarks" && editValue) || row.remark,
         header_space:
-          (editRow === "header_space" && Number(editValue).toFixed(2)) ||
-          row.header_space,
+          (editRow === "header_space" && editValue) || row.header_space,
       }));
 
       // Prevent duplicates in updatedData
