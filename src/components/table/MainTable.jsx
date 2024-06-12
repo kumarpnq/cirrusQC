@@ -42,7 +42,6 @@ const MainTable = ({
   setSortColumn,
   highlightUpdatedRows,
 }) => {
-  console.log(tableHeaders);
   const classes = useStyles();
   const [checkBoxLoading, setCheckBoxLoading] = useState(false);
 

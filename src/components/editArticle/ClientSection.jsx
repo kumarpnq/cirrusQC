@@ -148,7 +148,6 @@ const ClientSection = ({ selectedArticle }) => {
         }
       } catch (error) {
         toast.error(error.message);
-        console.log(error);
       }
     } else {
       toast.warning("No company Selected");
@@ -200,6 +199,8 @@ const ClientSection = ({ selectedArticle }) => {
     }
   };
 
+  // * loading state
+  const [saveLoading, setSaveLoading] = useState(false);
   const handleSave = async () => {
     if (modifiedRows.length < 0) {
       return toast.warning("No data");
@@ -219,6 +220,7 @@ const ClientSection = ({ selectedArticle }) => {
       return;
     }
     try {
+      setSaveLoading(true);
       const requestData = modifiedRows.map((obj) => convertKeys(obj));
       const headers = { Authorization: `Bearer ${userToken}` };
       const response = await axios.post(
@@ -230,11 +232,13 @@ const ClientSection = ({ selectedArticle }) => {
         toast.success("Updated successfully");
         setModifiedRows([]);
         setFetchTagDataAfterChange(true);
+        setSaveLoading(false);
       } else {
         toast.error("Something went wrong");
       }
     } catch (error) {
       toast.error(error.message);
+      setSaveLoading(false);
     }
   };
   return (
@@ -243,15 +247,15 @@ const ClientSection = ({ selectedArticle }) => {
         <Box display="flex" alignItems="center">
           <Typography sx={{ fontSize: "0.9em", mt: 1 }}>Company:</Typography>
           <div className="z-50 ml-4">
-            {/* <DebounceSearch
-              selectedCompany={selectedCompany}
-              setSelectedCompany={setSelectedCompany}
-            /> */}
             <DebounceSearchCompany setSelectedCompany={setSelectedCompany} />
           </div>
         </Box>
         <Button btnText="Add" onClick={handleAddCompanies} />
-        <Button btnText="Save" onClick={handleSave} />
+        <Button
+          btnText={saveLoading ? "Loading" : "Save"}
+          onClick={handleSave}
+          isLoading={saveLoading}
+        />
       </Box>
       <Card>
         <table>
@@ -361,7 +365,7 @@ const ClientSection = ({ selectedArticle }) => {
                       className="border border-black outline-none w-14"
                       value={item.remarks}
                       onChange={(e) =>
-                        handleChange(index, "qc2_remark", e.target.value)
+                        handleChange(index, "remarks", e.target.value)
                       }
                     />
                   </td>

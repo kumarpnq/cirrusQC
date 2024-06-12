@@ -75,7 +75,6 @@ const SearchableCategory = ({
       <CustomAutocomplete
         className={classes.autocomplete}
         options={categories || []}
-        disableClearable
         ListboxProps={{ style: { maxHeight: 200 } }}
         getOptionLabel={(option) => option}
         renderValue={(selected) => selected.join(", ")}

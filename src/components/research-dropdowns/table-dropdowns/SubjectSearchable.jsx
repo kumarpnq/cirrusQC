@@ -52,7 +52,7 @@ const SubjectSearchable = ({ label, setSubject, subject, width }) => {
     }
   }, [subjectLists]);
   const handleSelectChange = (event, newValue) => {
-    setSubject(newValue || null);
+    setSubject(newValue);
   };
 
   const CustomAutocomplete = styled(Autocomplete)({
@@ -66,7 +66,6 @@ const SubjectSearchable = ({ label, setSubject, subject, width }) => {
       <CustomAutocomplete
         className={classes.autocomplete}
         options={subjects || []}
-        disableClearable
         ListboxProps={{ style: { maxHeight: 200 } }}
         getOptionLabel={(option) => option}
         renderValue={(selected) => selected.join(", ")}
