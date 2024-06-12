@@ -3,13 +3,14 @@ import { IoIosArrowRoundDown, IoIosArrowRoundUp } from "react-icons/io";
 import getHeaderAbbreviation from "../../constants/concatHeader";
 import React, { useEffect, useState } from "react";
 import PropTypes from "prop-types";
-import { TableCell, TableRow, Tooltip } from "@mui/material";
+import { Box, TableCell, TableRow, Tooltip } from "@mui/material";
 import TableRowCheckBox from "./TableRow";
 import { AiOutlineLoading } from "react-icons/ai";
 import { EditAttributesOutlined } from "@mui/icons-material";
 import UploadDialog from "../editArticle/UploadDialog";
 import { TableVirtuoso } from "react-virtuoso";
 import TotalRecordsCard from "../../@core/TotalRecords";
+import RadialMenu from "../../@core/RadialMenu";
 
 const useStyles = makeStyles(() => ({
   dropDowns: {
@@ -41,6 +42,7 @@ const MainTable = ({
   setSortDirection,
   setSortColumn,
   highlightUpdatedRows,
+  setTableData,
 }) => {
   console.log(tableHeaders);
   const classes = useStyles();
@@ -124,11 +126,40 @@ const MainTable = ({
     setSelectedArticle(null);
   };
 
+  const handleMoveModifiedRows = () => {
+    const highlightedSet = new Set(
+      highlightUpdatedRows.map(
+        (row) => `${row.social_feed_id}-${row.company_id}`
+      )
+    );
+
+    const filteredData = tableData.filter(
+      (row) => !highlightedSet.has(`${row.social_feed_id}-${row.company_id}`)
+    );
+
+    // Get the highlighted rows
+    const highlightedData = tableData.filter((row) =>
+      highlightedSet.has(`${row.social_feed_id}-${row.company_id}`)
+    );
+
+    setTableData([...highlightedData, ...filteredData]);
+  };
+
   const dataToRender = searchedData.length > 0 ? searchedData : tableData;
 
   return (
     <div className="relative mt-2">
-      <TotalRecordsCard totalRecords={dataToRender.length} tClass="top-[5%]" />
+      <Box sx={{ display: "flex" }}>
+        <TotalRecordsCard
+          totalRecords={dataToRender.length}
+          tClass="top-[5%]"
+        />
+        <RadialMenu
+          onMoveTop={handleMoveModifiedRows}
+          totalRows={tableData.length}
+          modifiedRows={highlightUpdatedRows.length}
+        />
+      </Box>
       {/* {!!dataToRender.length && ( */}
       <TableVirtuoso
         style={{ height: 600 }}
@@ -403,5 +434,6 @@ MainTable.propTypes = {
   setSortDirection: PropTypes.func,
   setSortColumn: PropTypes.func,
   highlightUpdatedRows: PropTypes.array,
+  setTableData: PropTypes.func,
 };
 export default MainTable;

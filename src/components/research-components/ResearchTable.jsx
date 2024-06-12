@@ -637,6 +637,7 @@ const ResearchTable = ({
         tableHeaders={tableHeaders}
         updatedRows={updatedRows}
         highlightUpdatedRows={highlightUpdatedRows}
+        setTableData={setTableData}
       />
       <Delete
         open={openDeleteDialog}
