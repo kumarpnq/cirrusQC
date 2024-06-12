@@ -1,18 +1,16 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { Box, IconButton, Tooltip } from "@mui/material";
+import { Box, Tooltip } from "@mui/material";
 import PropTypes from "prop-types";
 import { FindSection } from "./find-section/FindSection";
 import EditSection from "./edit-section/EditSection";
 import Loader from "../components/loader/Loader";
 import { AiOutlineLoading } from "react-icons/ai";
-import { FaRegEdit } from "react-icons/fa";
 import { IoIosArrowRoundDown, IoIosArrowRoundUp } from "react-icons/io";
 import EditModal from "./editModal/editModal";
 import { EditAttributesOutlined } from "@mui/icons-material";
 import { TableVirtuoso } from "react-virtuoso";
 import TotalRecordsCard from "../@core/TotalRecords";
-import { Planet } from "react-planet";
 import RadialMenu from "../@core/RadialMenu";
 
 const Qc2Table = ({
@@ -215,7 +213,11 @@ const Qc2Table = ({
           totalRecords={dataToRender.length}
           tClass="top-[27%]"
         />
-        <RadialMenu />
+        <RadialMenu
+          onMoveTop={handleMoveModifiedRows}
+          totalRows={qc2PrintTableData.length}
+          modifiedRows={highlightRows.length}
+        />
       </Box>
 
       {/* <button onClick={handleMoveModifiedRows}>Move to top</button> */}

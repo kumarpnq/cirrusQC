@@ -161,7 +161,7 @@ const EditSection = ({
       });
 
       setUpdatedData(newUpdatedData);
-      setHighlightRows((prev) => [...prev, ...updatedSelectedRows]);
+      setHighlightRows(newUpdatedData);
       setQc2PrintTableData(updatedTableData);
       setSearchedData(updatedSearchedData);
       setUnsavedChanges(true);
