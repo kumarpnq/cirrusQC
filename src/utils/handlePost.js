@@ -72,7 +72,7 @@ const handlePostData = async (
 
     // Return only the modified fields
     return {
-      ARTICLEID: selectedItem.article_id,
+      SOCIALFEEDID: selectedItem.social_feed_id,
       COMPANYID: selectedItem.company_id,
       MODIFIEDBY: name,
       MODIFIEDON: currentDateWithTime,
