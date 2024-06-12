@@ -1,17 +1,19 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { Tooltip } from "@mui/material";
+import { Box, IconButton, Tooltip } from "@mui/material";
 import PropTypes from "prop-types";
 import { FindSection } from "./find-section/FindSection";
 import EditSection from "./edit-section/EditSection";
 import Loader from "../components/loader/Loader";
 import { AiOutlineLoading } from "react-icons/ai";
-// import Pagination from "../components/pagination/Pagination";
+import { FaRegEdit } from "react-icons/fa";
 import { IoIosArrowRoundDown, IoIosArrowRoundUp } from "react-icons/io";
 import EditModal from "./editModal/editModal";
 import { EditAttributesOutlined } from "@mui/icons-material";
 import { TableVirtuoso } from "react-virtuoso";
 import TotalRecordsCard from "../@core/TotalRecords";
+import { Planet } from "react-planet";
+import RadialMenu from "../@core/RadialMenu";
 
 const Qc2Table = ({
   isTableDataLoading,
@@ -170,6 +172,22 @@ const Qc2Table = ({
     setOpen(true);
     setSelectedArticle((prev) => (prev === item ? null : item));
   };
+  const handleMoveModifiedRows = () => {
+    const highlightedSet = new Set(
+      highlightRows.map((row) => `${row.article_id}-${row.company_id}`)
+    );
+
+    const filteredData = qc2PrintTableData.filter(
+      (row) => !highlightedSet.has(`${row.article_id}-${row.company_id}`)
+    );
+
+    // Get the highlighted rows
+    const highlightedData = qc2PrintTableData.filter((row) =>
+      highlightedSet.has(`${row.article_id}-${row.company_id}`)
+    );
+
+    setQc2PrintTableData([...highlightedData, ...filteredData]);
+  };
 
   return (
     <div className="relative">
@@ -192,8 +210,15 @@ const Qc2Table = ({
         setRetrieveAfterSave={setRetrieveAfterSave}
         selectedArticle={selectedArticle}
       />
+      <Box sx={{ display: "flex" }}>
+        <TotalRecordsCard
+          totalRecords={dataToRender.length}
+          tClass="top-[27%]"
+        />
+        <RadialMenu />
+      </Box>
 
-      <TotalRecordsCard totalRecords={dataToRender.length} tClass="top-[27%]" />
+      {/* <button onClick={handleMoveModifiedRows}>Move to top</button> */}
       {isTableDataLoading || tableLoading ? (
         <Loader />
       ) : (
