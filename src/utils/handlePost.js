@@ -28,8 +28,6 @@ const handlePostData = async (
   setSavedSuccess(true);
   setPostingLoading(true);
 
-  console.log(updatedRows);
-
   const invalidRows = updatedRows.filter((row) =>
     ["reporting_tone", "prominence", "reporting_subject"].some(
       (field) => row[field] === "Unknown"

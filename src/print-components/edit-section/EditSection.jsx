@@ -112,8 +112,9 @@ const EditSection = ({
         subcategory: category || row.subcategory,
         m_prom: prominence || row.m_prom,
         space:
-          Number(editValue ? editValue : row.header_space) *
-            prominenceInNumber || row.space,
+          Number(
+            editValue ? editValue : row.header_space * prominenceInNumber
+          ).toFixed(2) || row.space,
         detail_summary:
           (editRow === "detail_summary" && editValue) || row.detail_summary,
         headline: (editRow === "headline" && editValue) || row.headline,
@@ -180,6 +181,22 @@ const EditSection = ({
     const formattedDate = dateNow.toISOString().slice(0, 19).replace("T", " ");
     const userName = sessionStorage.getItem("userName");
 
+    const invalidRows = updatedData.filter((row) =>
+      ["reporting_tone", "m_prom", "reporting_subject"].some(
+        (field) => row[field] === "Unknown"
+      )
+    );
+
+    console.log(updatedData);
+    console.log(invalidRows);
+
+    if (invalidRows.length > 0) {
+      toast.warning(
+        "Some rows have null values in reporting_tone, manual_prominence, or subject."
+      );
+      return;
+    }
+
     const dataToSending = differData.map((selectedItem) => {
       const updatedRows = updatedData.filter(
         (row) =>
@@ -241,18 +258,6 @@ const EditSection = ({
       };
     });
 
-    const invalidRows = updatedData.filter((row) =>
-      ["reporting_tone", "m_prom", "reporting_subject"].some(
-        (field) => row[field] === "Unknown"
-      )
-    );
-
-    if (invalidRows.length > 0) {
-      toast.warning(
-        "Some rows have null values in reporting_tone, manual_prominence, or subject."
-      );
-      return;
-    }
     try {
       const url = `${import.meta.env.VITE_BASE_URL}updatePrint2database/`;
       if (dataToSending.length > 0) {
