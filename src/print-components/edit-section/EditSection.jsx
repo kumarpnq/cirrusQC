@@ -100,8 +100,19 @@ const EditSection = ({
       return (match = text.match(/\(([\d.]+)\)/)) ? match[1] : 0;
     })(text);
 
-    let dataForDiffer = [...selectedItems];
-    setDifferData((prev) => prev.concat(dataForDiffer));
+    // Prevent duplicates in differData
+    const newDifferData = [...differData];
+    selectedItems.forEach((item) => {
+      const index = newDifferData.findIndex(
+        (row) =>
+          row.article_id === item.article_id &&
+          row.company_id === item.company_id
+      );
+      if (index === -1) {
+        newDifferData.push(item);
+      }
+    });
+    setDifferData(newDifferData);
 
     // setTimeout(() => {
     if (selectedItems.length > 0) {
@@ -112,9 +123,9 @@ const EditSection = ({
         subcategory: category || row.subcategory,
         m_prom: prominence || row.m_prom,
         space:
-          Number(
-            editValue ? editValue : row.header_space * prominenceInNumber
-          ).toFixed(2) || row.space,
+          (editRow === "header_space" &&
+            Number(row.header_space * prominenceInNumber).toFixed(2)) ||
+          row.space,
         detail_summary:
           (editRow === "detail_summary" && editValue) || row.detail_summary,
         headline: (editRow === "headline" && editValue) || row.headline,
@@ -187,9 +198,6 @@ const EditSection = ({
       )
     );
 
-    console.log(updatedData);
-    console.log(invalidRows);
-
     if (invalidRows.length > 0) {
       toast.warning(
         "Some rows have null values in reporting_tone, manual_prominence, or subject."
@@ -197,7 +205,7 @@ const EditSection = ({
       return;
     }
 
-    const dataToSending = differData.map((selectedItem) => {
+    let dataToSending = differData.map((selectedItem) => {
       const updatedRows = updatedData.filter(
         (row) =>
           row.article_id === selectedItem.article_id &&
@@ -290,6 +298,7 @@ const EditSection = ({
         toast.warning("No Data to Save.");
       }
     } catch (error) {
+      dataToSending = [];
       toast.warning(error.message);
       setSaveLoading(false);
     }
