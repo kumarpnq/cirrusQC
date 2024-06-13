@@ -28,22 +28,34 @@ const handlePostData = async (
   setSavedSuccess(true);
   setPostingLoading(true);
 
+  // Separate valid and invalid rows
   const invalidRows = updatedRows.filter((row) =>
     ["reporting_tone", "prominence", "reporting_subject"].some(
       (field) => row[field] === "Unknown"
     )
   );
 
+  console.log(invalidRows);
+
+  const validRows = updatedRows.filter((row) =>
+    ["reporting_tone", "prominence", "reporting_subject"].every(
+      (field) => row[field] !== "Unknown"
+    )
+  );
+
   if (invalidRows.length > 0) {
     toast.warning(
-      "Some rows have null values in reporting_tone, manual_prominence, or subject."
+      "Some rows have null values in reporting_tone, manual_prominence, or subject. Only valid rows will be updated."
     );
+  }
+
+  if (validRows.length === 0) {
     setPostingLoading(false);
     return;
   }
 
   const dataToSending = differData.map((selectedItem) => {
-    const updatedData = updatedRows.filter(
+    const updatedData = validRows.filter(
       (row) =>
         row.social_feed_id === selectedItem.social_feed_id &&
         row.company_id === selectedItem.company_id
@@ -95,7 +107,7 @@ const handlePostData = async (
   });
 
   try {
-    const url = `${import.meta.env.VITE_BASE_URL}update2databaseTemp/`; //update2database
+    const url = `${import.meta.env.VITE_BASE_URL}update2databaseTemp/`;
     if (dataToSending.length > 0) {
       await axios.post(url, dataToSending, {
         headers: {
@@ -103,20 +115,23 @@ const handlePostData = async (
           Authorization: "Bearer " + userToken,
         },
       });
+
       // Remove updated rows from table data
-      const updatedSocialFeedIds = updatedRows.map((row) => row.social_feed_id);
-      const updatedCompanyIds = updatedRows.map((row) => row.company_id);
+      const updatedSocialFeedIds = validRows.map((row) => row.social_feed_id);
+      const updatedCompanyIds = validRows.map((row) => row.company_id);
       const newTableData = tableData.filter(
         (row) =>
           !updatedSocialFeedIds.includes(row.social_feed_id) ||
           !updatedCompanyIds.includes(row.company_id)
       );
-      setUpdatedRows([]);
+
+      setUpdatedRows(invalidRows); // Keep only invalid rows in updatedRows
       setPostingLoading(false);
       setSelectedRowData([]);
-      setHighlightUpdatedRows([]);
+      setHighlightUpdatedRows(invalidRows);
       setSearchedData([]);
       setDifferData([]);
+
       // Clearing the dropdown values
       setReportingTone("");
       setSubject("");
@@ -126,7 +141,8 @@ const handlePostData = async (
       setEditValue("");
       setEditRow("");
       setTableData(newTableData);
-      toast.success("Data updated successfully!");
+
+      toast.success("Valid data updated successfully!");
     } else {
       setSuccessMessage("No data to save.");
       setPostingLoading(false);
@@ -134,7 +150,6 @@ const handlePostData = async (
   } catch (error) {
     console.log(error);
     setSuccessMessage(error.message);
-
     setPostingLoading(false);
   }
 };
