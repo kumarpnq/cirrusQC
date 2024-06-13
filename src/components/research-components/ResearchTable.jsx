@@ -201,8 +201,20 @@ const ResearchTable = ({
       return toast.warning("Please select at least one item to update", {
         autoClose: 3000,
       });
-    let dataForDiffer = [...selectedRowData];
-    setDifferData((prev) => prev.concat(dataForDiffer));
+    // Prevent duplicates in differData
+    const newDifferData = [...differData];
+    selectedRowData.forEach((item) => {
+      const index = newDifferData.findIndex(
+        (row) =>
+          row.article_id === item.article_id &&
+          row.company_id === item.company_id
+      );
+      if (index === -1) {
+        newDifferData.push(item);
+      }
+    });
+    setDifferData(newDifferData);
+
     setApplyLoading(true);
     // setTimeout(() => {
     if (selectedRowData.length > 0) {
