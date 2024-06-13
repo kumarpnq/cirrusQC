@@ -35,8 +35,6 @@ const handlePostData = async (
     )
   );
 
-  console.log(invalidRows);
-
   const validRows = updatedRows.filter((row) =>
     ["reporting_tone", "prominence", "reporting_subject"].every(
       (field) => row[field] !== "Unknown"

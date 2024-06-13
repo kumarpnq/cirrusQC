@@ -1,5 +1,5 @@
 import { useContext, useEffect, useState } from "react";
-import PropTypes from "prop-types";
+import PropTypes, { number } from "prop-types";
 import HeaderForEdits from "../../components/research-dropdowns/table-dropdowns/HeaderForEdits";
 import Button from "../../components/custom/Button";
 import { makeStyles } from "@mui/styles";
@@ -100,6 +100,8 @@ const EditSection = ({
       return (match = text.match(/\(([\d.]+)\)/)) ? match[1] : 0;
     })(text);
 
+    const isHeaderSpace = Boolean(editRow === "header_space");
+
     // Prevent duplicates in differData
     const newDifferData = [...differData];
     selectedItems.forEach((item) => {
@@ -123,9 +125,14 @@ const EditSection = ({
         subcategory: category || row.subcategory,
         m_prom: prominence || row.m_prom,
         space:
-          (editRow === "header_space" &&
-            Number(row.header_space * prominenceInNumber).toFixed(2)) ||
-          row.space,
+          isHeaderSpace && !prominence
+            ? Number(row?.m_prom?.match(/\(([\d.]+)\)/)).toFixed(2)
+            : isHeaderSpace && prominence
+            ? Number(editValue * prominenceInNumber).toFixed(2)
+            : !isHeaderSpace && prominenceInNumber
+            ? Number(prominenceInNumber * row.header_space).toFixed(2)
+            : row.space,
+
         detail_summary:
           (editRow === "detail_summary" && editValue) || row.detail_summary,
         headline: (editRow === "headline" && editValue) || row.headline,
@@ -192,21 +199,31 @@ const EditSection = ({
     const formattedDate = dateNow.toISOString().slice(0, 19).replace("T", " ");
     const userName = sessionStorage.getItem("userName");
 
+    // Separate valid and invalid rows
     const invalidRows = updatedData.filter((row) =>
       ["reporting_tone", "m_prom", "reporting_subject"].some(
         (field) => row[field] === "Unknown"
       )
     );
 
+    const validRows = updatedData.filter((row) =>
+      ["reporting_tone", "m_prom", "reporting_subject"].every(
+        (field) => row[field] !== "Unknown"
+      )
+    );
+
     if (invalidRows.length > 0) {
       toast.warning(
-        "Some rows have null values in reporting_tone, manual_prominence, or subject."
+        "Some rows have null values in reporting_tone, manual_prominence, or subject. Only valid rows will be updated."
       );
+    }
+
+    if (validRows.length === 0) {
       return;
     }
 
     let dataToSending = differData.map((selectedItem) => {
-      const updatedRows = updatedData.filter(
+      const updatedRows = validRows.filter(
         (row) =>
           row.article_id === selectedItem.article_id &&
           row.company_id === selectedItem.company_id
@@ -276,29 +293,35 @@ const EditSection = ({
             Authorization: `Bearer ${userToken} `,
           },
         });
-        res.statusText === "OK" && toast.success("Row Updated");
-        const updatedTableData = qc2PrintTableData.filter(
-          (row) =>
-            !updatedData.some(
-              (updatedRow) =>
-                updatedRow.article_id === row.article_id &&
-                updatedRow.company_id === row.company_id
-            )
-        );
-        setQc2PrintTableData(updatedTableData);
-        setSelectedItems([]);
-        setHighlightRows([]);
-        setSaveLoading(false);
-        setSearchedData([]);
-        setUnsavedChanges(false);
-        // setRetrieveAfterSave((prev) => !prev);
-        setUpdatedData([]);
-        setDifferData([]);
+
+        if (res.statusText === "OK") {
+          toast.success("Row Updated");
+
+          // Remove updated rows from table data
+          const updatedTableData = qc2PrintTableData.filter(
+            (row) =>
+              !validRows.some(
+                (updatedRow) =>
+                  updatedRow.article_id === row.article_id &&
+                  updatedRow.company_id === row.company_id
+              )
+          );
+
+          setQc2PrintTableData(updatedTableData);
+          setSelectedItems(invalidRows);
+          setHighlightRows(invalidRows);
+          setSearchedData([]);
+          setUnsavedChanges(false);
+          setUpdatedData(invalidRows);
+          setDifferData(invalidRows);
+        } else {
+          toast.warning("No Data to Save.");
+        }
       } else {
-        toast.warning("No Data to Save.");
+        toast.warning("No data");
       }
+      setSaveLoading(false);
     } catch (error) {
-      dataToSending = [];
       toast.warning(error.message);
       setSaveLoading(false);
     }
