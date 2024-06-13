@@ -112,9 +112,8 @@ const EditSection = ({
         subcategory: category || row.subcategory,
         m_prom: prominence || row.m_prom,
         space:
-          Number(
-            editValue ? editValue : row.header_space * prominenceInNumber
-          ).toFixed(2) || row.space,
+          Number(editValue ? editValue : row.header_space) *
+            prominenceInNumber || row.space,
         detail_summary:
           (editRow === "detail_summary" && editValue) || row.detail_summary,
         headline: (editRow === "headline" && editValue) || row.headline,
@@ -124,7 +123,8 @@ const EditSection = ({
         keyword: (editRow === "keyword" && editValue) || row.keyword,
         remark: (editRow === "remarks" && editValue) || row.remark,
         header_space:
-          (editRow === "header_space" && editValue) || row.header_space,
+          (editRow === "header_space" && Number(editValue).toFixed(2)) ||
+          row.header_space,
       }));
 
       // Prevent duplicates in updatedData
