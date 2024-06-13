@@ -185,6 +185,9 @@ const ResearchScreen = () => {
     setQc2byuserToString(qc2_userV);
   }, [language, continent, country, qc1by, qc2by]);
 
+  console.log(qc1by);
+  console.log(qc2by);
+
   // searching the tabledata using multiple parameters
   const handleSearch = async () => {
     if (clientId) {
@@ -223,16 +226,8 @@ const ResearchScreen = () => {
             }
           }
           addPropertyIfConditionIsTrue(companyId, "company_id", companyId);
-          addPropertyIfConditionIsTrue(
-            qc1byuserToString,
-            "qc1_by",
-            qc1byuserToString
-          );
-          addPropertyIfConditionIsTrue(
-            qc2byuserToString,
-            "qc2_by",
-            qc2byuserToString
-          );
+          addPropertyIfConditionIsTrue(qc1by, "qc1_by", qc1by);
+          addPropertyIfConditionIsTrue(qc2by, "qc2_by", qc2by);
           addPropertyIfConditionIsTrue(
             continentsToString,
             "continent",

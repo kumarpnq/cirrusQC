@@ -222,18 +222,8 @@ const DDComp = () => {
         "is_qc2",
         Number(qc2Done)
       );
-      addPropertyIfConditionIsTrue(
-        qc1By.length > 0 && arrayToString(qc1By),
-        requestData,
-        "qc1_by",
-        arrayToString(qc1By)
-      );
-      addPropertyIfConditionIsTrue(
-        qc2By.length > 0 && arrayToString(qc2By),
-        requestData,
-        "qc2_by",
-        arrayToString(qc2By)
-      );
+      addPropertyIfConditionIsTrue(qc1By, requestData, "qc1_by", qc1By);
+      addPropertyIfConditionIsTrue(qc2By, requestData, "qc2_by", qc2By);
       addPropertyIfConditionIsTrue(
         city.length > 0 && arrayToString(city),
         requestData,
