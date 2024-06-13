@@ -1,5 +1,5 @@
 import { useContext, useEffect, useState } from "react";
-import PropTypes, { number } from "prop-types";
+import PropTypes from "prop-types";
 import HeaderForEdits from "../../components/research-dropdowns/table-dropdowns/HeaderForEdits";
 import Button from "../../components/custom/Button";
 import { makeStyles } from "@mui/styles";
