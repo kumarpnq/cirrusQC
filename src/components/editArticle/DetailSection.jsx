@@ -45,14 +45,18 @@ const Details = ({ selectedRow }) => {
       const headers = {
         Authorization: `Bearer ${userToken}`,
       };
-      const request_data = {
-        SOCIALFEEDID: selectedRow?.social_feed_id,
-        HEADLINE: headline,
-        SUMMARY: summary,
-        AUTHOR: journalist,
-        HASIMAGE: iAlignment,
-        HASVIDEO: vAlignment,
-      };
+      let img = iAlignment === "Yes" ? 1 : 0;
+      let video = vAlignment === "Yes" ? 1 : 0;
+      const request_data = [
+        {
+          SOCIALFEEDID: selectedRow?.social_feed_id,
+          HEADLINE: headline,
+          SUMMARY: summary,
+          AUTHOR: journalist,
+          HASIMAGE: img,
+          HASVIDEO: video,
+        },
+      ];
 
       const response = await axios.post(
         `${url}updatesocialfeedheader/`,
@@ -64,7 +68,6 @@ const Details = ({ selectedRow }) => {
         toast.success("Updated Successfully.");
       }
     } catch (error) {
-      console.log(error);
       setUpdateLoading(false);
       toast.error(error.message);
     }
