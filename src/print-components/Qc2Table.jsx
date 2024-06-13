@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { Link } from "react-router-dom";
 import { Box, Tooltip } from "@mui/material";
 import PropTypes from "prop-types";
@@ -12,6 +12,8 @@ import { EditAttributesOutlined } from "@mui/icons-material";
 import { TableVirtuoso } from "react-virtuoso";
 import TotalRecordsCard from "../@core/TotalRecords";
 import RadialMenu from "../@core/RadialMenu";
+import { DataGrid, GridToolbar } from "@mui/x-data-grid";
+import { useMovieData } from "@mui/x-data-grid-generator";
 
 const Qc2Table = ({
   isTableDataLoading,
@@ -187,6 +189,24 @@ const Qc2Table = ({
     setQc2PrintTableData([...highlightedData, ...filteredData]);
   };
 
+  const VISIBLE_FIELDS = [
+    "title",
+    "company",
+    "director",
+    "year",
+    "cinematicUniverse",
+  ];
+
+  const data = useMovieData();
+
+  console.log(data);
+
+  const columns = useMemo(
+    () =>
+      data.columns.filter((column) => VISIBLE_FIELDS.includes(column.field)),
+    [data.columns]
+  );
+
   return (
     <div className="relative">
       <FindSection
@@ -217,6 +237,21 @@ const Qc2Table = ({
           onMoveTop={handleMoveModifiedRows}
           totalRows={qc2PrintTableData.length}
           modifiedRows={highlightRows.length}
+        />
+      </Box>
+      <Box sx={{ height: 400, width: 1 }}>
+        <DataGrid
+          {...data}
+          disableColumnFilter
+          disableColumnSelector
+          disableDensitySelector
+          columns={columns}
+          slots={{ toolbar: GridToolbar }}
+          slotProps={{
+            toolbar: {
+              showQuickFilter: true,
+            },
+          }}
         />
       </Box>
 
