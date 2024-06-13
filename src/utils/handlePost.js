@@ -28,6 +28,22 @@ const handlePostData = async (
   setSavedSuccess(true);
   setPostingLoading(true);
 
+  console.log(updatedRows);
+
+  const invalidRows = updatedRows.filter((row) =>
+    ["reporting_tone", "prominence", "reporting_subject"].some(
+      (field) => row[field] === "Unknown"
+    )
+  );
+
+  if (invalidRows.length > 0) {
+    toast.warning(
+      "Some rows have null values in reporting_tone, manual_prominence, or subject."
+    );
+    setPostingLoading(false);
+    return;
+  }
+
   const dataToSending = differData.map((selectedItem) => {
     const updatedData = updatedRows.filter(
       (row) =>
@@ -80,19 +96,6 @@ const handlePostData = async (
     };
   });
 
-  const invalidRows = updatedRows.filter((row) =>
-    ["reporting_tone", "prominence", "reporting_subject"].some(
-      (field) => row[field] === "Unknown"
-    )
-  );
-
-  if (invalidRows.length > 0) {
-    toast.warning(
-      "Some rows have null values in reporting_tone, manual_prominence, or subject."
-    );
-    setPostingLoading(false);
-    return;
-  }
   try {
     const url = `${import.meta.env.VITE_BASE_URL}update2databaseTemp/`; //update2database
     if (dataToSending.length > 0) {
@@ -132,10 +135,9 @@ const handlePostData = async (
     }
   } catch (error) {
     console.log(error);
-    if (error.message === "Network Error") {
-      setSuccessMessage("Please check your internet connection.");
-      setPostingLoading(false);
-    }
+    setSuccessMessage(error.message);
+
+    setPostingLoading(false);
   }
 };
 

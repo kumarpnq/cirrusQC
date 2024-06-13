@@ -4,7 +4,7 @@ import { FaLongArrowAltUp, FaRegEdit } from "react-icons/fa";
 import { Planet } from "react-planet";
 
 const RadialMenu = ({ onMoveTop = () => {}, totalRows, modifiedRows }) => {
-  const pendingRows = totalRows - modifiedRows;
+  // const pendingRows = totalRows - modifiedRows;
 
   return (
     <div className="z-50">
@@ -27,7 +27,7 @@ const RadialMenu = ({ onMoveTop = () => {}, totalRows, modifiedRows }) => {
           </IconButton>
         </Tooltip>
 
-        <Tooltip title="Total Rows">
+        {/* <Tooltip title="Total Rows">
           <IconButton sx={{ right: 0, bottom: 2 }}>{totalRows}</IconButton>
         </Tooltip>
 
@@ -37,7 +37,7 @@ const RadialMenu = ({ onMoveTop = () => {}, totalRows, modifiedRows }) => {
 
         <Tooltip title="Pending Rows">
           <IconButton sx={{ right: 0, bottom: 2 }}>{pendingRows}</IconButton>
-        </Tooltip>
+        </Tooltip> */}
       </Planet>
     </div>
   );
