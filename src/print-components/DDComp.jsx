@@ -101,8 +101,8 @@ const DDComp = () => {
   }, [prominenceLists]);
   const [qc1Done, setQc1Done] = useState("2");
   const [qc2Done, setQc2Done] = useState("0");
-  const [qc1By, setQc1By] = useState([]);
-  const [qc2By, setQc2By] = useState([]);
+  const [qc1By, setQc1By] = useState("");
+  const [qc2By, setQc2By] = useState("");
   const { data: qcUserData } = useFetchData(`${url}qcuserlist/`, {
     qc1By,
     qc2By,

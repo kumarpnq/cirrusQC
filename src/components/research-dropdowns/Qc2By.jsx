@@ -2,11 +2,6 @@ import { FormControl, Select, MenuItem } from "@mui/material";
 import PropTypes from "prop-types";
 
 const Qc2By = ({ qcUsersData, classes, qc2by, setQc2by, pageType }) => {
-  const selectedUsernamesqc2 = qcUsersData
-    .filter((item) =>
-      qc2by.includes(pageType === "print" ? item.username : item.usersid)
-    )
-    .map((selectedItem) => selectedItem.username);
   return (
     <div style={{ height: 25 }} className="flex items-center">
       <FormControl className="w-32">
@@ -14,26 +9,23 @@ const Qc2By = ({ qcUsersData, classes, qc2by, setQc2by, pageType }) => {
           className={classes.dropDowns}
           value={qc2by}
           onChange={(e) => setQc2by(e.target.value)}
-          multiple
           MenuProps={{ PaperProps: { style: { height: 200 } } }}
           displayEmpty
           inputProps={{ "aria-label": "Without label" }}
           sx={{ fontSize: "0.8em" }}
-          renderValue={() => {
-            if (selectedUsernamesqc2.length === 0) {
-              return <em>Qc2 by</em>;
-            }
-            return selectedUsernamesqc2.join(", ");
-          }}
         >
-          <MenuItem value="" sx={{ fontSize: "0.8em", opacity: 0.7 }}>
+          <MenuItem
+            value=""
+            sx={{ fontSize: "0.8em", opacity: 0.7 }}
+            onClick={() => setQc2by("")}
+          >
             <em>Qc2 by</em>
           </MenuItem>
           {qcUsersData &&
             qcUsersData?.map((items) => (
               <MenuItem
                 key={items.usersid}
-                value={pageType === "print" ? items.username : items.usersid}
+                value={items.username}
                 sx={{ fontSize: "0.8em", opacity: 0.7 }}
               >
                 {items.username}

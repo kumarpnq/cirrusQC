@@ -62,8 +62,8 @@ const Dump = () => {
   const [toDate, setToDate] = useState(formattedNextDay);
   const [qc1Done, setQc1Done] = useState("2");
   const [qc2Done, setQc2Done] = useState("2");
-  const [qc1By, setQc1By] = useState([]);
-  const [qc2By, setQc2By] = useState([]);
+  const [qc1By, setQc1By] = useState("");
+  const [qc2By, setQc2By] = useState("");
   const [dumpLoading, setDumpLoading] = useState(false);
   const [openDialog, setOpenDialog] = useState(false);
   const [selectedColumnsForDump, setSelectedColumnsForDump] = useState([]);
