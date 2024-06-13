@@ -27,6 +27,7 @@ const Details = ({ selectedRow }) => {
   const [headline, setHeadline] = useState(selectedRow?.headline);
   const [journalist, setJournalist] = useState(selectedRow?.author_name);
   const [summary, setSummary] = useState(selectedRow?.headsummary);
+  const [updateLoading, setUpdateLoading] = useState(false);
 
   const [iAlignment, setIAlignment] = useState(selectedRow?.has_image);
   const [vAlignment, setVAlignment] = useState(selectedRow?.has_video);
@@ -40,30 +41,31 @@ const Details = ({ selectedRow }) => {
 
   const handleHeaderUpdate = async () => {
     try {
+      setUpdateLoading(true);
       const headers = {
         Authorization: `Bearer ${userToken}`,
       };
-      const request_data = [
-        {
-          SOCIALFEEDID: selectedRow?.social_feed_id,
-          HEADLINE: selectedRow?.headline,
-          SUMMARY: selectedRow?.headsummary,
-          AUTHOR: selectedRow?.author_name,
-          HASIMAGE: iAlignment,
-          HASVIDEO: vAlignment,
-        },
-      ];
-      const response = axios.post(
+      const request_data = {
+        SOCIALFEEDID: selectedRow?.social_feed_id,
+        HEADLINE: headline,
+        SUMMARY: summary,
+        AUTHOR: journalist,
+        HASIMAGE: iAlignment,
+        HASVIDEO: vAlignment,
+      };
+
+      const response = await axios.post(
         `${url}updatesocialfeedheader/`,
         request_data,
         { headers }
       );
-      console.log(response);
       if (response) {
+        setUpdateLoading(false);
         toast.success("Updated Successfully.");
       }
     } catch (error) {
       console.log(error);
+      setUpdateLoading(false);
       toast.error(error.message);
     }
   };
@@ -73,13 +75,7 @@ const Details = ({ selectedRow }) => {
         <Typography variant="h2" fontSize={"0.9em"} ml={2}>
           Edit
         </Typography>
-        {/* <CardHeader
-        title={
-          <Typography variant="h6" fontSize={"0.9em"}>
-            Edit
-          </Typography>
-        }
-      /> */}
+
         <CardContent sx={{ mx: 1 }}>
           <FormControl>
             <Box mb={1} display="flex" alignItems="center">
@@ -182,7 +178,11 @@ const Details = ({ selectedRow }) => {
               />
             </Box>
             <Box display="flex" justifyContent="flex-end">
-              <Button btnText="Update" onClick={handleHeaderUpdate} />
+              <Button
+                btnText={updateLoading ? "Updating" : "Update"}
+                onClick={handleHeaderUpdate}
+                isLoading={updateLoading}
+              />
             </Box>
           </FormControl>
         </CardContent>
@@ -206,8 +206,5 @@ Details.propTypes = {
     has_video: PropTypes.string,
     social_feed_id: PropTypes.string,
   }),
-  selectedCompany: PropTypes.string.isRequired,
-  setSelectedCompany: PropTypes.func.isRequired,
-  userToken: PropTypes.string.isRequired,
 };
 export default Details;

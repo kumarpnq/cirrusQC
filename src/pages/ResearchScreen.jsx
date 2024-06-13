@@ -205,8 +205,8 @@ const ResearchScreen = () => {
             // search_text: searchValue,
             // qc1_by: "qc1_user", //optional using condition
             // qc2_by: "qc2_user", //optional using condition
-            is_qc1: qc1done,
-            is_qc2: qc2done,
+            is_qc1: Number(qc1done),
+            is_qc2: Number(qc2done),
             has_image: isImage,
             has_video: isVideo,
             // continent: "Asia", //optional using condition

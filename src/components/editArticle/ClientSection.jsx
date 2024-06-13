@@ -103,8 +103,24 @@ const ClientSection = ({ selectedArticle }) => {
       newData[index] = updatedRow;
       return newData;
     });
-    setModifiedRows((prevRows) => [...prevRows, updatedRow]);
+
+    setModifiedRows((prevRows) => {
+      const existingIndex = prevRows.findIndex(
+        (row) => row.company_id === updatedRow.company_id
+      );
+      if (existingIndex >= 0) {
+        const newRows = [...prevRows];
+        newRows[existingIndex] = {
+          ...newRows[existingIndex],
+          [key]: value,
+        };
+        return newRows;
+      } else {
+        return [...prevRows, updatedRow];
+      }
+    });
   };
+
   const handleAddCompanies = async () => {
     const rowData = editableTagData.length > 0 && editableTagData[0];
     if (selectedCompany) {
