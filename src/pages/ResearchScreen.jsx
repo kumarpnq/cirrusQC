@@ -83,8 +83,6 @@ const ResearchScreen = () => {
   const [langsToString, setLangsToString] = useState("");
   const [continentsToString, setContinentsToString] = useState("");
   const [countriesToString, setCountriesToString] = useState("");
-  const [qc1byuserToString, setQc1byuserToString] = useState("");
-  const [qc2byuserToString, setQc2byuserToString] = useState("");
 
   // main data
   const [tableData, setTableData] = useState([]);
@@ -175,14 +173,10 @@ const ResearchScreen = () => {
     const langsV = arrayToString(language);
     const continentV = arrayToString(continent);
     const countriesV = arrayToString(country);
-    const qc1_userV = arrayToString(qc1by);
-    const qc2_userV = arrayToString(qc2by);
 
     setLangsToString(langsV);
     setContinentsToString(continentV);
     setCountriesToString(countriesV);
-    setQc1byuserToString(qc1_userV);
-    setQc2byuserToString(qc2_userV);
   }, [language, continent, country, qc1by, qc2by]);
 
   // searching the tabledata using multiple parameters

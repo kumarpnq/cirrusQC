@@ -226,7 +226,6 @@ const SecondSection = (props) => {
         const resp = await axios.post(`${url}updatearticleheader/`, data, {
           headers,
         });
-        console.log(data);
         if (resp.data) {
           toast.success("Successfully saved changes!");
           setEditedSingleArticle(null);
@@ -251,7 +250,6 @@ const SecondSection = (props) => {
             }
             return row;
           });
-          console.log(updatedData);
 
           // Set the updated tableData
           setTableData(updatedData);

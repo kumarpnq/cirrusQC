@@ -416,7 +416,6 @@ EditSection.propTypes = {
   setSearchedData: PropTypes.func.isRequired,
   highlightRows: PropTypes.array.isRequired,
   setHighlightRows: PropTypes.func.isRequired,
-  setRetrieveAfterSave: PropTypes.func.isRequired,
   differData: PropTypes.array.isRequired,
   setDifferData: PropTypes.func.isRequired,
   updatedData: PropTypes.array.isRequired,
