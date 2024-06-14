@@ -41,7 +41,10 @@ const EditSection = ({
   searchedData,
   setSearchedData,
   setHighlightRows,
-  // setRetrieveAfterSave,
+  updatedData,
+  setUpdatedData,
+  differData,
+  setDifferData,
 }) => {
   const { userToken, setUnsavedChanges } = useContext(ResearchContext);
   const classes = useStyles();
@@ -53,7 +56,6 @@ const EditSection = ({
   const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
 
   // updated data to snd database
-  const [updatedData, setUpdatedData] = useState([]);
   const [reportingTones, setReportingTones] = useState([]);
   const [reportingTone, setReportingTone] = useState("");
   const { data: reportingTons } = useFetchData(`${url}reportingtonelist`);
@@ -81,9 +83,6 @@ const EditSection = ({
   const handleEditRowChange = (e) => {
     setEditRow(e.target.value);
   };
-
-  // * imp state for differ when saving to the db
-  const [differData, setDifferData] = useState([]);
 
   //updating tabledata
   const handleApplyChanges = () => {
@@ -418,6 +417,10 @@ EditSection.propTypes = {
   highlightRows: PropTypes.array.isRequired,
   setHighlightRows: PropTypes.func.isRequired,
   setRetrieveAfterSave: PropTypes.func.isRequired,
+  differData: PropTypes.array.isRequired,
+  setDifferData: PropTypes.func.isRequired,
+  updatedData: PropTypes.array.isRequired,
+  setUpdatedData: PropTypes.func.isRequired,
 };
 
 export default EditSection;

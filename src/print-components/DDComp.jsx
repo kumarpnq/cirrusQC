@@ -34,6 +34,7 @@ import Button from "../components/custom/Button";
 import axios from "axios";
 import { toast } from "react-toastify";
 import CustomDebounceDropdown from "../@core/CustomDebounceDropdown";
+import FormDialog from "../@core/ConfirmBox";
 
 const useStyle = makeStyles(() => ({
   dropDowns: {
@@ -135,6 +136,15 @@ const DDComp = () => {
     setIsInitialMount(false);
   }, []);
 
+  const [open, setOpen] = useState(false);
+  const [isProceed, setIsProceed] = useState(false);
+
+  // * data states clear before refresh
+  const [updatedData, setUpdatedData] = useState([]);
+  const [differData, setDifferData] = useState([]);
+  const [searchedData, setSearchedData] = useState([]);
+  const [highlightRows, setHighlightRows] = useState([]);
+
   const handleSearchPrintData = useCallback(async () => {
     // Don't run the function on the initial mount
     if (isInitialMount) {
@@ -145,7 +155,12 @@ const DDComp = () => {
       toast.warning(`Please select a Client`);
       return;
     }
+
     setPrintTableData([]);
+    setUpdatedData([]);
+    setDifferData([]);
+    setSearchedData([]);
+    setHighlightRows([]);
 
     try {
       setIsTableDataLoading(true);
@@ -236,12 +251,6 @@ const DDComp = () => {
         "pagenumber",
         Number(pageNo)
       );
-      // addPropertyIfConditionIsTrue(
-      //   mProm && Number(mProm),
-      //   requestData,
-      //   "manualprominence",
-      //   Number(mProm)
-      // );
 
       const headers = {
         Authorization: "Bearer " + userToken,
@@ -299,6 +308,8 @@ const DDComp = () => {
     setFetchingUsingPrevNext,
     toast,
     setFetchAfterSave,
+    isProceed,
+    isInitialMount,
   ]);
 
   // useEffect(() => {
@@ -477,8 +488,17 @@ const DDComp = () => {
           totalRecordsCount={totalRecordsCount}
           setFetchingUsingPrevNext={setFetchingUsingPrevNext}
           setRetrieveAfterSave={setRetrieveAfterSave}
+          updatedData={updatedData}
+          setUpdatedData={setUpdatedData}
+          highlightRows={highlightRows}
+          setHighlightRows={setHighlightRows}
+          searchedData={searchedData}
+          setSearchedData={setSearchedData}
+          differData={differData}
+          setDifferData={setDifferData}
         />
       </div>
+      {/* <FormDialog open={open} setOpen={setOpen} setIsProceed={setIsProceed} /> */}
     </div>
   );
 };

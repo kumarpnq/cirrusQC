@@ -17,19 +17,27 @@ const Qc2Table = ({
   isTableDataLoading,
   qc2PrintTableData,
   setQc2PrintTableData,
-  // totalRecordsCount,
-  // setFetchingUsingPrevNext,
   setRetrieveAfterSave,
+
+  // data states
+  searchedData,
+  setSearchedData,
+  highlightRows,
+  setHighlightRows,
+  differData,
+  setDifferData,
+  updatedData,
+  setUpdatedData,
 }) => {
   const [selectedItems, setSelectedItems] = useState([]);
   // tableheaders
   const [tableHeaders, setTableHeaders] = useState([]);
   // searchedData
-  const [searchedData, setSearchedData] = useState([]);
+  // const [searchedData, setSearchedData] = useState([]);
   // single article selection for edit
   const [selectedArticle, setSelectedArticle] = useState(null);
   // for highlight the rows
-  const [highlightRows, setHighlightRows] = useState([]);
+  // const [highlightRows, setHighlightRows] = useState([]);
   // loading states
   const [tableLoading, setTableLoading] = useState(false);
   const [masterCheckBoxLoading, setMasterCheckBoxLoading] = useState(false);
@@ -207,6 +215,10 @@ const Qc2Table = ({
         setHighlightRows={setHighlightRows}
         setRetrieveAfterSave={setRetrieveAfterSave}
         selectedArticle={selectedArticle}
+        updatedData={updatedData}
+        setUpdatedData={setUpdatedData}
+        differData={differData}
+        setDifferData={setDifferData}
       />
       <Box sx={{ display: "flex" }}>
         <TotalRecordsCard
@@ -587,5 +599,13 @@ Qc2Table.propTypes = {
   totalRecordsCount: PropTypes.number,
   setFetchingUsingPrevNext: PropTypes.func,
   setRetrieveAfterSave: PropTypes.func,
+  searchedData: PropTypes.array.isRequired,
+  setSearchedData: PropTypes.func.isRequired,
+  highlightRows: PropTypes.array.isRequired,
+  setHighlightRows: PropTypes.func.isRequired,
+  differData: PropTypes.array.isRequired,
+  setDifferData: PropTypes.func.isRequired,
+  updatedData: PropTypes.array.isRequired,
+  setUpdatedData: PropTypes.func.isRequired,
 };
 export default Qc2Table;
