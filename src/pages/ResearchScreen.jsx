@@ -185,9 +185,6 @@ const ResearchScreen = () => {
     setQc2byuserToString(qc2_userV);
   }, [language, continent, country, qc1by, qc2by]);
 
-  console.log(qc1by);
-  console.log(qc2by);
-
   // searching the tabledata using multiple parameters
   const handleSearch = async () => {
     if (clientId) {
