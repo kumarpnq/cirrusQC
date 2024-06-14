@@ -6,10 +6,9 @@ import {
   DialogActions,
   CircularProgress,
 } from "@mui/material";
-import { useContext, useState } from "react";
+import { useState } from "react";
 import Button from "../components/custom/Button"; // Assuming this is the correct import for your Button component
 import { url } from "../constants/baseUrl";
-import { ResearchContext } from "../context/ContextProvider";
 import CustomButton from "./CustomButton";
 
 //**  third party imports
@@ -50,7 +49,7 @@ const Delete = ({
       setVerificationLoading(false);
       return response.data.valid_user;
     } catch (error) {
-      console.log("Error:", error.message);
+      toast.error("Error:", error.message);
     }
   };
 

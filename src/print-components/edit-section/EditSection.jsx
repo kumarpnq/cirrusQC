@@ -280,7 +280,7 @@ const EditSection = ({
             modifiedFieldsForRow.REMARKS = updatedRow.remark;
           }
           if (updatedRow.space !== selectedItem.space) {
-            modifiedFieldsForRow.TOTALSPACE = updatedRow.space;
+            modifiedFieldsForRow.SPACE = updatedRow.space;
           }
 
           // Merge modified fields for this row with overall modified fields
@@ -314,7 +314,7 @@ const EditSection = ({
         });
 
         if (res.statusText === "OK") {
-          toast.success("Row Updated");
+          toast.success(`${dataToSending.length} rows updated successfully. `);
 
           // Remove updated rows from table data
           const updatedTableData = qc2PrintTableData.filter(

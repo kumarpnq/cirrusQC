@@ -162,13 +162,12 @@ const handlePostData = async (
       setEditRow("");
       setTableData(newTableData);
 
-      toast.success("Valid data updated successfully!");
+      toast.success(`${dataToSending.length} rows updated successfully!`);
     } else {
       setSuccessMessage("No data to save.");
       setPostingLoading(false);
     }
   } catch (error) {
-    console.log(error);
     setSuccessMessage(error.message);
   } finally {
     setPostingLoading(false);
