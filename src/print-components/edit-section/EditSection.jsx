@@ -217,10 +217,6 @@ const EditSection = ({
       );
     }
 
-    if (validRows.length === 0) {
-      return;
-    }
-
     let dataToSending = differData.map((selectedItem) => {
       const updatedRows = validRows.filter(
         (row) =>
@@ -234,6 +230,9 @@ const EditSection = ({
         const modifiedFieldsForRow = {};
 
         // Compare each field with the selected row
+        if (updatedRow.headline !== selectedItem.headline) {
+          modifiedFieldsForRow.HEADLINE = updatedRow.headline;
+        }
         if (updatedRow.head_summary !== selectedItem.head_summary) {
           modifiedFieldsForRow.HEADSUMMARY = updatedRow.head_summary;
         }
@@ -317,7 +316,7 @@ const EditSection = ({
           toast.warning("No Data to Save.");
         }
       } else {
-        toast.warning("No data");
+        toast.warning("No data to save");
       }
       setSaveLoading(false);
     } catch (error) {

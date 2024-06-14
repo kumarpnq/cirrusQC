@@ -28,8 +28,9 @@ const Qc2Table = ({
   setDifferData,
   updatedData,
   setUpdatedData,
+  selectedItems,
+  setSelectedItems,
 }) => {
-  const [selectedItems, setSelectedItems] = useState([]);
   // tableheaders
   const [tableHeaders, setTableHeaders] = useState([]);
   // searchedData
@@ -596,8 +597,7 @@ Qc2Table.propTypes = {
     })
   ).isRequired,
   setQc2PrintTableData: PropTypes.func.isRequired,
-  totalRecordsCount: PropTypes.number,
-  setFetchingUsingPrevNext: PropTypes.func,
+
   setRetrieveAfterSave: PropTypes.func,
   searchedData: PropTypes.array.isRequired,
   setSearchedData: PropTypes.func.isRequired,
@@ -607,5 +607,7 @@ Qc2Table.propTypes = {
   setDifferData: PropTypes.func.isRequired,
   updatedData: PropTypes.array.isRequired,
   setUpdatedData: PropTypes.func.isRequired,
+  selectedItems: PropTypes.array.isRequired,
+  setSelectedItems: PropTypes.func.isRequired,
 };
 export default Qc2Table;

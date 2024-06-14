@@ -136,14 +136,15 @@ const DDComp = () => {
     setIsInitialMount(false);
   }, []);
 
-  const [open, setOpen] = useState(false);
-  const [isProceed, setIsProceed] = useState(false);
+  // const [open, setOpen] = useState(false);
+  // const [isProceed, setIsProceed] = useState(false);
 
   // * data states clear before refresh
   const [updatedData, setUpdatedData] = useState([]);
   const [differData, setDifferData] = useState([]);
   const [searchedData, setSearchedData] = useState([]);
   const [highlightRows, setHighlightRows] = useState([]);
+  const [selectedItems, setSelectedItems] = useState([]);
 
   const handleSearchPrintData = useCallback(async () => {
     // Don't run the function on the initial mount
@@ -161,6 +162,7 @@ const DDComp = () => {
     setDifferData([]);
     setSearchedData([]);
     setHighlightRows([]);
+    setSelectedItems([]);
 
     try {
       setIsTableDataLoading(true);
@@ -308,13 +310,9 @@ const DDComp = () => {
     setFetchingUsingPrevNext,
     toast,
     setFetchAfterSave,
-    isProceed,
     isInitialMount,
   ]);
 
-  // useEffect(() => {
-  //   handleSearchPrintData();
-  // }, [fetchingUsingPrevNext, retrieveAfterSave, fetchAfterSave]);
   const classes = useStyle();
   return (
     <div className="flex flex-col h-screen px-4">
@@ -496,6 +494,8 @@ const DDComp = () => {
           setSearchedData={setSearchedData}
           differData={differData}
           setDifferData={setDifferData}
+          selectedItems={selectedItems}
+          setSelectedItems={setSelectedItems}
         />
       </div>
       {/* <FormDialog open={open} setOpen={setOpen} setIsProceed={setIsProceed} /> */}
