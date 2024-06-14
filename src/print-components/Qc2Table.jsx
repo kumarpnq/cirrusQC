@@ -566,6 +566,8 @@ const Qc2Table = ({
         selectedArticle={selectedArticle}
         editedSingleArticle={editedSingleArticle}
         setEditedSingleArticle={setEditedSingleArticle}
+        tableData={qc2PrintTableData}
+        setTableData={setQc2PrintTableData}
       />
     </div>
   );

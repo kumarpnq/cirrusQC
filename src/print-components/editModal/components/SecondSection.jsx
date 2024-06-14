@@ -38,6 +38,8 @@ const SecondSection = (props) => {
     selectedArticle,
     editedSingleArticle,
     setEditedSingleArticle,
+    tableData,
+    setTableData,
   } = props;
   const [selectedCompany, setSelectedCompany] = useState(null);
   const [tagData, setTagData] = useState([]);
@@ -224,14 +226,41 @@ const SecondSection = (props) => {
         const resp = await axios.post(`${url}updatearticleheader/`, data, {
           headers,
         });
+        console.log(data);
         if (resp.data) {
           toast.success("Successfully saved changes!");
           setEditedSingleArticle(null);
+          const updatedData = tableData.map((row) => {
+            if (
+              row.company_id === data[0].company_id &&
+              row.article_id === data[0].article_id
+            ) {
+              // Update specified fields
+              return {
+                ...row,
+                box: data[0].BOX === "Yes" ? "Yes" : "No",
+                photo: data[0].PHOTO === "Yes" ? "Yes" : "No",
+                page_number: data[0].PAGENUMBER,
+                headlines: data[0].HEADLINES,
+                page_value: data[0].PAGEVALUE,
+                publicationname: data[0].PUBLICATIONNAME,
+                journalist: data[0].JOURNALIST,
+                space: data[0].SPACE,
+                headsummary: data[0].HEADSUMMARY,
+              };
+            }
+            return row;
+          });
+          console.log(updatedData);
+
+          // Set the updated tableData
+          setTableData(updatedData);
         }
       }
 
       setSaveLoading(false);
     } catch (error) {
+      console.log(error);
       toast.error(error.message);
       setSaveLoading(false);
     }
@@ -658,5 +687,7 @@ SecondSection.propTypes = {
   selectedArticle: PropTypes.array.isRequired,
   editedSingleArticle: PropTypes.array.isRequired,
   setEditedSingleArticle: PropTypes.func.isRequired,
+  tableData: PropTypes.array.isRequired,
+  setTableData: PropTypes.func.isRequired,
 };
 export default SecondSection;

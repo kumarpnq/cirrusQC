@@ -55,6 +55,8 @@ export default function EditModal({
   selectedArticle,
   editedSingleArticle,
   setEditedSingleArticle,
+  tableData,
+  setTableData,
 }) {
   // first section states
   // second section states
@@ -93,6 +95,8 @@ export default function EditModal({
                 selectedArticle={selectedArticle}
                 editedSingleArticle={editedSingleArticle}
                 setEditedSingleArticle={setEditedSingleArticle}
+                tableData={tableData}
+                setTableData={setTableData}
               />
             </Box>
             <Box sx={{ width: "50%" }}>
@@ -138,4 +142,6 @@ EditModal.propTypes = {
   selectedArticle: PropTypes.array.isRequired,
   editedSingleArticle: PropTypes.array.isRequired,
   setEditedSingleArticle: PropTypes.func.isRequired,
+  tableData: PropTypes.array.isRequired,
+  setTableData: PropTypes.func.isRequired,
 };
