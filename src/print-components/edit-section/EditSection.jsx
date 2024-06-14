@@ -186,6 +186,7 @@ const EditSection = ({
     }
     setApplyLoading(false);
     setSelectedItems([]);
+    setEditRow("");
     // setReportingTone("");
     // setProminence("");
     // setSubject("");
@@ -210,76 +211,96 @@ const EditSection = ({
         (field) => row[field] !== "Unknown"
       )
     );
+    const hasValidRows = validRows.length > 0;
+    const hasOneInvalidRowWithNoValid =
+      !validRows.length && invalidRows.length === 1;
+    const hasInvalidRows = invalidRows.length > 0;
 
-    if (invalidRows.length > 0) {
+    if (hasOneInvalidRowWithNoValid) {
+      toast.warning("Some Mandatory Fields are Empty");
+      return;
+    }
+    if (hasInvalidRows) {
       toast.warning(
-        "Some rows have null values in reporting_tone, manual_prominence, or subject. Only valid rows will be updated."
+        "Some Mandatory Fields are Empty. Only valid rows will be updated."
       );
     }
 
-    let dataToSending = differData.map((selectedItem) => {
-      const updatedRows = validRows.filter(
-        (row) =>
-          row.article_id === selectedItem.article_id &&
-          row.company_id === selectedItem.company_id
-      );
+    if (!hasValidRows) {
+      toast.warning("No data to save.");
+      return;
+    }
 
-      let modifiedFields = {};
+    let dataToSending = differData
+      .map((selectedItem) => {
+        const updatedRows = validRows.filter(
+          (row) =>
+            row.article_id === selectedItem.article_id &&
+            row.company_id === selectedItem.company_id
+        );
 
-      updatedRows.forEach((updatedRow) => {
-        const modifiedFieldsForRow = {};
+        let modifiedFields = {};
 
-        // Compare each field with the selected row
-        if (updatedRow.headline !== selectedItem.headline) {
-          modifiedFieldsForRow.HEADLINE = updatedRow.headline;
-        }
-        if (updatedRow.head_summary !== selectedItem.head_summary) {
-          modifiedFieldsForRow.HEADSUMMARY = updatedRow.head_summary;
-        }
-        if (updatedRow.author !== selectedItem.author) {
-          modifiedFieldsForRow.AUTHOR = updatedRow.author;
-        }
-        if (updatedRow.detail_summary !== selectedItem.detail_summary) {
-          modifiedFieldsForRow.DETAILSUMMARY = updatedRow.detail_summary;
-        }
-        if (updatedRow.keyword !== selectedItem.keyword) {
-          modifiedFieldsForRow.KEYWORD = updatedRow.keyword;
-        }
-        if (updatedRow.m_prom !== selectedItem.m_prom) {
-          modifiedFieldsForRow.PROMINENCE = updatedRow.m_prom;
-        }
-        if (updatedRow.reporting_subject !== selectedItem.reporting_subject) {
-          modifiedFieldsForRow.REPORTINGSUBJECT = updatedRow.reporting_subject;
-        }
-        if (updatedRow.reporting_tone !== selectedItem.reporting_tone) {
-          modifiedFieldsForRow.REPORTINGTONE = updatedRow.reporting_tone;
-        }
-        if (updatedRow.social_feed_id !== selectedItem.social_feed_id) {
-          modifiedFieldsForRow.SOCIALFEEDID = updatedRow.social_feed_id;
-        }
-        if (updatedRow.sub_category !== selectedItem.sub_category) {
-          modifiedFieldsForRow.SUBCATEGORY = updatedRow.sub_category;
-        }
-        if (updatedRow.remark !== selectedItem.remark) {
-          modifiedFieldsForRow.REMARKS = updatedRow.remark;
-        }
-        if (updatedRow.space !== selectedItem.space) {
-          modifiedFieldsForRow.TOTALSPACE = updatedRow.space;
+        updatedRows.forEach((updatedRow) => {
+          const modifiedFieldsForRow = {};
+
+          // Compare each field with the selected row and add to modifiedFieldsForRow if different
+          if (updatedRow.headline !== selectedItem.headline) {
+            modifiedFieldsForRow.HEADLINE = updatedRow.headline;
+          }
+          if (updatedRow.head_summary !== selectedItem.head_summary) {
+            modifiedFieldsForRow.HEADSUMMARY = updatedRow.head_summary;
+          }
+          if (updatedRow.author !== selectedItem.author) {
+            modifiedFieldsForRow.AUTHOR = updatedRow.author;
+          }
+          if (updatedRow.detail_summary !== selectedItem.detail_summary) {
+            modifiedFieldsForRow.DETAILSUMMARY = updatedRow.detail_summary;
+          }
+          if (updatedRow.keyword !== selectedItem.keyword) {
+            modifiedFieldsForRow.KEYWORD = updatedRow.keyword;
+          }
+          if (updatedRow.m_prom !== selectedItem.m_prom) {
+            modifiedFieldsForRow.PROMINENCE = updatedRow.m_prom;
+          }
+          if (updatedRow.reporting_subject !== selectedItem.reporting_subject) {
+            modifiedFieldsForRow.REPORTINGSUBJECT =
+              updatedRow.reporting_subject;
+          }
+          if (updatedRow.reporting_tone !== selectedItem.reporting_tone) {
+            modifiedFieldsForRow.REPORTINGTONE = updatedRow.reporting_tone;
+          }
+          if (updatedRow.social_feed_id !== selectedItem.social_feed_id) {
+            modifiedFieldsForRow.SOCIALFEEDID = updatedRow.social_feed_id;
+          }
+          if (updatedRow.sub_category !== selectedItem.sub_category) {
+            modifiedFieldsForRow.SUBCATEGORY = updatedRow.sub_category;
+          }
+          if (updatedRow.remark !== selectedItem.remark) {
+            modifiedFieldsForRow.REMARKS = updatedRow.remark;
+          }
+          if (updatedRow.space !== selectedItem.space) {
+            modifiedFieldsForRow.TOTALSPACE = updatedRow.space;
+          }
+
+          // Merge modified fields for this row with overall modified fields
+          modifiedFields = { ...modifiedFields, ...modifiedFieldsForRow };
+        });
+
+        // Only return the entry if there are modifications
+        if (Object.keys(modifiedFields).length > 0) {
+          return {
+            ARTICLEID: selectedItem.article_id,
+            COMPANYID: selectedItem.company_id,
+            MODIFIEDBY: userName,
+            MODIFIEDON: formattedDate,
+            ...modifiedFields,
+          };
         }
 
-        // Merge modified fields for this row with overall modified fields
-        modifiedFields = { ...modifiedFields, ...modifiedFieldsForRow };
-      });
-
-      // Return only the modified fields
-      return {
-        ARTICLEID: selectedItem.article_id,
-        COMPANYID: selectedItem.company_id,
-        MODIFIEDBY: userName,
-        MODIFIEDON: formattedDate,
-        ...modifiedFields,
-      };
-    });
+        return null; // No modifications, return null
+      })
+      .filter((entry) => entry !== null); // Remove null entries
 
     try {
       const url = `${import.meta.env.VITE_BASE_URL}updatePrint2database/`;
