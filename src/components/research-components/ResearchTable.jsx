@@ -206,7 +206,7 @@ const ResearchTable = ({
     selectedRowData.forEach((item) => {
       const index = newDifferData.findIndex(
         (row) =>
-          row.article_id === item.article_id &&
+          row.social_feed_id === item.social_feed_id &&
           row.company_id === item.company_id
       );
       if (index === -1) {

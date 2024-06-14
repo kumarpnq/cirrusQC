@@ -84,14 +84,23 @@ const handlePostData = async (
         if (updatedRow.reporting_tone !== selectedItem.reporting_tone) {
           modifiedFieldsForRow.REPORTINGTONE = updatedRow.reporting_tone;
         }
-        if (updatedRow.sub_category !== selectedItem.sub_category) {
-          modifiedFieldsForRow.SUBCATEGORY = updatedRow.sub_category;
+        if (updatedRow.subcategory !== selectedItem.subcategory) {
+          modifiedFieldsForRow.SUBCATEGORY = updatedRow.subcategory;
         }
         if (updatedRow.headline !== selectedItem.headline) {
           modifiedFieldsForRow.HEADLINE = updatedRow.headline;
         }
+        if (updatedRow.remarks !== selectedItem.remarks) {
+          modifiedFieldsForRow.REMARKS = updatedRow.remarks;
+        }
+        if (updatedRow.keyword !== selectedItem.keyword) {
+          modifiedFieldsForRow.KEYWORD = updatedRow.keyword;
+        }
         if (updatedRow.headsummary !== selectedItem.headsummary) {
           modifiedFieldsForRow.HEADSUMMARY = updatedRow.headsummary;
+        }
+        if (updatedRow.detail_summary !== selectedItem.detail_summary) {
+          modifiedFieldsForRow.SUMMARY = updatedRow.detail_summary;
         }
         if (updatedRow.author_name !== selectedItem.author_name) {
           modifiedFieldsForRow.AUTHOR = updatedRow.author_name;
@@ -161,6 +170,7 @@ const handlePostData = async (
   } catch (error) {
     console.log(error);
     setSuccessMessage(error.message);
+  } finally {
     setPostingLoading(false);
   }
 };
