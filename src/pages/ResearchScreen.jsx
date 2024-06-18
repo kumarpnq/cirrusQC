@@ -270,7 +270,7 @@ const ResearchScreen = () => {
                 )
               );
             } else {
-              setTableData([]);
+              toast.warning("No data found.");
             }
           }
 

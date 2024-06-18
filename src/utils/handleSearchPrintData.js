@@ -146,7 +146,7 @@ export const handleSearchPrintData = async (
       setTotalRecordsCount(count);
     }
   } catch (error) {
-    console.error(error);
+    toast.error("Error While Fetching Data Try Again.");
   } finally {
     setIsTableDataLoading(false);
     setFetchingUsingPrevNext(false);

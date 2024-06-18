@@ -71,7 +71,9 @@ function App() {
           setScreenPermissions(mappedPermissions);
         }
       } catch (error) {
-        console.log(error);
+        if (error.request.statusText === "Unauthorized") {
+          localStorage.clear();
+        }
       } finally {
         setLoading(false);
       }

@@ -55,79 +55,55 @@ const Qc2Table = ({
 
   const handleMasterCheckboxChange = () => {
     setMasterCheckBoxLoading(true);
-    setTimeout(() => {
-      if (searchedData.length > 0) {
-        const allSearchedSelected =
-          selectedItems.length === searchedData.length;
-        if (allSearchedSelected) {
-          setSelectedItems((prevSelectedRows) =>
-            prevSelectedRows.filter(
-              (row) =>
-                !searchedData.some(
-                  (searchedRow) =>
-                    searchedRow.article_id === row.article_id &&
-                    searchedRow.company_id === row.company_id
-                )
-            )
-          );
-        } else {
-          setSelectedItems((prevSelectedRows) => [
-            ...prevSelectedRows,
-            ...searchedData.filter(
+    const allSearchedSelected = selectedItems.length === dataToRender.length;
+    if (allSearchedSelected) {
+      setSelectedItems((prevSelectedRows) =>
+        prevSelectedRows.filter(
+          (row) =>
+            !dataToRender.some(
               (searchedRow) =>
-                !prevSelectedRows.some(
-                  (selectedRow) =>
-                    selectedRow.article_id === searchedRow.article_id &&
-                    selectedRow.company_id === searchedRow.company_id
-                )
-            ),
-          ]);
-        }
-      } else {
-        setSelectedItems((selectedItems) =>
-          selectedItems.length === qc2PrintTableData.length
-            ? []
-            : [...qc2PrintTableData]
-        );
-      }
-      setMasterCheckBoxLoading(false);
-    }, 0);
+                searchedRow.article_id === row.article_id &&
+                searchedRow.company_id === row.company_id
+            )
+        )
+      );
+    } else {
+      setSelectedItems((prevSelectedRows) => [
+        ...prevSelectedRows,
+        ...dataToRender.filter(
+          (searchedRow) =>
+            !prevSelectedRows.some(
+              (selectedRow) =>
+                selectedRow.article_id === searchedRow.article_id &&
+                selectedRow.company_id === searchedRow.company_id
+            )
+        ),
+      ]);
+    }
+    setMasterCheckBoxLoading(false);
   };
 
   const handleCheckboxChange = (item) => {
     setCheckBoxLoading(true);
-
-    setTimeout(() => {
-      setSelectedItems((prev) => {
-        if (!Array.isArray(prev)) {
-          prev = [];
-        }
-        const isSelected = prev.some(
+    setSelectedItems((prev) => {
+      const isSelected = prev.some(
+        (row) =>
+          row.article_id === item.article_id &&
+          row.company_id === item.company_id
+      );
+      if (isSelected) {
+        return prev.filter(
           (row) =>
-            row.article_id === item.article_id &&
-            row.company_id === item.company_id
+            !(
+              row.article_id === item.article_id &&
+              row.company_id === item.company_id
+            )
         );
-        if (isSelected) {
-          return prev.filter(
-            (row) =>
-              !(
-                row.article_id === item.article_id &&
-                row.company_id === item.company_id
-              )
-          );
-        } else {
-          if (searchedData.length > 0) {
-            if (searchedData.includes(item)) {
-              return [...prev, item];
-            }
-          } else {
-            return [...prev, item];
-          }
-        }
-        return prev;
-      });
-      setCheckBoxLoading(false);
-    }, 0);
+      } else {
+        return [...prev, item];
+      }
+    });
+    setCheckBoxLoading(false);
   };
 
   const sortTableData = (header) => {
@@ -179,6 +155,8 @@ const Qc2Table = ({
     setOpen(true);
     setSelectedArticle((prev) => (prev === item ? null : item));
   };
+
+  // * move modified rows on top using icon
   const handleMoveModifiedRows = () => {
     const highlightedSet = new Set(
       highlightRows.map((row) => `${row.article_id}-${row.company_id}`)
@@ -202,6 +180,7 @@ const Qc2Table = ({
         selectedItems={selectedItems}
         setSelectedItems={setSelectedItems}
         qc2PrintTableData={qc2PrintTableData}
+        setQc2PrintTableData={setQc2PrintTableData}
         setSearchedData={setSearchedData}
         setTableLoading={setTableLoading}
       />
@@ -287,8 +266,8 @@ const Qc2Table = ({
                           (item === "remark" && "pl-16") ||
                           (item === "keyword" && "pl-36") ||
                           (item === "detail_summary" && "pl-44") ||
-                          (item === "category" && "pl-36") ||
-                          (item === "subcategory" && "pl-44") ||
+                          (item === "category" && "pl-28") ||
+                          (item === "subcategory" && "pl-36") ||
                           (item === "city_name" && "pl-[120px]") ||
                           (item === "head_summary" && "pl-10") ||
                           (item === "article_id" && "pl-36") ||
@@ -299,7 +278,7 @@ const Qc2Table = ({
                           (item === "box_value" && "pl-8") ||
                           (item === "qc1_on" && "pl-28") ||
                           (item === "qc2_by" && "pl-28") ||
-                          (item === "qc2_on" && "pl-44 pr-20")
+                          (item === "qc2_on" && "pl-32 pr-20")
                         }`}
                         onClick={() => sortTableData(item)}
                       >
@@ -334,7 +313,7 @@ const Qc2Table = ({
                 </thead>
               )}
               itemContent={(index, items) => (
-                <tbody className="bg-white divide-y divide-gray-200 text-[0.8em]">
+                <tbody className="bg-white divide-y divide-gray-200 text-[0.7em]">
                   <tr
                     key={index}
                     className={`border borer-black ${
@@ -354,7 +333,7 @@ const Qc2Table = ({
                     >
                       <EditAttributesOutlined className="text-primary" />
                     </td>
-                    <td className="px-3 py-2 whitespace-nowrap">
+                    <td className="px-1 py-2 pl-6 whitespace-nowrap">
                       <div className="truncate w-28">{items.company}</div>
                     </td>
                     <Tooltip
@@ -393,7 +372,7 @@ const Qc2Table = ({
                       </Link>
                     </td>
                     <td
-                      className="px-3 py-2 truncate"
+                      className="px-3 py-2 pl-4 truncate"
                       style={{ minWidth: "200px" }}
                     >
                       <div className="truncate" style={{ width: "200px" }}>
@@ -430,19 +409,19 @@ const Qc2Table = ({
                     </td>
                     <td>
                       <div
-                        className={`whitespace-nowrap ${
+                        className={`whitespace-nowrap ml-3 ${
                           items.reporting_tone === "Unknown" &&
                           "bg-[#FF7F7F] text-white"
                         }`}
-                        style={{ width: "200px" }}
+                        style={{ width: "160px" }}
                       >
                         {items.reporting_tone}
                       </div>
                     </td>
 
-                    <td className="border">
+                    <td>
                       <div
-                        className={`px-3 whitespace-nowrap ${
+                        className={`px-1 whitespace-nowrap ${
                           items.reporting_subject === "Unknown" &&
                           "bg-[#FF7F7F] text-white"
                         }`}
@@ -454,7 +433,7 @@ const Qc2Table = ({
                     <td className="px-3 py-2 whitespace-nowrap">
                       <div style={{ width: "200px" }}>{items.remark}</div>
                     </td>
-                    <td className="px-3 py-2 overflow-hidden">
+                    <td className="py-2 overflow-hidden">
                       <div
                         style={{
                           display: "-webkit-box",
@@ -488,13 +467,13 @@ const Qc2Table = ({
                       </Tooltip>
                     </td>
 
-                    <td className="px-6 py-2 whitespace-nowrap">
+                    <td className="py-2 pl-6 whitespace-nowrap">
                       <div style={{ width: "200px" }}>{items.category}</div>
                     </td>
                     <td className="px-6 py-2 whitespace-nowrap">
                       <div style={{ width: "200px" }}>{items.subcategory}</div>
                     </td>
-                    <td className="px-3 py-2 whitespace-nowrap">
+                    <td className="px-3 py-2 pl-6 whitespace-nowrap">
                       <div style={{ width: "100px" }}>{items.city_name}</div>
                     </td>
                     <Tooltip
@@ -516,7 +495,7 @@ const Qc2Table = ({
                         </div>
                       </td>
                     </Tooltip>
-                    <td className="px-3 py-2 whitespace-nowrap">
+                    <td className="px-1 py-2 pl-4 whitespace-nowrap">
                       <div style={{ width: "100px" }}>{items.article_id}</div>
                     </td>
 
@@ -545,7 +524,7 @@ const Qc2Table = ({
                     <td className="py-2 pl-12 whitespace-nowrap">
                       <div style={{ width: "50px" }}>{items.page_number}</div>
                     </td>
-                    <td className="py-2 pl-16 whitespace-nowrap">
+                    <td className="py-2 pl-20 whitespace-nowrap">
                       <div style={{ width: "50px" }}>{items.page_value}</div>
                     </td>
                     <td className="py-2 pl-16 whitespace-nowrap">
@@ -554,10 +533,10 @@ const Qc2Table = ({
                     <td className="py-2 pl-8 whitespace-nowrap">
                       <div style={{ width: "50px" }}>{items.qc2_done}</div>
                     </td>
-                    <td className="px-3 py-2 whitespace-nowrap">
+                    <td className="py-2 pl-6 whitespace-nowrap">
                       <div style={{ width: "150px" }}>{items.qc1_by}</div>
                     </td>
-                    <td className="px-3 py-2 whitespace-nowrap">
+                    <td className="px-3 py-2 pl-4 whitespace-nowrap">
                       <div style={{ width: "150px" }}>{items.qc1_on}</div>
                     </td>
                     <td className="px-3 py-2 whitespace-nowrap">

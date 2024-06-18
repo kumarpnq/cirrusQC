@@ -61,44 +61,44 @@ const MainTable = ({
   const handleMasterCheckboxChange = () => {
     setCheckBoxLoading(true);
 
-    setTimeout(() => {
-      const allSelected = selectedRowData.length === tableData.length;
+    // setTimeout(() => {
+    const allSelected = selectedRowData.length === tableData.length;
 
-      if (searchedData.length > 0) {
-        const allSearchedSelected =
-          selectedRowData.length === searchedData.length;
+    if (searchedData.length > 0) {
+      const allSearchedSelected =
+        selectedRowData.length === searchedData.length;
 
-        if (allSearchedSelected) {
-          // If all rows in searchedData are already selected, remove them from selectedRowData
-          setSelectedRowData((prevSelectedRows) =>
-            prevSelectedRows.filter(
-              (row) =>
-                !searchedData.some(
-                  (searchedRow) =>
-                    searchedRow.social_feed_id === row.social_feed_id
-                )
-            )
-          );
-        } else {
-          // Add all rows in searchedData to selectedRowData
-          setSelectedRowData((prevSelectedRows) => [
-            ...prevSelectedRows,
-            ...searchedData.filter(
-              (searchedRow) =>
-                !prevSelectedRows.some(
-                  (selectedRow) =>
-                    selectedRow.social_feed_id === searchedRow.social_feed_id
-                )
-            ),
-          ]);
-        }
+      if (allSearchedSelected) {
+        // If all rows in searchedData are already selected, remove them from selectedRowData
+        setSelectedRowData((prevSelectedRows) =>
+          prevSelectedRows.filter(
+            (row) =>
+              !searchedData.some(
+                (searchedRow) =>
+                  searchedRow.social_feed_id === row.social_feed_id
+              )
+          )
+        );
       } else {
-        // Toggle selection for all rows in tableData
-        setSelectedRowData(allSelected ? [] : [...tableData]);
+        // Add all rows in searchedData to selectedRowData
+        setSelectedRowData((prevSelectedRows) => [
+          ...prevSelectedRows,
+          ...searchedData.filter(
+            (searchedRow) =>
+              !prevSelectedRows.some(
+                (selectedRow) =>
+                  selectedRow.social_feed_id === searchedRow.social_feed_id
+              )
+          ),
+        ]);
       }
+    } else {
+      // Toggle selection for all rows in tableData
+      setSelectedRowData(allSelected ? [] : [...tableData]);
+    }
 
-      setCheckBoxLoading(false);
-    }, 1000);
+    setCheckBoxLoading(false);
+    // }, 1000);
   };
 
   const handleSort = (clickedHeader) => {
@@ -199,7 +199,7 @@ const MainTable = ({
                   </th>
                 )}
                 {!!dataToRender.length && (
-                  <th className="text-white text-[0.9em] sticky bg-primary pl-3 left-8 tracking-widest font-thin pt-2">
+                  <th className="text-white text-[0.9em] sticky bg-primary pl-3 left-10 tracking-widest font-thin pt-2">
                     Edit
                   </th>
                 )}
@@ -299,7 +299,8 @@ const MainTable = ({
                     header === "PUBLICATION" ||
                     header === "AUTHOR NAME" ||
                     header === "HEADSUMMARY" ||
-                    header === "FEED-ID") && (
+                    header === "FEED-ID" ||
+                    header === "SUBCATEGORY") && (
                     <TableCell
                       sx={{
                         padding: "10px",
@@ -344,8 +345,8 @@ const MainTable = ({
                             (header === "HEADSUMMARY" && "w-[25rem] ml-20") ||
                             (header === "KEYWORD" && "w-40") ||
                             (header === "PUBLICATION" && "w-28") ||
-                            (header === "AUTHOR NAME" && "w-10 ml-24") ||
-                            (header === "SUBCATEGORY" && "ml-36")
+                            (header === "AUTHOR NAME" && "w-12 ml-24") ||
+                            (header === "SUBCATEGORY" && "text-red-500 pl-6")
                           }`}
                         >
                           {rowData[header.toLowerCase().replace(/ /g, "_")]}
@@ -359,7 +360,8 @@ const MainTable = ({
                     header !== "KEYWORD" &&
                     header !== "PUBLICATION" &&
                     header !== "AUTHOR NAME" &&
-                    header !== "HEADSUMMARY" && (
+                    header !== "HEADSUMMARY" &&
+                    header !== "SUBCATEGORY" && (
                       <TableCell size="small">
                         <div
                           className={`text-xs w-16 text-black overflow-hidden whitespace-normal mx-3 ${
@@ -369,8 +371,7 @@ const MainTable = ({
                             (header === "QC2 DONE" && "w-4") ||
                             (header === "QC1 DONE" && "w-4") ||
                             (header === "HAS VIDEO" && "w-6") ||
-                            (header === "HAS IMAGE" && "w-6") ||
-                            (header === "SUBCATEGORY" && "w-6 text-red-500")
+                            (header === "HAS IMAGE" && "w-6")
                           }`}
                           style={{
                             display: "-webkit-box",

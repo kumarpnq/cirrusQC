@@ -249,7 +249,7 @@ const Details = ({
           >
             <Box display="flex" alignItems="center">
               <Typography sx={{ fontSize: "0.9em" }}>Company:</Typography>
-              <div className="ml-">
+              <div className="ml-4">
                 <DebounceSearchCompany
                   setSelectedCompany={setSelectedCompanies}
                 />

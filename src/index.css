@@ -60,3 +60,17 @@
   font-style: italic;
   font-size: 0.9em;
 }
+
+/* dump */
+/* styles.css */
+.processing {
+  background-color: #fffd8f;
+}
+
+.failed {
+  background-color: #f77b52;
+}
+
+.completed {
+  background-color: #b0faa2;
+}

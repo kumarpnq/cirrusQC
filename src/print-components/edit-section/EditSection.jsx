@@ -115,7 +115,6 @@ const EditSection = ({
     });
     setDifferData(newDifferData);
 
-    // setTimeout(() => {
     if (selectedItems.length > 0) {
       const updatedSelectedRows = selectedItems.map((row) => ({
         ...row,
@@ -182,16 +181,11 @@ const EditSection = ({
       setHighlightRows(newUpdatedData);
       setQc2PrintTableData(updatedTableData);
       setSearchedData(updatedSearchedData);
+      setSelectedItems([]);
       setUnsavedChanges(true);
     }
     setApplyLoading(false);
-    setSelectedItems([]);
     setEditRow("");
-    // setReportingTone("");
-    // setProminence("");
-    // setSubject("");
-    // setCategory("");
-    // }, 0);
   };
 
   const handleSave = async () => {
@@ -391,6 +385,7 @@ const EditSection = ({
         <Button
           btnText={saveLoading ? "Loading" : "Save"}
           onClick={handleSave}
+          isLoading={saveLoading}
         />
         {!!selectedItems.length && (
           <CustomButton
@@ -434,7 +429,6 @@ EditSection.propTypes = {
   setQc2PrintTableData: PropTypes.func.isRequired,
   searchedData: PropTypes.array.isRequired,
   setSearchedData: PropTypes.func.isRequired,
-  highlightRows: PropTypes.array.isRequired,
   setHighlightRows: PropTypes.func.isRequired,
   differData: PropTypes.array.isRequired,
   setDifferData: PropTypes.func.isRequired,

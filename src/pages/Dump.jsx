@@ -32,6 +32,7 @@ import AlertDialogSlide from "../dump-components/alertSlide";
 import Permissions from "../dump-components/Permission";
 import JobDetails from "../dump-components/JobDetails";
 import { ResearchContext } from "../context/ContextProvider";
+import { CustomToast } from "../@core/toast";
 
 const useStyle = makeStyles(() => ({
   dropDowns: {
@@ -80,9 +81,7 @@ const Dump = () => {
     const dayDifference = Math.ceil(timeDifference / (1000 * 3600 * 24));
 
     if (dayDifference > 62) {
-      toast.error("Date range cannot exceed 62 days");
-      setFromDate(formattedDate);
-      setToDate(formattedNextDay);
+      toast.warning("limit exceeding!");
     }
   }, [fromDate, toDate]);
 
@@ -151,7 +150,7 @@ const Dump = () => {
         setJobData(response.data.job_list);
         setFetchDumpData(false);
       } catch (error) {
-        console.log(error);
+        toast.error("Error while fetching");
       }
     };
     fetchJobs();

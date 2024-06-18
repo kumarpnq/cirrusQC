@@ -216,7 +216,6 @@ const ResearchTable = ({
     setDifferData(newDifferData);
 
     setApplyLoading(true);
-    // setTimeout(() => {
     if (selectedRowData.length > 0) {
       const updatedSelectedRows = selectedRowData.map((row) => ({
         ...row,
@@ -274,11 +273,6 @@ const ResearchTable = ({
     }
     setSelectedRowData([]);
     setApplyLoading(false);
-    // setReportingTone("");
-    // setProminence("");
-    // setSubject("");
-    // setCategory("");
-    // }, 0);
   };
   const handleSearch = () => {
     if (selectedRowData.length > 0) {

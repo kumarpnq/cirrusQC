@@ -265,8 +265,10 @@ const DDComp = () => {
         }
       );
 
-      if (response?.data?.feed_data) {
+      if (response?.data?.feed_data.length > 0) {
         setPrintTableData(response.data.feed_data);
+      } else {
+        toast.warning("No data found.");
       }
       if (response?.data?.feed_count) {
         const count = response?.data?.feed_count[0].total_rows;

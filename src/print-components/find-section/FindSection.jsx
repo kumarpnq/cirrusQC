@@ -33,6 +33,7 @@ export const FindSection = ({
   qc2PrintTableData,
   setSearchedData,
   setTableLoading,
+  setQc2PrintTableData,
 }) => {
   const classes = useStyles();
   const [headerForSearch, setHeaderForSearch] = useState("");
@@ -245,6 +246,7 @@ export const FindSection = ({
     }
 
     setSearchedData(output);
+    setQc2PrintTableData(output);
     setTableLoading(false);
   };
   return (
@@ -286,4 +288,5 @@ FindSection.propTypes = {
   qc2PrintTableData: PropTypes.array.isRequired,
   setSearchedData: PropTypes.func.isRequired,
   setTableLoading: PropTypes.func.isRequired,
+  setQc2PrintTableData: PropTypes.func.isRequired,
 };

@@ -1,3 +1,113 @@
+// import PropTypes from "prop-types";
+// import { DataGrid, GridToolbar } from "@mui/x-data-grid";
+// import { Box } from "@mui/material";
+
+// const JobDetails = ({ URI, rows }) => {
+//   const columns = [
+//     {
+//       field: "requested_date",
+//       headerName: "Requested Date",
+//       width: 200,
+//       headerClassName: "super-app-theme--header",
+//     },
+//     {
+//       field: "filename",
+//       headerName: "Filename",
+//       width: 300,
+//       headerClassName: "super-app-theme--header",
+//     },
+//     {
+//       field: "status",
+//       headerName: "Status",
+//       width: 150,
+//       headerClassName: "super-app-theme--header",
+//       renderCell: (params) => {
+//         let backgroundColor = "";
+//         if (params.value === "Processing") {
+//           backgroundColor = "#fffd8f";
+//         } else if (params.value === "Failed") {
+//           backgroundColor = "#f77b52";
+//         } else if (params.value === "Completed") {
+//           backgroundColor = "#b0faa2";
+//         }
+//         return (
+//           <div
+//             style={{
+//               backgroundColor,
+//               width: "100%",
+//               height: "100%",
+//               display: "flex",
+//               alignItems: "center",
+//               justifyContent: "center",
+//             }}
+//           >
+//             {params.value}
+//           </div>
+//         );
+//       },
+//     },
+//     {
+//       field: "filelink",
+//       headerName: "File Link",
+//       width: 300,
+//       headerClassName: "super-app-theme--header",
+//       renderCell: (params) => (
+//         <a href={URI + params.value} target="_blank" rel="noopener noreferrer">
+//           Download
+//         </a>
+//       ),
+//     },
+//   ];
+
+//   return (
+//     <Box
+//       sx={{
+//         height: 400,
+//         width: "100%",
+//         "& .super-app-theme--header": {
+//           backgroundColor: "#0a4f7d",
+//           color: "#fff",
+//         },
+//       }}
+//     >
+//       <DataGrid
+//         rows={rows}
+//         columns={columns}
+//         pageSize={5}
+//         rowsPerPageOptions={[5]}
+//         getRowId={(row) => row.requested_date}
+//         disableColumnFilter
+//         disableColumnSelector
+//         disableDensitySelector
+//         hideFooterPagination
+//         hideFooterSelectedRowCount
+//         slots={{ toolbar: GridToolbar }}
+//         slotProps={{
+//           toolbar: {
+//             showQuickFilter: true,
+//           },
+//         }}
+//         disableRowSelectionOnClick
+//       />
+//     </Box>
+//   );
+// };
+
+// JobDetails.propTypes = {
+//   URI: PropTypes.string.isRequired,
+//   rows: PropTypes.arrayOf(
+//     PropTypes.shape({
+//       name: PropTypes.string.isRequired,
+//       filename: PropTypes.string.isRequired,
+//       status: PropTypes.oneOf(["Processing", "Failed", "Completed"]).isRequired,
+//       filelink: PropTypes.string.isRequired,
+//       requested_date: PropTypes.string.isRequired,
+//     })
+//   ).isRequired,
+// };
+
+// export default JobDetails;
+
 import { useState } from "react";
 // import Table from "@mui/material/Table";
 // import TableBody from "@mui/material/TableBody";

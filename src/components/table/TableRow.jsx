@@ -26,33 +26,30 @@ const TableRowCheckBox = ({
   const handleRowSelect = (rowData) => {
     setCheckBoxLoading(true);
 
-    // Simulate an asynchronous operation (replace this with your actual logic)
-    setTimeout(() => {
-      setSelectedRowData((prevSelectedRows) => {
-        if (!Array.isArray(prevSelectedRows)) {
-          // If prevSelectedRows is not an array, initialize it as an empty array
-          prevSelectedRows = [];
-        }
+    setSelectedRowData((prevSelectedRows) => {
+      if (!Array.isArray(prevSelectedRows)) {
+        // If prevSelectedRows is not an array, initialize it as an empty array
+        prevSelectedRows = [];
+      }
 
-        const isSelected = prevSelectedRows.some((row) => row === rowData);
+      const isSelected = prevSelectedRows.some((row) => row === rowData);
 
-        if (isSelected) {
-          return prevSelectedRows.filter((row) => row !== rowData);
-        } else {
-          if (searchedData.length > 0) {
-            // Check if the selected row is within the searched data
-            if (searchedData.includes(rowData)) {
-              return [...prevSelectedRows, rowData];
-            }
-          } else {
+      if (isSelected) {
+        return prevSelectedRows.filter((row) => row !== rowData);
+      } else {
+        if (searchedData.length > 0) {
+          // Check if the selected row is within the searched data
+          if (searchedData.includes(rowData)) {
             return [...prevSelectedRows, rowData];
           }
+        } else {
+          return [...prevSelectedRows, rowData];
         }
-        return prevSelectedRows;
-      });
+      }
+      return prevSelectedRows;
+    });
 
-      setCheckBoxLoading(false);
-    }, 0);
+    setCheckBoxLoading(false);
   };
 
   return (
