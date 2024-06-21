@@ -55,10 +55,7 @@ export default function EditModal({
   selectedArticle,
   editedSingleArticle,
   setEditedSingleArticle,
-  tableData,
-  setTableData,
 }) {
-  console.log(selectedArticle);
   // first section states
   // second section states
   const [selectedClient, setSelectedClient] = useState("");
@@ -94,10 +91,6 @@ export default function EditModal({
                 selectedClient={selectedClient}
                 setSelectedClient={setSelectedClient}
                 selectedArticle={selectedArticle}
-                editedSingleArticle={editedSingleArticle}
-                setEditedSingleArticle={setEditedSingleArticle}
-                tableData={tableData}
-                setTableData={setTableData}
               />
             </Box>
             <Box sx={{ width: "50%" }}>

@@ -4,85 +4,132 @@ import { yesOrNo } from "../../../constants/dataArray";
 import FormWithLabelTextField from "../../../@core/FormWithLabel";
 import { useEffect, useState } from "react";
 import CustomDebounceDropdown from "../../../@core/CustomDebounceDropdown";
+import Button from "../../../components/custom/Button";
+import axios from "axios";
+import { url } from "../../../constants/baseUrl";
+import { toast } from "react-toastify";
 
 const FirstSection = (props) => {
-  const { classes, selectedArticle, setEditedSingleArticle } = props;
+  const { classes, selectedArticle } = props;
   const [focusedTextFields, setFocusedTextField] = useState({
     isHeadline: false,
     isSummary: false,
     isArticleSummary: false,
   });
-  const [headline, setHeadline] = useState(selectedArticle?.headline);
-  const [selectedPublication, setSelectedPublication] = useState(null);
+  const articleId = selectedArticle.article_id;
+  const [articleHeaderData, setArticleHeaderData] = useState(null);
+  const [updateLoading, setUpdateLoading] = useState(false);
 
-  const [journalist, setJournalist] = useState(selectedArticle?.author);
-  const [box, setBox] = useState(selectedArticle?.box);
-  const [photo, setPhoto] = useState(selectedArticle?.photo);
-  const [pageNumber, setPageNumber] = useState(selectedArticle?.page_number);
-  const [pageValue, setPageValue] = useState(selectedArticle?.page_value);
-  const [space, setSpace] = useState(selectedArticle?.space);
-  const [qc1By, setQc1By] = useState(selectedArticle?.qc1_by);
-  const [qc2By, setQc2By] = useState(selectedArticle?.qc2_by);
-  const [articleSummary, setArticleSummary] = useState(
-    selectedArticle?.head_summary
-  );
-  useEffect(() => {
-    if (selectedArticle) {
-      const data = {
-        ARTICLEID: selectedArticle.article_id,
-        BOX: box ?? selectedArticle?.box,
-        PHOTO: photo ?? selectedArticle?.photo,
-        PAGENUMBER: pageNumber ?? selectedArticle?.page_number,
-        HEADLINES: headline ?? selectedArticle?.headline,
-        PAGEVALUE: pageValue ?? selectedArticle?.page_value,
-        PUBLICATIONNAME: selectedPublication ?? selectedArticle.publication,
-        JOURNALIST: journalist ?? selectedArticle.author,
-        SPACE: space ?? selectedArticle.space,
-        HEADSUMMARY: articleSummary ?? selectedArticle.head_summary,
-        QC1BY: qc1By ?? selectedArticle.qc1_by,
-        QC2BY: qc2By ?? selectedArticle.qc2_by,
-      };
-      const dataForCompare = {
-        ARTICLEID: selectedArticle?.article_id,
-        BOX: selectedArticle?.box,
-        PHOTO: selectedArticle?.photo,
-        PAGENUMBER: selectedArticle?.page_number,
-        HEADLINES: selectedArticle?.headline,
-        PAGEVALUE: selectedArticle?.page_value,
-        PUBLICATIONNAME: selectedArticle?.publication,
-        JOURNALIST: selectedArticle?.author,
-        SPACE: selectedArticle?.space,
-        HEADSUMMARY: selectedArticle?.head_summary,
-        QC1BY: selectedArticle?.qc1_by,
-        QC2BY: selectedArticle?.qc2_by,
-      };
-      const isEqual = JSON.stringify(data) === JSON.stringify(dataForCompare);
+  // Data states
+  const [selectedPublication, setSelectedPublication] = useState("");
+  const [headline, setHeadline] = useState("");
+  const [journalist, setJournalist] = useState("");
+  const [box, setBox] = useState("");
+  const [photo, setPhoto] = useState("");
+  const [pageNumber, setPageNumber] = useState("");
+  const [pageValue, setPageValue] = useState("");
+  const [space, setSpace] = useState("");
+  const [qc1By, setQc1By] = useState("");
+  const [qc2By, setQc2By] = useState("");
+  const [articleSummary, setArticleSummary] = useState("");
 
-      if (!isEqual) {
-        setEditedSingleArticle(data);
+  // * headers
+  const userToken = localStorage.getItem("user");
+  const headers = {
+    Authorization: `Bearer ${userToken}`,
+  };
+
+  const fetchArticleHeader = async () => {
+    try {
+      const response = await axios.get(
+        `${url}articleheader/?article_id=${articleId}`,
+        {
+          headers,
+        }
+      );
+      const fetchedArticle = response.data.article[0];
+      if (fetchedArticle) {
+        setArticleHeaderData(fetchedArticle);
+        setHeadline(fetchedArticle.headline);
+        setJournalist(fetchedArticle.author);
+        setSelectedPublication(fetchedArticle.publication);
+        setBox(fetchedArticle.box);
+        setPhoto(fetchedArticle.photo);
+        setPageNumber(fetchedArticle.page_number);
+        setPageValue(fetchedArticle.page_value);
+        setSpace(fetchedArticle.space);
+        setQc1By(fetchedArticle.qc1_by);
+        setQc2By(fetchedArticle.qc2_by);
+        setArticleSummary(fetchedArticle.head_summary);
       }
+    } catch (error) {
+      toast.warning("Error while fetch header.");
     }
-  }, [
-    articleSummary,
-    box,
-    headline,
-    journalist,
-    pageNumber,
-    pageValue,
-    photo,
-    selectedPublication,
-    qc1By,
-    qc2By,
-    selectedArticle,
-    space,
-    // summary,
-    setEditedSingleArticle,
-  ]);
+  };
+  // * fetch header data when app load
+  useEffect(() => {
+    fetchArticleHeader();
+  }, [articleId]);
+
+  const updateData = async () => {
+    try {
+      setUpdateLoading(true);
+      const data = {
+        ARTICLEID: articleId,
+      };
+      // Compare each state variable with articleHeaderData
+      if (headline !== articleHeaderData?.headline) {
+        data.HEADLINES = headline;
+      }
+      if (journalist !== articleHeaderData?.author) {
+        data.JOURNALIST = journalist;
+      }
+      if (box !== articleHeaderData?.box) {
+        data.BOX = box;
+      }
+      if (photo !== articleHeaderData?.photo) {
+        data.PHOTO = photo;
+      }
+      if (pageNumber !== articleHeaderData?.page_number) {
+        data.PAGENUMBER = pageNumber;
+      }
+      if (pageValue !== articleHeaderData?.page_value) {
+        data.PAGEVALUE = pageValue;
+      }
+      if (selectedPublication !== articleHeaderData?.publication) {
+        data.PUBLICATIONNAME = selectedPublication;
+      }
+      if (space !== articleHeaderData?.space) {
+        data.SPACE = space;
+      }
+      if (articleSummary !== articleHeaderData?.head_summary) {
+        data.HEADSUMMARY = articleSummary;
+      }
+      if (qc1By !== articleHeaderData?.qc1_by) {
+        data.QC1BY = qc1By;
+      }
+      if (qc2By !== articleHeaderData?.qc2_by) {
+        data.QC2BY = qc2By;
+      }
+
+      const response = await axios.post(`${url}updatearticleheader/`, [data], {
+        headers,
+      });
+      if (response.status === 200) {
+        fetchArticleHeader();
+        toast.success("Header updated.");
+      }
+    } catch (error) {
+      toast.error("Error while updating.");
+    } finally {
+      setUpdateLoading(false);
+    }
+  };
 
   return (
     <form>
       <div className="flex flex-wrap items-center gap-2">
-        <div className="flex items-center w-full gap-2 border">
+        <div className="flex items-center w-full gap-2">
           <label htmlFor="headlines" className="text-[0.9em] text-gray-500">
             Headlines:
           </label>
@@ -211,6 +258,11 @@ const FirstSection = (props) => {
             setValue={setQc2By}
             width={100}
             isDisabled={true}
+          />
+          <Button
+            btnText={updateLoading ? "Updating" : "update"}
+            isLoading={updateLoading}
+            onClick={updateData}
           />
         </div>
       </div>

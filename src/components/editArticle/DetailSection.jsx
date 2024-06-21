@@ -11,7 +11,7 @@ import {
   ToggleButtonGroup,
 } from "@mui/material";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 // ** third party imports
 
@@ -24,13 +24,15 @@ import Button from "../custom/Button";
 
 const Details = ({ selectedRow }) => {
   const userToken = localStorage.getItem("user");
-  const [headline, setHeadline] = useState(selectedRow?.headline);
-  const [journalist, setJournalist] = useState(selectedRow?.author_name);
-  const [summary, setSummary] = useState(selectedRow?.headsummary);
+  const socialFeedId = selectedRow?.social_feed_id;
+  const [headerData, setHeaderData] = useState(null);
+  const [headline, setHeadline] = useState("");
+  const [journalist, setJournalist] = useState("");
+  const [summary, setSummary] = useState("");
   const [updateLoading, setUpdateLoading] = useState(false);
 
-  const [iAlignment, setIAlignment] = useState(selectedRow?.has_image);
-  const [vAlignment, setVAlignment] = useState(selectedRow?.has_video);
+  const [iAlignment, setIAlignment] = useState("");
+  const [vAlignment, setVAlignment] = useState("");
 
   const handleImageChange = (event, newAlignment) => {
     setIAlignment(newAlignment);
@@ -38,6 +40,33 @@ const Details = ({ selectedRow }) => {
   const handleVideoChange = (event, newAlignment) => {
     setVAlignment(newAlignment);
   };
+
+  // * fetching header data
+  const fetchSocialFeedHeader = async () => {
+    try {
+      const headers = {
+        Authorization: `Bearer ${userToken}`,
+      };
+      const response = await axios.get(
+        `${url}socialfeedheader/?socialfeed_id=${socialFeedId}`,
+        { headers }
+      );
+      const data = response.data.socialfeed[0] || {};
+      if (data) {
+        setHeaderData(data);
+        setHeadline(data.headline);
+        setJournalist(data.author_name);
+        setSummary(data.headsummary);
+        setIAlignment(data.has_image);
+        setVAlignment(data.has_video);
+      }
+    } catch (error) {
+      toast.warning("Error while fetching header data");
+    }
+  };
+  useEffect(() => {
+    fetchSocialFeedHeader();
+  }, [socialFeedId, userToken]);
 
   const handleHeaderUpdate = async () => {
     try {
@@ -47,24 +76,41 @@ const Details = ({ selectedRow }) => {
       };
       let img = iAlignment === "Yes" ? 1 : 0;
       let video = vAlignment === "Yes" ? 1 : 0;
-      const request_data = [
-        {
-          SOCIALFEEDID: selectedRow?.social_feed_id,
-          HEADLINE: headline,
-          SUMMARY: summary,
-          AUTHOR: journalist,
-          HASIMAGE: img,
-          HASVIDEO: video,
-        },
-      ];
+      const request_data = {
+        // *comp
+        SOCIALFEEDID: selectedRow?.social_feed_id,
+        // * optional if value changed
+        // HEADLINE: headline,
+        // SUMMARY: summary,
+        // AUTHOR: journalist,
+        // HASIMAGE: img,
+        // HASVIDEO: video,
+      };
+
+      if (headline !== headerData.headline) {
+        request_data.HEADLINE = headline;
+      }
+      if (summary !== headerData.headsummary) {
+        request_data.SUMMARY = summary;
+      }
+      if (journalist !== headerData.author_name) {
+        request_data.AUTHOR = journalist;
+      }
+      if (img !== (headerData.has_image === "Yes" ? 1 : 0)) {
+        request_data.HASIMAGE = img;
+      }
+      if (video !== (headerData.has_video === "Yes" ? 1 : 0)) {
+        request_data.HASVIDEO = video;
+      }
 
       const response = await axios.post(
         `${url}updatesocialfeedheader/`,
-        request_data,
+        [request_data],
         { headers }
       );
       if (response) {
         setUpdateLoading(false);
+        fetchSocialFeedHeader();
         toast.success("Updated Successfully.");
       }
     } catch (error) {

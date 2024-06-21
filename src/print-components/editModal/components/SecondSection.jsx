@@ -33,14 +33,7 @@ import DebounceSearchCompany from "../../../@core/DebounceSearchCompany";
 
 const SecondSection = (props) => {
   const userToken = localStorage.getItem("user");
-  const {
-    selectedClient,
-    selectedArticle,
-    editedSingleArticle,
-    setEditedSingleArticle,
-    tableData,
-    setTableData,
-  } = props;
+  const { selectedClient, selectedArticle } = props;
   const [selectedCompany, setSelectedCompany] = useState(null);
   const [tagData, setTagData] = useState([]);
   const [tagDataLoading, setTagDataLoading] = useState(false);
@@ -204,7 +197,6 @@ const SecondSection = (props) => {
     }
 
     const requestData = modifiedRows.map((obj) => convertKeys(obj));
-    const data = editedSingleArticle ? [editedSingleArticle] : [];
 
     try {
       setSaveLoading(true);
@@ -219,40 +211,6 @@ const SecondSection = (props) => {
         if (res.data) {
           toast.success("Successfully saved changes!");
           setFetchTagDataAfterChange(true);
-        }
-      }
-
-      if (data.length > 0) {
-        const resp = await axios.post(`${url}updatearticleheader/`, data, {
-          headers,
-        });
-        if (resp.data) {
-          toast.success("Successfully saved changes!");
-          setEditedSingleArticle(null);
-          const updatedData = tableData.map((row) => {
-            if (
-              row.company_id === data[0].company_id &&
-              row.article_id === data[0].article_id
-            ) {
-              // Update specified fields
-              return {
-                ...row,
-                box: data[0].BOX === "Yes" ? "Yes" : "No",
-                photo: data[0].PHOTO === "Yes" ? "Yes" : "No",
-                page_number: data[0].PAGENUMBER,
-                headlines: data[0].HEADLINES,
-                page_value: data[0].PAGEVALUE,
-                publicationname: data[0].PUBLICATIONNAME,
-                journalist: data[0].JOURNALIST,
-                space: data[0].SPACE,
-                headsummary: data[0].HEADSUMMARY,
-              };
-            }
-            return row;
-          });
-
-          // Set the updated tableData
-          setTableData(updatedData);
         }
       }
 
@@ -683,9 +641,5 @@ const SecondSection = (props) => {
 SecondSection.propTypes = {
   selectedClient: PropTypes.string.isRequired,
   selectedArticle: PropTypes.array.isRequired,
-  editedSingleArticle: PropTypes.array.isRequired,
-  setEditedSingleArticle: PropTypes.func.isRequired,
-  tableData: PropTypes.array.isRequired,
-  setTableData: PropTypes.func.isRequired,
 };
 export default SecondSection;
