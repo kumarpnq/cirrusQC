@@ -17,6 +17,7 @@ const ContextProvider = ({ children }) => {
     Dump: false,
     "Manual-upload": false,
     "Non-Tagged": false,
+    Analytics: false,
   });
   const [permissionLoading, setPermissionLoading] = useState(false);
 

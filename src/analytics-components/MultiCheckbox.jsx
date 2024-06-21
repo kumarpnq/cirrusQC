@@ -3,9 +3,8 @@ import PropTypes from "prop-types";
 import IconButton from "@mui/material/IconButton";
 import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
-import Checkbox from "@mui/material/Checkbox";
-import { CheckBoxOutlineBlank, CheckBox } from "@mui/icons-material";
-import { Tooltip } from "@mui/material";
+
+import { Button, Divider, Tooltip } from "@mui/material";
 
 const options = ["QC1 Header", "QC2 Header", "Qc1 Detail", "Qc2 Detail"];
 
@@ -48,6 +47,22 @@ function LongMenu({ headerDetails, setHeaderDetails }) {
     }
   };
 
+  const handleSelectAll = () => {
+    const allSelectedDetails = options.reduce((acc, option) => {
+      acc[getOptionKey(option)] = true;
+      return acc;
+    }, {});
+    setHeaderDetails(allSelectedDetails);
+  };
+
+  const handleSelectNone = () => {
+    const allDeselectedDetails = options.reduce((acc, option) => {
+      acc[getOptionKey(option)] = false;
+      return acc;
+    }, {});
+    setHeaderDetails(allDeselectedDetails);
+  };
+
   return (
     <div>
       <Tooltip title="Header&detail">
@@ -58,9 +73,9 @@ function LongMenu({ headerDetails, setHeaderDetails }) {
           aria-expanded={open ? "true" : undefined}
           aria-haspopup="true"
           onClick={handleClick}
-          sx={{ fontSize: "0.9em" }}
+          sx={{ fontSize: "0.9em", background: "#0a4f7d", color: "#fff" }}
         >
-          HD
+          QC
         </IconButton>
       </Tooltip>
       <Menu
@@ -78,13 +93,21 @@ function LongMenu({ headerDetails, setHeaderDetails }) {
           },
         }}
       >
+        <MenuItem>
+          <Button onClick={handleSelectAll} size="small">
+            All
+          </Button>
+          <Button onClick={handleSelectNone} size="small">
+            None
+          </Button>
+        </MenuItem>
+        <Divider />
         {options.map((option) => (
-          <MenuItem key={option} onClick={() => handleMenuItemClick(option)}>
-            <Checkbox
-              icon={<CheckBoxOutlineBlank fontSize="small" />}
-              checkedIcon={<CheckBox fontSize="small" />}
-              checked={isSelected(option)}
-            />
+          <MenuItem
+            key={option}
+            onClick={() => handleMenuItemClick(option)}
+            selected={isSelected(option)}
+          >
             {option}
           </MenuItem>
         ))}

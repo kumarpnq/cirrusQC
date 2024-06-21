@@ -126,8 +126,14 @@ const Analytics = () => {
     ],
     []
   );
-
   const handleFetchRecords = async () => {
+    if (value && !selectedUserId) {
+      toast.warning("Please select user.");
+      return;
+    } else if (!value && !selectedPrintAndOnline.length) {
+      toast.warning("Please select Media.");
+      return;
+    }
     const data = qcUserData?.data?.qc_users || [];
     const usernames = selectedUsers.map((id) => {
       const user = data.find((entry) => entry.usersid === id);
@@ -139,33 +145,36 @@ const Analytics = () => {
       const headers = {
         Authorization: `Bearer ${userToken}`,
       };
-      // Format dates to "YYYY-MM-DD"
-      const formattedFromDate = new Date(fromDate).toISOString().split("T")[0];
-      const formattedToDate = new Date(toDate).toISOString().split("T")[0];
 
       const params1 = {
         userName: selectedUserId,
-        fromDate: formattedFromDate,
-        toDate: formattedToDate,
+        fromDate: fromDate.split(" ")[0],
+        toDate: toDate.split(" ")[0],
       };
       const params0 = {
         media: arrayToString(selectedPrintAndOnline),
-        fromdate: formattedFromDate,
-        todate: formattedToDate,
+        fromdate: fromDate.split(" ")[0],
+        todate: toDate.split(" ")[0],
         clientids: arrayToString(selectedClients),
-        userids: arrayToString(usernames),
+        usernames: arrayToString(usernames),
         qc1by_header: headerDetails.qc1by_header,
         qc2by_header: headerDetails.qc2by_header,
         qc1by_detail: headerDetails.qc1by_detail,
         qc2by_detail: headerDetails.qc2by_detail,
       };
+
       const endpoint = !value ? "useractivityreport/" : "userActivityLog/";
       const response = await axios.get(url + endpoint, {
         headers,
         params: value ? params1 : params0,
       });
       const accesskey = !value ? "feed_data" : "result";
-      setGridData(response.data[accesskey]);
+      const data = response.data[accesskey] || [];
+      if (data.length) {
+        setGridData(response.data[accesskey]);
+      } else {
+        toast.warning("No data found.");
+      }
     } catch (error) {
       toast.error(error.message);
     } finally {
@@ -275,6 +284,8 @@ const Analytics = () => {
           disableColumnFilter
           disableColumnSelector
           disableDensitySelector
+          disableRowSelectionOnClick
+          hideFooterSelectedRowCount
           slots={{ toolbar: GridToolbar }}
           slotProps={{
             toolbar: {

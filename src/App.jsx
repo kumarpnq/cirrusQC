@@ -8,11 +8,10 @@ import {
 } from "react";
 import { Routes, Route, useLocation } from "react-router-dom";
 
+// * third party import
 import axios from "axios";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-// * third party import
-
 // * comp & urls
 import AutoTokenRefresh from "./auth/autoToken";
 import MainNav from "./components/material-navbar";
@@ -24,7 +23,6 @@ import { url } from "./constants/baseUrl";
 import Online from "./pages/qc1/Online";
 import Print from "./pages/qc1/Print";
 import Analytics from "./pages/Analytics/Analytics";
-import Test from "./pages/Test";
 
 // Lazy load the components
 const Home = lazy(() => import("./pages/Home"));
@@ -46,6 +44,7 @@ function App() {
     dump: false,
     manual: false,
     nonTagged: false,
+    Analytics: false,
   });
   const [loading, setLoading] = useState(false);
 
@@ -91,6 +90,7 @@ function App() {
       dump: screenPermissions?.Dump,
       manual: screenPermissions["Manual-upload"],
       nonTagged: screenPermissions["Non-Tagged"],
+      Analytics: screenPermissions.Analytics,
     });
   }, [screenPermissions]);
 
@@ -189,10 +189,20 @@ function App() {
                   )
                 }
               />
-              <Route path="/analytics" element={<Analytics />} />
+              <Route
+                path="/analytics"
+                element={
+                  permissions.Analytics ? (
+                    <Analytics />
+                  ) : loading ? (
+                    <div>Loading...</div>
+                  ) : (
+                    <NotFound />
+                  )
+                }
+              />
               <Route path="/qc1/online" element={<Online />} />
               <Route path="/qc1/print" element={<Print />} />
-              <Route path="/test" element={<Test />} />
             </>
           ) : (
             <Route path="login" element={<Login />} />

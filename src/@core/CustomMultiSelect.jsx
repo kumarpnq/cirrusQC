@@ -3,7 +3,6 @@ import PropTypes from "prop-types";
 import {
   FormControl,
   MenuItem,
-  Checkbox,
   ListItemText,
   Input,
   Paper,
@@ -152,6 +151,7 @@ const CustomMultiSelect = ({
                     className={classes.searchInput}
                     startAdornment={<SearchIcon />}
                     size="small"
+                    autoFocus
                   />
                 </ListItem>
                 <Divider />
@@ -169,12 +169,9 @@ const CustomMultiSelect = ({
                     key={option[keyId]}
                     value={option[keyId]}
                     onClick={() => handleSelectChange(option)}
+                    selected={selectedItems.includes(option[keyId])}
                     dense
                   >
-                    <Checkbox
-                      checked={selectedItems.includes(option[keyId])}
-                      size="small"
-                    />
                     <ListItemText primary={option[keyName]} />
                   </MenuItem>
                 ))}

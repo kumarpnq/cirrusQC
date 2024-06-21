@@ -34,6 +34,7 @@ import Button from "../components/custom/Button";
 import axios from "axios";
 import { toast } from "react-toastify";
 import CustomDebounceDropdown from "../@core/CustomDebounceDropdown";
+import { arrayToString } from "../utils/arrayToString";
 // import FormDialog from "../@core/ConfirmBox";
 
 const useStyle = makeStyles(() => ({
@@ -117,14 +118,6 @@ const DDComp = () => {
   const [fetchingUsingPrevNext, setFetchingUsingPrevNext] = useState(false);
   const [retrieveAfterSave, setRetrieveAfterSave] = useState(false);
   const [isInitialMount, setIsInitialMount] = useState(true);
-
-  const arrayToString = (arr) => {
-    if (Array.isArray(arr) && arr.length > 0) {
-      return arr.map((item) => `'${item}'`).join(",");
-    }
-    return "";
-  };
-
   const addPropertyIfConditionIsTrue = (condition, obj, key, value) => {
     if (condition) {
       obj[key] = value;

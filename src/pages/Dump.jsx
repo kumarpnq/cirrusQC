@@ -32,7 +32,6 @@ import AlertDialogSlide from "../dump-components/alertSlide";
 import Permissions from "../dump-components/Permission";
 import JobDetails from "../dump-components/JobDetails";
 import { ResearchContext } from "../context/ContextProvider";
-import { CustomToast } from "../@core/toast";
 
 const useStyle = makeStyles(() => ({
   dropDowns: {

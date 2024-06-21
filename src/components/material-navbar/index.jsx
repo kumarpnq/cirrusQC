@@ -17,6 +17,7 @@ import SearchIcon from "@mui/icons-material/Search";
 import AccountCircle from "@mui/icons-material/AccountCircle";
 import UploadFileIcon from "@mui/icons-material/UploadFile";
 import BookmarkBorderIcon from "@mui/icons-material/BookmarkBorder";
+import BarChartIcon from "@mui/icons-material/BarChart";
 
 import MoreIcon from "@mui/icons-material/MoreVert";
 import Drawer from "@mui/material/Drawer";
@@ -130,40 +131,17 @@ export default function MainNav() {
           },
         ]
       : []),
+    ...(screenPermissions.Analytics
+      ? [
+          {
+            id: 6,
+            title: "Analytics",
+            path: "/analytics",
+            icon: <BarChartIcon />,
+          },
+        ]
+      : []),
   ];
-
-  // const navList = [
-  //   {
-  //     id: 1,
-  //     title: "Online-QC2",
-  //     path: "/online",
-  //     icon: <HiStatusOnline />,
-  //   },
-  //   {
-  //     id: 2,
-  //     title: "Print-QC2",
-  //     path: "/print",
-  //     icon: <FaPrint />,
-  //   },
-  //   {
-  //     id: 3,
-  //     title: "Dump",
-  //     path: "/dump",
-  //     icon: <FaDumpster />,
-  //   },
-  //   {
-  //     id: 4,
-  //     title: "Manual-upload",
-  //     path: "/manual-upload",
-  //     icon: <UploadFileIcon />,
-  //   },
-  //   {
-  //     id: 5,
-  //     title: "Non-Tagged",
-  //     path: "/non-tagged",
-  //     icon: <BookmarkBorderIcon />,
-  //   },
-  // ];
 
   const handleProfileMenuOpen = (event) => {
     setAnchorEl(event.currentTarget);
