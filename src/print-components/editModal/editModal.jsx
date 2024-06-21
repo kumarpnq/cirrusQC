@@ -101,9 +101,6 @@ export default function EditModal({
                 alignItems="center"
                 gap={1}
                 fontSize={"0.9em"}
-                // href={`${url + selectedArticle?.link}`}
-                // target="_blank"
-                // rel="noreferrer"
                 className="underline text-primary"
               >
                 <Link

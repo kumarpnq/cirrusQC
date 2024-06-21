@@ -33,6 +33,11 @@ const FirstSection = (props) => {
   const [qc2By, setQc2By] = useState("");
   const [articleSummary, setArticleSummary] = useState("");
 
+  const YesOrNoModifier = (item) => {
+    let result = (item === "Y" && "Yes") || (item == "N" && "No");
+    return result;
+  };
+
   // * headers
   const userToken = localStorage.getItem("user");
   const headers = {
@@ -49,12 +54,14 @@ const FirstSection = (props) => {
       );
       const fetchedArticle = response.data.article[0];
       if (fetchedArticle) {
+        let boxV = YesOrNoModifier(fetchedArticle.box);
+        let photoV = YesOrNoModifier(fetchedArticle.photo);
         setArticleHeaderData(fetchedArticle);
         setHeadline(fetchedArticle.headline);
         setJournalist(fetchedArticle.author);
         setSelectedPublication(fetchedArticle.publication);
-        setBox(fetchedArticle.box);
-        setPhoto(fetchedArticle.photo);
+        setBox(boxV);
+        setPhoto(photoV);
         setPageNumber(fetchedArticle.page_number);
         setPageValue(fetchedArticle.page_value);
         setSpace(fetchedArticle.space);
