@@ -39,8 +39,6 @@ CustomTextField.propTypes = {
   setValue: PropTypes.func.isRequired,
   type: PropTypes.string,
   width: PropTypes.number.isRequired,
-  isIncrease: PropTypes.bool,
-  customHeight: PropTypes.number,
   isDisabled: PropTypes.bool,
 };
 

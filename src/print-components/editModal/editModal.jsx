@@ -58,6 +58,7 @@ export default function EditModal({
   tableData,
   setTableData,
 }) {
+  console.log(selectedArticle);
   // first section states
   // second section states
   const [selectedClient, setSelectedClient] = useState("");

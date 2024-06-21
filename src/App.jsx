@@ -21,7 +21,10 @@ import NotFound from "./components/NotFound";
 import { ResearchContext } from "./context/ContextProvider";
 import { checkUserAuthenticate } from "./auth/auth";
 import { url } from "./constants/baseUrl";
-// import Analytics from "./pages/Analytics/Analytics";
+import Online from "./pages/qc1/Online";
+import Print from "./pages/qc1/Print";
+import Analytics from "./pages/Analytics/Analytics";
+import Test from "./pages/Test";
 
 // Lazy load the components
 const Home = lazy(() => import("./pages/Home"));
@@ -186,7 +189,10 @@ function App() {
                   )
                 }
               />
-              {/* <Route path="/analytics" element={<Analytics />} /> */}
+              <Route path="/analytics" element={<Analytics />} />
+              <Route path="/qc1/online" element={<Online />} />
+              <Route path="/qc1/print" element={<Print />} />
+              <Route path="/test" element={<Test />} />
             </>
           ) : (
             <Route path="login" element={<Login />} />

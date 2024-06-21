@@ -25,7 +25,7 @@ const YesOrNo = ({
         inputProps={{ "aria-label": "Without label" }}
         sx={{ fontSize: "0.8em" }}
       >
-        <MenuItem value={"Unknown"} sx={{ fontSize: "0.8em", opacity: 0.7 }}>
+        <MenuItem value="" sx={{ fontSize: "0.8em", opacity: 0.7 }}>
           <em>{placeholder}</em>
         </MenuItem>
         {mapValue.map((item) => (
