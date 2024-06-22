@@ -2,9 +2,13 @@ import PropTypes from "prop-types";
 
 import { useEffect, useState } from "react";
 import FormWithLabelTextField from "../../../@core/FormWithLabel";
-import CustomDebounceDropdown from "../../../@core/CustomDebounceDropdown";
+
 import YesOrNo from "../../../@core/YesOrNo";
 import { yesOrNo } from "../../../constants/dataArray";
+import CustomSingleSelect from "../../../@core/CustomSingleSelect";
+import useFetchData from "../../../hooks/useFetchData";
+import { url } from "../../../constants/baseUrl";
+import Button from "../../../components/custom/Button";
 
 const FirstSection = (props) => {
   const { classes, selectedArticle, setEditedSingleArticle } = props;
@@ -14,7 +18,10 @@ const FirstSection = (props) => {
     isArticleSummary: false,
   });
   const [headline, setHeadline] = useState(selectedArticle?.headline);
-  const [selectedPublication, setSelectedPublication] = useState(null);
+  const [selectedPublication, setSelectedPublication] = useState({
+    publicationid: "",
+    publicationname: "",
+  });
 
   const [journalist, setJournalist] = useState(selectedArticle?.author);
   const [box, setBox] = useState(selectedArticle?.box);
@@ -27,10 +34,17 @@ const FirstSection = (props) => {
   const [articleSummary, setArticleSummary] = useState(
     selectedArticle?.head_summary
   );
+
+  // * data hooks
+  const { data: publicationData } = useFetchData(`${url}publicationslist/`);
   useEffect(() => {
     if (selectedArticle) {
       setHeadline(selectedArticle?.headline);
       setSelectedPublication(selectedArticle.publication);
+      setSelectedPublication({
+        publicationid: "",
+        publicationname: selectedArticle.publication,
+      });
       setJournalist(selectedArticle?.author);
       setBox(selectedArticle?.box);
       setPhoto(selectedArticle?.photo);
@@ -94,6 +108,10 @@ const FirstSection = (props) => {
     // summary,
     setEditedSingleArticle,
   ]);
+
+  const handleUpdateArticleHeader = async (e) => {
+    e.preventDefault();
+  };
   return (
     <form>
       <div className="flex flex-wrap items-center gap-2">
@@ -157,11 +175,13 @@ const FirstSection = (props) => {
         />
         <div className="flex items-center gap-1">
           <label className="text-[0.8em]">Publication:</label>
-          <CustomDebounceDropdown
-            publicationGroup={selectedPublication}
-            setPublicationGroup={setSelectedPublication}
-            bg="bg-white"
-            m="0"
+
+          <CustomSingleSelect
+            label="publication"
+            width={200}
+            selectedValue={selectedPublication}
+            setSelectedValue={setSelectedPublication}
+            options={publicationData?.data?.publications || []}
           />
         </div>
         <div className="flex flex-wrap items-center gap-2">
@@ -227,6 +247,7 @@ const FirstSection = (props) => {
             width={100}
             isDisabled={true}
           />
+          <Button btnText="update" onClick={handleUpdateArticleHeader} />
         </div>
       </div>
     </form>

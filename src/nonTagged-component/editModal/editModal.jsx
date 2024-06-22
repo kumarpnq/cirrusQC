@@ -84,7 +84,6 @@ export default function EditModal({
   }, [selectedArticle, articleId, userToken]);
 
   const classes = useStyle();
-  console.log(selectedArticle);
 
   return (
     <div style={{ height: "800px !important", overflow: "scroll" }}>

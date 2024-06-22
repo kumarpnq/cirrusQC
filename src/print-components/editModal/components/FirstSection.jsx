@@ -3,11 +3,12 @@ import YesOrNo from "../../../@core/YesOrNo";
 import { yesOrNo } from "../../../constants/dataArray";
 import FormWithLabelTextField from "../../../@core/FormWithLabel";
 import { useEffect, useState } from "react";
-import CustomDebounceDropdown from "../../../@core/CustomDebounceDropdown";
 import Button from "../../../components/custom/Button";
 import axios from "axios";
 import { url } from "../../../constants/baseUrl";
 import { toast } from "react-toastify";
+import useFetchData from "../../../hooks/useFetchData";
+import CustomSingleSelect from "../../../@core/CustomSingleSelect";
 
 const FirstSection = (props) => {
   const { classes, selectedArticle } = props;
@@ -21,7 +22,11 @@ const FirstSection = (props) => {
   const [updateLoading, setUpdateLoading] = useState(false);
 
   // Data states
-  const [selectedPublication, setSelectedPublication] = useState("");
+
+  const [publication, setPublication] = useState({
+    publicationid: "",
+    publicationname: "",
+  });
   const [headline, setHeadline] = useState("");
   const [journalist, setJournalist] = useState("");
   const [box, setBox] = useState("");
@@ -32,6 +37,9 @@ const FirstSection = (props) => {
   const [qc1By, setQc1By] = useState("");
   const [qc2By, setQc2By] = useState("");
   const [articleSummary, setArticleSummary] = useState("");
+
+  // data hook
+  const { data: publicationData } = useFetchData(`${url}publicationslist/`);
 
   const YesOrNoModifier = (item) => {
     let result = (item === "Y" && "Yes") || (item == "N" && "No");
@@ -53,13 +61,17 @@ const FirstSection = (props) => {
         }
       );
       const fetchedArticle = response.data.article[0];
+
       if (fetchedArticle) {
         let boxV = YesOrNoModifier(fetchedArticle.box);
         let photoV = YesOrNoModifier(fetchedArticle.photo);
         setArticleHeaderData(fetchedArticle);
         setHeadline(fetchedArticle.headline);
         setJournalist(fetchedArticle.author);
-        setSelectedPublication(fetchedArticle.publication);
+        setPublication({
+          publicationid: "",
+          publicationname: fetchedArticle.publication,
+        });
         setBox(boxV);
         setPhoto(photoV);
         setPageNumber(fetchedArticle.page_number);
@@ -78,50 +90,60 @@ const FirstSection = (props) => {
     fetchArticleHeader();
   }, [articleId]);
 
-  const updateData = async () => {
+  const updateData = async (e) => {
+    e.preventDefault();
     try {
       setUpdateLoading(true);
+
       const data = {
         ARTICLEID: articleId,
       };
-      // Compare each state variable with articleHeaderData
-      if (headline !== articleHeaderData?.headline) {
-        data.HEADLINES = headline;
-      }
-      if (journalist !== articleHeaderData?.author) {
-        data.JOURNALIST = journalist;
-      }
-      if (box !== articleHeaderData?.box) {
-        data.BOX = box;
-      }
-      if (photo !== articleHeaderData?.photo) {
-        data.PHOTO = photo;
-      }
-      if (pageNumber !== articleHeaderData?.page_number) {
-        data.PAGENUMBER = pageNumber;
-      }
-      if (pageValue !== articleHeaderData?.page_value) {
-        data.PAGEVALUE = pageValue;
-      }
-      if (selectedPublication !== articleHeaderData?.publication) {
-        data.PUBLICATIONNAME = selectedPublication;
-      }
-      if (space !== articleHeaderData?.space) {
-        data.SPACE = space;
-      }
-      if (articleSummary !== articleHeaderData?.head_summary) {
-        data.HEADSUMMARY = articleSummary;
-      }
-      if (qc1By !== articleHeaderData?.qc1_by) {
-        data.QC1BY = qc1By;
-      }
-      if (qc2By !== articleHeaderData?.qc2_by) {
-        data.QC2BY = qc2By;
+
+      const updates = {
+        HEADLINES: headline !== articleHeaderData?.headline ? headline : null,
+        JOURNALIST:
+          journalist !== articleHeaderData?.author ? journalist : null,
+        BOX:
+          (box === "Yes" ? "Y" : "N") !== articleHeaderData?.box ? box : null,
+        PHOTO:
+          (photo === "Yes" ? "Y" : "N") !== articleHeaderData?.photo
+            ? photo
+            : null,
+        PAGENUMBER:
+          pageNumber !== articleHeaderData?.page_number ? pageNumber : null,
+        PAGEVALUE:
+          pageValue !== articleHeaderData?.page_value ? pageValue : null,
+        PUBLICATIONNAME:
+          publication.publicationname !== articleHeaderData?.publication
+            ? publication.publicationname
+            : null,
+        SPACE: space !== articleHeaderData?.space ? space : null,
+        HEADSUMMARY:
+          articleSummary !== articleHeaderData?.head_summary
+            ? articleSummary
+            : null,
+        QC1BY: qc1By !== articleHeaderData?.qc1_by ? qc1By : null,
+        QC2BY: qc2By !== articleHeaderData?.qc2_by ? qc2By : null,
+      };
+
+      Object.keys(updates).forEach((key) => {
+        if (updates[key] !== null) {
+          data[key] = updates[key];
+        }
+      });
+
+      // Check if there's any data to update
+      if (Object.keys(data).length === 1) {
+        // Only ARTICLEID is present
+        toast.warning("No data to save.");
+        setUpdateLoading(false);
+        return;
       }
 
       const response = await axios.post(`${url}updatearticleheader/`, [data], {
         headers,
       });
+
       if (response.status === 200) {
         fetchArticleHeader();
         toast.success("Header updated.");
@@ -196,11 +218,12 @@ const FirstSection = (props) => {
         />
         <div className="flex items-center gap-1">
           <label className="text-[0.8em]">Publication:</label>
-          <CustomDebounceDropdown
-            publicationGroup={selectedPublication}
-            setPublicationGroup={setSelectedPublication}
-            bg="bg-white"
-            m="0"
+          <CustomSingleSelect
+            options={publicationData?.data?.publications || []}
+            label="publication"
+            selectedValue={publication}
+            setSelectedValue={setPublication}
+            width={200}
           />
         </div>
         <div className="flex flex-wrap items-center gap-2">

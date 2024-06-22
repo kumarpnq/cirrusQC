@@ -65,12 +65,10 @@ const Details = ({ selectedRow, userToken }) => {
         request_data,
         { headers }
       );
-      console.log(response);
       if (response.status == 200) {
         toast.success("Updated Successfully.");
       }
     } catch (error) {
-      console.log(error);
       toast.error(error.message);
     }
   };

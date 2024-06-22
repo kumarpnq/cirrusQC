@@ -102,7 +102,14 @@ const Details = ({ selectedRow }) => {
       if (video !== (headerData.has_video === "Yes" ? 1 : 0)) {
         request_data.HASVIDEO = video;
       }
+      // Check if there are any updates to be made
+      const updatesExist = Object.keys(request_data).length > 1;
 
+      if (!updatesExist) {
+        setUpdateLoading(false);
+        toast.warning("No changes to update.");
+        return;
+      }
       const response = await axios.post(
         `${url}updatesocialfeedheader/`,
         [request_data],

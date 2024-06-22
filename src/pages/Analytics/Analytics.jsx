@@ -121,7 +121,9 @@ const Analytics = () => {
       { field: "CLIENTNAME", headerName: "Client Name", width: 200 },
       { field: "COMPANYNAME", headerName: "Company Name", width: 200 },
       { field: "QC_DATE", headerName: "QC Date", width: 150 },
+      { field: "QC1BY_HEADER", headerName: "QC1 By Header", width: 150 },
       { field: "QC1BY_DETAIL", headerName: "QC1 By Detail", width: 150 },
+      { field: "QC2BY_HEADER", headerName: "QC2 By Header", width: 150 },
       { field: "QC2BY_DETAIL", headerName: "QC2 By Detail", width: 150 },
     ],
     []
