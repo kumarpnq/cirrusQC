@@ -153,10 +153,10 @@ const handlePostData = async (
       setDifferData([]);
 
       // Clearing the dropdown values
-      setReportingTone("");
-      setSubject("");
-      setCategory("");
-      setProminence("");
+      // setReportingTone("");
+      // setSubject("");
+      // setCategory("");
+      // setProminence("");
       setUnsavedChanges(false);
       setEditValue("");
       setEditRow("");
