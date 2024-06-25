@@ -1,11 +1,16 @@
 import { useState } from "react";
+import { Box, Divider, IconButton, Typography } from "@mui/material";
+import { DataGrid } from "@mui/x-data-grid";
+import { makeStyles } from "@mui/styles";
+
+// * icons
+import { EditAttributesOutlined } from "@mui/icons-material";
 import { formattedDate, formattedNextDay } from "../../constants/dates";
-import { Box, Divider, Typography } from "@mui/material";
+
+// * components
 import Client from "../../print-components/dropdowns/Client";
 import Category from "../../print-components/dropdowns/Category";
-import { makeStyles } from "@mui/styles";
 import useFetchData from "../../hooks/useFetchData";
-import { url } from "../../constants/baseUrl";
 import Company from "../../print-components/dropdowns/Company";
 import CustomDebounceDropdown from "../../@core/CustomDebounceDropdown";
 import Publication from "../../print-components/dropdowns/Publication";
@@ -13,15 +18,17 @@ import FromDate from "../../components/research-dropdowns/FromDate";
 import ToDate from "../../components/research-dropdowns/ToDate";
 import PubType from "../../print-components/dropdowns/PubType";
 import Qc1All from "../../components/research-dropdowns/Qc1All";
-import { qc1Array } from "../../constants/dataArray";
 import YesOrNo from "../../@core/YesOrNo";
 import Cities from "../../print-components/dropdowns/Cities";
 import Languages from "../../components/research-dropdowns/Languages";
 import Qc1By from "../../components/research-dropdowns/Qc1By";
 import CustomTextField from "../../@core/CutsomTextField";
 import Button from "../../components/custom/Button";
-import { DataGrid } from "@mui/x-data-grid";
 import EditDialog from "../../qc1-components/online/EditDialog";
+
+// * constants
+import { url } from "../../constants/baseUrl";
+import { qc1Array } from "../../constants/dataArray";
 
 const useStyle = makeStyles(() => ({
   dropDowns: {
@@ -141,9 +148,9 @@ const Print = () => {
       headerName: "Edit",
       width: 70,
       renderCell: (params) => (
-        <button onClick={() => handleRowClick(params.row, params.id)}>
-          Edit
-        </button>
+        <IconButton onClick={() => handleRowClick(params.row, params.id)}>
+          <EditAttributesOutlined className="text-primary" />
+        </IconButton>
       ),
     },
     { field: "headline", headerName: "Headlines", width: 300 },
@@ -162,18 +169,20 @@ const Print = () => {
     },
   ];
   return (
-    <Box>
+    <Box sx={{ px: 1.5 }}>
       <Box
         sx={{ display: "flex", alignItems: "center", flexWrap: "wrap" }}
         className="gap-1"
       >
-        <Client
-          label="Client"
-          client={selectedClient}
-          setClient={setSelectedClient}
-          width={200}
-          setCompanies={setSelectedCompanies}
-        />
+        <div className="pt-[3px]">
+          <Client
+            label="Client"
+            client={selectedClient}
+            setClient={setSelectedClient}
+            width={200}
+            setCompanies={setSelectedCompanies}
+          />
+        </div>
         <Company
           companyData={data?.data?.companies || []}
           companies={selectedCompanies}
@@ -272,27 +281,30 @@ const Print = () => {
           setValue={setTv}
           width={100}
         />
-        <CustomTextField
-          placeholder={"ArticleId"}
-          type={"number"}
-          width={100}
-          value={articleId}
-          setValue={setArticleId}
-        />
-        <CustomTextField
-          placeholder={"SystemArticleId"}
-          type={"number"}
-          width={100}
-          value={systemArticleId}
-          setValue={setSystemArticleId}
-        />
-        <CustomTextField
-          placeholder={"PageNumber"}
-          type={"number"}
-          width={100}
-          value={pageNumber}
-          setValue={setPageNumber}
-        />
+        <div className="flex flex-wrap gap-1 pt-3">
+          <CustomTextField
+            placeholder={"ArticleId"}
+            type={"number"}
+            width={100}
+            value={articleId}
+            setValue={setArticleId}
+          />
+          <CustomTextField
+            placeholder={"SystemArticleId"}
+            type={"number"}
+            width={100}
+            value={systemArticleId}
+            setValue={setSystemArticleId}
+          />
+          <CustomTextField
+            placeholder={"PageNumber"}
+            type={"number"}
+            width={100}
+            value={pageNumber}
+            setValue={setPageNumber}
+          />
+        </div>
+
         <Button btnText="Search" onClick={() => {}} />
       </Box>
       <Divider sx={{ mt: 1 }} />
@@ -305,7 +317,7 @@ const Print = () => {
           columns={columns}
           pageSize={5}
           rowsPerPageOptions={[5]}
-          checkboxSelection
+          density="compact"
         />
       </Box>
       <EditDialog

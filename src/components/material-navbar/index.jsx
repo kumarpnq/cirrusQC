@@ -35,6 +35,7 @@ import { FaDumpster } from "react-icons/fa";
 
 //**  context
 import { ResearchContext } from "../../context/ContextProvider";
+import { getInitials } from "../../utils/getInitialName";
 
 const Search = styled("div")(({ theme }) => ({
   position: "relative",
@@ -80,13 +81,14 @@ export default function MainNav() {
   const navigate = useNavigate();
   const { handleLogout, screenPermissions, unsavedChanges } =
     useContext(ResearchContext);
+  const userName = sessionStorage.getItem("userName");
 
   // ** state variables
   const [anchorEl, setAnchorEl] = React.useState(null);
   const [mobileMoreAnchorEl, setMobileMoreAnchorEl] = React.useState(null);
   const [open, setOpen] = React.useState(false);
   const [searchValue, setSearchValue] = React.useState();
-  const [filteredNavItems, setFilteredNavItems] = React.useState([]);
+  // const [filteredNavItems, setFilteredNavItems] = React.useState([]);
 
   // * vars
   const userToken = localStorage.getItem("user");
@@ -95,10 +97,30 @@ export default function MainNav() {
   const isMenuOpen = Boolean(anchorEl);
   const isMobileMenuOpen = Boolean(mobileMoreAnchorEl);
   const navList = [
-    ...(screenPermissions["Online-QC2"]
+    ...(screenPermissions["QC1-Online"]
       ? [
           {
             id: 1,
+            title: "Online-QC1",
+            path: "/qc1/online",
+            icon: <HiStatusOnline />,
+          },
+        ]
+      : []),
+    ...(screenPermissions["QC1-Print"]
+      ? [
+          {
+            id: 2,
+            title: "Print-QC1",
+            path: "/qc1/print",
+            icon: <FaPrint />,
+          },
+        ]
+      : []),
+    ...(screenPermissions["Online-QC2"]
+      ? [
+          {
+            id: 3,
             title: "Online-QC2",
             path: "/online",
             icon: <HiStatusOnline />,
@@ -106,15 +128,15 @@ export default function MainNav() {
         ]
       : []),
     ...(screenPermissions["Print-QC2"]
-      ? [{ id: 2, title: "Print-QC2", path: "/print", icon: <FaPrint /> }]
+      ? [{ id: 4, title: "Print-QC2", path: "/print", icon: <FaPrint /> }]
       : []),
     ...(screenPermissions.Dump
-      ? [{ id: 3, title: "Dump", path: "/dump", icon: <FaDumpster /> }]
+      ? [{ id: 5, title: "Dump", path: "/dump", icon: <FaDumpster /> }]
       : []),
     ...(screenPermissions["Manual-upload"]
       ? [
           {
-            id: 4,
+            id: 6,
             title: "Manual-upload",
             path: "/manual-upload",
             icon: <UploadFileIcon />,
@@ -124,17 +146,18 @@ export default function MainNav() {
     ...(screenPermissions["Non-Tagged"]
       ? [
           {
-            id: 5,
+            id: 7,
             title: "Non-Tagged",
             path: "/non-tagged",
             icon: <BookmarkBorderIcon />,
           },
         ]
       : []),
+
     ...(screenPermissions.Analytics
       ? [
           {
-            id: 6,
+            id: 8,
             title: "Analytics",
             path: "/analytics",
             icon: <BarChartIcon />,
@@ -173,11 +196,6 @@ export default function MainNav() {
   const handleSearchValue = React.useCallback((event) => {
     const { value } = event.target;
     setSearchValue(value);
-    const list = navList.map((i) => i.title);
-    const filteredItems = list.filter((item) =>
-      item.toLowerCase().includes(value.toLowerCase())
-    );
-    setFilteredNavItems(filteredItems || []);
   }, []);
 
   const handleEnterKeyPress = (event) => {
@@ -339,17 +357,29 @@ export default function MainNav() {
             <Box sx={{ flexGrow: 1 }} />
             <Box sx={{ display: { xs: "none", md: "flex" } }}>
               <IconButton
-                size="large"
+                size="small"
                 edge="end"
                 aria-label="account of current user"
                 aria-controls={menuId}
                 aria-haspopup="true"
                 onClick={handleProfileMenuOpen}
-                color="inherit"
+                sx={{
+                  background: "#fff",
+                  color: "#0a4f7d",
+                  fontSize: "0.9em",
+                  width: 40, // adjust the width to make it circular
+                  height: 40, // adjust the height to make it circular
+                  borderRadius: "50%", // this makes the button circular
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                }}
+                disableRipple
               >
-                <AccountCircle />
+                {userName ? getInitials(userName) : <AccountCircle />}
               </IconButton>
             </Box>
+
             <Box sx={{ display: { xs: "flex", md: "none" } }}>
               <IconButton
                 size="large"

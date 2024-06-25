@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import PropTypes from "prop-types";
 import {
   Modal,
@@ -10,6 +10,7 @@ import {
   CardHeader,
   CardContent,
   Grid,
+  CircularProgress,
 } from "@mui/material";
 import { DataGrid } from "@mui/x-data-grid";
 
@@ -21,6 +22,9 @@ import { FaExternalLinkAlt } from "react-icons/fa";
 // * component imports
 import CustomTextField from "../../../@core/TextFieldWithLabel";
 import DebounceSearchCompany from "../../../@core/DebounceSearchCompany";
+import axios from "axios";
+import { url } from "../../../constants/baseUrl";
+// import { toast } from "react-toastify";
 
 const style = {
   position: "absolute",
@@ -42,16 +46,32 @@ const titleStyle = {
   justifyContent: "space-between",
 };
 
-const EditDialog = ({ row, rowNumber, open, setOpen }) => {
+const EditDialog = ({ rowData, rowNumber, setRowNumber, open, setOpen }) => {
+  const [row, setRow] = useState(null);
+
+  useEffect(() => {
+    const data = rowData[rowNumber] || null;
+    setRow(data);
+  }, [rowData, rowNumber, setRow]);
+
+  const socialFeedId = row?.social_feed_id;
+  const iframeURI = row?.link;
   const [formItems, setFormItems] = useState({
-    headline: "test headline",
-    summary: "test Summary",
-    journalist: "Sidd S",
-    tag: "test tag",
+    headline: "",
+    summary: "",
+    journalist: "",
+    tag: "",
   });
+
   const [selectedCompanies, setSelectedCompanies] = useState(null);
+  const [socialFeedTagDetails, setSocialFeedTagDetails] = useState([]);
+  const [socialFeedTagDetailsLoading, setSocialFeedTagDetailsLoading] =
+    useState([]);
 
   const handleClose = () => {
+    setRowNumber(0);
+    setRow(null);
+    setSocialFeedTagDetails([]);
     setOpen(false);
   };
 
@@ -69,15 +89,19 @@ const EditDialog = ({ row, rowNumber, open, setOpen }) => {
     handleClose();
   };
 
+  const handleDeleteCompany = (row) => {
+    console.log(row);
+  };
+
   const columns = [
     {
       field: "Action",
       headerName: "Action",
       width: 70,
-      renderCell: () => (
+      renderCell: (params) => (
         <IconButton
           sx={{ color: "red" }}
-          onClick={() => alert("Yeah You Clicked!")}
+          onClick={() => handleDeleteCompany(params.row)}
         >
           <CloseIcon />
         </IconButton>
@@ -86,44 +110,49 @@ const EditDialog = ({ row, rowNumber, open, setOpen }) => {
     { field: "CompanyName", headerName: "CompanyName", width: 300 },
   ];
 
-  const rows = [
-    {
-      id: 1,
-      Action: (
-        <IconButton color="red">
-          <CloseIcon />
-        </IconButton>
-      ),
-      CompanyName: "American Express",
-    },
-    {
-      id: 2,
-      Action: (
-        <IconButton color="red">
-          <CloseIcon />
-        </IconButton>
-      ),
-      CompanyName: "BMW India",
-    },
-    {
-      id: 3,
-      Action: (
-        <IconButton color="red">
-          <CloseIcon />
-        </IconButton>
-      ),
-      CompanyName: "Tata Motors",
-    },
-    {
-      id: 4,
-      Action: (
-        <IconButton color="red">
-          <CloseIcon />
-        </IconButton>
-      ),
-      CompanyName: "Volkswagen",
-    },
-  ];
+  const rows = socialFeedTagDetails.map((detail, index) => ({
+    id: index,
+    CompanyName: detail.company_name,
+  }));
+
+  // * fetching header & tag details
+
+  useEffect(() => {
+    const fetchHeaderAndTagDetails = async () => {
+      try {
+        setSocialFeedTagDetailsLoading(true);
+        const userToken = localStorage.getItem("user");
+        const headers = {
+          Authorization: `Bearer ${userToken}`,
+        };
+
+        const headerResponse = await axios.get(
+          `${url}qc1onlineheader/?socialfeed_id=${socialFeedId}`,
+          { headers }
+        );
+        const headerData = headerResponse.data.socialfeed[0] || {};
+        setFormItems({
+          headline: headerData.headline,
+          summary: headerData.headsummary,
+          journalist: headerData.author_name,
+          tag: "",
+        });
+
+        const tagDetailsResponse = await axios.get(
+          `${url}qc1onlinetagdetails/?socialfeed_id=${socialFeedId}`,
+          { headers }
+        );
+        setSocialFeedTagDetails(tagDetailsResponse.data.socialfeed_details);
+      } catch (error) {
+        // toast.error("Error While fetching data.");
+        console.log(error.message);
+      } finally {
+        setSocialFeedTagDetailsLoading(false);
+      }
+    };
+
+    fetchHeaderAndTagDetails();
+  }, [socialFeedId]);
 
   return (
     <Modal
@@ -149,6 +178,7 @@ const EditDialog = ({ row, rowNumber, open, setOpen }) => {
             </IconButton>
           </Typography>
         </Box>
+
         <Card>
           {" "}
           <CardHeader
@@ -216,14 +246,14 @@ const EditDialog = ({ row, rowNumber, open, setOpen }) => {
                   <DataGrid
                     rows={rows}
                     columns={columns}
-                    initialState={{
-                      pagination: {
-                        paginationModel: { page: 0, pageSize: 5 },
-                      },
-                    }}
                     density="compact"
+                    loading={
+                      socialFeedTagDetailsLoading && <CircularProgress />
+                    }
+                    pageSize={5}
+                    pageSizeOptions={[10, 100, 200, 1000]}
+                    columnBufferPx={1000}
                     hideFooterSelectedRowCount
-                    pageSizeOptions={[5, 10]}
                   />
                 </Box>
               </CardContent>
@@ -240,7 +270,7 @@ const EditDialog = ({ row, rowNumber, open, setOpen }) => {
                     alignItems="center"
                     gap={1}
                     fontSize={"0.9em"}
-                    href={"https://marathi.abplive.com/"}
+                    href={iframeURI}
                     target="_blank"
                     rel="noreferrer"
                     fontFamily="nunito"
@@ -258,7 +288,7 @@ const EditDialog = ({ row, rowNumber, open, setOpen }) => {
               />
               <CardContent>
                 <iframe
-                  src="https://marathi.abplive.com/"
+                  src={iframeURI}
                   frameBorder="0"
                   style={{ width: "100%", height: "540px" }}
                 />
@@ -272,8 +302,9 @@ const EditDialog = ({ row, rowNumber, open, setOpen }) => {
 };
 
 EditDialog.propTypes = {
-  row: PropTypes.object.isRequired,
+  rowData: PropTypes.array.isRequired,
   rowNumber: PropTypes.number.isRequired,
+  setRowNumber: PropTypes.func.isRequired,
   open: PropTypes.bool.isRequired,
   setOpen: PropTypes.func.isRequired,
 };

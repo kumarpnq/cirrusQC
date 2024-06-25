@@ -1,7 +1,16 @@
-import { useState, useMemo } from "react";
-import { Box, Divider } from "@mui/material";
+import { useState, useMemo, Fragment } from "react";
+import {
+  Box,
+  CircularProgress,
+  Divider,
+  FormControl,
+  FormControlLabel,
+  Typography,
+  Checkbox,
+} from "@mui/material";
 import { makeStyles } from "@mui/styles";
 import { DataGrid, GridToolbar } from "@mui/x-data-grid";
+import { AiOutlineDownload } from "react-icons/ai";
 import Tabs from "@mui/material/Tabs";
 import Tab from "@mui/material/Tab";
 
@@ -9,17 +18,18 @@ import Tab from "@mui/material/Tab";
 import axios from "axios";
 import { toast } from "react-toastify";
 import PropTypes from "prop-types";
+import * as XLSX from "xlsx";
+// import { saveAs } from "file-saver";
 
 //* components
 import Button from "../../components/custom/Button";
 import FromDate from "../../components/research-dropdowns/FromDate";
 import ToDate from "../../components/research-dropdowns/ToDate";
-import { formattedDate, formattedNextDay } from "../../constants/dates";
 import Qc1By from "../../components/research-dropdowns/Qc1By";
-import { url } from "../../constants/baseUrl";
 import useFetchData from "../../hooks/useFetchData";
-import LongMenu from "../../analytics-components/MultiCheckbox";
 import CustomMultiSelect from "../../@core/CustomMultiSelect";
+import { formattedDate, formattedNextDay } from "../../constants/dates";
+import { url } from "../../constants/baseUrl";
 import { arrayToString } from "../../utils/arrayToString";
 
 const useStyle = makeStyles(() => ({
@@ -69,16 +79,17 @@ function a11yProps(index) {
 }
 
 const Analytics = () => {
+  // * table data variables
   const [gridData, setGridData] = useState([]);
+  const [articleData, setArticleData] = useState([]);
+  const [competitionData, setCompetitionData] = useState([]);
+
+  // * retrieve
   const [gridDataLoading, setGridDataLoading] = useState(false);
   const [selectedClients, setSelectedClients] = useState([]);
   const [selectedPrintAndOnline, setSelectedPrintAndOnline] = useState([]);
-  const [headerDetails, setHeaderDetails] = useState({
-    qc1by_header: false,
-    qc2by_header: false,
-    qc1by_detail: false,
-    qc2by_detail: false,
-  });
+  const [selectedHeaders, setSelectedHeaders] = useState([]);
+  const [withCompetition, setWithCompetition] = useState(false);
   const [selectedUsers, setSelectedUsers] = useState([]);
   const [selectedUserId, setSelectedUserId] = useState("");
   const [fromDate, setFromDate] = useState(formattedDate);
@@ -89,14 +100,11 @@ const Analytics = () => {
     setValue(newValue);
     // * clear the dropdown values after tab change
     setGridData([]);
+    setArticleData([]);
+    setCompetitionData([]);
     setSelectedClients([]);
     setSelectedPrintAndOnline([]);
-    setHeaderDetails({
-      qc1by_header: false,
-      qc2by_header: false,
-      qc1by_detail: false,
-      qc2by_detail: false,
-    });
+    setSelectedHeaders([]);
     setSelectedUsers([]);
     setSelectedUserId("");
   };
@@ -128,6 +136,46 @@ const Analytics = () => {
     ],
     []
   );
+
+  const articleDataColumn = useMemo(
+    () => [
+      { field: "USERNAME", headerName: "Username", width: 150 },
+      { field: "MEDIA", headerName: "Media", width: 150 },
+      { field: "QC_DATE", headerName: "QC Date", width: 150 },
+      { field: "QC1_HEADER", headerName: "QC1 Header", width: 150 },
+      { field: "QC2_HEADER", headerName: "QC2 Header", width: 150 },
+    ],
+    []
+  );
+  const competitionYes = useMemo(
+    () => [
+      { field: "USERNAME", headerName: "Username", width: 150 },
+      { field: "MEDIA", headerName: "Media", width: 150 },
+      { field: "CLIENTNAME", headerName: "Client Name", width: 200 },
+      { field: "COMPANYNAME", headerName: "Company Name", width: 200 },
+      { field: "QC_DATE", headerName: "QC Date", width: 150 },
+      { field: "QC1_DETAIL", headerName: "QC1 Detail", width: 150 },
+      { field: "QC2_DETAIL", headerName: "QC2 Detail", width: 150 },
+    ],
+    []
+  );
+
+  const competitionNo = useMemo(
+    () => [
+      { field: "USERNAME", headerName: "Username", width: 150 },
+      { field: "MEDIA", headerName: "Media", width: 150 },
+      { field: "CLIENTNAME", headerName: "Client Name", width: 200 },
+      { field: "QC_DATE", headerName: "QC Date", width: 150 },
+      { field: "QC1_DETAIL", headerName: "QC1 Detail", width: 150 },
+      { field: "QC2_DETAIL", headerName: "QC2 Detail", width: 150 },
+    ],
+    []
+  );
+
+  const competitionDataColumn = withCompetition
+    ? competitionYes
+    : competitionNo;
+
   const handleFetchRecords = async () => {
     if (value && !selectedUserId) {
       toast.warning("Please select user.");
@@ -159,10 +207,9 @@ const Analytics = () => {
         todate: toDate.split(" ")[0],
         clientids: arrayToString(selectedClients),
         usernames: arrayToString(usernames),
-        qc1by_header: headerDetails.qc1by_header,
-        qc2by_header: headerDetails.qc2by_header,
-        qc1by_detail: headerDetails.qc1by_detail,
-        qc2by_detail: headerDetails.qc2by_detail,
+        qc1: selectedHeaders.includes("qc1"),
+        qc2: selectedHeaders.includes("qc2"),
+        competetion: withCompetition ? "YES" : "NO",
       };
 
       const endpoint = !value ? "useractivityreport/" : "userActivityLog/";
@@ -172,13 +219,18 @@ const Analytics = () => {
       });
       const accesskey = !value ? "feed_data" : "result";
       const data = response.data[accesskey] || [];
-      if (data.length) {
+      if (data.length && value) {
         setGridData(response.data[accesskey]);
+      } else if (!!data && !value) {
+        const article = data.article;
+        const competition = data.competetion;
+        setArticleData(article || []);
+        setCompetitionData(competition || []);
       } else {
         toast.warning("No data found.");
       }
     } catch (error) {
-      toast.error(error.message);
+      toast.error("Error while fetching records.");
     } finally {
       setGridDataLoading(false);
     }
@@ -188,6 +240,25 @@ const Analytics = () => {
   const classes = useStyle();
 
   const rows = gridData.map((item, index) => ({ id: index + 1, ...item }));
+  const articleRows = articleData.map((item, index) => ({
+    id: index + 1,
+    ...item,
+  }));
+  const competitionRows = competitionData.map((item, index) => ({
+    id: index + 1,
+    ...item,
+  }));
+
+  // Function to handle Excel export
+  const handleExportToExcel = () => {
+    const articleSheet = XLSX.utils.json_to_sheet(articleRows);
+    const competitionSheet = XLSX.utils.json_to_sheet(competitionRows);
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, articleSheet, "Article Data");
+    XLSX.utils.book_append_sheet(wb, competitionSheet, "Competition Data");
+    const excelFileName = "analytics_data.xlsx";
+    XLSX.writeFile(wb, excelFileName);
+  };
 
   return (
     <div className="px-3">
@@ -232,10 +303,19 @@ const Analytics = () => {
                 dropdownToggleWidth={200}
               />
             </div>
-            <div className="pt-2">
-              <LongMenu
-                headerDetails={headerDetails}
-                setHeaderDetails={setHeaderDetails}
+            <div className="pt-3 w-[180px]">
+              <CustomMultiSelect
+                title="QC"
+                dropdownWidth={180}
+                dropdownToggleWidth={180}
+                options={[
+                  { id: "qc1", name: "QC1" },
+                  { id: "qc2", name: "QC2" },
+                ]}
+                keyId="id"
+                keyName="name"
+                selectedItems={selectedHeaders}
+                setSelectedItems={setSelectedHeaders}
               />
             </div>
             <div className="pt-3 w-[150px]">
@@ -253,7 +333,24 @@ const Analytics = () => {
                 dropdownToggleWidth={150}
               />
             </div>
-
+            <div>
+              <FormControl>
+                <FormControlLabel
+                  sx={{ mt: 2 }}
+                  label={
+                    <Typography variant="h6" fontSize={"0.9em"}>
+                      Competition
+                    </Typography>
+                  }
+                  control={
+                    <Checkbox
+                      checked={withCompetition}
+                      onChange={() => setWithCompetition((prev) => !prev)}
+                    />
+                  }
+                />
+              </FormControl>
+            </div>
             <FromDate fromDate={fromDate} setFromDate={setFromDate} />
             <ToDate dateNow={toDate} setDateNow={setToDate} isMargin={true} />
           </>
@@ -277,24 +374,56 @@ const Analytics = () => {
         />
       </Box>
       <Divider sx={{ my: 1 }} />
+
       <Box sx={{ height: 500, width: "100%" }}>
-        <DataGrid
-          rows={rows}
-          columns={!value ? columns1 : columns}
-          pageSize={5}
-          density="compact"
-          disableColumnFilter
-          disableColumnSelector
-          disableDensitySelector
-          disableRowSelectionOnClick
-          hideFooterSelectedRowCount
-          slots={{ toolbar: GridToolbar }}
-          slotProps={{
-            toolbar: {
-              showQuickFilter: true,
-            },
-          }}
-        />
+        {value ? (
+          <DataGrid
+            rows={rows}
+            columns={!value ? columns1 : columns}
+            pageSize={5}
+            density="compact"
+            disableColumnFilter
+            disableColumnSelector
+            disableDensitySelector
+            disableRowSelectionOnClick
+            hideFooterSelectedRowCount
+            slots={{ toolbar: GridToolbar }}
+            slotProps={{
+              toolbar: {
+                showQuickFilter: true,
+              },
+            }}
+            loading={gridDataLoading && <CircularProgress />}
+          />
+        ) : (
+          <Fragment>
+            <Box
+              component={"button"}
+              display={"flex"}
+              alignItems={"center"}
+              className="gap-1 text-primary"
+              onClick={handleExportToExcel}
+              disabled={!articleData.length && !competitionData.length}
+            >
+              <AiOutlineDownload />
+              EXPORT
+            </Box>
+            <Box display={"flex"} gap={1} sx={{ height: 450, width: "100%" }}>
+              <Box>
+                <DataGrid
+                  rows={articleRows}
+                  columns={articleDataColumn}
+                  loading={gridDataLoading && <CircularProgress />}
+                />
+              </Box>
+              <DataGrid
+                rows={competitionRows}
+                columns={competitionDataColumn}
+                loading={gridDataLoading && <CircularProgress />}
+              />
+            </Box>
+          </Fragment>
+        )}
       </Box>
     </div>
   );

@@ -45,6 +45,8 @@ function App() {
     manual: false,
     nonTagged: false,
     Analytics: false,
+    onlineQC1: false,
+    printQc1: false,
   });
   const [loading, setLoading] = useState(false);
 
@@ -91,6 +93,8 @@ function App() {
       manual: screenPermissions["Manual-upload"],
       nonTagged: screenPermissions["Non-Tagged"],
       Analytics: screenPermissions.Analytics,
+      onlineQC1: screenPermissions["QC1-Online"],
+      printQc1: screenPermissions["QC1-Print"],
     });
   }, [screenPermissions]);
 
@@ -130,6 +134,22 @@ function App() {
           {userToken ? (
             <>
               <Route path="/" exact element={<Home />} />
+              {/* <Route path="/qc1/online" element={<Online />} />
+              <Route path="/qc1/print" element={<Print />} /> */}
+              <Route
+                path="/qc1/online"
+                exact
+                element={
+                  permissions.onlineQC1 ? <Online /> : <div>Loading...</div>
+                }
+              />
+              <Route
+                path="/qc1/print"
+                exact
+                element={
+                  permissions.printQc1 ? <Print /> : <div>Loading...</div>
+                }
+              />
               <Route
                 path="/online"
                 exact
@@ -201,8 +221,6 @@ function App() {
                   )
                 }
               />
-              <Route path="/qc1/online" element={<Online />} />
-              <Route path="/qc1/print" element={<Print />} />
             </>
           ) : (
             <Route path="login" element={<Login />} />

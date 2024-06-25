@@ -1,5 +1,5 @@
 import { useCallback, useState } from "react";
-import { Box, Divider } from "@mui/material";
+import { Box, CircularProgress, Divider, IconButton } from "@mui/material";
 import { makeStyles } from "@mui/styles";
 import { DataGrid, GridToolbar } from "@mui/x-data-grid";
 
@@ -34,6 +34,9 @@ import { formattedDate, formattedNextDay } from "../../constants/dates";
 // * third party imports
 import axios from "axios";
 import { toast } from "react-toastify";
+import CustomTextField from "../../@core/CutsomTextField";
+import { arrayToString } from "../../utils/arrayToString";
+import { EditAttributesOutlined } from "@mui/icons-material";
 
 const useStyle = makeStyles(() => ({
   dropDowns: {
@@ -67,18 +70,15 @@ const Online = () => {
   const [selectedCountries, setSelectedCountries] = useState([]);
   const [isImage, setIsImage] = useState(0);
   const [isVideo, setIsVideo] = useState(0);
+  const [headOrSummary, setHeadOrSummary] = useState("");
+  const [link, setLink] = useState("");
+  const [socialFeedId, setSocialFeedId] = useState("");
 
   // * data hooks
-  const {
-    data: clientData,
-    error: ClientError,
-    loading: clientLoading,
-  } = useFetchData(`${url}clientlist/`);
-  const {
-    data: companyData,
-    error: companyError,
-    loading: companyLoading,
-  } = useFetchData(selectedClient ? `${url}companylist/${selectedClient}` : "");
+  const { data: clientData } = useFetchData(`${url}clientlist/`);
+  const { data: companyData } = useFetchData(
+    selectedClient ? `${url}companylist/${selectedClient}` : ""
+  );
   const { data: qcUserData } = useFetchData(`${url}qcuserlist/`);
 
   // * table data
@@ -87,27 +87,108 @@ const Online = () => {
   const fetchTableData = useCallback(async () => {
     try {
       setTableDataLoading(true);
-      const response = await axios.get(`${url}endpoint`);
-      console.log(response);
-      setTableData(response.data);
-      console.log(tableData);
+      const userToken = localStorage.getItem("user");
+      const headers = {
+        Authorization: `Bearer ${userToken}`,
+      };
+      const params = {
+        client_id: selectedClient,
+        from_date: fromDate,
+        to_date: dateNow,
+        date_type: selectedDateType,
+
+        //* optional params
+        // company_ids: "",
+        // search_text: "",
+        // link: "",
+        // is_qc1: "",
+        // qc_1by: "",
+        // language: "",
+        // continent: "",
+        // country: "",
+        // has_image: "",
+        // has_video: "",
+        // socialfeed_id: "",
+        // count: "",
+      };
+
+      // eslint-disable-next-line no-inner-declarations
+      function addPropertyIfConditionIsTrue(condition, property, value) {
+        if (condition) {
+          params[property] = value;
+        }
+      }
+      addPropertyIfConditionIsTrue(
+        selectedCompanies.length > 0,
+        "company_ids",
+        arrayToString(selectedCompanies)
+      );
+      addPropertyIfConditionIsTrue(
+        headOrSummary !== "",
+        "search_text",
+        headOrSummary
+      );
+      addPropertyIfConditionIsTrue(qc1By !== "", "qc_1by", qc1By);
+      addPropertyIfConditionIsTrue(link !== "", "link", link);
+      addPropertyIfConditionIsTrue(isQc1Done !== 0, "is_qc1", isQc1Done);
+      addPropertyIfConditionIsTrue(
+        selectedLanguages.length > 0,
+        "language",
+        arrayToString(selectedLanguages)
+      );
+      addPropertyIfConditionIsTrue(
+        selectedContinents.length > 0,
+        "continent",
+        arrayToString(selectedContinents)
+      );
+      addPropertyIfConditionIsTrue(
+        selectedCountries.length > 0,
+        "country",
+        arrayToString(selectedCountries)
+      );
+      addPropertyIfConditionIsTrue(isImage !== 0, "has_image", isImage);
+      addPropertyIfConditionIsTrue(isVideo !== 0, "has_video", isVideo);
+      addPropertyIfConditionIsTrue(
+        socialFeedId !== "",
+        "socialfeed_id",
+        socialFeedId
+      );
+      const response = await axios.get(`${url}listArticlebyQC1/`, {
+        headers,
+        params,
+      });
+      setTableData(response.data.feed_data || []);
     } catch (error) {
       toast.error(error);
     } finally {
       setTableDataLoading(false);
     }
-  }, [tableData]);
+  }, [
+    dateNow,
+    fromDate,
+    headOrSummary,
+    isImage,
+    isQc1Done,
+    isVideo,
+    link,
+    qc1By,
+    selectedClient,
+    selectedCompanies,
+    selectedContinents,
+    selectedCountries,
+    selectedDateType,
+    selectedLanguages,
+    socialFeedId,
+  ]);
   // *  mui style
   const classes = useStyle();
 
   //  * edit dialog
   const [open, setOpen] = useState(false);
-  const [selectedRow, setSelectedRow] = useState(null);
   const [articleNumber, setArticleNumber] = useState(0);
 
   const handleRowClick = (row, rowNumber) => {
     setOpen((prev) => !prev);
-    setSelectedRow(row);
     setArticleNumber(rowNumber);
   };
 
@@ -117,9 +198,9 @@ const Online = () => {
       headerName: "Action",
       width: 100,
       renderCell: (params) => (
-        <button onClick={() => handleRowClick(params.row, params.id)}>
-          Edit
-        </button>
+        <IconButton onClick={() => handleRowClick(params.row, params.id)}>
+          <EditAttributesOutlined className="text-primary" />
+        </IconButton>
       ),
     },
     { field: "headline", headerName: "Headline", width: 250 },
@@ -138,53 +219,21 @@ const Online = () => {
     },
     { field: "qcDone", headerName: "QC Done", width: 100 },
     { field: "articleDate", headerName: "Article Date", width: 150 },
-    { field: "articleId", headerName: "Article ID", width: 150 },
+    { field: "socialFeedId", headerName: "socialFeedId", width: 150 },
   ];
 
-  const rows = [
-    {
-      id: 1,
-      action: "#",
-      headline:
-        "Fortune India: Business News, Strategy, Finance and Corporate Insight",
-      summary:
-        "BYJU s to delay March salaries; blames ‘misguided foreign investors BYJU s says these investors obtained court order that restricted use of funds raised through rights issue; assures employees could receive salaries by April 8.",
-      journalist: "",
-      publication: "fortuneindia.com",
-      url: "#",
-      qcDone: "No",
-      articleDate: "18-JUN-24",
-      articleId: "18200740589",
-    },
-    {
-      id: 2,
-      action: "#",
-      headline:
-        "Fortune India: Business News, Strategy, Finance and Corporate Insight",
-      summary:
-        "‘Moved mountains : Byju Raveendran admits to struggles in clearing salaries BYJU s says the co. has not had any external investor funding for 2 years apart from founder infusing over $1 bn — a reason why it launched a $200 mn righ ts issue to quickly raise mone.",
-      journalist: "",
-      publication: "fortuneindia.com",
-      url: "#",
-      qcDone: "No",
-      articleDate: "18-JUN-24",
-      articleId: "18200746311",
-    },
-    {
-      id: 3,
-      action: "#",
-      headline:
-        "Seethamraju Sudhakar @SakshiTV - Andhra/Telangana News తెలుగు వార్తలు - Video - APLatestNews",
-      summary: ".",
-      journalist: "",
-      publication: "aplatestnews.com",
-      url: "#",
-      qcDone: "No",
-      articleDate: "18-JUN-24",
-      articleId: "18200749964",
-    },
-  ];
-
+  const rows = tableData.map((item, index) => ({
+    id: index,
+    action: "#",
+    headline: item.headline,
+    summary: item.detail_summary,
+    journalist: item.journalist,
+    publication: item.publication,
+    url: item.link,
+    qcDone: item.qc1_done,
+    articleDate: item.feed_date_time,
+    socialFeedId: item.social_feed_id,
+  }));
   return (
     <Box mx={2}>
       <Box
@@ -249,7 +298,32 @@ const Online = () => {
           <CheckboxComp value={isImage} setValue={setIsImage} label={"Image"} />
           <CheckboxComp value={isVideo} setValue={setIsVideo} label={"Video"} />
         </div>
-
+        <div
+          className="flex flex-wrap items-center gap-2 pt-2"
+          style={{ height: 25 }}
+        >
+          <CustomTextField
+            width={200}
+            placeholder="Summary/Headline"
+            type="text"
+            value={headOrSummary}
+            setValue={setHeadOrSummary}
+          />
+          <CustomTextField
+            width={200}
+            placeholder="Link"
+            type="text"
+            value={link}
+            setValue={setLink}
+          />
+          <CustomTextField
+            width={200}
+            placeholder={"socialFeedId"}
+            type={"number"}
+            value={socialFeedId}
+            setValue={setSocialFeedId}
+          />
+        </div>
         <Button
           btnText={tableDataLoading ? "searching" : "search"}
           isLoading={tableDataLoading}
@@ -257,7 +331,7 @@ const Online = () => {
         />
       </Box>
       <Divider sx={{ mt: 1 }} />
-      <Box sx={{ height: 400, width: "100%" }}>
+      <Box sx={{ height: 500, width: "100%", mt: 1 }}>
         <DataGrid
           rows={rows}
           columns={columns}
@@ -281,14 +355,16 @@ const Online = () => {
           disableDensitySelector
           disableSelectionOnClick
           hideFooterSelectedRowCount
+          loading={tableDataLoading && <CircularProgress />}
           components={{ Toolbar: GridToolbar }}
         />
       </Box>
       <EditDialog
         open={open}
         setOpen={setOpen}
-        row={selectedRow}
+        rowData={tableData}
         rowNumber={articleNumber}
+        setRowNumber={setArticleNumber}
       />
     </Box>
   );

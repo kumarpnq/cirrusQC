@@ -15,7 +15,6 @@ export default function CheckboxComp({ value, setValue, label }) {
           control={
             <Checkbox
               size="small"
-              color="default"
               checked={value === 1}
               onChange={() => {
                 setValue(value === 1 ? 0 : 1);
