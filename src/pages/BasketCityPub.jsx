@@ -28,145 +28,11 @@ const columns = [
       </IconButton>
     ),
   },
-  { field: "clientname", headerName: "Client", width: 200 },
-  { field: "companyname", headerName: "Company", width: 200 },
-  { field: "cityname", headerName: "City", width: 200 },
-  { field: "publicationname", headerName: "Publication", width: 200 },
-];
-
-const rows = [
-  {
-    id: 13,
-    action: "Remove",
-    clientname: "1-BMW CURATED",
-    companyname: "BMW AUTO INDUSTRY",
-    cityname: "Adilabad",
-    publicationname: "Ahmedabad Mirror",
-    clientid: "BMWCU11",
-    companyid: "BMWINDAUT",
-    cityid: 203,
-    pubgroupid: "AM",
-  },
-  {
-    id: 14,
-    action: "Remove",
-    clientname: "1-BMW CURATED",
-    companyname: "BMW AUTO INDUSTRY",
-    cityname: "APAC",
-    publicationname: "Ahmedabad Mirror",
-    clientid: "BMWCU11",
-    companyid: "BMWINDAUT",
-    cityid: 203,
-    pubgroupid: "AM",
-  },
-  {
-    id: 15,
-    action: "Remove",
-    clientname: "1-BMW CURATED",
-    companyname: "BMW AUTO INDUSTRY",
-    cityname: "APAC",
-    publicationname: "Asian Age",
-    clientid: "BMWCU11",
-    companyid: "BMWINDAUT",
-    cityid: 203,
-    pubgroupid: "AM",
-  },
-  {
-    id: 16,
-    action: "Remove",
-    clientname: "1-BMW CURATED",
-    companyname: "BMW AUTO INDUSTRY",
-    cityname: "APAC",
-    publicationname: "Bangalore Mirror",
-    clientid: "BMWCU11",
-    companyid: "BMWINDAUT",
-    cityid: 203,
-    pubgroupid: "AM",
-  },
-  {
-    id: 17,
-    action: "Remove",
-    clientname: "1-BMW CURATED",
-    companyname: "BMW AUTO INDUSTRY",
-    cityname: "ARLINGTONHEIGHTS",
-    publicationname: "Ahmedabad Mirror",
-    clientid: "BMWCU11",
-    companyid: "BMWINDAUT",
-    cityid: 203,
-    pubgroupid: "AM",
-  },
-  {
-    id: 18,
-    action: "Remove",
-    clientname: "1-BMW CURATED",
-    companyname: "BMW AUTO INDUSTRY",
-    cityname: "ARLINGTONHEIGHTS",
-    publicationname: "Asian Age",
-    clientid: "BMWCU11",
-    companyid: "BMWINDAUT",
-    cityid: 203,
-    pubgroupid: "AM",
-  },
-  {
-    id: 19,
-    action: "Remove",
-    clientname: "1-BMW CURATED",
-    companyname: "BMW AUTO INDUSTRY",
-    cityname: "ARLINGTONHEIGHTS",
-    publicationname: "Bangalore Mirror",
-    clientid: "BMWCU11",
-    companyid: "BMWINDAUT",
-    cityid: 203,
-    pubgroupid: "AM",
-  },
-  {
-    id: 20,
-    action: "Remove",
-    clientname: "1-BMW CURATED",
-    companyname: "BMW AUTO INDUSTRY",
-    cityname: "Adilabad",
-    publicationname: "Ahmedabad Mirror",
-    clientid: "BMWCU11",
-    companyid: "BMWINDAUT",
-    cityid: 203,
-    pubgroupid: "AM",
-  },
-  {
-    id: 21,
-    action: "Remove",
-    clientname: "1-BMW CURATED",
-    companyname: "BMW AUTO INDUSTRY",
-    cityname: "Adilabad",
-    publicationname: "Asian Age",
-    clientid: "BMWCU11",
-    companyid: "BMWINDAUT",
-    cityid: 203,
-    pubgroupid: "AA",
-  },
-  {
-    id: 22,
-    action: "Remove",
-    clientname: "1-BMW CURATED",
-    companyname: "BMW AUTO INDUSTRY",
-    cityname: "Adilabad",
-    publicationname: "Bangalore Mirror",
-    clientid: "BMWCU11",
-    companyid: "BMWINDAUT",
-    cityid: 203,
-    pubgroupid: "Bangalore Mirror",
-  },
-  {
-    id: 23,
-    action: "Remove",
-    clientname: "1-BMW CURATED",
-    companyname: "BMW CARS BIKE COMPETITION",
-    cityname: "APAC",
-    publicationname: "Ahmedabad Mirror",
-    clientid: "BMWCU11",
-    companyid: "BMWINDAUT",
-    cityid: 203,
-    pubgroupid: "AM",
-  },
+  { field: "CLIENTNAME", headerName: "Client", width: 200 },
+  { field: "COMPANYNAME", headerName: "Company", width: 200 },
+  { field: "CITYNAME", headerName: "City", width: 200 },
+  { field: "PUBGROUPNAME", headerName: "Publication", width: 200 },
+  { field: "ISACTIVE", headerName: "Active", width: 200 },
 ];
 
 const publications = [
@@ -679,6 +545,7 @@ const publications = [
 const BasketCityPub = () => {
   const [selectedClient, setSelectedClient] = useState("");
   const [companies, setCompanies] = useState([]);
+  const [tableData, setTableData] = useState([]);
 
   //   * data hooks
   const { data: clientData } = useFetchData(`${url}clientlist/`);
@@ -701,7 +568,7 @@ const BasketCityPub = () => {
         },
       });
 
-      console.log(response.data);
+      setTableData(response.data.result || []);
     } catch (error) {
       const errorMessage = error.response
         ? `An error has occurred: ${error.response.status}`
@@ -713,6 +580,27 @@ const BasketCityPub = () => {
   useEffect(() => {
     fetchCBCPList();
   }, []);
+
+  const rows = tableData.map((item, index) => ({
+    id: index,
+    CLIENTID: item.CLIENTID,
+
+    CLIENTNAME: item.CLIENTNAME,
+
+    COMPANYID: item.COMPANYID,
+
+    COMPANYNAME: item.COMPANYNAME,
+
+    CITYID: item.CITYID,
+
+    CITYNAME: item.CITYNAME,
+
+    PUBGROUPID: item.PUBGROUPID,
+
+    PUBGROUPNAME: item.PUBGROUPNAME,
+
+    ISACTIVE: item.ISACTIVE,
+  }));
 
   return (
     <Grid container sx={{ px: 2 }}>
