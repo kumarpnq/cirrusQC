@@ -18,8 +18,7 @@ import Tab from "@mui/material/Tab";
 import axios from "axios";
 import { toast } from "react-toastify";
 import PropTypes from "prop-types";
-import * as XLSX from "xlsx";
-// import { saveAs } from "file-saver";
+import XLSX from "xlsx";
 
 //* components
 import Button from "../../components/custom/Button";
