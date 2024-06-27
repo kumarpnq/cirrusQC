@@ -1,5 +1,5 @@
-import { Fragment, useCallback, useState } from "react";
-import { Button, FormControl } from "@mui/material";
+import { useCallback, useState } from "react";
+import { Button, CircularProgress, FormControl } from "@mui/material";
 import Accordion from "@mui/material/Accordion";
 import AccordionSummary from "@mui/material/AccordionSummary";
 import AccordionDetails from "@mui/material/AccordionDetails";
@@ -9,7 +9,9 @@ import CustomMultiSelect from "../@core/CustomMultiSelect";
 
 // * third party imports
 import PropTypes from "prop-types";
-import MatchedRowModal from "./MatchedRowModal";
+import axios from "axios";
+import { url } from "../constants/baseUrl";
+import { toast } from "react-toastify";
 
 export default function AddNewRow({
   cityOptions,
@@ -18,18 +20,22 @@ export default function AddNewRow({
   tableData,
   clientId,
   clientData,
+  setHighlightRows,
+  setTableData,
+  setFetchFlag,
 }) {
   const [companies, setCompanies] = useState([]);
   const [city, setCity] = useState([]);
   const [publicationGroups, setPublicationGroups] = useState([]);
   const [matchedItems, setMatchedItems] = useState([]);
-  // * matched row modal
-  const [open, setOpen] = useState(false);
+
+  const [addLoading, setAddLoading] = useState(false);
 
   const isAnySelected =
     companies.length || city.length || publicationGroups.length;
 
-  const handleAddNewRows = useCallback(() => {
+  const handleAddNewRows = useCallback(async () => {
+    setAddLoading(true);
     // clientName
     const clientName = clientData.find(
       (i) => i.clientid === clientId
@@ -63,9 +69,6 @@ export default function AddNewRow({
         selectedPublicationGroupNames.includes(row.publicationname)
     );
     setMatchedItems(existingRows);
-    if (existingRows.length) {
-      setOpen(true);
-    }
 
     const matchedRows = [];
 
@@ -97,7 +100,7 @@ export default function AddNewRow({
 
           if (!existsInTableData) {
             dataToSendFiltered.push({
-              clientid: clientId,
+              clientid: "INFINIXIN",
               companyid: companyId,
               cityid: cityId,
               pubgroupid: publicationId,
@@ -107,6 +110,32 @@ export default function AddNewRow({
         });
       });
     });
+    try {
+      const userToken = localStorage.getItem("user");
+      const response = await axios.post(
+        `${url}updateCBCP/`,
+        dataToSendFiltered,
+        {
+          headers: { Authorization: `Bearer ${userToken}` },
+        }
+      );
+      if (response.data.result.success.length) {
+        setTableData((prev) => [...prev, ...dataToSendFiltered]);
+        setHighlightRows(dataToSendFiltered);
+        toast.success("Data added.");
+        setAddLoading(false);
+        setCompanies([]);
+        setCity([]);
+        setPublicationGroups([]);
+        setFetchFlag(true);
+      } else {
+        toast.error("Please try again");
+      }
+    } catch (error) {
+      console.log(error);
+      toast.error("Something went wrong");
+      setAddLoading(false);
+    }
   }, [
     companies,
     city,
@@ -117,75 +146,70 @@ export default function AddNewRow({
     tableData,
     clientId,
     clientData,
+    setTableData,
+    setHighlightRows,
+    setFetchFlag,
   ]);
 
   return (
-    <Fragment>
-      <Accordion>
-        <AccordionSummary
-          expandIcon={
-            <ArrowDownwardIcon sx={{ color: isAnySelected ? "#0a4f7d" : "" }} />
-          }
-          aria-controls="panel1-content"
-          id="panel1-header"
-        >
-          <Typography className="text-primary">Add Rows</Typography>
-        </AccordionSummary>
-        <AccordionDetails>
-          <Typography>
-            <FormControl
-              sx={{
-                display: "flex",
-                flexDirection: "row",
-                alignItems: "center",
-                gap: 1,
-              }}
-            >
-              <CustomMultiSelect
-                title="Companies"
-                options={companyData}
-                selectedItems={companies}
-                setSelectedItems={setCompanies}
-                keyId="companyid"
-                keyName="companyname"
-                dropdownWidth={200}
-                dropdownToggleWidth={200}
-              />
-              <CustomMultiSelect
-                title="Cities"
-                options={cityOptions || []}
-                selectedItems={city}
-                setSelectedItems={setCity}
-                keyId="cityid"
-                keyName="cityname"
-                dropdownWidth={200}
-                dropdownToggleWidth={200}
-              />
-              <CustomMultiSelect
-                title="PubGroups"
-                options={publicationData || []}
-                selectedItems={publicationGroups}
-                setSelectedItems={setPublicationGroups}
-                keyId="publicationgroupid"
-                keyName="publicationgroupname"
-                dropdownWidth={200}
-                dropdownToggleWidth={200}
-              />
+    <Accordion>
+      <AccordionSummary
+        expandIcon={
+          <ArrowDownwardIcon sx={{ color: isAnySelected ? "#0a4f7d" : "" }} />
+        }
+        aria-controls="panel1-content"
+        id="panel1-header"
+      >
+        <Typography className="text-primary">Add Rows</Typography>
+      </AccordionSummary>
+      <AccordionDetails>
+        <Typography>
+          <FormControl
+            sx={{
+              display: "flex",
+              flexDirection: "row",
+              alignItems: "center",
+              gap: 1,
+            }}
+          >
+            <CustomMultiSelect
+              title="Companies"
+              options={companyData}
+              selectedItems={companies}
+              setSelectedItems={setCompanies}
+              keyId="companyid"
+              keyName="companyname"
+              dropdownWidth={200}
+              dropdownToggleWidth={200}
+            />
+            <CustomMultiSelect
+              title="Cities"
+              options={cityOptions || []}
+              selectedItems={city}
+              setSelectedItems={setCity}
+              keyId="cityid"
+              keyName="cityname"
+              dropdownWidth={200}
+              dropdownToggleWidth={200}
+            />
+            <CustomMultiSelect
+              title="PubGroups"
+              options={publicationData || []}
+              selectedItems={publicationGroups}
+              setSelectedItems={setPublicationGroups}
+              keyId="publicationgroupid"
+              keyName="publicationgroupname"
+              dropdownWidth={200}
+              dropdownToggleWidth={200}
+            />
 
-              <Button type="submit" onClick={handleAddNewRows}>
-                Add
-              </Button>
-            </FormControl>
-          </Typography>
-        </AccordionDetails>
-      </Accordion>
-      <MatchedRowModal
-        open={open}
-        setOpen={setOpen}
-        matchedItems={matchedItems}
-        setMatchedItems={setMatchedItems}
-      />
-    </Fragment>
+            <Button type="submit" onClick={handleAddNewRows}>
+              {addLoading ? <CircularProgress /> : " Add"}
+            </Button>
+          </FormControl>
+        </Typography>
+      </AccordionDetails>
+    </Accordion>
   );
 }
 
@@ -196,4 +220,7 @@ AddNewRow.propTypes = {
   tableData: PropTypes.array.isRequired,
   clientId: PropTypes.string.isRequired,
   clientData: PropTypes.array.isRequired,
+  setHighlightRows: PropTypes.array.isRequired,
+  setTableData: PropTypes.func.isRequired,
+  setFetchFlag: PropTypes.bool.isRequired,
 };

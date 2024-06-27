@@ -17,10 +17,12 @@ export default function Selector({
   publications,
   companyData,
   clientid,
+  companies,
+  setCompanies,
 }) {
   const [city, setCity] = React.useState([]);
   const [selectedPublications, setSelectedPublications] = React.useState([]);
-  const [companies, setCompanies] = React.useState([]);
+
   const steps = [
     {
       label: "Select Company",
@@ -83,21 +85,21 @@ export default function Selector({
       const selectedPublication = selectedPublications.map(
         (i) => i.publicationgroupname
       );
-      const params = {
-        clientid,
+      const request_data = {
+        clientid: "INFINIXIN",
         companyid: arrayToString(selectedCompanies),
         cityid: arrayToString(selectedCities),
         pubgroupid: arrayToString(selectedPublication),
       };
-      const response = await axios.post(`${url}generateCBCP/`, params, {
+      const response = await axios.post(`${url}generateCBCP/`, request_data, {
         headers: {
           Authorization: `Bearer ${userToken}`,
-          "Content-Type": "application/json",
         },
       });
 
       console.log(response.data);
     } catch (error) {
+      console.log("test");
       console.log(error);
     }
   };
@@ -164,4 +166,6 @@ Selector.propTypes = {
     })
   ).isRequired,
   clientid: PropTypes.string.isRequired,
+  companies: PropTypes.array.isRequired,
+  setCompanies: PropTypes.func.isRequired,
 };

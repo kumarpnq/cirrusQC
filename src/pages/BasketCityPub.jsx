@@ -1,9 +1,10 @@
 import { useEffect, useState } from "react";
-import { Box, Button, Grid, IconButton } from "@mui/material";
+import { Box, Button, CircularProgress, Grid, IconButton } from "@mui/material";
 import ClearIcon from "@mui/icons-material/Clear";
 
 // * third party imports
 import axios from "axios";
+import toast from "react-hot-toast";
 
 // * components &  constants
 import Client from "../print-components/dropdowns/Client";
@@ -16,24 +17,6 @@ import useFetchData from "../hooks/useFetchData";
 
 import Selector from "../basketCityPub-components/Selector";
 import { DataGrid } from "@mui/x-data-grid";
-const columns = [
-  { field: "id", headerName: "ID", width: 50 },
-  {
-    field: "action",
-    headerName: "Action",
-    width: 120,
-    renderCell: (params) => (
-      <IconButton color="error" onClick={() => params.row.id}>
-        <ClearIcon />
-      </IconButton>
-    ),
-  },
-  { field: "CLIENTNAME", headerName: "Client", width: 200 },
-  { field: "COMPANYNAME", headerName: "Company", width: 200 },
-  { field: "CITYNAME", headerName: "City", width: 200 },
-  { field: "PUBGROUPNAME", headerName: "Publication", width: 200 },
-  { field: "ISACTIVE", headerName: "Active", width: 200 },
-];
 
 const publications = [
   {
@@ -544,8 +527,12 @@ const publications = [
 
 const BasketCityPub = () => {
   const [selectedClient, setSelectedClient] = useState("");
-  const [companies, setCompanies] = useState([]);
+  const [selectorCompanies, setSelectorCompanies] = useState([]);
+  // const [addNewRoCompany,setAddNewRowCompany] = useState([])
   const [tableData, setTableData] = useState([]);
+  const [fetchLoading, setFetchLoading] = useState(false);
+  const [highlightRows, setHighlightRows] = useState([]);
+  const [tableFetchFlag, setTableFetchFalg] = useState(false);
 
   //   * data hooks
   const { data: clientData } = useFetchData(`${url}clientlist/`);
@@ -557,6 +544,7 @@ const BasketCityPub = () => {
   const { data: cityData } = useFetchData(`${url}citieslist`);
 
   const fetchCBCPList = async () => {
+    setFetchLoading(true);
     try {
       const clientid = "INFINIXIN";
       const userToken = localStorage.getItem("user");
@@ -569,17 +557,80 @@ const BasketCityPub = () => {
       });
 
       setTableData(response.data.result || []);
+      setFetchLoading(false);
     } catch (error) {
-      const errorMessage = error.response
-        ? `An error has occurred: ${error.response.status}`
-        : error.message;
-      throw new Error(errorMessage);
+      console.log(error.message);
+      setFetchLoading(false);
+    } finally {
+      setTableFetchFalg(false);
     }
   };
 
   useEffect(() => {
     fetchCBCPList();
   }, []);
+
+  useEffect(() => {
+    if (tableFetchFlag) {
+      fetchCBCPList();
+    }
+  }, [tableFetchFlag]);
+
+  const handleDeleteRow = async (row) => {
+    const userToken = localStorage.getItem("user");
+    const request_data = [
+      {
+        clientid: "INFINIXIN",
+        companyid: row.COMPANYID,
+        cityid: row.CITYID,
+        pubgroupid: row.PUBGROUPID,
+        update_type: "D",
+      },
+    ];
+
+    toast.promise(
+      axios
+        .post(`${url}updateCBCP/`, request_data, {
+          headers: { Authorization: `Bearer ${userToken}` },
+        })
+        .then((response) => {
+          // On successful deletion, update the state to remove the deleted row
+          setTableData((prevData) =>
+            prevData.filter(
+              (item) =>
+                item.COMPANYID !== row.COMPANYID ||
+                item.CITYID !== row.CITYID ||
+                item.PUBGROUPID !== row.PUBGROUPID
+            )
+          );
+          return response;
+        }),
+      {
+        loading: "Deleting record...",
+        success: "Record deleted successfully!",
+        error: "Error while deleting record",
+      }
+    );
+  };
+
+  const columns = [
+    { field: "id", headerName: "ID", width: 50 },
+    {
+      field: "action",
+      headerName: "Action",
+      width: 120,
+      renderCell: (params) => (
+        <IconButton color="error" onClick={() => handleDeleteRow(params.row)}>
+          <ClearIcon />
+        </IconButton>
+      ),
+    },
+    { field: "CLIENTNAME", headerName: "Client", width: 200 },
+    { field: "COMPANYNAME", headerName: "Company", width: 200 },
+    { field: "CITYNAME", headerName: "City", width: 200 },
+    { field: "PUBGROUPNAME", headerName: "Publication", width: 200 },
+    { field: "ISACTIVE", headerName: "Active", width: 200 },
+  ];
 
   const rows = tableData.map((item, index) => ({
     id: index,
@@ -612,7 +663,7 @@ const BasketCityPub = () => {
             client={selectedClient}
             setClient={setSelectedClient}
             width={200}
-            setCompanies={setCompanies}
+            setCompanies={setSelectorCompanies}
           />
         </Box>
         <Selector
@@ -620,11 +671,13 @@ const BasketCityPub = () => {
           companyData={data?.data?.companies || []}
           publications={publications}
           clientid={selectedClient}
+          companies={selectorCompanies}
+          setCompanies={setSelectorCompanies}
         />
       </Grid>
 
       {/* Second section */}
-      <Grid item xs={12} sm={8}>
+      <Grid item xs={12} sm={8} md={9}>
         <Box display={"flex"} mt={1}>
           <AddNewRow
             cityOptions={cityData?.data?.cities || []}
@@ -633,6 +686,9 @@ const BasketCityPub = () => {
             tableData={rows}
             clientId={selectedClient}
             clientData={clientData?.data?.clients || []}
+            setTableData={setTableData}
+            setHighlightRows={setHighlightRows}
+            setFetchFlag={setTableFetchFalg}
           />
           <Button>Save</Button>
         </Box>
@@ -643,6 +699,9 @@ const BasketCityPub = () => {
             columns={columns}
             pageSize={5}
             density="compact"
+            disableRowSelectionOnClick
+            hideFooterSelectedRowCount
+            loading={fetchLoading && <CircularProgress />}
           />
         </Box>
       </Grid>

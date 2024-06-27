@@ -10,6 +10,7 @@ import { Routes, Route, useLocation } from "react-router-dom";
 
 // * third party import
 import axios from "axios";
+import { Toaster } from "react-hot-toast";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 // * comp & urls
@@ -122,6 +123,10 @@ function App() {
 
   return (
     <div className="bg-secondary" style={{ fontFamily: "Nunito" }}>
+      <Toaster
+        position="top-right" // Set the position to top-right
+        reverseOrder={false}
+      />
       <ToastContainer />
       {!isArticleView && (
         <div className="sticky top-0 z-50">

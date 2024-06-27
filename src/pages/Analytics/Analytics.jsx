@@ -414,9 +414,11 @@ const Analytics = () => {
                   rows={articleRows}
                   columns={articleDataColumn}
                   loading={gridDataLoading && <CircularProgress />}
+                  density="compact"
                 />
               </Box>
               <DataGrid
+                density="compact"
                 rows={competitionRows}
                 columns={competitionDataColumn}
                 loading={gridDataLoading && <CircularProgress />}
