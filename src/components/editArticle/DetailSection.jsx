@@ -110,11 +110,10 @@ const Details = ({ selectedRow }) => {
         toast.warning("No changes to update.");
         return;
       }
-      const response = await axios.post(
-        `${url}updatesocialfeedheader/`,
-        [request_data],
-        { headers }
-      );
+      const data = { data: [request_data], qcflag: 2 };
+      const response = await axios.post(`${url}updatesocialfeedheader/`, data, {
+        headers,
+      });
       if (response) {
         setUpdateLoading(false);
         fetchSocialFeedHeader();

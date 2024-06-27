@@ -145,13 +145,15 @@ const ClientSection = ({ selectedArticle }) => {
           },
         ];
 
+        const data = { data: requestData, qcflag: 2 };
         const response = await axios.post(
           `${url}updatesocialfeedtagdetails/`,
-          requestData,
+          data,
           {
             headers: header,
           }
         );
+
         const successOrError =
           (response.data.result.success.length && "company added") ||
           (response.data.result.errors.length && "something went wrong");
@@ -199,7 +201,8 @@ const ClientSection = ({ selectedArticle }) => {
         COMPANYID: selectedRowForDelete.company_id,
       },
     ];
-    isValid && (await makeRequest(requestData));
+    const data = { data: requestData, qcflag: 2 };
+    isValid && (await makeRequest(data));
     if (!isValid) {
       return toast.error("Password not match with records");
     }
@@ -239,11 +242,13 @@ const ClientSection = ({ selectedArticle }) => {
       setSaveLoading(true);
       const requestData = modifiedRows.map((obj) => convertKeys(obj));
       const headers = { Authorization: `Bearer ${userToken}` };
+      const data = { data: requestData, qcflag: 2 };
       const response = await axios.post(
         `${url}updatesocialfeedtagdetails/`,
-        requestData,
+        data,
         { headers }
       );
+
       if (response.data.result.success.length > 0) {
         toast.success("Updated successfully");
         setModifiedRows([]);
@@ -251,6 +256,7 @@ const ClientSection = ({ selectedArticle }) => {
         setSaveLoading(false);
       } else {
         toast.error("Something went wrong");
+        setSaveLoading(false);
       }
     } catch (error) {
       toast.error(error.message);

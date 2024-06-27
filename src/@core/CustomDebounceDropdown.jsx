@@ -168,6 +168,7 @@ CustomDebounceDropdown.propTypes = {
   setPublicationGroup: PropTypes.func.isRequired,
   bg: PropTypes.string.isRequired,
   m: PropTypes.string.isRequired,
+  isMultiple: PropTypes.bool,
 };
 
 export default CustomDebounceDropdown;

@@ -23,6 +23,7 @@ import { url } from "./constants/baseUrl";
 import Online from "./pages/qc1/Online";
 import Print from "./pages/qc1/Print";
 import Analytics from "./pages/Analytics/Analytics";
+import BasketCityPub from "./pages/BasketCityPub";
 
 // Lazy load the components
 const Home = lazy(() => import("./pages/Home"));
@@ -134,8 +135,7 @@ function App() {
           {userToken ? (
             <>
               <Route path="/" exact element={<Home />} />
-              {/* <Route path="/qc1/online" element={<Online />} />
-              <Route path="/qc1/print" element={<Print />} /> */}
+
               <Route
                 path="/qc1/online"
                 exact
@@ -221,6 +221,7 @@ function App() {
                   )
                 }
               />
+              <Route path="/basket-city-pub" element={<BasketCityPub />} />
             </>
           ) : (
             <Route path="login" element={<Login />} />
