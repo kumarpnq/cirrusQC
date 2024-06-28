@@ -534,9 +534,6 @@ const BasketCityPub = () => {
   const [highlightRows, setHighlightRows] = useState([]);
   const [tableFetchFlag, setTableFetchFalg] = useState(false);
 
-  console.log(highlightRows);
-  console.log(tableData);
-
   //   * data hooks
   const { data: clientData } = useFetchData(`${url}clientlist/`);
 

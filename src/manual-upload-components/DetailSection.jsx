@@ -1,25 +1,16 @@
-import {
-  Card,
-  CardContent,
-  Box,
-  Typography,
-  FormControl,
-  TextField,
-  CardHeader,
-} from "@mui/material";
+import { Box, Typography, FormControl, TextField } from "@mui/material";
 
 import Button from "../components/custom/Button";
-import { useContext, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import ToDate from "../components/research-dropdowns/ToDate";
-import { ResearchContext } from "../context/ContextProvider";
 
 // ** third party imports
-
 import PropTypes from "prop-types";
 import axios from "axios";
 import { toast } from "react-toastify";
-import { url } from "../constants/baseUrl";
 
+// * constants
+import { url } from "../constants/baseUrl";
 import useFetchData from "../hooks/useFetchData";
 import { formattedDate } from "../constants/dates";
 import DebounceSearchCompany from "../@core/DebounceSearchCompany";
@@ -32,12 +23,18 @@ const Details = ({
   errorList,
   articleNumber,
   setArticleNumber,
+  setLink,
 }) => {
   const userToken = localStorage.getItem("user");
   const [selectedRow, setSelectedRow] = useState(errorList[articleNumber]);
+
   useEffect(() => {
     setSelectedRow(errorList.length > 0 ? errorList[articleNumber] : null);
   }, [articleNumber, errorList]);
+
+  useEffect(() => {
+    setLink(selectedRow?.articlelink);
+  }, [articleNumber, selectedRow]);
 
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
@@ -340,5 +337,6 @@ Details.propTypes = {
   errorList: PropTypes.array.isRequired,
   articleNumber: PropTypes.number.isRequired,
   setArticleNumber: PropTypes.func.isRequired,
+  setLink: PropTypes.func.isRequired,
 };
 export default Details;

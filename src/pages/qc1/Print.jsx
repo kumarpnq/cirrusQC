@@ -1,5 +1,13 @@
-import { useState } from "react";
-import { Box, Divider, IconButton, Typography } from "@mui/material";
+import { useCallback, useState } from "react";
+import {
+  Box,
+  Checkbox,
+  Divider,
+  FormControlLabel,
+  FormGroup,
+  IconButton,
+  Typography,
+} from "@mui/material";
 import { DataGrid } from "@mui/x-data-grid";
 import { makeStyles } from "@mui/styles";
 
@@ -29,6 +37,9 @@ import EditDialog from "../../qc1-components/online/EditDialog";
 // * constants
 import { url } from "../../constants/baseUrl";
 import { qc1Array } from "../../constants/dataArray";
+import axios from "axios";
+import { arrayToString } from "../../utils/arrayToString";
+import { addPropertyIfConditionIsTrue } from "../../utils/addProprtyIfConditiontrue";
 
 const useStyle = makeStyles(() => ({
   dropDowns: {
@@ -44,58 +55,12 @@ const useStyle = makeStyles(() => ({
     width: 200,
     background: "#d4c8c7",
   },
+  componentHeight: {
+    height: 25,
+    display: "flex",
+    alignItems: "center",
+  },
 }));
-
-const dummyData = [
-  {
-    id: 1,
-    headline: "Canada Parl honours Nijjar; India plans Kanishka tribute...",
-    articleId: "01DELHI-20240620-TIMES_OF_INDIA-0001-0002.pdf",
-    articleDate: "20/06/2024",
-    publicationName: "Times Of India - Delhi",
-    pages: 1,
-    pdfSize: "201 KB",
-    journalist: "Dadaji",
-    uploadTime: "06:28:11 AM",
-    tagTime: "Tagging Detail",
-  },
-  {
-    id: 2,
-    headline: "12th pass mantri unable to write Beti Bachao...",
-    articleId: "01DELHI-20240620-TIMES_OF_INDIA-0001-0003.pdf",
-    articleDate: "20/06/2024",
-    publicationName: "Times Of India - Delhi",
-    pages: 1,
-    pdfSize: "92 KB",
-    journalist: "Dadaji",
-    uploadTime: "06:27:07 AM",
-    tagTime: "Tagging Detail",
-  },
-  {
-    id: 3,
-    headline: "IIT-B students fined for Ramayana skit...",
-    articleId: "01DELHI-20240620-TIMES_OF_INDIA-0001-0004.pdf",
-    articleDate: "20/06/2024",
-    publicationName: "Times Of India - Delhi",
-    pages: 1,
-    pdfSize: "44 KB",
-    journalist: "Dadaji",
-    uploadTime: "06:27:07 AM",
-    tagTime: "Tagging Detail",
-  },
-  {
-    id: 4,
-    headline: "Man lynched over theft suspicion in UP...",
-    articleId: "01DELHI-20240620-TIMES_OF_INDIA-0001-0005.pdf",
-    articleDate: "20/06/2024",
-    publicationName: "Times Of India - Delhi",
-    pages: 1,
-    pdfSize: "43 KB",
-    journalist: "Dadaji",
-    uploadTime: "06:28:11 AM",
-    tagTime: "Tagging Detail",
-  },
-];
 
 const Print = () => {
   // * state variables for data retrieve
@@ -110,16 +75,22 @@ const Print = () => {
   const [pubType, setPubType] = useState("");
   const [selectedCity, setSelectedCity] = useState([]);
   const [selectedLanguages, setSelectedLanguages] = useState([]);
-  const [qc1Done, setQc1Done] = useState("2");
+  const [qc1Done, setQc1Done] = useState("");
   const [qc1By, setQc1By] = useState("");
   const [photo, setPhoto] = useState("");
   const [graph, setGraph] = useState("");
   const [articleType, setArticleType] = useState("");
   const [stitched, setStitched] = useState("");
   const [tv, setTv] = useState("");
-  const [articleId, setArticleId] = useState(0);
-  const [systemArticleId, setSystemArticleId] = useState(0);
-  const [pageNumber, setPageNumber] = useState(0);
+  const [articleId, setArticleId] = useState(null);
+  const [systemArticleId, setSystemArticleId] = useState(null);
+  const [pageNumber, setPageNumber] = useState(null);
+  const [isNoCompany, setIsNoCompany] = useState(false);
+  const [searchKeyword, setSearchKeyword] = useState("");
+
+  // Table data
+  const [gridData, setGridData] = useState([]);
+  const [gridDataLoading, setGridDataLoading] = useState(false);
 
   //   * data hooks
   const { data } = useFetchData(
@@ -154,10 +125,11 @@ const Print = () => {
       ),
     },
     { field: "headline", headerName: "Headlines", width: 300 },
-    { field: "articleId", headerName: "Article ID", width: 300 },
-    { field: "articleDate", headerName: "Article Date", width: 150 },
-    { field: "publicationName", headerName: "Publication Name", width: 200 },
-    { field: "pages", headerName: "Pages", width: 80 },
+    { field: "head_summary", headerName: "Summary", width: 300 },
+    { field: "article_id", headerName: "Article ID", width: 300 },
+    { field: "article_date", headerName: "Article Date", width: 150 },
+    { field: "publication_name", headerName: "Publication Name", width: 200 },
+    { field: "page_number", headerName: "Pages", width: 80 },
     { field: "pdfSize", headerName: "PDF Size", width: 100 },
     { field: "journalist", headerName: "Journalist", width: 150 },
     { field: "uploadTime", headerName: "Upload Time", width: 150 },
@@ -168,13 +140,180 @@ const Print = () => {
       renderCell: (params) => <a href="#">{params.value}</a>,
     },
   ];
+
+  const rows = gridData.map((item, index) => ({
+    id: index,
+    headline: item.headline,
+    head_summary: item.head_summary,
+    article_id: item.article_id,
+    article_date: item.article_date,
+    publication_name: item.publication_name,
+    page_number: item.page_number,
+    pdfSize: item.pdfSize,
+    journalist: item.journalist,
+    uploadTime: item.upload_time,
+  }));
+
+  const fetchListArticleByQC1Print = useCallback(async () => {
+    try {
+      setGridDataLoading(true);
+      const params = {
+        // comp params
+        client_id: selectedClient,
+        from_date: fromDate,
+        to_date: toDate,
+        date_type: "ARTICLE",
+
+        // optional params
+        // company_id:'',
+        // article_id:articleId,
+        // qc1_by:qc1By,
+        // is_qc1:qc1Done,
+        // city:'',
+        // search_keyword:'',
+        // pagenumber:pageNumber,
+        // photo:photo,
+        // graph:graph,
+        // language:'',
+        // category:'',
+        // pubgroup_id:'',
+        // publication_id:''
+        // pubtype:'',
+        // no_company:'',
+        // count:''
+      };
+      // eslint-disable-next-line no-inner-declarations
+
+      // Add optional params using the helper function
+      addPropertyIfConditionIsTrue(
+        params,
+        selectedCompanies.length > 0,
+        "company_id",
+        arrayToString(selectedCompanies),
+        params
+      );
+      addPropertyIfConditionIsTrue(
+        params,
+        articleId !== null,
+        "article_id",
+        articleId,
+        params
+      );
+      addPropertyIfConditionIsTrue(params, qc1By, "qc1_by", qc1By, params);
+      addPropertyIfConditionIsTrue(params, qc1Done, "is_qc1", qc1Done, params);
+      addPropertyIfConditionIsTrue(
+        params,
+        selectedCity.length > 0,
+        "city",
+        arrayToString(selectedCity),
+        params
+      );
+      addPropertyIfConditionIsTrue(
+        params,
+        selectedLanguages.length > 0,
+        "language",
+        arrayToString(selectedLanguages),
+        params
+      );
+      addPropertyIfConditionIsTrue(params, photo, "photo", photo, params);
+      addPropertyIfConditionIsTrue(params, graph, "graph", graph, params);
+      addPropertyIfConditionIsTrue(
+        params,
+        articleType,
+        "article_type",
+        articleType,
+        params
+      );
+      addPropertyIfConditionIsTrue(
+        params,
+        stitched,
+        "stitched",
+        stitched,
+        params
+      );
+      addPropertyIfConditionIsTrue(params, tv, "tv", tv, params);
+      addPropertyIfConditionIsTrue(
+        params,
+        publicationGroup,
+        "pubgroup_id",
+        publicationGroup,
+        params
+      );
+      addPropertyIfConditionIsTrue(
+        params,
+        publication,
+        "publication_id",
+        publication,
+        params
+      );
+      addPropertyIfConditionIsTrue(params, pubType, "pubtype", pubType, params);
+      addPropertyIfConditionIsTrue(
+        params,
+        pageNumber !== null,
+        "pagenumber",
+        pageNumber,
+        params
+      );
+      addPropertyIfConditionIsTrue(
+        params,
+        isNoCompany !== false,
+        "no_company",
+        isNoCompany,
+        params
+      );
+      addPropertyIfConditionIsTrue(
+        params,
+        searchKeyword !== "",
+        "search_keyword",
+        searchKeyword,
+        params
+      );
+      const userToken = localStorage.getItem("user");
+      const response = await axios.get(`${url}listArticlebyQC1Print/`, {
+        headers: { Authorization: `Bearer ${userToken}` },
+        params,
+      });
+      setGridData(response.data.feed_data || []);
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setGridDataLoading(false);
+    }
+  }, [
+    selectedClient,
+    fromDate,
+    toDate,
+    // withCategory,
+    setGridDataLoading,
+    articleId,
+    articleType,
+    graph,
+    pageNumber,
+    photo,
+    pubType,
+    publication,
+    publicationGroup,
+    qc1By,
+    qc1Done,
+    selectedCity,
+    selectedCompanies,
+    selectedLanguages,
+    stitched,
+    tv,
+    isNoCompany,
+    searchKeyword,
+  ]);
+
   return (
     <Box sx={{ px: 1.5 }}>
       <Box
-        sx={{ display: "flex", alignItems: "center", flexWrap: "wrap" }}
-        className="gap-1"
+        sx={{ display: "flex", alignItems: "center", flexWrap: "wrap", gap: 1 }}
       >
-        <div className="pt-[3px]">
+        <Typography
+          component={"div"}
+          className={classes.componentHeight}
+          sx={{ pt: 1 }}
+        >
           <Client
             label="Client"
             client={selectedClient}
@@ -182,106 +321,166 @@ const Print = () => {
             width={200}
             setCompanies={setSelectedCompanies}
           />
-        </div>
-        <Company
-          companyData={data?.data?.companies || []}
-          companies={selectedCompanies}
-          setCompanies={setSelectedCompanies}
-          isMt={true}
-        />
-        <Category
-          category={withCategory}
-          setCategory={setWithCategory}
-          classes={classes}
-          width={150}
-        />
-        <FromDate fromDate={fromDate} setFromDate={setFromDate} />
-        <ToDate dateNow={toDate} setDateNow={setToDate} isMargin={true} />
-        {/* upload date */}
-        <FromDate fromDate={uploadDate} setFromDate={setUploadDate} />
-        <CustomDebounceDropdown
-          publicationGroup={publicationGroup}
-          setPublicationGroup={setPublicationGroup}
-          bg="secondory"
-          m="mt-3"
-        />
-        <Publication
-          publicationGroup={publicationGroup}
-          publication={publication}
-          setPublication={setPublication}
-          classes={classes}
-          width={150}
-        />
-        <PubType
-          pubType={pubType}
-          setPubType={setPubType}
-          classes={classes}
-          width={150}
-        />
-        <Qc1All
-          qc1done={qc1Done}
-          setQc1done={setQc1Done}
-          classes={classes}
-          qc1Array={qc1Array}
-        />
-        <Qc1By
-          qcUsersData={qcUserData?.data?.qc_users || []}
-          qc1by={qc1By}
-          setQc1by={setQc1By}
-          classes={classes}
-          pageType={"print"}
-        />
-        <Cities
-          classes={classes}
-          city={selectedCity}
-          setCity={setSelectedCity}
-        />
-        <Languages
-          language={selectedLanguages}
-          setLanguage={setSelectedLanguages}
-          classes={classes}
-        />
-        <YesOrNo
-          classes={classes}
-          mapValue={["Yes", "No", "All"]}
-          placeholder="Photo"
-          value={photo}
-          setValue={setPhoto}
-          width={100}
-        />
-        <YesOrNo
-          classes={classes}
-          mapValue={["Yes", "No", "All"]}
-          placeholder="Graph"
-          value={graph}
-          setValue={setGraph}
-          width={100}
-        />
-        <YesOrNo
-          classes={classes}
-          mapValue={["Print", "Internet", "All"]}
-          placeholder="ArticleType"
-          value={articleType}
-          setValue={setArticleType}
-          width={100}
-        />
-        <YesOrNo
-          classes={classes}
-          mapValue={["Yes", "No", "All"]}
-          placeholder="Stitch"
-          value={stitched}
-          setValue={setStitched}
-          width={100}
-        />
-        <YesOrNo
-          classes={classes}
-          mapValue={["Yes", "No", "All"]}
-          placeholder="TV"
-          value={tv}
-          setValue={setTv}
-          width={100}
-        />
-        <div className="flex flex-wrap gap-1 pt-3">
+        </Typography>
+        <Typography component={"div"} className={classes.componentHeight}>
+          <Company
+            companyData={data?.data?.companies || []}
+            companies={selectedCompanies}
+            setCompanies={setSelectedCompanies}
+            isMt={true}
+          />
+        </Typography>
+        <Typography component={"div"} className={classes.componentHeight}>
+          <Category
+            category={withCategory}
+            setCategory={setWithCategory}
+            classes={classes}
+            width={150}
+          />
+        </Typography>
+        <Typography component={"div"} className={classes.componentHeight}>
+          <FromDate fromDate={fromDate} setFromDate={setFromDate} />
+        </Typography>
+        <Typography component={"div"} className={classes.componentHeight}>
+          <ToDate dateNow={toDate} setDateNow={setToDate} isMargin={true} />
+        </Typography>
+        <Typography component={"div"} className={classes.componentHeight}>
+          <FromDate fromDate={uploadDate} setFromDate={setUploadDate} />
+        </Typography>
+        <Typography component={"div"} className={classes.componentHeight}>
+          <CustomDebounceDropdown
+            publicationGroup={publicationGroup}
+            setPublicationGroup={setPublicationGroup}
+            bg="secondory"
+            m="mt-3"
+          />
+        </Typography>
+        <Typography component={"div"} className={classes.componentHeight}>
+          <Publication
+            publicationGroup={publicationGroup}
+            publication={publication}
+            setPublication={setPublication}
+            classes={classes}
+            width={150}
+          />
+        </Typography>
+        <Typography component={"div"} className={classes.componentHeight}>
+          <PubType
+            pubType={pubType}
+            setPubType={setPubType}
+            classes={classes}
+            width={150}
+          />
+        </Typography>
+        <Typography component={"div"} className={classes.componentHeight}>
+          <Qc1All
+            qc1done={qc1Done}
+            setQc1done={setQc1Done}
+            classes={classes}
+            qc1Array={qc1Array}
+          />
+        </Typography>
+        <Typography component={"div"} className={classes.componentHeight}>
+          <Qc1By
+            qcUsersData={qcUserData?.data?.qc_users || []}
+            qc1by={qc1By}
+            setQc1by={setQc1By}
+            classes={classes}
+            pageType={"print"}
+          />
+        </Typography>
+        <Typography component={"div"} className={classes.componentHeight}>
+          <Cities
+            classes={classes}
+            city={selectedCity}
+            setCity={setSelectedCity}
+          />
+        </Typography>
+        <Typography component={"div"} className={classes.componentHeight}>
+          <Languages
+            language={selectedLanguages}
+            setLanguage={setSelectedLanguages}
+            classes={classes}
+          />
+        </Typography>
+        <Typography component={"div"} className={classes.componentHeight}>
+          <YesOrNo
+            classes={classes}
+            mapValue={["Yes", "No", "All"]}
+            placeholder="Photo"
+            value={photo}
+            setValue={setPhoto}
+            width={100}
+          />
+        </Typography>
+        <Typography component={"div"} className={classes.componentHeight}>
+          <YesOrNo
+            classes={classes}
+            mapValue={["Yes", "No", "All"]}
+            placeholder="Graph"
+            value={graph}
+            setValue={setGraph}
+            width={100}
+          />
+        </Typography>
+        <Typography component={"div"} className={classes.componentHeight}>
+          <YesOrNo
+            classes={classes}
+            mapValue={["Print", "Internet", "All"]}
+            placeholder="ArticleType"
+            value={articleType}
+            setValue={setArticleType}
+            width={100}
+          />
+        </Typography>
+        <Typography component={"div"} className={classes.componentHeight}>
+          <YesOrNo
+            classes={classes}
+            mapValue={["Yes", "No", "All"]}
+            placeholder="Stitch"
+            value={stitched}
+            setValue={setStitched}
+            width={100}
+          />
+        </Typography>
+        <Typography component={"div"} className={classes.componentHeight}>
+          <YesOrNo
+            classes={classes}
+            mapValue={["Yes", "No", "All"]}
+            placeholder="TV"
+            value={tv}
+            setValue={setTv}
+            width={100}
+          />
+        </Typography>
+        <Typography
+          component={"div"}
+          className={classes.componentHeight}
+          sx={{ pt: 1 }}
+        >
+          <FormGroup>
+            <FormControlLabel
+              label={
+                <Typography variant="h6" fontSize={"0.9em"}>
+                  No company
+                </Typography>
+              }
+              control={
+                <Checkbox
+                  size="small"
+                  checked={isNoCompany}
+                  onChange={() => setIsNoCompany((prev) => !prev)}
+                />
+              }
+            />
+          </FormGroup>
+        </Typography>
+
+        <Typography
+          component={"div"}
+          className={classes.componentHeight}
+          sx={{ gap: 1, pt: 1 }}
+        >
           <CustomTextField
             placeholder={"ArticleId"}
             type={"number"}
@@ -303,17 +502,27 @@ const Print = () => {
             value={pageNumber}
             setValue={setPageNumber}
           />
-        </div>
+          <CustomTextField
+            placeholder={"Search Keyword"}
+            type={"text"}
+            width={200}
+            value={searchKeyword}
+            setValue={setSearchKeyword}
+          />
+        </Typography>
 
-        <Button btnText="Search" onClick={() => {}} />
+        <Typography component={"div"} className={classes.componentHeight}>
+          <Button
+            btnText={gridDataLoading ? "Searching" : "Search"}
+            onClick={fetchListArticleByQC1Print}
+            isLoading={gridDataLoading}
+          />
+        </Typography>
       </Box>
       <Divider sx={{ mt: 1 }} />
-      <Box sx={{ height: 400, width: "100%" }}>
-        <Typography variant="h6" gutterBottom>
-          Articles
-        </Typography>
+      <Box sx={{ height: 400, width: "100%", mt: 1 }}>
         <DataGrid
-          rows={dummyData}
+          rows={rows}
           columns={columns}
           pageSize={5}
           rowsPerPageOptions={[5]}

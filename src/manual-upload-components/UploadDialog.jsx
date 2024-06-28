@@ -8,6 +8,7 @@ import ArticleView from "./ArticleView";
 import Box from "@mui/material/Box";
 import Modal from "@mui/material/Modal";
 import { Grid, useMediaQuery } from "@mui/material";
+import { useState } from "react";
 
 const style = {
   position: "absolute",
@@ -29,14 +30,16 @@ const UploadDialog = ({
   handleClose,
   selectedRow,
   type,
-  link,
-  setLink,
+  // link,
+  // setLink,
   setIsArticleSaved,
   errorList,
   articleNumber,
   setArticleNumber,
 }) => {
   const isResponsive = useMediaQuery("(max-width: 1269px)");
+
+  const [link, setLink] = useState("");
 
   return (
     <Modal open={open} onClose={handleClose}>
@@ -91,6 +94,7 @@ const UploadDialog = ({
                       errorList={errorList}
                       articleNumber={articleNumber}
                       setArticleNumber={setArticleNumber}
+                      setLink={setLink}
                     />
                   </Box>
                 </Grid>

@@ -49,6 +49,7 @@ function App() {
     Analytics: false,
     onlineQC1: false,
     printQc1: false,
+    clientBasketCityPublication: false,
   });
   const [loading, setLoading] = useState(false);
 
@@ -97,6 +98,8 @@ function App() {
       Analytics: screenPermissions.Analytics,
       onlineQC1: screenPermissions["QC1-Online"],
       printQc1: screenPermissions["QC1-Print"],
+      clientBasketCityPublication:
+        screenPermissions.clientBasketCityPublication,
     });
   }, [screenPermissions]);
 
@@ -226,7 +229,18 @@ function App() {
                   )
                 }
               />
-              <Route path="/basket-city-pub" element={<BasketCityPub />} />
+              <Route
+                path="/client-basket-city-publication"
+                element={
+                  permissions.clientBasketCityPublication ? (
+                    <BasketCityPub />
+                  ) : loading ? (
+                    <div>Loading...</div>
+                  ) : (
+                    <NotFound />
+                  )
+                }
+              />
             </>
           ) : (
             <Route path="login" element={<Login />} />

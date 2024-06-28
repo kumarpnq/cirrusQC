@@ -18,6 +18,7 @@ import AccountCircle from "@mui/icons-material/AccountCircle";
 import UploadFileIcon from "@mui/icons-material/UploadFile";
 import BookmarkBorderIcon from "@mui/icons-material/BookmarkBorder";
 import BarChartIcon from "@mui/icons-material/BarChart";
+import ShoppingBasketIcon from "@mui/icons-material/ShoppingBasket";
 
 import MoreIcon from "@mui/icons-material/MoreVert";
 import Drawer from "@mui/material/Drawer";
@@ -161,6 +162,16 @@ export default function MainNav() {
             title: "Analytics",
             path: "/analytics",
             icon: <BarChartIcon />,
+          },
+        ]
+      : []),
+    ...(screenPermissions.clientBasketCityPublication
+      ? [
+          {
+            id: 8,
+            title: "ClientBasketCity",
+            path: "/client-basket-city-publication",
+            icon: <ShoppingBasketIcon />,
           },
         ]
       : []),

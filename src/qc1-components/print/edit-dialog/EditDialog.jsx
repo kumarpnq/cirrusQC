@@ -107,6 +107,7 @@ const EditDialog = ({ rowData, rowNumber, setRowNumber, open, setOpen }) => {
         `${url}qc1onlinetagdetails/?socialfeed_id=${socialFeedId}`,
         { headers }
       );
+
       setSocialFeedTagDetails(tagDetailsResponse.data.socialfeed_details || []);
     } catch (error) {
       // toast.error("Error While fetching data.");
@@ -291,11 +292,13 @@ const EditDialog = ({ rowData, rowNumber, setRowNumber, open, setOpen }) => {
       ),
     },
     { field: "CompanyName", headerName: "CompanyName", width: 300 },
+    { field: "Keyword", headerName: "Keyword", width: 300 },
   ];
 
   const rows = socialFeedTagDetails.map((detail, index) => ({
     id: index,
     CompanyName: detail.company_name,
+    Keyword: detail.keyword,
   }));
 
   return (
