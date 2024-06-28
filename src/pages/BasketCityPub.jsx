@@ -534,6 +534,9 @@ const BasketCityPub = () => {
   const [highlightRows, setHighlightRows] = useState([]);
   const [tableFetchFlag, setTableFetchFalg] = useState(false);
 
+  console.log(highlightRows);
+  console.log(tableData);
+
   //   * data hooks
   const { data: clientData } = useFetchData(`${url}clientlist/`);
 
@@ -653,6 +656,18 @@ const BasketCityPub = () => {
     ISACTIVE: item.ISACTIVE,
   }));
 
+  const getRowClassName = (params) => {
+    return highlightRows.some(
+      (row) =>
+        row.clientid === params.row.CLIENTID &&
+        row.companyid === params.row.COMPANYID &&
+        row.cityid === params.row.CITYID &&
+        row.pubgroupid === params.row.PUBGROUPID
+    )
+      ? "highlight-row"
+      : "";
+  };
+
   return (
     <Grid container sx={{ px: 2 }}>
       {/* First section */}
@@ -702,6 +717,7 @@ const BasketCityPub = () => {
             disableRowSelectionOnClick
             hideFooterSelectedRowCount
             loading={fetchLoading && <CircularProgress />}
+            getRowClassName={getRowClassName}
           />
         </Box>
       </Grid>

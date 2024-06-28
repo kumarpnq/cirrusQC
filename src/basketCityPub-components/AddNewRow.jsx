@@ -120,7 +120,7 @@ export default function AddNewRow({
         }
       );
       if (response.data.result.success.length) {
-        setTableData((prev) => [...prev, ...dataToSendFiltered]);
+        setTableData((prev) => [...dataToSendFiltered, ...prev]);
         setHighlightRows(dataToSendFiltered);
         toast.success("Data added.");
         setAddLoading(false);

@@ -56,6 +56,10 @@
   background-color: #b1f0be;
 }
 
+.highlight-row {
+  background-color: #b1f0be; /* Yellow highlight */
+}
+
 ::placeholder {
   font-style: italic;
   font-size: 0.9em;

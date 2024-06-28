@@ -26,8 +26,8 @@ import DebounceSearchCompany from "../@core/DebounceSearchCompany";
 
 const Details = ({
   type,
-  articleURl,
-  setArticleURL,
+  // articleURl,
+  // setArticleURL,
   setIsArticleSaved,
   errorList,
   articleNumber,
@@ -44,6 +44,7 @@ const Details = ({
   const [summary, setSummary] = useState("");
   const [image, setImage] = useState("");
   const [searchURl, setSearchURL] = useState(selectedRow?.searchlink);
+  const [articleURL, setArticleURL] = useState("");
   const [publication, setPublication] = useState(selectedRow?.publicationname);
   const [selectedLanguages, setSelectedLanguages] = useState("en");
   const [selectedCompanies, setSelectedCompanies] = useState("");
@@ -69,10 +70,11 @@ const Details = ({
     return regex.test(url);
   }
   const handleSave = async () => {
-    const isBothUrlSame = isDomainIncluded(articleURl, publication);
+    const isBothUrlSame = isDomainIncluded(articleURL, publication);
+
     if (
-      !articleURl ||
-      !selectedCompanies.value ||
+      !articleURL ||
+      !selectedCompanies?.value ||
       !dateNow ||
       !title ||
       !summary ||
@@ -88,7 +90,7 @@ const Details = ({
         Authorization: `Bearer ${userToken}`,
       };
       const request_data = {
-        url: articleURl,
+        url: articleURL,
         searchurl: searchURl,
         companyid: selectedCompanies.value,
         article_datetime: dateNow,
@@ -231,7 +233,7 @@ const Details = ({
               size="small"
               fullWidth
               sx={{ ml: 1 }}
-              value={articleURl}
+              value={articleURL}
               onChange={(e) => setArticleURL(e.target.value)}
               InputProps={{
                 style: {
