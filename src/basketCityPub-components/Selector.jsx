@@ -20,6 +20,7 @@ export default function Selector({
   clientid,
   companies,
   setCompanies,
+  setTableFetchFlag,
 }) {
   const [city, setCity] = React.useState([]);
   const [selectedPublications, setSelectedPublications] = React.useState([]);
@@ -80,13 +81,23 @@ export default function Selector({
   const generateCBCP = async () => {
     try {
       const userToken = localStorage.getItem("user");
-      const selectedCompanies = companies.map((i) => i.companyname);
+      const selectedCompanies = companies.map((i) => i.companyid);
       const selectedCities = city.map((i) => i.cityid);
       const selectedPublication = selectedPublications.map(
         (i) => i.publicationgroupid
       );
+      const missingFields = [];
+      if (!clientid) missingFields.push("client");
+      if (!selectedCompanies.length) missingFields.push("company");
+      if (!selectedCities.length) missingFields.push("city");
+      if (!selectedPublication.length) missingFields.push("publication");
+
+      if (missingFields.length > 0) {
+        toast.warning(`Missing fields: ${missingFields.join(", ")}`);
+        return;
+      }
       const request_data = {
-        clientid: "INFINIXIN",
+        clientid: clientid,
         companyid: arrayToString(selectedCompanies),
         cityid: arrayToString(selectedCities),
         pubgroupid: arrayToString(selectedPublication),
@@ -97,8 +108,9 @@ export default function Selector({
         },
       });
 
-      if (response.data?.result?.success.length) {
-        toast.success("Report generated.");
+      if (response) {
+        toast.success(response.data.result);
+        setTableFetchFlag(true);
       } else {
         toast.warning("Error while generating");
       }
@@ -143,7 +155,9 @@ export default function Selector({
         }
       />
       <Typography component={"div"} textAlign={"center"} mt={3}>
-        <Button onClick={generateCBCP}>Generate</Button>
+        <Button onClick={generateCBCP} variant="contained">
+          Generate
+        </Button>
       </Typography>
     </Box>
   );
@@ -171,4 +185,5 @@ Selector.propTypes = {
   clientid: PropTypes.string.isRequired,
   companies: PropTypes.array.isRequired,
   setCompanies: PropTypes.func.isRequired,
+  setTableFetchFlag: PropTypes.func.isRequired,
 };

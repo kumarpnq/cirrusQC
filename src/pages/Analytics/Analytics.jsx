@@ -7,6 +7,7 @@ import {
   FormControlLabel,
   Typography,
   Checkbox,
+  Grid,
 } from "@mui/material";
 import { makeStyles } from "@mui/styles";
 import { DataGrid, GridToolbar } from "@mui/x-data-grid";
@@ -142,8 +143,8 @@ const Analytics = () => {
       { field: "USERNAME", headerName: "Username", width: 150 },
       { field: "MEDIA", headerName: "Media", width: 150 },
       { field: "QC_DATE", headerName: "QC Date", width: 150 },
-      { field: "QC1_HEADER", headerName: "QC1 Header", width: 150 },
-      { field: "QC2_HEADER", headerName: "QC2 Header", width: 150 },
+      { field: "QC1_HEADER", headerName: "QC1", width: 150 },
+      { field: "QC2_HEADER", headerName: "QC2", width: 150 },
     ],
     []
   );
@@ -154,8 +155,8 @@ const Analytics = () => {
       { field: "CLIENTNAME", headerName: "Client Name", width: 200 },
       { field: "COMPANYNAME", headerName: "Company Name", width: 200 },
       { field: "QC_DATE", headerName: "QC Date", width: 150 },
-      { field: "QC1_DETAIL", headerName: "QC1 Detail", width: 150 },
-      { field: "QC2_DETAIL", headerName: "QC2 Detail", width: 150 },
+      { field: "QC1_DETAIL", headerName: "QC1", width: 150 },
+      { field: "QC2_DETAIL", headerName: "QC2", width: 150 },
     ],
     []
   );
@@ -166,8 +167,8 @@ const Analytics = () => {
       { field: "MEDIA", headerName: "Media", width: 150 },
       { field: "CLIENTNAME", headerName: "Client Name", width: 200 },
       { field: "QC_DATE", headerName: "QC Date", width: 150 },
-      { field: "QC1_DETAIL", headerName: "QC1 Detail", width: 150 },
-      { field: "QC2_DETAIL", headerName: "QC2 Detail", width: 150 },
+      { field: "QC1_DETAIL", headerName: "QC1", width: 150 },
+      { field: "QC2_DETAIL", headerName: "QC2", width: 150 },
     ],
     []
   );
@@ -408,21 +409,27 @@ const Analytics = () => {
               <AiOutlineDownload />
               EXPORT
             </Box>
-            <Box display={"flex"} gap={1} sx={{ height: 450, width: "100%" }}>
-              <Box>
-                <DataGrid
-                  rows={articleRows}
-                  columns={articleDataColumn}
-                  loading={gridDataLoading && <CircularProgress />}
-                  density="compact"
-                />
-              </Box>
-              <DataGrid
-                density="compact"
-                rows={competitionRows}
-                columns={competitionDataColumn}
-                loading={gridDataLoading && <CircularProgress />}
-              />
+            <Box sx={{ height: 450, width: "100%" }}>
+              <Grid container spacing={2}>
+                <Grid item xs={12} md={6} height={450}>
+                  <Typography component={"span"}>Articles</Typography>
+                  <DataGrid
+                    rows={articleRows}
+                    columns={articleDataColumn}
+                    loading={gridDataLoading && <CircularProgress />}
+                    density="compact"
+                  />
+                </Grid>
+                <Grid item xs={12} md={6}>
+                  <Typography component={"span"}>Competition</Typography>
+                  <DataGrid
+                    rows={competitionRows}
+                    columns={competitionDataColumn}
+                    loading={gridDataLoading && <CircularProgress />}
+                    density="compact"
+                  />
+                </Grid>
+              </Grid>
             </Box>
           </Fragment>
         )}

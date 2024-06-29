@@ -546,7 +546,7 @@ const BasketCityPub = () => {
   const fetchCBCPList = async () => {
     setFetchLoading(true);
     try {
-      const clientid = "INFINIXIN";
+      const clientid = selectedClient;
       const userToken = localStorage.getItem("user");
       const response = await axios.get(`${url}CBCPList/`, {
         params: { clientid },
@@ -560,6 +560,7 @@ const BasketCityPub = () => {
       setFetchLoading(false);
     } catch (error) {
       console.log(error.message);
+      setTableData([]);
       setFetchLoading(false);
     } finally {
       setTableFetchFalg(false);
@@ -568,7 +569,7 @@ const BasketCityPub = () => {
 
   useEffect(() => {
     fetchCBCPList();
-  }, []);
+  }, [selectedClient]);
 
   useEffect(() => {
     if (tableFetchFlag) {
@@ -674,7 +675,7 @@ const BasketCityPub = () => {
             label="Client"
             client={selectedClient}
             setClient={setSelectedClient}
-            width={200}
+            width={300}
             setCompanies={setSelectorCompanies}
           />
         </Box>
@@ -685,6 +686,7 @@ const BasketCityPub = () => {
           clientid={selectedClient}
           companies={selectorCompanies}
           setCompanies={setSelectorCompanies}
+          setTableFetchFlag={setTableFetchFalg}
         />
       </Grid>
 

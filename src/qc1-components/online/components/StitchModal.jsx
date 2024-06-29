@@ -21,6 +21,8 @@ import PropTypes from "prop-types";
 import { url } from "../../../constants/baseUrl";
 import FromDate from "../../../components/research-dropdowns/FromDate";
 import { formattedDate } from "../../../constants/dates";
+import { toast } from "react-toastify";
+import { arrayToString } from "../../../utils/arrayToString";
 
 // Styles
 const style = {
@@ -37,118 +39,27 @@ const style = {
 };
 
 const columns = [
-  { field: "articleId", headerName: "Article ID", width: 150 },
-  { field: "articleDate", headerName: "Article Date", width: 150 },
-  { field: "publicationName", headerName: "Publication Name", width: 200 },
-  { field: "headline", headerName: "Headline", width: 300 },
-  { field: "pageNo", headerName: "Page No", width: 100 },
-  { field: "reportingSubject", headerName: "Reporting Subject", width: 200 },
+  { field: "article_id", headerName: "Article ID", width: 150 },
+  { field: "article_date", headerName: "Article Date", width: 150 },
+  { field: "publication_name", headerName: "Publication Name", width: 200 },
+  { field: "headlines", headerName: "Headline", width: 300 },
+  { field: "page_number", headerName: "Page No", width: 100 },
+  { field: "reporting_subject", headerName: "Reporting Subject", width: 200 },
 ];
-const rows = [
-  {
-    id: 1,
-    articleId: "001",
-    articleDate: "2024-01-01",
-    publicationName: "Daily News",
-    headline: "Breaking News 1",
-    pageNo: 1,
-    reportingSubject: "Politics",
-  },
-  {
-    id: 2,
-    articleId: "002",
-    articleDate: "2024-01-02",
-    publicationName: "Global Times",
-    headline: "Latest Update 2",
-    pageNo: 2,
-    reportingSubject: "Economy",
-  },
-  {
-    id: 3,
-    articleId: "003",
-    articleDate: "2024-01-03",
-    publicationName: "City Herald",
-    headline: "Top Story 3",
-    pageNo: 3,
-    reportingSubject: "Health",
-  },
-  {
-    id: 4,
-    articleId: "004",
-    articleDate: "2024-01-04",
-    publicationName: "Morning Post",
-    headline: "Exclusive 4",
-    pageNo: 4,
-    reportingSubject: "Technology",
-  },
-  {
-    id: 5,
-    articleId: "005",
-    articleDate: "2024-01-05",
-    publicationName: "Evening Star",
-    headline: "Feature 5",
-    pageNo: 5,
-    reportingSubject: "Sports",
-  },
-  {
-    id: 6,
-    articleId: "006",
-    articleDate: "2024-01-06",
-    publicationName: "Weekly Review",
-    headline: "In-depth 6",
-    pageNo: 6,
-    reportingSubject: "Science",
-  },
-  {
-    id: 7,
-    articleId: "007",
-    articleDate: "2024-01-07",
-    publicationName: "Daily News",
-    headline: "News Flash 7",
-    pageNo: 7,
-    reportingSubject: "Entertainment",
-  },
-  {
-    id: 8,
-    articleId: "008",
-    articleDate: "2024-01-08",
-    publicationName: "Global Times",
-    headline: "Update 8",
-    pageNo: 8,
-    reportingSubject: "World",
-  },
-  {
-    id: 9,
-    articleId: "009",
-    articleDate: "2024-01-09",
-    publicationName: "City Herald",
-    headline: "Report 9",
-    pageNo: 9,
-    reportingSubject: "Environment",
-  },
-  {
-    id: 10,
-    articleId: "010",
-    articleDate: "2024-01-10",
-    publicationName: "Morning Post",
-    headline: "News 10",
-    pageNo: 10,
-    reportingSubject: "Education",
-  },
-];
-const StitchModal = ({ open, setOpen, articleId, isStitch, isUnStitch }) => {
-  const handleClose = () => setOpen(false);
 
+const StitchModal = ({ open, setOpen, articleId, isStitch, isUnStitch }) => {
   //* fetch stitched articles
   const [date, setDate] = useState(formattedDate);
+  const [articles, setArticles] = useState([]);
   const [fetchLoading, setFetchLoading] = useState(false);
+  const [selectedRows, setSelectedRows] = useState([]);
   const fetchStitchedArticles = async () => {
     try {
       setFetchLoading(true);
       const params = {
-        article_id: 83598910,
-        date,
+        article_id: 83600748,
       };
+      if (isStitch) params.date = date.split(" ")[0];
       const endpoint =
         (isStitch && "articlestostich/") ||
         (isUnStitch && "getstichedarticles/");
@@ -157,9 +68,8 @@ const StitchModal = ({ open, setOpen, articleId, isStitch, isUnStitch }) => {
         headers: { Authorization: `Bearer ${userToken}` },
         params,
       });
-      console.log(response.data);
+      setArticles(response.data.articles || []);
     } catch (error) {
-      console.log(error);
       console.log(error.message);
     } finally {
       setFetchLoading(false);
@@ -168,7 +78,55 @@ const StitchModal = ({ open, setOpen, articleId, isStitch, isUnStitch }) => {
 
   useEffect(() => {
     fetchStitchedArticles();
-  }, [articleId, date]);
+  }, [articleId, date, open]);
+
+  const rows = articles.map((item) => ({
+    id: item.article_id,
+    article_id: item.article_id,
+
+    article_date: item.article_date,
+
+    publication_name: item.publication_name,
+
+    headlines: item.headlines,
+
+    page_number: item.page_number,
+
+    reporting_subject: item.reporting_subject,
+  }));
+
+  const handleClose = () => {
+    setArticles([]);
+    setDate(formattedDate);
+    setOpen(false);
+  };
+  const handleSelectionChange = (newSelection) => {
+    setSelectedRows(newSelection);
+  };
+  const handleSave = async () => {
+    try {
+      const userToken = localStorage.getItem("user");
+      const request_data = {
+        parent_id: 83600748,
+        child_id: arrayToString(selectedRows),
+      };
+      const endpoint =
+        (isStitch && "sticharticle/") || (isUnStitch && "unsticharticle/");
+      const response = await axios.post(`${url + endpoint}`, request_data, {
+        headers: { Authorization: `Bearer ${userToken}` },
+      });
+      if (response) {
+        toast.success(
+          `${selectedRows.length} rows ${
+            isStitch ? "stitched" : "un-stitched"
+          }.`
+        );
+        setSelectedRows([]);
+      }
+    } catch (error) {
+      toast.error("Something went wrong.");
+    }
+  };
 
   return (
     <Modal
@@ -198,8 +156,8 @@ const StitchModal = ({ open, setOpen, articleId, isStitch, isUnStitch }) => {
               {isStitch && <FromDate fromDate={date} setFromDate={setDate} />}
 
               <Typography component={"div"}>
-                <Button>Save</Button>
-                <Button>Cancel</Button>
+                <Button onClick={handleSave}>Save</Button>
+                {/* <Button>Cancel</Button> */}
               </Typography>
             </Box>
             <Box sx={{ height: 400, width: "100%" }}>
@@ -210,6 +168,10 @@ const StitchModal = ({ open, setOpen, articleId, isStitch, isUnStitch }) => {
                 rowsPerPageOptions={[5, 10, 20]}
                 checkboxSelection
                 loading={fetchLoading && <CircularProgress />}
+                onRowSelectionModelChange={(ids) => {
+                  handleSelectionChange(ids);
+                }}
+                density="compact"
               />
             </Box>
           </CardContent>
