@@ -33,7 +33,7 @@ export const FindSection = ({
   qc2PrintTableData,
   setSearchedData,
   setTableLoading,
-  setQc2PrintTableData,
+  // setQc2PrintTableData,
 }) => {
   const classes = useStyles();
   const [headerForSearch, setHeaderForSearch] = useState("");

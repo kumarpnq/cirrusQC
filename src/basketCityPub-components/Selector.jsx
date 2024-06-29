@@ -75,7 +75,6 @@ export default function Selector({
   const handleBack = () => {
     setActiveStep((prevActiveStep) => prevActiveStep - 1);
   };
-
   //* generating table data
   const generateCBCP = async () => {
     try {
@@ -83,7 +82,7 @@ export default function Selector({
       const selectedCompanies = companies.map((i) => i.companyname);
       const selectedCities = city.map((i) => i.cityid);
       const selectedPublication = selectedPublications.map(
-        (i) => i.publicationgroupname
+        (i) => i.publicationgroupid
       );
       const request_data = {
         clientid: "INFINIXIN",
@@ -96,7 +95,7 @@ export default function Selector({
           Authorization: `Bearer ${userToken}`,
         },
       });
-
+      console.log(request_data);
       console.log(response.data);
     } catch (error) {
       console.log("test");

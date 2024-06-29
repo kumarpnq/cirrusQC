@@ -4,12 +4,23 @@ import {
   Card,
   CardContent,
   CardHeader,
+  CircularProgress,
   IconButton,
   Modal,
   Typography,
 } from "@mui/material";
 import { CloseOutlined } from "@mui/icons-material";
 import { DataGrid } from "@mui/x-data-grid";
+import { useEffect, useState } from "react";
+
+// * third party imports
+import axios from "axios";
+import PropTypes from "prop-types";
+
+// * constants
+import { url } from "../../../constants/baseUrl";
+import FromDate from "../../../components/research-dropdowns/FromDate";
+import { formattedDate } from "../../../constants/dates";
 
 // Styles
 const style = {
@@ -125,8 +136,39 @@ const rows = [
     reportingSubject: "Education",
   },
 ];
-const StitchModal = ({ open, setOpen }) => {
+const StitchModal = ({ open, setOpen, articleId, isStitch, isUnStitch }) => {
   const handleClose = () => setOpen(false);
+
+  //* fetch stitched articles
+  const [date, setDate] = useState(formattedDate);
+  const [fetchLoading, setFetchLoading] = useState(false);
+  const fetchStitchedArticles = async () => {
+    try {
+      setFetchLoading(true);
+      const params = {
+        article_id: 83598910,
+        date,
+      };
+      const endpoint =
+        (isStitch && "articlestostich/") ||
+        (isUnStitch && "getstichedarticles/");
+      const userToken = localStorage.getItem("user");
+      const response = await axios.get(`${url + endpoint}`, {
+        headers: { Authorization: `Bearer ${userToken}` },
+        params,
+      });
+      console.log(response.data);
+    } catch (error) {
+      console.log(error);
+      console.log(error.message);
+    } finally {
+      setFetchLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchStitchedArticles();
+  }, [articleId, date]);
 
   return (
     <Modal
@@ -138,7 +180,9 @@ const StitchModal = ({ open, setOpen }) => {
         <Card>
           <CardHeader
             title={
-              <Typography component={"span"}>Stitched Articles</Typography>
+              <Typography component={"span"}>
+                {isStitch ? "Stitch Articles" : "UnStitch Articles"}
+              </Typography>
             }
             action={
               <IconButton onClick={handleClose}>
@@ -147,9 +191,16 @@ const StitchModal = ({ open, setOpen }) => {
             }
           />
           <CardContent>
-            <Box display="flex" justifyContent="flex-end">
-              <Button>Save</Button>
-              <Button>Cancel</Button>
+            <Box
+              display="flex"
+              justifyContent={isStitch ? "space-between" : "flex-end"}
+            >
+              {isStitch && <FromDate fromDate={date} setFromDate={setDate} />}
+
+              <Typography component={"div"}>
+                <Button>Save</Button>
+                <Button>Cancel</Button>
+              </Typography>
             </Box>
             <Box sx={{ height: 400, width: "100%" }}>
               <DataGrid
@@ -158,6 +209,7 @@ const StitchModal = ({ open, setOpen }) => {
                 pageSize={5}
                 rowsPerPageOptions={[5, 10, 20]}
                 checkboxSelection
+                loading={fetchLoading && <CircularProgress />}
               />
             </Box>
           </CardContent>
@@ -167,4 +219,11 @@ const StitchModal = ({ open, setOpen }) => {
   );
 };
 
+StitchModal.propTypes = {
+  open: PropTypes.bool.isRequired,
+  setOpen: PropTypes.func.isRequired,
+  articleId: PropTypes.number.isRequired,
+  isStitch: PropTypes.bool,
+  isUnStitch: PropTypes.bool,
+};
 export default StitchModal;

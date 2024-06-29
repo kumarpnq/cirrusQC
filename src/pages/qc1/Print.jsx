@@ -143,6 +143,7 @@ const Print = () => {
 
   const rows = gridData.map((item, index) => ({
     id: index,
+    main_id: item.id,
     headline: item.headline,
     head_summary: item.head_summary,
     article_id: item.article_id,
@@ -152,6 +153,7 @@ const Print = () => {
     pdfSize: item.pdfSize,
     journalist: item.journalist,
     uploadTime: item.upload_time,
+    defaultLink: item.default_link,
   }));
 
   const fetchListArticleByQC1Print = useCallback(async () => {
@@ -274,7 +276,6 @@ const Print = () => {
         params,
       });
       setGridData(response.data.feed_data || []);
-      console.log(response.data);
     } catch (error) {
       console.log(error);
     } finally {

@@ -48,7 +48,14 @@ const titleStyle = {
 };
 
 const EditDialog = ({ open, setOpen, row }) => {
-  const articleId = row?.id;
+  // * headers
+  const userToken = localStorage.getItem("user");
+  const headers = {
+    Authorization: `Bearer ${userToken}`,
+  };
+
+  const articleId = row?.main_id;
+  const defaultLink = row?.defaultLink;
   const [articleTagDetails, setArticleTagDetails] = useState([]);
   const [articleTagDetailsLoading, setArticleTagDetailsLoading] = useState([]);
   const [formItems, setFormItems] = useState({
@@ -72,26 +79,23 @@ const EditDialog = ({ open, setOpen, row }) => {
         `${url}qc1printheader/?article_id=${articleId}`,
         { headers }
       );
-      const headerData = headerResponse.data.socialfeed[0] || {};
+      const headerData = headerResponse.data.article[0] || {};
       setFormItems({
-        headline: "test headline",
-        summary: "test Summary",
-        journalist: "Sidd S",
-        page: 5,
-        articleSummary: "Article summary",
+        headline: headerData.headline,
+        summary: headerData.summary,
+        journalist: headerData.journalist,
+        page: headerData.page_number,
+        articleSummary: headerData.article_summary,
       });
-
-      console.log(headerData);
 
       const tagDetailsResponse = await axios.get(
         `${url}qc1printtagdetails/?article_id=${articleId}`,
         { headers }
       );
-      console.log(tagDetailsResponse);
-      setArticleTagDetails(tagDetailsResponse.data.socialfeed_details || []);
+
+      setArticleTagDetails(tagDetailsResponse.data.article_details || []);
     } catch (error) {
       // toast.error("Error While fetching data.");
-      console.log(error);
       console.log(error.message);
     } finally {
       setArticleTagDetailsLoading(false);
@@ -101,6 +105,25 @@ const EditDialog = ({ open, setOpen, row }) => {
   useEffect(() => {
     fetchHeaderAndTagDetails();
   }, [articleId]);
+
+  // * updating header data
+  const [updateHeaderLoading, setUpdateHeaderLoading] = useState(false);
+  const updateHeaderData = async () => {
+    try {
+      setUpdateHeaderLoading(true);
+      const data = {
+        ARTICLEID: articleId,
+      };
+      const response = await axios.post(`${url}updatearticleheader/`, [data], {
+        headers,
+      });
+      console.log(response);
+    } catch (error) {
+      console.log(error.message);
+    } finally {
+      setUpdateHeaderLoading(false);
+    }
+  };
 
   const [selectedCompanies, setSelectedCompanies] = useState(null);
 
@@ -131,49 +154,36 @@ const EditDialog = ({ open, setOpen, row }) => {
       ),
     },
     { field: "CompanyName", headerName: "CompanyName", width: 300 },
+    { field: "keyword", headerName: "Keyword", width: 300 },
   ];
 
-  const rows = [
-    {
-      id: 1,
-      Action: (
-        <IconButton color="red">
-          <CloseIcon />
-        </IconButton>
-      ),
-      CompanyName: "American Express",
-    },
-    {
-      id: 2,
-      Action: (
-        <IconButton color="red">
-          <CloseIcon />
-        </IconButton>
-      ),
-      CompanyName: "BMW India",
-    },
-    {
-      id: 3,
-      Action: (
-        <IconButton color="red">
-          <CloseIcon />
-        </IconButton>
-      ),
-      CompanyName: "Tata Motors",
-    },
-    {
-      id: 4,
-      Action: (
-        <IconButton color="red">
-          <CloseIcon />
-        </IconButton>
-      ),
-      CompanyName: "Volkswagen",
-    },
-  ];
+  const rows = articleTagDetails.map((item, index) => ({
+    id: index,
+    companyId: item.company_id,
+    CompanyName: item.company_name,
+    keyword: item.keyword,
+  }));
 
   // * stitch modal
   const [modalOpen, setModalOpen] = useState(false);
+  const [stitchUnStitch, setStitchUnStitch] = useState({
+    stitch: false,
+    unStitch: false,
+  });
+  const handleStitchOpen = () => {
+    setStitchUnStitch({
+      stitch: true,
+      unStitch: false,
+    });
+    setModalOpen(true);
+  };
+  const handleUnStitchOpen = () => {
+    setStitchUnStitch({
+      stitch: false,
+      unStitch: true,
+    });
+    setModalOpen(true);
+  };
 
   return (
     <Fragment>
@@ -190,10 +200,9 @@ const EditDialog = ({ open, setOpen, row }) => {
               variant="h6"
               component="h6"
               fontSize={"1em"}
-            >
-              Edit
-            </Typography>
+            ></Typography>
             <Typography id="edit-dialog-description" component={"div"}>
+              <Button>Save</Button>
               <IconButton onClick={handleClose}>
                 <CloseOutlined />
               </IconButton>
@@ -249,10 +258,8 @@ const EditDialog = ({ open, setOpen, row }) => {
                     multiline
                     rows={4}
                   />
-                  <Button onClick={() => setModalOpen((prev) => !prev)}>
-                    Stitch
-                  </Button>
-                  <Button>unStitch</Button>
+                  <Button onClick={handleStitchOpen}>Stitch</Button>
+                  <Button onClick={handleUnStitchOpen}>unStitch</Button>
                 </Box>
               </Grid>
             </Grid>
@@ -275,9 +282,7 @@ const EditDialog = ({ open, setOpen, row }) => {
                       rows={rows}
                       columns={columns}
                       density="compact"
-                      // loading={
-                      //   socialFeedTagDetailsLoading && <CircularProgress />
-                      // }
+                      loading={articleTagDetailsLoading && <CircularProgress />}
                       pageSize={5}
                       pageSizeOptions={[10, 100, 200, 1000]}
                       columnBufferPx={1000}
@@ -316,7 +321,7 @@ const EditDialog = ({ open, setOpen, row }) => {
                 />
                 <CardContent>
                   <iframe
-                    src={"https://marathi.abplive.com/"}
+                    src={url + defaultLink}
                     frameBorder="0"
                     style={{ width: "100%", height: "540px" }}
                   />
@@ -326,7 +331,13 @@ const EditDialog = ({ open, setOpen, row }) => {
           </Grid>
         </Box>
       </Modal>
-      <StitchModal open={modalOpen} setOpen={setModalOpen} />
+      <StitchModal
+        open={modalOpen}
+        setOpen={setModalOpen}
+        articleId={articleId}
+        isStitch={stitchUnStitch.stitch}
+        isUnStitch={stitchUnStitch.unStitch}
+      />
     </Fragment>
   );
 };
