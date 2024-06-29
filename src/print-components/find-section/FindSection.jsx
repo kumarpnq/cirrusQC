@@ -246,7 +246,7 @@ export const FindSection = ({
     }
 
     setSearchedData(output);
-    setQc2PrintTableData(output);
+    // setQc2PrintTableData(output);
     setTableLoading(false);
   };
   return (

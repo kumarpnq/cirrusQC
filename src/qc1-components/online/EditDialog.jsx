@@ -3,7 +3,7 @@
 print edit component
 
 */
-import { Fragment, useState } from "react";
+import { Fragment, useEffect, useState } from "react";
 import {
   Box,
   Button,
@@ -24,6 +24,8 @@ import { DataGrid } from "@mui/x-data-grid";
 import DebounceSearchCompany from "../../@core/DebounceSearchCompany";
 import { FaExternalLinkAlt } from "react-icons/fa";
 import StitchModal from "./components/StitchModal";
+import axios from "axios";
+import { url } from "../../constants/baseUrl";
 
 const style = {
   position: "absolute",
@@ -45,14 +47,60 @@ const titleStyle = {
   justifyContent: "space-between",
 };
 
-const EditDialog = ({ open, setOpen }) => {
+const EditDialog = ({ open, setOpen, row }) => {
+  const articleId = row?.id;
+  const [articleTagDetails, setArticleTagDetails] = useState([]);
+  const [articleTagDetailsLoading, setArticleTagDetailsLoading] = useState([]);
   const [formItems, setFormItems] = useState({
-    headline: "test headline",
-    summary: "test Summary",
-    journalist: "Sidd S",
-    page: 5,
-    articleSummary: "Article summary",
+    headline: "",
+    summary: "",
+    journalist: "",
+    page: "",
+    articleSummary: "",
   });
+
+  // * fetch data
+  const fetchHeaderAndTagDetails = async () => {
+    try {
+      setArticleTagDetailsLoading(true);
+      const userToken = localStorage.getItem("user");
+      const headers = {
+        Authorization: `Bearer ${userToken}`,
+      };
+
+      const headerResponse = await axios.get(
+        `${url}qc1printheader/?article_id=${articleId}`,
+        { headers }
+      );
+      const headerData = headerResponse.data.socialfeed[0] || {};
+      setFormItems({
+        headline: "test headline",
+        summary: "test Summary",
+        journalist: "Sidd S",
+        page: 5,
+        articleSummary: "Article summary",
+      });
+
+      console.log(headerData);
+
+      const tagDetailsResponse = await axios.get(
+        `${url}qc1printtagdetails/?article_id=${articleId}`,
+        { headers }
+      );
+      console.log(tagDetailsResponse);
+      setArticleTagDetails(tagDetailsResponse.data.socialfeed_details || []);
+    } catch (error) {
+      // toast.error("Error While fetching data.");
+      console.log(error);
+      console.log(error.message);
+    } finally {
+      setArticleTagDetailsLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchHeaderAndTagDetails();
+  }, [articleId]);
 
   const [selectedCompanies, setSelectedCompanies] = useState(null);
 

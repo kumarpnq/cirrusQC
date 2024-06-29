@@ -274,6 +274,7 @@ const Print = () => {
         params,
       });
       setGridData(response.data.feed_data || []);
+      console.log(response.data);
     } catch (error) {
       console.log(error);
     } finally {
@@ -520,7 +521,7 @@ const Print = () => {
         </Typography>
       </Box>
       <Divider sx={{ mt: 1 }} />
-      <Box sx={{ height: 400, width: "100%", mt: 1 }}>
+      <Box sx={{ height: 550, width: "100%", mt: 1 }}>
         <DataGrid
           rows={rows}
           columns={columns}
