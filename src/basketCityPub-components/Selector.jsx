@@ -11,6 +11,7 @@ import SelectableList from "../@core/SalactableList";
 import axios from "axios";
 import { url } from "../constants/baseUrl";
 import { arrayToString } from "../utils/arrayToString";
+import { toast } from "react-toastify";
 
 export default function Selector({
   cityData,
@@ -95,11 +96,14 @@ export default function Selector({
           Authorization: `Bearer ${userToken}`,
         },
       });
-      console.log(request_data);
-      console.log(response.data);
+
+      if (response.data?.result?.success.length) {
+        toast.success("Report generated.");
+      } else {
+        toast.warning("Error while generating");
+      }
     } catch (error) {
-      console.log("test");
-      console.log(error);
+      toast.error("Something went wrong.");
     }
   };
 
