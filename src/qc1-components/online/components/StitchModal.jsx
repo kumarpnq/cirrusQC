@@ -57,7 +57,7 @@ const StitchModal = ({ open, setOpen, articleId, isStitch, isUnStitch }) => {
     try {
       setFetchLoading(true);
       const params = {
-        article_id: 83600748,
+        article_id: articleId, //83600748
       };
       if (isStitch) params.date = date.split(" ")[0];
       const endpoint =
@@ -107,7 +107,7 @@ const StitchModal = ({ open, setOpen, articleId, isStitch, isUnStitch }) => {
     try {
       const userToken = localStorage.getItem("user");
       const request_data = {
-        parent_id: 83600748,
+        parent_id: articleId, //83600748
         child_id: arrayToString(selectedRows),
       };
       const endpoint =

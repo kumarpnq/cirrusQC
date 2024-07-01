@@ -179,6 +179,15 @@ const ResearchScreen = () => {
     setCountriesToString(countriesV);
   }, [language, continent, country, qc1by, qc2by]);
 
+  // * languages
+  const {
+    data: langs,
+    //  error: langsError,
+    // loading: langsLoading,
+  } = useFetchData(`${url}languagelist/`);
+
+  console.log(language);
+
   // searching the tabledata using multiple parameters
   const handleSearch = async () => {
     if (clientId) {
@@ -189,6 +198,12 @@ const ResearchScreen = () => {
       } else {
         setShowTableData(!!companies);
         setTableDataLoading(true);
+
+        // * extracting languages
+        const languages = langs?.data?.languages || [];
+        const matchingLanguageKeys = Object.entries(languages)
+          .filter(([key, value]) => language.includes(value))
+          .map(([key, value]) => key);
         try {
           let requestData = {
             client_id: clientId,
@@ -230,9 +245,9 @@ const ResearchScreen = () => {
             countriesToString
           );
           addPropertyIfConditionIsTrue(
-            langsToString,
+            arrayToString(matchingLanguageKeys),
             "language",
-            langsToString
+            arrayToString(matchingLanguageKeys)
           );
 
           const requestDataJSON = JSON.stringify(requestData);
@@ -299,7 +314,7 @@ const ResearchScreen = () => {
             setTestClient={setClientId}
             testclient={clientId}
             label={"Clients"}
-            width={300}
+            width={200}
           />
         </div>
         {/* comapany */}
@@ -370,6 +385,7 @@ const ResearchScreen = () => {
           language={language}
           setLanguage={setLanguage}
           classes={classes}
+          // isOnlineScreen
         />
         {/* continents */}
         <Continents

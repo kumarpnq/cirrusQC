@@ -157,7 +157,11 @@ const Online = () => {
         headers,
         params,
       });
-      setTableData(response.data.feed_data || []);
+      if (response.data.feed_data.length) {
+        setTableData(response.data.feed_data || []);
+      } else {
+        toast.warning("No data found.");
+      }
     } catch (error) {
       toast.error(error);
     } finally {

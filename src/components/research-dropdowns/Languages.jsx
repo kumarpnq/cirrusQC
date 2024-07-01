@@ -47,7 +47,7 @@ const Languages = ({ language, setLanguage, classes }) => {
             return selectedLanguages.join(", ");
           }}
         >
-          <MenuItem value="" sx={{ fontSize: "0.8em", opacity: 0.7 }}>
+          <MenuItem disabled sx={{ fontSize: "0.8em", opacity: 0.7 }}>
             <em>Languages</em>
           </MenuItem>
           {Object.entries(languages).map(([languagename, languagecode]) => (

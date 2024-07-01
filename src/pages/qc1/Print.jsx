@@ -40,6 +40,7 @@ import { qc1Array } from "../../constants/dataArray";
 import axios from "axios";
 import { arrayToString } from "../../utils/arrayToString";
 import { addPropertyIfConditionIsTrue } from "../../utils/addProprtyIfConditiontrue";
+import { toast } from "react-toastify";
 
 const useStyle = makeStyles(() => ({
   dropDowns: {
@@ -275,7 +276,11 @@ const Print = () => {
         headers: { Authorization: `Bearer ${userToken}` },
         params,
       });
-      setGridData(response.data.feed_data || []);
+      if (response.data.feed_data.length) {
+        setGridData(response.data.feed_data || []);
+      } else {
+        toast.warning("No data found");
+      }
     } catch (error) {
       console.log(error);
     } finally {
