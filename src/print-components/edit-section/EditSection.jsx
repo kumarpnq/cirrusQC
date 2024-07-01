@@ -46,7 +46,7 @@ const EditSection = ({
   differData,
   setDifferData,
 }) => {
-  const { userToken, setUnsavedChanges } = useContext(ResearchContext);
+  const { setUnsavedChanges } = useContext(ResearchContext);
   const classes = useStyles();
 
   const [editRow, setEditRow] = useState("");
@@ -297,6 +297,7 @@ const EditSection = ({
       .filter((entry) => entry !== null); // Remove null entries
 
     try {
+      const userToken = localStorage.getItem("user");
       const url = `${import.meta.env.VITE_BASE_URL}updatePrint2database/`;
       if (dataToSending.length > 0) {
         setSaveLoading(true);

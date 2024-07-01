@@ -581,7 +581,7 @@ const BasketCityPub = () => {
     const userToken = localStorage.getItem("user");
     const request_data = [
       {
-        clientid: "INFINIXIN",
+        clientid: selectedClient,
         companyid: row.COMPANYID,
         cityid: row.CITYID,
         pubgroupid: row.PUBGROUPID,

@@ -100,7 +100,7 @@ export default function AddNewRow({
 
           if (!existsInTableData) {
             dataToSendFiltered.push({
-              clientid: "INFINIXIN",
+              clientid: clientId,
               companyid: companyId,
               cityid: cityId,
               pubgroupid: publicationId,

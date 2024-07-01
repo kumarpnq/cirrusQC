@@ -1,5 +1,9 @@
 import { useCallback, useState } from "react";
 import { Box, CircularProgress, Divider, IconButton } from "@mui/material";
+import Accordion from "@mui/material/Accordion";
+import AccordionSummary from "@mui/material/AccordionSummary";
+import AccordionDetails from "@mui/material/AccordionDetails";
+import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import { makeStyles } from "@mui/styles";
 import { DataGrid, GridToolbar } from "@mui/x-data-grid";
 
@@ -36,7 +40,11 @@ import axios from "axios";
 import { toast } from "react-toastify";
 import CustomTextField from "../../@core/CutsomTextField";
 import { arrayToString } from "../../utils/arrayToString";
-import { EditAttributesOutlined } from "@mui/icons-material";
+import {
+  AttachFileOutlined,
+  ControlCameraOutlined,
+  EditAttributesOutlined,
+} from "@mui/icons-material";
 
 const useStyle = makeStyles(() => ({
   dropDowns: {
@@ -83,6 +91,7 @@ const Online = () => {
 
   // * table data
   const [tableData, setTableData] = useState([]);
+  const [selectedItems, setSelectedItems] = useState([]);
   const [tableDataLoading, setTableDataLoading] = useState(false);
   const fetchTableData = useCallback(async () => {
     try {
@@ -225,7 +234,6 @@ const Online = () => {
     { field: "articleDate", headerName: "Article Date", width: 150 },
     { field: "socialFeedId", headerName: "socialFeedId", width: 150 },
   ];
-
   const rows = tableData.map((item, index) => ({
     id: index,
     action: "#",
@@ -238,104 +246,175 @@ const Online = () => {
     articleDate: item.feed_date_time,
     socialFeedId: item.social_feed_id,
   }));
+
+  // * group & un-group articles
+  const handleSelectionChange = (ids) => {
+    const selectedItem = ids.map((index) => tableData[index]);
+    setSelectedItems(selectedItem);
+  };
+
+  // * group selected articles
+  const handleClickGroupItems = () => {};
+
+  // * un-group selected items
+  const handleClickUnGroupItems = () => {};
+
+  // * clear selected items
+  const handleClickClearItems = () => {
+    setSelectedItems([]);
+  };
   return (
     <Box mx={2}>
-      <Box
-        sx={{ display: "flex", alignItems: "center", flexFlow: "wrap", gap: 1 }}
-      >
-        <div className="flex items-center mt-1" style={{ height: 25 }}>
-          <SearchableDropdown
-            options={clientData?.data?.clients || []}
-            testclient={selectedClient}
-            setTestClient={setSelectedClient}
-            label="Clients"
-            width={300}
-          />
-        </div>
-        <CustomAutocomplete
-          companies={selectedCompanies}
-          setCompanies={setSelectedCompanies}
-          company={companyData?.data?.companies || []}
-        />
-        <Datetype
-          classes={classes}
-          dateTypes={dateTypes}
-          dateType={selectedDateType}
-          setDateType={setSelectedDateType}
-        />
-        <FromDate fromDate={fromDate} setFromDate={setFromDate} />
-        <ToDate dateNow={dateNow} setDateNow={setDateNow} isMargin={true} />
-        <Qc1All
-          qc1done={isQc1Done}
-          setQc1done={setIsQc1Done}
-          classes={classes}
-          qc1Array={qc1Array}
-        />
-        <Qc1By
-          qcUsersData={qcUserData?.data?.qc_users || []}
-          qc1by={qc1By}
-          setQc1by={setQc1By}
-          classes={classes}
-          pageType={"print"}
-        />
-        <Languages
-          language={selectedLanguages}
-          setLanguage={setSelectedLanguages}
-          classes={classes}
-        />
-        <Continents
-          continent={selectedContinents}
-          setContinent={setSelectedContinents}
-          countriesByContinent={countriesByContinent}
-          setFilteredCountries={setFilteredCountries}
-          continents={continents}
-          classes={classes}
-        />
-        {/* countries */}
-        <Countries
-          country={selectedCountries}
-          setCountry={setSelectedCountries}
-          classes={classes}
-          filteredCountries={filteredCountries}
-        />
-        <div className="flex flex-wrap items-center" style={{ height: 25 }}>
-          <CheckboxComp value={isImage} setValue={setIsImage} label={"Image"} />
-          <CheckboxComp value={isVideo} setValue={setIsVideo} label={"Video"} />
-        </div>
-        <div
-          className="flex flex-wrap items-center gap-2 pt-2"
-          style={{ height: 25 }}
+      <Accordion>
+        <AccordionSummary
+          expandIcon={<ExpandMoreIcon />}
+          aria-controls="panel1-content"
+          id="panel1-header"
         >
-          <CustomTextField
-            width={200}
-            placeholder="Summary/Headline"
-            type="text"
-            value={headOrSummary}
-            setValue={setHeadOrSummary}
-          />
-          <CustomTextField
-            width={200}
-            placeholder="Link"
-            type="text"
-            value={link}
-            setValue={setLink}
-          />
-          <CustomTextField
-            width={200}
-            placeholder={"socialFeedId"}
-            type={"number"}
-            value={socialFeedId}
-            setValue={setSocialFeedId}
-          />
-        </div>
-        <Button
-          btnText={tableDataLoading ? "searching" : "search"}
-          isLoading={tableDataLoading}
-          onClick={fetchTableData}
-        />
-      </Box>
+          Search Filters
+        </AccordionSummary>
+        <AccordionDetails>
+          <Box
+            sx={{
+              display: "flex",
+              alignItems: "center",
+              flexFlow: "wrap",
+              gap: 1,
+            }}
+          >
+            <div className="flex items-center mt-1" style={{ height: 25 }}>
+              <SearchableDropdown
+                options={clientData?.data?.clients || []}
+                testclient={selectedClient}
+                setTestClient={setSelectedClient}
+                label="Clients"
+                width={300}
+              />
+            </div>
+            <CustomAutocomplete
+              companies={selectedCompanies}
+              setCompanies={setSelectedCompanies}
+              company={companyData?.data?.companies || []}
+            />
+            <Datetype
+              classes={classes}
+              dateTypes={dateTypes}
+              dateType={selectedDateType}
+              setDateType={setSelectedDateType}
+            />
+            <FromDate fromDate={fromDate} setFromDate={setFromDate} />
+            <ToDate dateNow={dateNow} setDateNow={setDateNow} isMargin={true} />
+            <Qc1All
+              qc1done={isQc1Done}
+              setQc1done={setIsQc1Done}
+              classes={classes}
+              qc1Array={qc1Array}
+            />
+            <Qc1By
+              qcUsersData={qcUserData?.data?.qc_users || []}
+              qc1by={qc1By}
+              setQc1by={setQc1By}
+              classes={classes}
+              pageType={"print"}
+            />
+            <Languages
+              language={selectedLanguages}
+              setLanguage={setSelectedLanguages}
+              classes={classes}
+            />
+            <Continents
+              continent={selectedContinents}
+              setContinent={setSelectedContinents}
+              countriesByContinent={countriesByContinent}
+              setFilteredCountries={setFilteredCountries}
+              continents={continents}
+              classes={classes}
+            />
+            {/* countries */}
+            <Countries
+              country={selectedCountries}
+              setCountry={setSelectedCountries}
+              classes={classes}
+              filteredCountries={filteredCountries}
+            />
+            <div className="flex flex-wrap items-center" style={{ height: 25 }}>
+              <CheckboxComp
+                value={isImage}
+                setValue={setIsImage}
+                label={"Image"}
+              />
+              <CheckboxComp
+                value={isVideo}
+                setValue={setIsVideo}
+                label={"Video"}
+              />
+            </div>
+            <div
+              className="flex flex-wrap items-center gap-2 pt-2"
+              style={{ height: 25 }}
+            >
+              <CustomTextField
+                width={200}
+                placeholder="Summary/Headline"
+                type="text"
+                value={headOrSummary}
+                setValue={setHeadOrSummary}
+              />
+              <CustomTextField
+                width={200}
+                placeholder="Link"
+                type="text"
+                value={link}
+                setValue={setLink}
+              />
+              <CustomTextField
+                width={200}
+                placeholder={"socialFeedId"}
+                type={"number"}
+                value={socialFeedId}
+                setValue={setSocialFeedId}
+              />
+            </div>
+            <Button
+              btnText={tableDataLoading ? "searching" : "search"}
+              isLoading={tableDataLoading}
+              onClick={fetchTableData}
+            />
+          </Box>
+        </AccordionDetails>
+        {/* <AccordionActions></AccordionActions> */}
+      </Accordion>
+      {!!selectedItems.length && (
+        <Accordion>
+          <AccordionSummary
+            expandIcon={<ExpandMoreIcon />}
+            aria-controls="panel1-content"
+            id="panel1-header"
+          >
+            Group & Un-Group Articles
+          </AccordionSummary>
+          <AccordionDetails sx={{ display: "flex" }}>
+            <Button
+              btnText="group"
+              icon={<AttachFileOutlined />}
+              onClick={handleClickGroupItems}
+            />
+            <Button
+              btnText="ungroup"
+              icon={<ControlCameraOutlined />}
+              onClick={handleClickUnGroupItems}
+            />
+            <Button
+              btnText="clear"
+              // icon={<ControlCameraOutlined />}
+              onClick={handleClickClearItems}
+            />
+          </AccordionDetails>
+        </Accordion>
+      )}
+
       <Divider sx={{ mt: 1 }} />
-      <Box sx={{ height: 500, width: "100%", mt: 1 }}>
+      <Box sx={{ height: 550, width: "100%", mt: 1 }}>
         <DataGrid
           rows={rows}
           columns={columns}
@@ -358,9 +437,12 @@ const Online = () => {
           disableColumnSelector
           disableDensitySelector
           disableSelectionOnClick
-          hideFooterSelectedRowCount
+          checkboxSelection
           loading={tableDataLoading && <CircularProgress />}
           components={{ Toolbar: GridToolbar }}
+          onRowSelectionModelChange={(ids) => {
+            handleSelectionChange(ids);
+          }}
         />
       </Box>
       <EditDialog

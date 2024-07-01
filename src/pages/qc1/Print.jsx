@@ -8,6 +8,10 @@ import {
   IconButton,
   Typography,
 } from "@mui/material";
+import Accordion from "@mui/material/Accordion";
+import AccordionSummary from "@mui/material/AccordionSummary";
+import AccordionDetails from "@mui/material/AccordionDetails";
+import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import { DataGrid } from "@mui/x-data-grid";
 import { makeStyles } from "@mui/styles";
 
@@ -313,219 +317,236 @@ const Print = () => {
 
   return (
     <Box sx={{ px: 1.5 }}>
-      <Box
-        sx={{ display: "flex", alignItems: "center", flexWrap: "wrap", gap: 1 }}
-      >
-        <Typography
-          component={"div"}
-          className={classes.componentHeight}
-          sx={{ pt: 1 }}
+      <Accordion>
+        <AccordionSummary
+          expandIcon={<ExpandMoreIcon />}
+          aria-controls="panel1-content"
+          id="panel1-header"
         >
-          <Client
-            label="Client"
-            client={selectedClient}
-            setClient={setSelectedClient}
-            width={200}
-            setCompanies={setSelectedCompanies}
-          />
-        </Typography>
-        <Typography component={"div"} className={classes.componentHeight}>
-          <Company
-            companyData={data?.data?.companies || []}
-            companies={selectedCompanies}
-            setCompanies={setSelectedCompanies}
-            isMt={true}
-          />
-        </Typography>
-        <Typography component={"div"} className={classes.componentHeight}>
-          <Category
-            category={withCategory}
-            setCategory={setWithCategory}
-            classes={classes}
-            width={150}
-          />
-        </Typography>
-        <Typography component={"div"} className={classes.componentHeight}>
-          <FromDate fromDate={fromDate} setFromDate={setFromDate} />
-        </Typography>
-        <Typography component={"div"} className={classes.componentHeight}>
-          <ToDate dateNow={toDate} setDateNow={setToDate} isMargin={true} />
-        </Typography>
-        <Typography component={"div"} className={classes.componentHeight}>
-          <FromDate fromDate={uploadDate} setFromDate={setUploadDate} />
-        </Typography>
-        <Typography component={"div"} className={classes.componentHeight}>
-          <CustomDebounceDropdown
-            publicationGroup={publicationGroup}
-            setPublicationGroup={setPublicationGroup}
-            bg="secondory"
-            m="mt-3"
-          />
-        </Typography>
-        <Typography component={"div"} className={classes.componentHeight}>
-          <Publication
-            publicationGroup={publicationGroup}
-            publication={publication}
-            setPublication={setPublication}
-            classes={classes}
-            width={150}
-          />
-        </Typography>
-        <Typography component={"div"} className={classes.componentHeight}>
-          <PubType
-            pubType={pubType}
-            setPubType={setPubType}
-            classes={classes}
-            width={150}
-          />
-        </Typography>
-        <Typography component={"div"} className={classes.componentHeight}>
-          <Qc1All
-            qc1done={qc1Done}
-            setQc1done={setQc1Done}
-            classes={classes}
-            qc1Array={qc1Array}
-          />
-        </Typography>
-        <Typography component={"div"} className={classes.componentHeight}>
-          <Qc1By
-            qcUsersData={qcUserData?.data?.qc_users || []}
-            qc1by={qc1By}
-            setQc1by={setQc1By}
-            classes={classes}
-            pageType={"print"}
-          />
-        </Typography>
-        <Typography component={"div"} className={classes.componentHeight}>
-          <Cities
-            classes={classes}
-            city={selectedCity}
-            setCity={setSelectedCity}
-          />
-        </Typography>
-        <Typography component={"div"} className={classes.componentHeight}>
-          <Languages
-            language={selectedLanguages}
-            setLanguage={setSelectedLanguages}
-            classes={classes}
-          />
-        </Typography>
-        <Typography component={"div"} className={classes.componentHeight}>
-          <YesOrNo
-            classes={classes}
-            mapValue={["Yes", "No", "All"]}
-            placeholder="Photo"
-            value={photo}
-            setValue={setPhoto}
-            width={100}
-          />
-        </Typography>
-        <Typography component={"div"} className={classes.componentHeight}>
-          <YesOrNo
-            classes={classes}
-            mapValue={["Yes", "No", "All"]}
-            placeholder="Graph"
-            value={graph}
-            setValue={setGraph}
-            width={100}
-          />
-        </Typography>
-        <Typography component={"div"} className={classes.componentHeight}>
-          <YesOrNo
-            classes={classes}
-            mapValue={["Print", "Internet", "All"]}
-            placeholder="ArticleType"
-            value={articleType}
-            setValue={setArticleType}
-            width={100}
-          />
-        </Typography>
-        <Typography component={"div"} className={classes.componentHeight}>
-          <YesOrNo
-            classes={classes}
-            mapValue={["Yes", "No", "All"]}
-            placeholder="Stitch"
-            value={stitched}
-            setValue={setStitched}
-            width={100}
-          />
-        </Typography>
-        <Typography component={"div"} className={classes.componentHeight}>
-          <YesOrNo
-            classes={classes}
-            mapValue={["Yes", "No", "All"]}
-            placeholder="TV"
-            value={tv}
-            setValue={setTv}
-            width={100}
-          />
-        </Typography>
-        <Typography
-          component={"div"}
-          className={classes.componentHeight}
-          sx={{ pt: 1 }}
-        >
-          <FormGroup>
-            <FormControlLabel
-              label={
-                <Typography variant="h6" fontSize={"0.9em"}>
-                  No company
-                </Typography>
-              }
-              control={
-                <Checkbox
-                  size="small"
-                  checked={isNoCompany}
-                  onChange={() => setIsNoCompany((prev) => !prev)}
+          Search Filters
+        </AccordionSummary>
+        <AccordionDetails>
+          <Box
+            sx={{
+              display: "flex",
+              alignItems: "center",
+              flexWrap: "wrap",
+              gap: 1,
+            }}
+          >
+            <Typography
+              component={"div"}
+              className={classes.componentHeight}
+              sx={{ pt: 1 }}
+            >
+              <Client
+                label="Client"
+                client={selectedClient}
+                setClient={setSelectedClient}
+                width={200}
+                setCompanies={setSelectedCompanies}
+              />
+            </Typography>
+            <Typography component={"div"} className={classes.componentHeight}>
+              <Company
+                companyData={data?.data?.companies || []}
+                companies={selectedCompanies}
+                setCompanies={setSelectedCompanies}
+                isMt={true}
+              />
+            </Typography>
+            <Typography component={"div"} className={classes.componentHeight}>
+              <Category
+                category={withCategory}
+                setCategory={setWithCategory}
+                classes={classes}
+                width={150}
+              />
+            </Typography>
+            <Typography component={"div"} className={classes.componentHeight}>
+              <FromDate fromDate={fromDate} setFromDate={setFromDate} />
+            </Typography>
+            <Typography component={"div"} className={classes.componentHeight}>
+              <ToDate dateNow={toDate} setDateNow={setToDate} isMargin={true} />
+            </Typography>
+            <Typography component={"div"} className={classes.componentHeight}>
+              <FromDate fromDate={uploadDate} setFromDate={setUploadDate} />
+            </Typography>
+            <Typography component={"div"} className={classes.componentHeight}>
+              <CustomDebounceDropdown
+                publicationGroup={publicationGroup}
+                setPublicationGroup={setPublicationGroup}
+                bg="secondory"
+                m="mt-3"
+              />
+            </Typography>
+            <Typography component={"div"} className={classes.componentHeight}>
+              <Publication
+                publicationGroup={publicationGroup}
+                publication={publication}
+                setPublication={setPublication}
+                classes={classes}
+                width={150}
+              />
+            </Typography>
+            <Typography component={"div"} className={classes.componentHeight}>
+              <PubType
+                pubType={pubType}
+                setPubType={setPubType}
+                classes={classes}
+                width={150}
+              />
+            </Typography>
+            <Typography component={"div"} className={classes.componentHeight}>
+              <Qc1All
+                qc1done={qc1Done}
+                setQc1done={setQc1Done}
+                classes={classes}
+                qc1Array={qc1Array}
+              />
+            </Typography>
+            <Typography component={"div"} className={classes.componentHeight}>
+              <Qc1By
+                qcUsersData={qcUserData?.data?.qc_users || []}
+                qc1by={qc1By}
+                setQc1by={setQc1By}
+                classes={classes}
+                pageType={"print"}
+              />
+            </Typography>
+            <Typography component={"div"} className={classes.componentHeight}>
+              <Cities
+                classes={classes}
+                city={selectedCity}
+                setCity={setSelectedCity}
+              />
+            </Typography>
+            <Typography component={"div"} className={classes.componentHeight}>
+              <Languages
+                language={selectedLanguages}
+                setLanguage={setSelectedLanguages}
+                classes={classes}
+              />
+            </Typography>
+            <Typography component={"div"} className={classes.componentHeight}>
+              <YesOrNo
+                classes={classes}
+                mapValue={["Yes", "No", "All"]}
+                placeholder="Photo"
+                value={photo}
+                setValue={setPhoto}
+                width={100}
+              />
+            </Typography>
+            <Typography component={"div"} className={classes.componentHeight}>
+              <YesOrNo
+                classes={classes}
+                mapValue={["Yes", "No", "All"]}
+                placeholder="Graph"
+                value={graph}
+                setValue={setGraph}
+                width={100}
+              />
+            </Typography>
+            <Typography component={"div"} className={classes.componentHeight}>
+              <YesOrNo
+                classes={classes}
+                mapValue={["Print", "Internet", "All"]}
+                placeholder="ArticleType"
+                value={articleType}
+                setValue={setArticleType}
+                width={100}
+              />
+            </Typography>
+            <Typography component={"div"} className={classes.componentHeight}>
+              <YesOrNo
+                classes={classes}
+                mapValue={["Yes", "No", "All"]}
+                placeholder="Stitch"
+                value={stitched}
+                setValue={setStitched}
+                width={100}
+              />
+            </Typography>
+            <Typography component={"div"} className={classes.componentHeight}>
+              <YesOrNo
+                classes={classes}
+                mapValue={["Yes", "No", "All"]}
+                placeholder="TV"
+                value={tv}
+                setValue={setTv}
+                width={100}
+              />
+            </Typography>
+            <Typography
+              component={"div"}
+              className={classes.componentHeight}
+              sx={{ pt: 1 }}
+            >
+              <FormGroup>
+                <FormControlLabel
+                  label={
+                    <Typography variant="h6" fontSize={"0.9em"}>
+                      No company
+                    </Typography>
+                  }
+                  control={
+                    <Checkbox
+                      size="small"
+                      checked={isNoCompany}
+                      onChange={() => setIsNoCompany((prev) => !prev)}
+                    />
+                  }
                 />
-              }
-            />
-          </FormGroup>
-        </Typography>
+              </FormGroup>
+            </Typography>
 
-        <Typography
-          component={"div"}
-          className={classes.componentHeight}
-          sx={{ gap: 1, pt: 1 }}
-        >
-          <CustomTextField
-            placeholder={"ArticleId"}
-            type={"number"}
-            width={100}
-            value={articleId}
-            setValue={setArticleId}
-          />
-          <CustomTextField
-            placeholder={"SystemArticleId"}
-            type={"number"}
-            width={100}
-            value={systemArticleId}
-            setValue={setSystemArticleId}
-          />
-          <CustomTextField
-            placeholder={"PageNumber"}
-            type={"number"}
-            width={100}
-            value={pageNumber}
-            setValue={setPageNumber}
-          />
-          <CustomTextField
-            placeholder={"Search Keyword"}
-            type={"text"}
-            width={200}
-            value={searchKeyword}
-            setValue={setSearchKeyword}
-          />
-        </Typography>
+            <Typography
+              component={"div"}
+              className={classes.componentHeight}
+              sx={{ gap: 1, pt: 1 }}
+            >
+              <CustomTextField
+                placeholder={"ArticleId"}
+                type={"number"}
+                width={100}
+                value={articleId}
+                setValue={setArticleId}
+              />
+              <CustomTextField
+                placeholder={"SystemArticleId"}
+                type={"number"}
+                width={100}
+                value={systemArticleId}
+                setValue={setSystemArticleId}
+              />
+              <CustomTextField
+                placeholder={"PageNumber"}
+                type={"number"}
+                width={100}
+                value={pageNumber}
+                setValue={setPageNumber}
+              />
+              <CustomTextField
+                placeholder={"Search Keyword"}
+                type={"text"}
+                width={200}
+                value={searchKeyword}
+                setValue={setSearchKeyword}
+              />
+            </Typography>
 
-        <Typography component={"div"} className={classes.componentHeight}>
-          <Button
-            btnText={gridDataLoading ? "Searching" : "Search"}
-            onClick={fetchListArticleByQC1Print}
-            isLoading={gridDataLoading}
-          />
-        </Typography>
-      </Box>
+            <Typography component={"div"} className={classes.componentHeight}>
+              <Button
+                btnText={gridDataLoading ? "Searching" : "Search"}
+                onClick={fetchListArticleByQC1Print}
+                isLoading={gridDataLoading}
+              />
+            </Typography>
+          </Box>
+        </AccordionDetails>
+      </Accordion>
+
       <Divider sx={{ mt: 1 }} />
       <Box sx={{ height: 550, width: "100%", mt: 1 }}>
         <DataGrid
