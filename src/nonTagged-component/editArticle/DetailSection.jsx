@@ -28,6 +28,7 @@ const Details = ({ selectedRow, userToken }) => {
 
   const [iAlignment, setIAlignment] = useState(selectedRow?.has_image);
   const [vAlignment, setVAlignment] = useState(selectedRow?.has_video);
+  const [updateLoading, setUpdateLoading] = useState(false);
 
   useEffect(() => {
     if (selectedRow) {
@@ -50,16 +51,21 @@ const Details = ({ selectedRow, userToken }) => {
       const headers = {
         Authorization: `Bearer ${userToken}`,
       };
-      const request_data = [
-        {
-          SOCIALFEEDID: selectedRow?.social_feed_id,
-          HEADLINE: headline,
-          SUMMARY: summary,
-          AUTHOR: journalist,
-          HASIMAGE: iAlignment,
-          HASVIDEO: vAlignment,
-        },
-      ];
+      setUpdateLoading(true);
+      const request_data = {
+        data: [
+          {
+            UPDATETYPE: "U",
+            SOCIALFEEDID: selectedRow?.social_feed_id,
+            HEADLINE: headline,
+            SUMMARY: summary,
+            AUTHOR: journalist,
+            HASIMAGE: iAlignment,
+            HASVIDEO: vAlignment,
+          },
+        ],
+        qcflag: 1,
+      };
       const response = await axios.post(
         `${url}updatesocialfeedheader/`,
         request_data,
@@ -70,6 +76,8 @@ const Details = ({ selectedRow, userToken }) => {
       }
     } catch (error) {
       toast.error(error.message);
+    } finally {
+      setUpdateLoading(false);
     }
   };
   return (
@@ -181,7 +189,11 @@ const Details = ({ selectedRow, userToken }) => {
               />
             </Box>
             <Box display="flex" justifyContent="flex-end">
-              <Button btnText="Update" onClick={handleHeaderUpdate} />
+              <Button
+                btnText={updateLoading ? "updating" : "update"}
+                onClick={handleHeaderUpdate}
+                isLoading={updateLoading}
+              />
             </Box>
           </FormControl>
         </CardContent>

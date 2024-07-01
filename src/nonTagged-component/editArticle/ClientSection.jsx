@@ -50,8 +50,9 @@ const ClientSection = ({
   }, []);
 
   const handleClose = () => {
-    setOpen(false);
     setTableDataList([]);
+    modifiedRows([]);
+    setOpen(false);
   };
   useEffect(() => {
     if (isFirstRender || fetchTagDataAfterChange) {
@@ -140,22 +141,25 @@ const ClientSection = ({
         const header = {
           Authorization: `Bearer ${userToken}`,
         };
-        const requestData = [
-          {
-            UPDATETYPE: "I",
-            SOCIALFEEDID: selectedArticle?.social_feed_id,
-            COMPANYID: selectedCompany.value,
-            COMPANYNAME: selectedCompany.label,
-            KEYWORD: null,
-            // AUTHOR: rowData.author,
-            REPORTINGTONE: null,
-            REPORTINGSUBJECT: null,
-            SUBCATEGORY: null,
-            PROMINENCE: null,
-            SUMMARY: null,
-            QC2REMARK: null,
-          },
-        ];
+        const requestData = {
+          data: [
+            {
+              UPDATETYPE: "I",
+              SOCIALFEEDID: selectedArticle?.social_feed_id,
+              COMPANYID: selectedCompany.value,
+              COMPANYNAME: selectedCompany.label,
+              KEYWORD: null,
+              // AUTHOR: rowData.author,
+              REPORTINGTONE: null,
+              REPORTINGSUBJECT: null,
+              SUBCATEGORY: null,
+              PROMINENCE: null,
+              SUMMARY: null,
+              QC2REMARK: null,
+            },
+          ],
+          qcflag: 1,
+        };
 
         const response = await axios.post(
           `${url}updatesocialfeedtagdetails/`,
@@ -207,18 +211,22 @@ const ClientSection = ({
 
   const handleDelete = async () => {
     const isValid = await userVerification();
-    const requestData = [
-      {
-        UPDATETYPE: "D",
-        SOCIALFEEDID: selectedRowForDelete.socialfeed_id,
-        COMPANYID: selectedRowForDelete.company_id,
-      },
-    ];
+    const requestData = {
+      data: [
+        {
+          UPDATETYPE: "D",
+          SOCIALFEEDID: selectedRowForDelete.socialfeed_id,
+          COMPANYID: selectedRowForDelete.company_id,
+          COMPANYNAME: selectedRowForDelete.company_name,
+        },
+      ],
+      qcflag: 1,
+    };
+
     isValid && (await makeRequest(requestData));
     if (!isValid) {
       return toast.error("Password not match with records");
     }
-
     if (error) {
       toast.error("An error occurred while deleting the articles.");
     } else {
@@ -232,6 +240,8 @@ const ClientSection = ({
     }
   };
 
+  // * loading state for save
+  const [saveLoading, setSaveLoading] = useState(false);
   const handleSave = async () => {
     if (modifiedRows.length < 0) {
       return toast.warning("No data");
@@ -252,11 +262,13 @@ const ClientSection = ({
       return;
     }
     try {
+      setSaveLoading(true);
       const requestData = modifiedRows.map((obj) => convertKeys(obj));
+      const dataToSend = { data: requestData, qcflag: 1 };
       const headers = { Authorization: `Bearer ${userToken}` };
       const response = await axios.post(
         `${url}updatesocialfeedtagdetails/`,
-        requestData,
+        dataToSend,
         { headers }
       );
       if (response.data.result.success.length > 0) {
@@ -268,12 +280,14 @@ const ClientSection = ({
         setModifiedRows([]);
 
         setFetchTagDataAfterChange(true);
-        setFetchAfterSave(true);
+        // setFetchAfterSave(true);
       } else {
         toast.error("Something went wrong");
       }
     } catch (error) {
       toast.error(error.message);
+    } finally {
+      setSaveLoading(false);
     }
   };
 
@@ -287,7 +301,11 @@ const ClientSection = ({
           </div>
         </Box>
         <Button btnText="Add" onClick={handleAddCompanies} />
-        <Button btnText="Save" onClick={handleSave} />
+        <Button
+          btnText={saveLoading ? "saving" : "save"}
+          onClick={handleSave}
+          isLoading={saveLoading}
+        />
       </Box>
       <Card>
         <table className="w-full">

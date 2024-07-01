@@ -186,8 +186,6 @@ const ResearchScreen = () => {
     // loading: langsLoading,
   } = useFetchData(`${url}languagelist/`);
 
-  console.log(language);
-
   // searching the tabledata using multiple parameters
   const handleSearch = async () => {
     if (clientId) {
