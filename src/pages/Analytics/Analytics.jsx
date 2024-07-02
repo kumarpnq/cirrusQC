@@ -12,8 +12,6 @@ import {
 import { makeStyles } from "@mui/styles";
 import { DataGrid, GridToolbar } from "@mui/x-data-grid";
 import { AiOutlineDownload } from "react-icons/ai";
-import Tabs from "@mui/material/Tabs";
-import Tab from "@mui/material/Tab";
 
 // * third party imports
 import axios from "axios";
@@ -32,6 +30,8 @@ import CustomMultiSelect from "../../@core/CustomMultiSelect";
 import { formattedDate, formattedNextDay } from "../../constants/dates";
 import { url } from "../../constants/baseUrl";
 import { arrayToString } from "../../utils/arrayToString";
+import NavigateTabs from "../../analytics-components/NavigateTabs";
+import SearchFilters from "../../analytics-components/SearchFilters";
 
 const useStyle = makeStyles(() => ({
   dropDowns: {
@@ -71,13 +71,6 @@ CustomTabPanel.propTypes = {
   index: PropTypes.number.isRequired,
   value: PropTypes.number.isRequired,
 };
-
-function a11yProps(index) {
-  return {
-    id: `simple-tab-${index}`,
-    "aria-controls": `simple-tabpanel-${index}`,
-  };
-}
 
 const Analytics = () => {
   // * table data variables
@@ -264,18 +257,31 @@ const Analytics = () => {
   return (
     <div className="px-3">
       <Box sx={{ width: "100%" }}>
-        <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
-          <Tabs
-            value={value}
-            onChange={handleChange}
-            aria-label="activity logs"
-          >
-            <Tab label="QC Activity" {...a11yProps(0)} />
-            <Tab label="Logs" {...a11yProps(1)} />
-          </Tabs>
-        </Box>
+        <NavigateTabs value={value} handleChange={handleChange} />
       </Box>
-      <Box
+      <SearchFilters
+        value={value}
+        selectedClients={selectedClients}
+        setSelectedClients={setSelectedClients}
+        selectedUsers={selectedUsers}
+        setSelectedUsers={setSelectedUsers}
+        selectedHeaders={selectedHeaders}
+        setSelectedHeaders={setSelectedHeaders}
+        selectedPrintAndOnline={selectedPrintAndOnline}
+        setSelectedPrintAndOnline={setSelectedPrintAndOnline}
+        withCompetition={withCompetition}
+        setWithCompetition={setWithCompetition}
+        fromDate={fromDate}
+        setFromDate={setFromDate}
+        toDate={toDate}
+        setToDate={setToDate}
+        selectedUserId={selectedUserId}
+        setSelectedUserId={setSelectedUserId}
+        gridDataLoading={gridDataLoading}
+        handleFetchRecords={handleFetchRecords}
+        classes={classes}
+      />
+      {/* <Box
         sx={{ display: "flex", alignItems: "center", gap: 1, flexWrap: "wrap" }}
       >
         {!value ? (
@@ -373,7 +379,7 @@ const Analytics = () => {
           onClick={handleFetchRecords}
           isLoading={gridDataLoading}
         />
-      </Box>
+      </Box> */}
       <Divider sx={{ my: 1 }} />
 
       <Box sx={{ height: 500, width: "100%" }}>
