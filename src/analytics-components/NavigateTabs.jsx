@@ -1,3 +1,4 @@
+import PropTypes from "prop-types";
 import { Box, Tab, Tabs } from "@mui/material";
 
 function a11yProps(index) {
@@ -19,4 +20,8 @@ const NavigateTabs = ({ value, handleChange }) => {
   );
 };
 
+NavigateTabs.propTypes = {
+  value: PropTypes.number.isRequired,
+  handleChange: PropTypes.func.isRequired,
+};
 export default NavigateTabs;
