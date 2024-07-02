@@ -16,7 +16,11 @@ import { DataGrid } from "@mui/x-data-grid";
 import { makeStyles } from "@mui/styles";
 
 // * icons
-import { EditAttributesOutlined } from "@mui/icons-material";
+import {
+  AttachFileOutlined,
+  ControlCameraOutlined,
+  EditAttributesOutlined,
+} from "@mui/icons-material";
 import { formattedDate, formattedNextDay } from "../../constants/dates";
 
 // * components
@@ -93,8 +97,9 @@ const Print = () => {
   const [isNoCompany, setIsNoCompany] = useState(false);
   const [searchKeyword, setSearchKeyword] = useState("");
 
-  // Table data
+  //* Table data
   const [gridData, setGridData] = useState([]);
+  const [selectedItems, setSelectedItems] = useState([]);
   const [gridDataLoading, setGridDataLoading] = useState(false);
 
   //   * data hooks
@@ -103,6 +108,12 @@ const Print = () => {
     selectedClient
   );
   const { data: qcUserData } = useFetchData(`${url}qcuserlist/`, {});
+
+  // * token and headers
+  const userToken = localStorage.getItem("user");
+  const headers = {
+    Authorization: `Bearer ${userToken}`,
+  };
 
   // * mui classes
   const classes = useStyle();
@@ -314,6 +325,48 @@ const Print = () => {
     isNoCompany,
     searchKeyword,
   ]);
+
+  // * group & un-group articles
+  const handleSelectionChange = (ids) => {
+    const selectedItem = ids.map((index) => gridData[index]);
+    setSelectedItems(selectedItem);
+  };
+
+  // * group selected articles
+  const [groupLoading, setGroupLoading] = useState(false);
+  const handleClickGroupItems = async () => {
+    if (selectedItems.length === 1) {
+      toast.warning("Select more than one article.");
+      return;
+    }
+    const parentId = selectedItems[0].id;
+    const childrenIds = selectedItems.slice(1).map((item) => item.id);
+
+    try {
+      setGroupLoading(true);
+      const request_data = {
+        parent_id: parentId,
+        child_id: arrayToString(childrenIds),
+      };
+      const response = await axios.post(
+        `${url}groupsimilararticles/`,
+        request_data,
+        { headers }
+      );
+      if (response.data.status?.success?.length) {
+        toast.success("Articles grouped successfully.");
+      } else {
+        toast.warning("Something went wrong.");
+      }
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setGroupLoading(false);
+    }
+  };
+
+  // * un-group selected items
+  const handleClickUnGroupItems = () => {};
 
   return (
     <Box sx={{ px: 1.5 }}>
@@ -546,6 +599,30 @@ const Print = () => {
           </Box>
         </AccordionDetails>
       </Accordion>
+      {!!selectedItems.length && (
+        <Accordion>
+          <AccordionSummary
+            expandIcon={<ExpandMoreIcon />}
+            aria-controls="panel1-content"
+            id="panel1-header"
+          >
+            Group & Un-Group Articles
+          </AccordionSummary>
+          <AccordionDetails sx={{ display: "flex" }}>
+            <Button
+              btnText={groupLoading ? "Loading" : "group"}
+              icon={<AttachFileOutlined />}
+              onClick={handleClickGroupItems}
+              isLoading={groupLoading}
+            />
+            <Button
+              btnText="ungroup"
+              icon={<ControlCameraOutlined />}
+              onClick={handleClickUnGroupItems}
+            />
+          </AccordionDetails>
+        </Accordion>
+      )}
 
       <Divider sx={{ mt: 1 }} />
       <Box sx={{ height: 550, width: "100%", mt: 1 }}>
@@ -555,6 +632,10 @@ const Print = () => {
           pageSize={5}
           rowsPerPageOptions={[5]}
           density="compact"
+          checkboxSelection
+          onRowSelectionModelChange={(ids) => {
+            handleSelectionChange(ids);
+          }}
         />
       </Box>
       <EditDialog

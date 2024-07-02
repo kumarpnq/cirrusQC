@@ -17,6 +17,7 @@ import FromDate from "../components/research-dropdowns/FromDate";
 import ToDate from "../components/research-dropdowns/ToDate";
 import Qc1By from "../components/research-dropdowns/Qc1By";
 import Button from "../components/custom/Button";
+import CustomTextField from "../@core/CutsomTextField";
 
 const SearchFilters = (props) => {
   const {
@@ -37,6 +38,8 @@ const SearchFilters = (props) => {
     setToDate,
     selectedUserId,
     setSelectedUserId,
+    threshHold,
+    setThreshHold,
     gridDataLoading,
     handleFetchRecords,
     classes,
@@ -46,18 +49,44 @@ const SearchFilters = (props) => {
   const { data: qcUserData } = useFetchData(`${url}qcuserlist/`);
 
   const renderClientSelect = () => (
-    <div className="pt-3 w-[200px]">
-      <CustomMultiSelect
-        title="Users"
-        options={qcUserData?.data?.qc_users || []}
-        selectedItems={selectedUsers}
-        setSelectedItems={setSelectedUsers}
-        keyId="usersid"
-        keyName="username"
-        dropdownWidth={200}
-        dropdownToggleWidth={200}
-      />
-    </div>
+    <>
+      <div className="pt-3 w-[200px]">
+        <CustomMultiSelect
+          title="Users"
+          options={qcUserData?.data?.qc_users || []}
+          selectedItems={selectedUsers}
+          setSelectedItems={setSelectedUsers}
+          keyId="usersid"
+          keyName="username"
+          dropdownWidth={200}
+          dropdownToggleWidth={200}
+        />
+      </div>
+      <div className="pt-3 w-[180px]">
+        <CustomMultiSelect
+          title="QC"
+          dropdownWidth={180}
+          dropdownToggleWidth={180}
+          options={[
+            { id: "qc1", name: "QC1" },
+            { id: "qc2", name: "QC2" },
+          ]}
+          keyId="id"
+          keyName="name"
+          selectedItems={selectedHeaders}
+          setSelectedItems={setSelectedHeaders}
+        />
+      </div>
+      <div className="pt-3">
+        <CustomTextField
+          value={threshHold}
+          setValue={setThreshHold}
+          width={120}
+          type={"number"}
+          placeholder={"threshold"}
+        />
+      </div>
+    </>
   );
 
   return (
@@ -67,7 +96,7 @@ const SearchFilters = (props) => {
         aria-controls="panel1-content"
         id="panel1-header"
       >
-        SearchFilters
+        Search Filters
       </AccordionSummary>
       <AccordionDetails>
         <Box
@@ -201,6 +230,8 @@ SearchFilters.propTypes = {
   setToDate: PropTypes.func.isRequired,
   selectedUserId: PropTypes.string.isRequired,
   setSelectedUserId: PropTypes.func.isRequired,
+  threshHold: PropTypes.any.isRequired,
+  setThreshHold: PropTypes.func.isRequired,
   gridDataLoading: PropTypes.bool.isRequired,
   handleFetchRecords: PropTypes.func.isRequired,
   classes: PropTypes.object,
