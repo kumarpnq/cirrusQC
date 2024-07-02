@@ -267,8 +267,8 @@ const EditSection = ({
           if (updatedRow.social_feed_id !== selectedItem.social_feed_id) {
             modifiedFieldsForRow.SOCIALFEEDID = updatedRow.social_feed_id;
           }
-          if (updatedRow.sub_category !== selectedItem.sub_category) {
-            modifiedFieldsForRow.SUBCATEGORY = updatedRow.sub_category;
+          if (updatedRow.subcategory !== selectedItem.subcategory) {
+            modifiedFieldsForRow.SUBCATEGORY = updatedRow.subcategory;
           }
           if (updatedRow.remark !== selectedItem.remark) {
             modifiedFieldsForRow.REMARKS = updatedRow.remark;
