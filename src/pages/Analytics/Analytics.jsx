@@ -3,17 +3,12 @@ import {
   Box,
   CircularProgress,
   Divider,
-  FormControl,
-  FormControlLabel,
   Typography,
-  Checkbox,
   Grid,
 } from "@mui/material";
 import { makeStyles } from "@mui/styles";
 import { DataGrid, GridToolbar } from "@mui/x-data-grid";
 import { AiOutlineDownload } from "react-icons/ai";
-import Tabs from "@mui/material/Tabs";
-import Tab from "@mui/material/Tab";
 
 // * third party imports
 import axios from "axios";
@@ -23,15 +18,13 @@ import * as XLSX from "xlsx";
 import { saveAs } from "file-saver";
 
 //* components
-import Button from "../../components/custom/Button";
-import FromDate from "../../components/research-dropdowns/FromDate";
-import ToDate from "../../components/research-dropdowns/ToDate";
-import Qc1By from "../../components/research-dropdowns/Qc1By";
+
 import useFetchData from "../../hooks/useFetchData";
-import CustomMultiSelect from "../../@core/CustomMultiSelect";
 import { formattedDate, formattedNextDay } from "../../constants/dates";
 import { url } from "../../constants/baseUrl";
 import { arrayToString } from "../../utils/arrayToString";
+import NavigateTabs from "../../analytics-components/NavigateTabs";
+import SearchFilters from "../../analytics-components/SearchFilters";
 
 const useStyle = makeStyles(() => ({
   dropDowns: {
@@ -72,13 +65,6 @@ CustomTabPanel.propTypes = {
   value: PropTypes.number.isRequired,
 };
 
-function a11yProps(index) {
-  return {
-    id: `simple-tab-${index}`,
-    "aria-controls": `simple-tabpanel-${index}`,
-  };
-}
-
 const Analytics = () => {
   // * table data variables
   const [gridData, setGridData] = useState([]);
@@ -95,6 +81,7 @@ const Analytics = () => {
   const [selectedUserId, setSelectedUserId] = useState("");
   const [fromDate, setFromDate] = useState(formattedDate);
   const [toDate, setToDate] = useState(formattedNextDay);
+  const [threshHold, setThreshHold] = useState();
   const [value, setValue] = useState(1);
 
   const handleChange = (event, newValue) => {
@@ -108,12 +95,13 @@ const Analytics = () => {
     setSelectedHeaders([]);
     setSelectedUsers([]);
     setSelectedUserId("");
+    setThreshHold();
   };
 
   // * data hooks
-  const { data } = useFetchData(`${url}clientlist/`);
   const { data: qcUserData } = useFetchData(`${url}qcuserlist/`);
 
+  // * column data for grid
   const columns = useMemo(
     () => [
       { field: "USERNAME", headerName: "Username", width: 150 },
@@ -137,6 +125,22 @@ const Analytics = () => {
     ],
     []
   );
+
+  const column2 = useMemo(() => {
+    const columns = [{ field: "USERNAME", headerName: "Username", width: 150 }];
+    if (selectedHeaders.includes("qc1")) {
+      columns.push({ field: "QC1", headerName: "QC1", width: 150 });
+    }
+    if (selectedHeaders.includes("qc2")) {
+      columns.push({ field: "QC2", headerName: "QC2", width: 150 });
+    }
+    columns.push({
+      field: "TOTAL_HOURS",
+      headerName: "Total Hours",
+      width: 150,
+    });
+    return columns;
+  }, [selectedHeaders]);
 
   const articleDataColumn = useMemo(
     () => [
@@ -177,8 +181,74 @@ const Analytics = () => {
     ? competitionYes
     : competitionNo;
 
+  // * decide the endpoint basis on selected tab
+  const getEndpoint = (value) => {
+    switch (value) {
+      case 0:
+        return "useractivityreport/";
+      case 1:
+        return "userActivityLog/";
+      case 2:
+        return "usersefforts/";
+      case 3:
+        return "totalefforts/";
+      default:
+        throw new Error("Invalid value");
+    }
+  };
+
+  // * decide params basis on selected tab
+  const getParams = (
+    value,
+    selectedUserId,
+    fromDate,
+    toDate,
+    selectedPrintAndOnline,
+    selectedClients,
+    usernames,
+    selectedHeaders,
+    withCompetition,
+    threshHold
+  ) => {
+    switch (value) {
+      case 0:
+        return {
+          media: arrayToString(selectedPrintAndOnline),
+          fromdate: fromDate.split(" ")[0],
+          todate: toDate.split(" ")[0],
+          clientids: arrayToString(selectedClients),
+          usernames: arrayToString(usernames),
+          qc1: selectedHeaders.includes("qc1"),
+          qc2: selectedHeaders.includes("qc2"),
+          competetion: withCompetition ? "YES" : "NO",
+        };
+      case 1:
+        return {
+          userName: selectedUserId,
+          fromDate: fromDate.split(" ")[0],
+          toDate: toDate.split(" ")[0],
+        };
+      case 2:
+        return {
+          usernames: arrayToString(usernames),
+          fromdate: fromDate.split(" ")[0],
+          todate: toDate.split(" ")[0],
+          qc1: selectedHeaders.includes("qc1"),
+          qc2: selectedHeaders.includes("qc2"),
+          threshold: threshHold,
+        };
+      case 3:
+        return {
+          fromDate: fromDate.split(" ")[0],
+          toDate: toDate.split(" ")[0],
+        };
+      default:
+        throw new Error("Invalid value");
+    }
+  };
+
   const handleFetchRecords = async () => {
-    if (value && !selectedUserId) {
+    if (value === 1 && !selectedUserId) {
       toast.warning("Please select user.");
       return;
     } else if (!value && !selectedPrintAndOnline.length) {
@@ -196,29 +266,27 @@ const Analytics = () => {
       const headers = {
         Authorization: `Bearer ${userToken}`,
       };
-
-      const params1 = {
-        userName: selectedUserId,
-        fromDate: fromDate.split(" ")[0],
-        toDate: toDate.split(" ")[0],
-      };
-      const params0 = {
-        media: arrayToString(selectedPrintAndOnline),
-        fromdate: fromDate.split(" ")[0],
-        todate: toDate.split(" ")[0],
-        clientids: arrayToString(selectedClients),
-        usernames: arrayToString(usernames),
-        qc1: selectedHeaders.includes("qc1"),
-        qc2: selectedHeaders.includes("qc2"),
-        competetion: withCompetition ? "YES" : "NO",
-      };
-
-      const endpoint = !value ? "useractivityreport/" : "userActivityLog/";
+      const endpoint = getEndpoint(value);
+      const params = getParams(
+        value,
+        selectedUserId,
+        fromDate,
+        toDate,
+        selectedPrintAndOnline,
+        selectedClients,
+        usernames,
+        selectedHeaders,
+        withCompetition,
+        threshHold
+      );
       const response = await axios.get(url + endpoint, {
         headers,
-        params: value ? params1 : params0,
+        params,
       });
-      const accesskey = !value ? "feed_data" : "result";
+      const accesskey =
+        (!value && "feed_data") ||
+        (value === 1 && "result") ||
+        (value === 2 && "users_data");
       const data = response.data[accesskey] || [];
       if (data.length && value) {
         setGridData(response.data[accesskey]);
@@ -240,6 +308,7 @@ const Analytics = () => {
   // * mui classes
   const classes = useStyle();
 
+  // * grid rows
   const rows = gridData.map((item, index) => ({ id: index + 1, ...item }));
   const articleRows = articleData.map((item, index) => ({
     id: index + 1,
@@ -248,6 +317,14 @@ const Analytics = () => {
   const competitionRows = competitionData.map((item, index) => ({
     id: index + 1,
     ...item,
+  }));
+  const valueTwoRows = gridData.map((item, index) => ({
+    id: index + 1,
+    ...item,
+    TOTAL_HOURS:
+      typeof item.TOTAL_HOURS === "number"
+        ? parseFloat(item.TOTAL_HOURS.toFixed(2))
+        : item.TOTAL_HOURS,
   }));
 
   // Function to handle Excel export
@@ -264,120 +341,35 @@ const Analytics = () => {
   return (
     <div className="px-3">
       <Box sx={{ width: "100%" }}>
-        <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
-          <Tabs
-            value={value}
-            onChange={handleChange}
-            aria-label="activity logs"
-          >
-            <Tab label="QC Activity" {...a11yProps(0)} />
-            <Tab label="Logs" {...a11yProps(1)} />
-          </Tabs>
-        </Box>
+        <NavigateTabs value={value} handleChange={handleChange} />
       </Box>
-      <Box
-        sx={{ display: "flex", alignItems: "center", gap: 1, flexWrap: "wrap" }}
-      >
-        {!value ? (
-          <>
-            <div className="pt-3 w-[200px]">
-              <CustomMultiSelect
-                title="Clients"
-                options={data?.data?.clients || []}
-                selectedItems={selectedClients}
-                setSelectedItems={setSelectedClients}
-                keyId="clientid"
-                keyName="clientname"
-                dropdownWidth={250}
-                dropdownToggleWidth={200}
-              />
-            </div>
-            <div className="pt-3 w-[200px]">
-              <CustomMultiSelect
-                title="Users"
-                options={qcUserData?.data?.qc_users || []}
-                selectedItems={selectedUsers}
-                setSelectedItems={setSelectedUsers}
-                keyId="usersid"
-                keyName="username"
-                dropdownWidth={200}
-                dropdownToggleWidth={200}
-              />
-            </div>
-            <div className="pt-3 w-[180px]">
-              <CustomMultiSelect
-                title="QC"
-                dropdownWidth={180}
-                dropdownToggleWidth={180}
-                options={[
-                  { id: "qc1", name: "QC1" },
-                  { id: "qc2", name: "QC2" },
-                ]}
-                keyId="id"
-                keyName="name"
-                selectedItems={selectedHeaders}
-                setSelectedItems={setSelectedHeaders}
-              />
-            </div>
-            <div className="pt-3 w-[150px]">
-              <CustomMultiSelect
-                title="Media"
-                options={[
-                  { id: "PRINT", name: "Print" },
-                  { id: "ONLINE", name: "Online" },
-                ]}
-                selectedItems={selectedPrintAndOnline}
-                setSelectedItems={setSelectedPrintAndOnline}
-                keyId="id"
-                keyName="name"
-                dropdownWidth={180}
-                dropdownToggleWidth={150}
-              />
-            </div>
-            <div>
-              <FormControl>
-                <FormControlLabel
-                  sx={{ mt: 2 }}
-                  label={
-                    <Typography variant="h6" fontSize={"0.9em"}>
-                      Competition
-                    </Typography>
-                  }
-                  control={
-                    <Checkbox
-                      checked={withCompetition}
-                      onChange={() => setWithCompetition((prev) => !prev)}
-                    />
-                  }
-                />
-              </FormControl>
-            </div>
-            <FromDate fromDate={fromDate} setFromDate={setFromDate} />
-            <ToDate dateNow={toDate} setDateNow={setToDate} isMargin={true} />
-          </>
-        ) : (
-          <>
-            <Qc1By
-              qcUsersData={qcUserData?.data?.qc_users || []}
-              qc1by={selectedUserId}
-              setQc1by={setSelectedUserId}
-              classes={classes}
-              title={"Users"}
-            />
-            <FromDate fromDate={fromDate} setFromDate={setFromDate} />
-            <ToDate dateNow={toDate} setDateNow={setToDate} isMargin={true} />
-          </>
-        )}
-        <Button
-          btnText={gridDataLoading ? "Searching" : "Search"}
-          onClick={handleFetchRecords}
-          isLoading={gridDataLoading}
-        />
-      </Box>
+      <SearchFilters
+        value={value}
+        selectedClients={selectedClients}
+        setSelectedClients={setSelectedClients}
+        selectedUsers={selectedUsers}
+        setSelectedUsers={setSelectedUsers}
+        selectedHeaders={selectedHeaders}
+        setSelectedHeaders={setSelectedHeaders}
+        selectedPrintAndOnline={selectedPrintAndOnline}
+        setSelectedPrintAndOnline={setSelectedPrintAndOnline}
+        withCompetition={withCompetition}
+        setWithCompetition={setWithCompetition}
+        fromDate={fromDate}
+        setFromDate={setFromDate}
+        toDate={toDate}
+        setToDate={setToDate}
+        selectedUserId={selectedUserId}
+        setSelectedUserId={setSelectedUserId}
+        gridDataLoading={gridDataLoading}
+        handleFetchRecords={handleFetchRecords}
+        classes={classes}
+        threshHold={threshHold}
+        setThreshHold={setThreshHold}
+      />
       <Divider sx={{ my: 1 }} />
-
       <Box sx={{ height: 500, width: "100%" }}>
-        {value ? (
+        {(value == 0 && (
           <DataGrid
             rows={rows}
             columns={!value ? columns1 : columns}
@@ -396,43 +388,68 @@ const Analytics = () => {
             }}
             loading={gridDataLoading && <CircularProgress />}
           />
-        ) : (
-          <Fragment>
-            <Box
-              component={"button"}
-              display={"flex"}
-              alignItems={"center"}
-              className="gap-1 text-primary"
-              onClick={handleExportToExcel}
-              disabled={!articleData.length && !competitionData.length}
-            >
-              <AiOutlineDownload />
-              EXPORT
-            </Box>
-            <Box sx={{ height: 450, width: "100%" }}>
-              <Grid container spacing={2}>
-                <Grid item xs={12} md={6} height={450}>
-                  <Typography component={"span"}>Articles</Typography>
-                  <DataGrid
-                    rows={articleRows}
-                    columns={articleDataColumn}
-                    loading={gridDataLoading && <CircularProgress />}
-                    density="compact"
-                  />
+        )) ||
+          (value === 1 && (
+            <Fragment>
+              <Box
+                component={"button"}
+                display={"flex"}
+                alignItems={"center"}
+                className="gap-1 text-primary"
+                onClick={handleExportToExcel}
+                disabled={!articleData.length && !competitionData.length}
+              >
+                <AiOutlineDownload />
+                EXPORT
+              </Box>
+              <Box sx={{ height: 450, width: "100%" }}>
+                <Grid container spacing={2}>
+                  <Grid item xs={12} md={6}>
+                    <Box sx={{ height: 450 }}>
+                      <Typography component={"span"}>Articles</Typography>
+                      <DataGrid
+                        rows={articleRows}
+                        columns={articleDataColumn}
+                        loading={gridDataLoading && <CircularProgress />}
+                        density="compact"
+                      />
+                    </Box>
+                  </Grid>
+                  <Grid item xs={12} md={6}>
+                    <Box sx={{ height: 450 }}>
+                      <Typography component={"span"}>Competition</Typography>
+                      <DataGrid
+                        rows={competitionRows}
+                        columns={competitionDataColumn}
+                        loading={gridDataLoading && <CircularProgress />}
+                        density="compact"
+                      />
+                    </Box>
+                  </Grid>
                 </Grid>
-                <Grid item xs={12} md={6}>
-                  <Typography component={"span"}>Competition</Typography>
-                  <DataGrid
-                    rows={competitionRows}
-                    columns={competitionDataColumn}
-                    loading={gridDataLoading && <CircularProgress />}
-                    density="compact"
-                  />
-                </Grid>
-              </Grid>
-            </Box>
-          </Fragment>
-        )}
+              </Box>
+            </Fragment>
+          )) ||
+          (value === 2 && (
+            <DataGrid
+              rows={valueTwoRows}
+              columns={column2}
+              pageSize={5}
+              density="compact"
+              disableColumnFilter
+              disableColumnSelector
+              disableDensitySelector
+              disableRowSelectionOnClick
+              hideFooterSelectedRowCount
+              slots={{ toolbar: GridToolbar }}
+              slotProps={{
+                toolbar: {
+                  showQuickFilter: true,
+                },
+              }}
+              loading={gridDataLoading && <CircularProgress />}
+            />
+          ))}
       </Box>
     </div>
   );

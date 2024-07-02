@@ -78,7 +78,7 @@ const EditDialog = ({ rowData, rowNumber, setRowNumber, open, setOpen }) => {
   const [selectedCompanies, setSelectedCompanies] = useState(null);
   const [socialFeedTagDetails, setSocialFeedTagDetails] = useState([]);
   const [socialFeedTagDetailsLoading, setSocialFeedTagDetailsLoading] =
-    useState([]);
+    useState(false);
   const [selectRowForDelete, setSelectRowForDelete] = useState({});
   const [verificationLoading, setVerificationLoading] = useState(false);
 

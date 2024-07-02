@@ -89,6 +89,12 @@ const Online = () => {
   );
   const { data: qcUserData } = useFetchData(`${url}qcuserlist/`);
 
+  // * token and headers
+  const userToken = localStorage.getItem("user");
+  const headers = {
+    Authorization: `Bearer ${userToken}`,
+  };
+
   // * table data
   const [tableData, setTableData] = useState([]);
   const [selectedItems, setSelectedItems] = useState([]);
@@ -96,10 +102,7 @@ const Online = () => {
   const fetchTableData = useCallback(async () => {
     try {
       setTableDataLoading(true);
-      const userToken = localStorage.getItem("user");
-      const headers = {
-        Authorization: `Bearer ${userToken}`,
-      };
+
       const params = {
         client_id: selectedClient,
         from_date: fromDate,
@@ -192,6 +195,7 @@ const Online = () => {
     selectedDateType,
     selectedLanguages,
     socialFeedId,
+    headers,
   ]);
   // *  mui style
   const classes = useStyle();
@@ -254,15 +258,39 @@ const Online = () => {
   };
 
   // * group selected articles
-  const handleClickGroupItems = () => {};
+  const [groupLoading, setGroupLoading] = useState(false);
+  const handleClickGroupItems = async () => {
+    if (selectedItems.length === 1) {
+      toast.warning("Select more than one article.");
+      return;
+    }
+    const parentId = selectedItems[0].social_feed_id;
+    const childrenIds = selectedItems
+      .slice(1)
+      .map((item) => item.social_feed_id);
+
+    try {
+      setGroupLoading(true);
+      const request_data = {
+        parent_id: parentId,
+        child_id: arrayToString(childrenIds),
+      };
+      const response = await axios.post(
+        `${url}groupsimilararticles/`,
+        request_data,
+        { headers }
+      );
+      console.log(response);
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setGroupLoading(false);
+    }
+  };
 
   // * un-group selected items
   const handleClickUnGroupItems = () => {};
 
-  // * clear selected items
-  const handleClickClearItems = () => {
-    setSelectedItems([]);
-  };
   return (
     <Box mx={2}>
       <Accordion>
@@ -395,19 +423,15 @@ const Online = () => {
           </AccordionSummary>
           <AccordionDetails sx={{ display: "flex" }}>
             <Button
-              btnText="group"
+              btnText={groupLoading ? "Loading" : "group"}
               icon={<AttachFileOutlined />}
               onClick={handleClickGroupItems}
+              isLoading={groupLoading}
             />
             <Button
               btnText="ungroup"
               icon={<ControlCameraOutlined />}
               onClick={handleClickUnGroupItems}
-            />
-            <Button
-              btnText="clear"
-              // icon={<ControlCameraOutlined />}
-              onClick={handleClickClearItems}
             />
           </AccordionDetails>
         </Accordion>
@@ -434,9 +458,6 @@ const Online = () => {
           ]}
           density="compact"
           columnBufferPx={1000}
-          disableColumnSelector
-          disableDensitySelector
-          disableSelectionOnClick
           checkboxSelection
           loading={tableDataLoading && <CircularProgress />}
           components={{ Toolbar: GridToolbar }}
