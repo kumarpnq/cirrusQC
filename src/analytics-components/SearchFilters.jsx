@@ -44,6 +44,22 @@ const SearchFilters = (props) => {
   // * data hooks
   const { data } = useFetchData(`${url}clientlist/`);
   const { data: qcUserData } = useFetchData(`${url}qcuserlist/`);
+
+  const renderClientSelect = () => (
+    <div className="pt-3 w-[200px]">
+      <CustomMultiSelect
+        title="Users"
+        options={qcUserData?.data?.qc_users || []}
+        selectedItems={selectedUsers}
+        setSelectedItems={setSelectedUsers}
+        keyId="usersid"
+        keyName="username"
+        dropdownWidth={200}
+        dropdownToggleWidth={200}
+      />
+    </div>
+  );
+
   return (
     <Accordion>
       <AccordionSummary
@@ -141,13 +157,17 @@ const SearchFilters = (props) => {
             </>
           ) : (
             <>
-              <Qc1By
-                qcUsersData={qcUserData?.data?.qc_users || []}
-                qc1by={selectedUserId}
-                setQc1by={setSelectedUserId}
-                classes={classes}
-                title={"Users"}
-              />
+              {value === 1 && (
+                <Qc1By
+                  qcUsersData={qcUserData?.data?.qc_users || []}
+                  qc1by={selectedUserId}
+                  setQc1by={setSelectedUserId}
+                  classes={classes}
+                  title={"Users"}
+                />
+              )}
+              {(value === 3 || value === 2) && renderClientSelect()}
+
               <FromDate fromDate={fromDate} setFromDate={setFromDate} />
               <ToDate dateNow={toDate} setDateNow={setToDate} isMargin={true} />
             </>
