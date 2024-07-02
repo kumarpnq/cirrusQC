@@ -20,6 +20,7 @@ import axios from "axios";
 import { toast } from "react-toastify";
 import { url } from "../../constants/baseUrl";
 import Button from "../../components/custom/Button";
+import { yesNoToBinary } from "../../utils/yesNoToBinary";
 
 const Details = ({ selectedRow, userToken }) => {
   const [headline, setHeadline] = useState(selectedRow?.headline);
@@ -60,8 +61,8 @@ const Details = ({ selectedRow, userToken }) => {
             HEADLINE: headline,
             SUMMARY: summary,
             AUTHOR: journalist,
-            HASIMAGE: iAlignment,
-            HASVIDEO: vAlignment,
+            HASIMAGE: yesNoToBinary(iAlignment),
+            HASVIDEO: yesNoToBinary(vAlignment),
           },
         ],
         qcflag: 1,
@@ -75,7 +76,7 @@ const Details = ({ selectedRow, userToken }) => {
         toast.success("Updated Successfully.");
       }
     } catch (error) {
-      toast.error(error.message);
+      toast.error("Something went wrong.");
     } finally {
       setUpdateLoading(false);
     }
