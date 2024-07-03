@@ -1,12 +1,15 @@
 import { useCallback, useContext, useEffect, useRef, useState } from "react";
 import { makeStyles } from "@mui/styles";
-import TextFields from "../components/TextFields/TextField";
-import { url } from "../constants/baseUrl";
+
+import Accordion from "@mui/material/Accordion";
+import AccordionSummary from "@mui/material/AccordionSummary";
+import AccordionDetails from "@mui/material/AccordionDetails";
+import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 
 // ** constantss
 import { formattedDate, formattedNextDay } from "../constants/dates";
 import { qc1Array, qc2Array } from "../constants/dataArray";
-
+import { url } from "../constants/baseUrl";
 // **component imports
 import Client from "./dropdowns/Client";
 import Category from "./dropdowns/Category";
@@ -29,6 +32,7 @@ import Languages from "../components/research-dropdowns/Languages";
 import Qc2Table from "./Qc2Table";
 import { ResearchContext } from "../context/ContextProvider";
 import Button from "../components/custom/Button";
+import TextFields from "../components/TextFields/TextField";
 
 // ** third party imports
 import axios from "axios";
@@ -310,168 +314,183 @@ const DDComp = () => {
   const classes = useStyle();
   return (
     <div className="flex flex-col h-screen px-4">
-      <div className="flex flex-wrap items-center justify-start gap-2">
-        <div className="h-[25px] flex items-center justify-center pt-1">
-          <Client
-            label="Client"
-            client={client}
-            setClient={setClient}
-            width={200}
-            setCompanies={setCompanies}
-          />
-        </div>
-        <div className="h-[25px] flex items-center justify-center">
-          <Category
-            category={withCategory}
-            setCategory={setWithCategory}
-            classes={classes}
-            width={150}
-          />
-        </div>
-        <div className="h-[25px] flex items-center justify-center">
-          <Company
-            companyData={companyData}
-            companies={companies}
-            setCompanies={setCompanies}
-            isMt={true}
-          />
-        </div>
-        <div className="h-[25px] flex items-center justify-center">
-          <Datetype
-            dateType={dateType}
-            setDateType={setDateType}
-            classes={classes}
-            width={150}
-          />
-        </div>
+      <Accordion>
+        <AccordionSummary
+          expandIcon={<ExpandMoreIcon />}
+          aria-controls="panel1-content"
+          id="panel1-header"
+        >
+          Search Filters
+        </AccordionSummary>
+        <AccordionDetails>
+          <div className="flex flex-wrap items-center justify-start gap-2">
+            <div className="h-[25px] flex items-center justify-center pt-1">
+              <Client
+                label="Client"
+                client={client}
+                setClient={setClient}
+                width={200}
+                setCompanies={setCompanies}
+              />
+            </div>
+            <div className="h-[25px] flex items-center justify-center">
+              <Category
+                category={withCategory}
+                setCategory={setWithCategory}
+                classes={classes}
+                width={150}
+              />
+            </div>
+            <div className="h-[25px] flex items-center justify-center">
+              <Company
+                companyData={companyData}
+                companies={companies}
+                setCompanies={setCompanies}
+                isMt={true}
+              />
+            </div>
+            <div className="h-[25px] flex items-center justify-center">
+              <Datetype
+                dateType={dateType}
+                setDateType={setDateType}
+                classes={classes}
+                width={150}
+              />
+            </div>
 
-        <div className="h-[25px] flex items-center justify-center">
-          <FromDate fromDate={fromDate} setFromDate={setFromDate} />
-        </div>
-        <div className="h-[25px] flex items-center justify-center">
-          <ToDate dateNow={dateNow} setDateNow={setDateNow} isMargin={true} />
-        </div>
+            <div className="h-[25px] flex items-center justify-center">
+              <FromDate fromDate={fromDate} setFromDate={setFromDate} />
+            </div>
+            <div className="h-[25px] flex items-center justify-center">
+              <ToDate
+                dateNow={dateNow}
+                setDateNow={setDateNow}
+                isMargin={true}
+              />
+            </div>
 
-        <div className="h-[25px] flex items-center justify-center">
-          <CustomDebounceDropdown
-            publicationGroup={publicationGroup}
-            setPublicationGroup={setPublicationGroup}
-            bg="secondory"
-            m="mt-3"
-          />
-        </div>
-        <div className="h-[25px] flex items-center justify-center">
-          <Publication
-            publicationGroup={publicationGroup}
-            publication={publication}
-            setPublication={setPublication}
-            classes={classes}
-            width={150}
-          />
-        </div>
-        <div className="h-[25px] flex items-center justify-center">
-          <PubType
-            pubType={pubType}
-            setPubType={setPubType}
-            classes={classes}
-            width={150}
-          />
-        </div>
-        <div className="h-[25px] flex items-center justify-center pt-1">
-          <SearchableCategory
-            label="Category"
-            setCategory={setCategory}
-            category={category}
-            width={150}
-            endpoint="categorylist"
-          />
-        </div>
-        <div className="h-[25px] flex items-center justify-center pt-1">
-          <SubjectSearchable
-            label="Subject"
-            setSubject={setSubject}
-            subject={subject}
-            width={150}
-          />
-        </div>
-        <div className="h-[25px] flex items-center justify-center">
-          <TableDropdown
-            value={reportingTone}
-            setValues={setReportingTone}
-            placeholder={"Tone"}
-            mappingValue={reportingTones}
-          />
-        </div>
-        <div className="h-[25px] flex items-center justify-center">
-          <TableDropdown
-            value={prominence}
-            setValues={setProminence}
-            placeholder={"Prominence"}
-            mappingValue={prominences}
-          />
-        </div>
-        <div className="h-[25px] flex items-center justify-center">
-          <Qc1All
-            qc1done={qc1Done}
-            setQc1done={setQc1Done}
-            classes={classes}
-            qc1Array={qc1Array}
-          />
-        </div>
-        <div className="h-[25px] flex items-center justify-center">
-          <Qc2All
-            qc2done={qc2Done}
-            setQc2done={setQc2Done}
-            classes={classes}
-            qc2Array={qc2Array}
-          />
-        </div>
-        <div className="h-[25px] flex items-center justify-center">
-          <Qc1By
-            qcUsersData={qcUsersData}
-            qc1by={qc1By}
-            setQc1by={setQc1By}
-            classes={classes}
-            pageType={"print"}
-          />
-        </div>
-        <div className="h-[25px] flex items-center justify-center">
-          <Qc2By
-            qcUsersData={qcUsersData}
-            classes={classes}
-            qc2by={qc2By}
-            setQc2by={setQc2By}
-            pageType={"print"}
-          />
-        </div>
-        <div className="h-[25px] flex items-center justify-center">
-          <Cities classes={classes} city={city} setCity={setCity} />
-        </div>
-        <div className="h-[25px] flex items-center justify-center">
-          <Languages
-            language={languages}
-            setLanguage={setLanguages}
-            classes={classes}
-          />
-        </div>
+            <div className="h-[25px] flex items-center justify-center">
+              <CustomDebounceDropdown
+                publicationGroup={publicationGroup}
+                setPublicationGroup={setPublicationGroup}
+                bg="secondory"
+                m="mt-3"
+              />
+            </div>
+            <div className="h-[25px] flex items-center justify-center">
+              <Publication
+                publicationGroup={publicationGroup}
+                publication={publication}
+                setPublication={setPublication}
+                classes={classes}
+                width={150}
+              />
+            </div>
+            <div className="h-[25px] flex items-center justify-center">
+              <PubType
+                pubType={pubType}
+                setPubType={setPubType}
+                classes={classes}
+                width={150}
+              />
+            </div>
+            <div className="h-[25px] flex items-center justify-center pt-1">
+              <SearchableCategory
+                label="Category"
+                setCategory={setCategory}
+                category={category}
+                width={150}
+                endpoint="categorylist"
+              />
+            </div>
+            <div className="h-[25px] flex items-center justify-center pt-1">
+              <SubjectSearchable
+                label="Subject"
+                setSubject={setSubject}
+                subject={subject}
+                width={150}
+              />
+            </div>
+            <div className="h-[25px] flex items-center justify-center">
+              <TableDropdown
+                value={reportingTone}
+                setValues={setReportingTone}
+                placeholder={"Tone"}
+                mappingValue={reportingTones}
+              />
+            </div>
+            <div className="h-[25px] flex items-center justify-center">
+              <TableDropdown
+                value={prominence}
+                setValues={setProminence}
+                placeholder={"Prominence"}
+                mappingValue={prominences}
+              />
+            </div>
+            <div className="h-[25px] flex items-center justify-center">
+              <Qc1All
+                qc1done={qc1Done}
+                setQc1done={setQc1Done}
+                classes={classes}
+                qc1Array={qc1Array}
+              />
+            </div>
+            <div className="h-[25px] flex items-center justify-center">
+              <Qc2All
+                qc2done={qc2Done}
+                setQc2done={setQc2Done}
+                classes={classes}
+                qc2Array={qc2Array}
+              />
+            </div>
+            <div className="h-[25px] flex items-center justify-center">
+              <Qc1By
+                qcUsersData={qcUsersData}
+                qc1by={qc1By}
+                setQc1by={setQc1By}
+                classes={classes}
+                pageType={"print"}
+              />
+            </div>
+            <div className="h-[25px] flex items-center justify-center">
+              <Qc2By
+                qcUsersData={qcUsersData}
+                classes={classes}
+                qc2by={qc2By}
+                setQc2by={setQc2By}
+                pageType={"print"}
+              />
+            </div>
+            <div className="h-[25px] flex items-center justify-center">
+              <Cities classes={classes} city={city} setCity={setCity} />
+            </div>
+            <div className="h-[25px] flex items-center justify-center">
+              <Languages
+                language={languages}
+                setLanguage={setLanguages}
+                classes={classes}
+              />
+            </div>
 
-        <div className="h-[25px] flex items-center justify-center w-[95px]">
-          <TextFields
-            placeholder="Page"
-            type={"number"}
-            value={pageNo}
-            setValue={setPageNo}
-          />
-        </div>
-        <div className="h-[25px] flex items-center justify-center">
-          <Button
-            btnText={isTableDataLoading ? "Searching" : "Search"}
-            onClick={handleSearchPrintData}
-            isLoading={isTableDataLoading}
-          />
-        </div>
-      </div>
-      <hr className="mt-4" />
+            <div className="h-[25px] flex items-center justify-center w-[95px]">
+              <TextFields
+                placeholder="Page"
+                type={"number"}
+                value={pageNo}
+                setValue={setPageNo}
+              />
+            </div>
+            <div className="h-[25px] flex items-center justify-center">
+              <Button
+                btnText={isTableDataLoading ? "Searching" : "Search"}
+                onClick={handleSearchPrintData}
+                isLoading={isTableDataLoading}
+              />
+            </div>
+          </div>
+        </AccordionDetails>
+      </Accordion>
+
       <div ref={printTableRef}>
         <Qc2Table
           isTableDataLoading={isTableDataLoading}

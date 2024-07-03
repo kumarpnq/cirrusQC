@@ -1,6 +1,13 @@
 import { useContext, useEffect, useRef, useState } from "react";
-import { Divider } from "@mui/material";
+import { toast } from "react-toastify";
+import axios from "axios";
 import { makeStyles } from "@mui/styles";
+import Accordion from "@mui/material/Accordion";
+import AccordionSummary from "@mui/material/AccordionSummary";
+import AccordionDetails from "@mui/material/AccordionDetails";
+import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
+
+// * constants
 import {
   dateTypes,
   qc1Array,
@@ -8,11 +15,13 @@ import {
   countriesByContinent,
   qc2Array,
 } from "../constants/dataArray";
+import { url } from "../constants/baseUrl";
+
 import ResearchTable from "../components/research-components/ResearchTable";
 import { ResearchContext } from "../context/ContextProvider";
+
+// * components import
 import useFetchData from "../hooks/useFetchData";
-import axios from "axios";
-import { toast } from "react-toastify";
 import SearchableDropDown from "../components/dropdowns/SearchableDropdown";
 import CheckboxComp from "../components/checkbox/Checkbox";
 import Datetype from "../components/research-dropdowns/Datetype";
@@ -26,7 +35,6 @@ import Languages from "../components/research-dropdowns/Languages";
 import Continents from "../components/research-dropdowns/Continents";
 import Countries from "../components/research-dropdowns/Countries";
 import CustomAutocomplete from "../components/custom/Autocomplet";
-import { url } from "../constants/baseUrl";
 
 const useStyle = makeStyles(() => ({
   dropDowns: {
@@ -305,115 +313,125 @@ const ResearchScreen = () => {
     <div className="h-full pl-4">
       {/* Category dropdowns filter out */}
       {/* client */}
-      <div className="flex flex-wrap items-center gap-1 mt-2">
-        <div className="flex items-center mt-1" style={{ height: 25 }}>
-          <SearchableDropDown
-            options={clients}
-            setTestClient={setClientId}
-            testclient={clientId}
-            label={"Clients"}
-            width={200}
-          />
-        </div>
-        {/* comapany */}
-        <CustomAutocomplete
-          companies={companies}
-          setCompanies={setCompanies}
-          company={company}
-        />
-        {/* Datetype */}
-        <Datetype
-          dateType={dateType}
-          classes={classes}
-          dateTypes={dateTypes}
-          setDateType={setDateType}
-        />
-        {/* date filter from date */}
-        <FromDate fromDate={fromDate} setFromDate={setFromDate} />
-        {/* date filter to now date */}
-        <ToDate dateNow={dateNow} setDateNow={setDateNow} isMargin={true} />
-        {/* qc1 done */}
-        <Qc1All
-          qc1done={qc1done}
-          setQc1done={setQc1done}
-          classes={classes}
-          qc1Array={qc1Array}
-        />
-        {/* qc2 done */}
-        <Qc2All
-          qc2done={qc2done}
-          setQc2done={setQc2done}
-          classes={classes}
-          qc2Array={qc2Array}
-        />
-        {/* qc1 by */}
-        <Qc1By
-          qcUsersData={qcUsersData}
-          qc1by={qc1by}
-          setQc1by={setQc1by}
-          classes={classes}
-        />
-        {/* qc2 by */}
-        <Qc2By
-          qcUsersData={qcUsersData}
-          classes={classes}
-          qc2by={qc2by}
-          setQc2by={setQc2by}
-        />
-        {/* image checkbox */}
-        <div className="flex items-center" style={{ height: 20 }}>
-          <div className="mt-4">
-            <CheckboxComp
-              value={isImage}
-              setValue={setIsImage}
-              label={"Image"}
-            />
-          </div>
-          {/* video checkbox */}
-          <div className="mt-4">
-            <CheckboxComp
-              value={isVideo}
-              setValue={setIsVideo}
-              label={"Video"}
-            />
-          </div>
-        </div>
-        {/* languages */}
-        <Languages
-          language={language}
-          setLanguage={setLanguage}
-          classes={classes}
-          // isOnlineScreen
-        />
-        {/* continents */}
-        <Continents
-          continent={continent}
-          countriesByContinent={countriesByContinent}
-          setContinent={setContinent}
-          setFilteredCountries={setFilteredCountries}
-          continents={continents}
-          classes={classes}
-        />
-        {/* countries */}
-        <Countries
-          country={country}
-          setCountry={setCountry}
-          classes={classes}
-          filteredCountries={filteredCountries}
-        />
-        <button
-          onClick={() => {
-            handleSearch();
-          }}
-          className={`bg-primary border border-gray-400 rounded px-10 mt-3 uppercase text-white text-[0.9em] ${
-            tableDataLoading ? "text-yellow-300" : "text-white"
-          }`}
+      <Accordion>
+        <AccordionSummary
+          expandIcon={<ExpandMoreIcon />}
+          aria-controls="panel1-content"
+          id="panel1-header"
         >
-          {tableDataLoading ? "Loading..." : "Search"}
-        </button>
-      </div>
-      {/* divider */}
-      <Divider sx={{ marginTop: 1 }} />
+          Search Filters
+        </AccordionSummary>
+        <AccordionDetails>
+          <div className="flex flex-wrap items-center gap-1 mt-2">
+            <div className="flex items-center mt-1" style={{ height: 25 }}>
+              <SearchableDropDown
+                options={clients}
+                setTestClient={setClientId}
+                testclient={clientId}
+                label={"Clients"}
+                width={200}
+              />
+            </div>
+            {/* comapany */}
+            <CustomAutocomplete
+              companies={companies}
+              setCompanies={setCompanies}
+              company={company}
+            />
+            {/* Datetype */}
+            <Datetype
+              dateType={dateType}
+              classes={classes}
+              dateTypes={dateTypes}
+              setDateType={setDateType}
+            />
+            {/* date filter from date */}
+            <FromDate fromDate={fromDate} setFromDate={setFromDate} />
+            {/* date filter to now date */}
+            <ToDate dateNow={dateNow} setDateNow={setDateNow} isMargin={true} />
+            {/* qc1 done */}
+            <Qc1All
+              qc1done={qc1done}
+              setQc1done={setQc1done}
+              classes={classes}
+              qc1Array={qc1Array}
+            />
+            {/* qc2 done */}
+            <Qc2All
+              qc2done={qc2done}
+              setQc2done={setQc2done}
+              classes={classes}
+              qc2Array={qc2Array}
+            />
+            {/* qc1 by */}
+            <Qc1By
+              qcUsersData={qcUsersData}
+              qc1by={qc1by}
+              setQc1by={setQc1by}
+              classes={classes}
+            />
+            {/* qc2 by */}
+            <Qc2By
+              qcUsersData={qcUsersData}
+              classes={classes}
+              qc2by={qc2by}
+              setQc2by={setQc2by}
+            />
+            {/* image checkbox */}
+            <div className="flex items-center" style={{ height: 20 }}>
+              <div className="mt-4">
+                <CheckboxComp
+                  value={isImage}
+                  setValue={setIsImage}
+                  label={"Image"}
+                />
+              </div>
+              {/* video checkbox */}
+              <div className="mt-4">
+                <CheckboxComp
+                  value={isVideo}
+                  setValue={setIsVideo}
+                  label={"Video"}
+                />
+              </div>
+            </div>
+            {/* languages */}
+            <Languages
+              language={language}
+              setLanguage={setLanguage}
+              classes={classes}
+              // isOnlineScreen
+            />
+            {/* continents */}
+            <Continents
+              continent={continent}
+              countriesByContinent={countriesByContinent}
+              setContinent={setContinent}
+              setFilteredCountries={setFilteredCountries}
+              continents={continents}
+              classes={classes}
+            />
+            {/* countries */}
+            <Countries
+              country={country}
+              setCountry={setCountry}
+              classes={classes}
+              filteredCountries={filteredCountries}
+            />
+            <button
+              onClick={() => {
+                handleSearch();
+              }}
+              className={`bg-primary border border-gray-400 rounded px-10 mt-3 uppercase text-white text-[0.9em] ${
+                tableDataLoading ? "text-yellow-300" : "text-white"
+              }`}
+            >
+              {tableDataLoading ? "Loading..." : "Search"}
+            </button>
+          </div>
+        </AccordionDetails>
+      </Accordion>
+
       {/* table */}
       <div ref={researchTableRef}>
         <ResearchTable

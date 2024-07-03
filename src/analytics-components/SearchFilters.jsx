@@ -195,7 +195,7 @@ const SearchFilters = (props) => {
                   title={"Users"}
                 />
               )}
-              {(value === 3 || value === 2) && renderClientSelect()}
+              {value === 2 && renderClientSelect()}
 
               <FromDate fromDate={fromDate} setFromDate={setFromDate} />
               <ToDate dateNow={toDate} setDateNow={setToDate} isMargin={true} />

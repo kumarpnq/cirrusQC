@@ -387,7 +387,7 @@ const Online = () => {
             1000,
             { value: 1000, label: "1,000" },
           ]}
-          density="compact"
+          // density="compact"
           columnBufferPx={1000}
           loading={tableDataLoading && <CircularProgress />}
           components={{ Toolbar: GridToolbar }}

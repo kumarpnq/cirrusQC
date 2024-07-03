@@ -1,9 +1,18 @@
 import { useContext, useEffect, useState } from "react";
 import { Typography } from "@mui/material";
 import { makeStyles } from "@mui/styles";
-import { ResearchContext } from "../../context/ContextProvider";
-import useFetchData from "../../hooks/useFetchData";
 import { toast } from "react-toastify";
+import Accordion from "@mui/material/Accordion";
+import AccordionSummary from "@mui/material/AccordionSummary";
+import AccordionDetails from "@mui/material/AccordionDetails";
+import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
+
+// * constants
+import { url } from "../../constants/baseUrl";
+import useFetchData from "../../hooks/useFetchData";
+import { ResearchContext } from "../../context/ContextProvider";
+
+// * components
 import Button from "../custom/Button";
 import TableDropdown from "../dropdowns/TableDropdown";
 import TextFields from "../TextFields/TextField";
@@ -16,8 +25,6 @@ import SecondFind from "../research-dropdowns/table-dropdowns/SecondFind";
 import HeaderForEdits from "../research-dropdowns/table-dropdowns/HeaderForEdits";
 import SubjectSearchable from "../research-dropdowns/table-dropdowns/SubjectSearchable";
 import SearchableCategory from "../research-dropdowns/table-dropdowns/SearchableCategory";
-
-import { url } from "../../constants/baseUrl";
 import Delete from "../deleteData/popupModal/Delete";
 import CustomButton from "../../@core/CustomButton";
 
@@ -493,143 +500,165 @@ const ResearchTable = ({
   return (
     <div>
       {/* filters for editing the cells */}
-      <div className="flex flex-wrap items-center gap-2">
-        {/* first find */}
-        <FirstFind
-          classes={classes}
-          headerForSearch={headerForSearch}
-          handleTableSearchUsingHeader={handleTableSearchUsingHeader}
-        />
-        {/* searchfield for the searching tableData */}
-        <TextFields
-          placeholder={"Find Text"}
-          value={searchValue}
-          setValue={setSearchValue}
-          width="200"
-        />
-        {/* radio button */}
-        <TableRadio
-          selectedRadioValue={selectedRadioValue}
-          handleChange={handleChange}
-        />
-        {/* second find */}
-        <SecondFind
-          classes={classes}
-          secondHeaderForSearch={secondHeaderForSearch}
-          handleSecondSearchUsingHeader={handleSecondSearchUsingHeader}
-          headerForSearch={headerForSearch}
-        />
-        <TextFields
-          placeholder={"Find Text"}
-          value={secondSearchValue}
-          setValue={setSecondSearchValue}
-        />
-        <Button btnText={"Find"} onClick={handleSearch} />
-      </div>
-      <hr className="mt-1" />
-      <div className="flex flex-wrap items-center gap-4">
-        {" "}
-        {/* dropdowns for separating the files */}
-        {/* reporting tone */}
-        <TableDropdown
-          value={reportingTone}
-          setValues={setReportingTone}
-          placeholder={"Tone"}
-          mappingValue={reportingTones}
-        />
-        {/* Prominence */}
-        <TableDropdown
-          value={prominence}
-          setValues={setProminence}
-          placeholder={"Prominence"}
-          mappingValue={prominences}
-        />
-        {/* Reporting subject */}
-        <div className="flex items-center gap-2 mt-1">
-          <SubjectSearchable
-            label={"Subject"}
-            setSubject={setSubject}
-            subject={subject}
-            width={120}
-          />
-          <SearchableCategory
-            label={"Category"}
-            setCategory={setCategory}
-            category={category}
-            width={120}
-            endpoint="subcategorylist"
-          />{" "}
-        </div>
-        <Button
-          btnText={applyLoading ? "Applying" : "Apply"}
-          onClick={handleApplyChanges}
-          disabled={applyLoading}
-          isLoading={applyLoading}
-        />
-        <button
-          className={`bg-primary border border-gray-400 rounded px-10 mt-3 uppercase text-white tracking-wider text-[0.9em] ${
-            postingLoading ? "text-yellow-300" : "text-white"
-          }`}
-          onClick={() => {
-            handlePostData(
-              updatedRows,
-              name,
-              currentDateWithTime,
-              setSavedSuccess,
-              setPostingLoading,
-              setUpdatedRows,
-              setSuccessMessage,
-              setSelectedRowData,
-              setSearchedData,
-              setReportingTone,
-              setSubject,
-              setCategory,
-              setProminence,
-              setUnsavedChanges,
-              setEditValue,
-              setEditRow,
-              userToken,
-              setHighlightUpdatedRows,
-              tableData,
-              setTableData,
-              differData,
-              setDifferData
-            );
-          }}
+      <Accordion sx={{ mt: 0.4 }}>
+        <AccordionSummary
+          expandIcon={<ExpandMoreIcon />}
+          aria-controls="panel1-content"
+          id="panel1-header"
         >
-          {postingLoading ? "Loading..." : "Save"}
-        </button>
-        {!!selectedRowData.length && (
-          <CustomButton
-            btnText="Delete"
-            onClick={handleDialogOpen}
-            bg="bg-red-500"
-          />
-        )}
-        <div>
-          {savedSuccess && (
-            <Typography className="text-primary" sx={{ fontSize: "0.8em" }}>
-              {successMessage}
-            </Typography>
-          )}
-        </div>
-      </div>
-      <div className="flex flex-wrap items-center gap-2">
-        {/* dropdown headers ofr edit*/}
-        <HeaderForEdits
-          editRow={editRow}
-          handleEditRowChange={handleEditRowChange}
-          classes={classes}
-        />
-        <span className="mt-3">
-          <input
-            placeholder="select a summary"
-            value={editValue || ""}
-            onChange={(e) => setEditValue(e.target.value)}
-            className="bg-secondory border border-gray-300 rounded-md px-4 outline-none md:w-[1140px] sm:w-full hover:border-black"
-          />
-        </span>
-      </div>
+          Find Filters
+        </AccordionSummary>
+        <AccordionDetails>
+          <div className="flex flex-wrap items-center gap-2">
+            {/* first find */}
+            <FirstFind
+              classes={classes}
+              headerForSearch={headerForSearch}
+              handleTableSearchUsingHeader={handleTableSearchUsingHeader}
+            />
+            {/* searchfield for the searching tableData */}
+            <TextFields
+              placeholder={"Find Text"}
+              value={searchValue}
+              setValue={setSearchValue}
+              width="200"
+            />
+            {/* radio button */}
+            <TableRadio
+              selectedRadioValue={selectedRadioValue}
+              handleChange={handleChange}
+            />
+            {/* second find */}
+            <SecondFind
+              classes={classes}
+              secondHeaderForSearch={secondHeaderForSearch}
+              handleSecondSearchUsingHeader={handleSecondSearchUsingHeader}
+              headerForSearch={headerForSearch}
+            />
+            <TextFields
+              placeholder={"Find Text"}
+              value={secondSearchValue}
+              setValue={setSecondSearchValue}
+            />
+            <Button btnText={"Find"} onClick={handleSearch} />
+          </div>
+        </AccordionDetails>
+      </Accordion>
+
+      <Accordion sx={{ mt: 0.4 }}>
+        <AccordionSummary
+          expandIcon={<ExpandMoreIcon />}
+          aria-controls="panel1-content"
+          id="panel1-header"
+        >
+          Apply Filters
+        </AccordionSummary>
+        <AccordionDetails>
+          <div className="flex flex-wrap items-center gap-4">
+            {" "}
+            {/* dropdowns for separating the files */}
+            {/* reporting tone */}
+            <TableDropdown
+              value={reportingTone}
+              setValues={setReportingTone}
+              placeholder={"Tone"}
+              mappingValue={reportingTones}
+            />
+            {/* Prominence */}
+            <TableDropdown
+              value={prominence}
+              setValues={setProminence}
+              placeholder={"Prominence"}
+              mappingValue={prominences}
+            />
+            {/* Reporting subject */}
+            <div className="flex items-center gap-2 mt-1">
+              <SubjectSearchable
+                label={"Subject"}
+                setSubject={setSubject}
+                subject={subject}
+                width={120}
+              />
+              <SearchableCategory
+                label={"Category"}
+                setCategory={setCategory}
+                category={category}
+                width={120}
+                endpoint="subcategorylist"
+              />{" "}
+            </div>
+            <Button
+              btnText={applyLoading ? "Applying" : "Apply"}
+              onClick={handleApplyChanges}
+              disabled={applyLoading}
+              isLoading={applyLoading}
+            />
+            <button
+              className={`bg-primary border border-gray-400 rounded px-10 mt-3 uppercase text-white tracking-wider text-[0.9em] ${
+                postingLoading ? "text-yellow-300" : "text-white"
+              }`}
+              onClick={() => {
+                handlePostData(
+                  updatedRows,
+                  name,
+                  currentDateWithTime,
+                  setSavedSuccess,
+                  setPostingLoading,
+                  setUpdatedRows,
+                  setSuccessMessage,
+                  setSelectedRowData,
+                  setSearchedData,
+                  setReportingTone,
+                  setSubject,
+                  setCategory,
+                  setProminence,
+                  setUnsavedChanges,
+                  setEditValue,
+                  setEditRow,
+                  userToken,
+                  setHighlightUpdatedRows,
+                  tableData,
+                  setTableData,
+                  differData,
+                  setDifferData
+                );
+              }}
+            >
+              {postingLoading ? "Loading..." : "Save"}
+            </button>
+            {!!selectedRowData.length && (
+              <CustomButton
+                btnText="Delete"
+                onClick={handleDialogOpen}
+                bg="bg-red-500"
+              />
+            )}
+            <div>
+              {savedSuccess && (
+                <Typography className="text-primary" sx={{ fontSize: "0.8em" }}>
+                  {successMessage}
+                </Typography>
+              )}
+            </div>
+          </div>
+          <div className="flex flex-wrap items-center gap-2">
+            {/* dropdown headers ofr edit*/}
+            <HeaderForEdits
+              editRow={editRow}
+              handleEditRowChange={handleEditRowChange}
+              classes={classes}
+            />
+            <span className="mt-3">
+              <input
+                placeholder="select a summary"
+                value={editValue || ""}
+                onChange={(e) => setEditValue(e.target.value)}
+                className="bg-secondory border border-gray-300 rounded-md px-4 outline-none md:w-[1140px] sm:w-full hover:border-black"
+              />
+            </span>
+          </div>
+        </AccordionDetails>
+      </Accordion>
 
       <MainTable
         searchedData={searchedData}

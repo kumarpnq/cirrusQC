@@ -1,7 +1,12 @@
 import { useState } from "react";
 import { makeStyles } from "@mui/styles";
+import { Accordion, AccordionDetails, AccordionSummary } from "@mui/material";
+import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import { toast } from "react-toastify";
 import PropTypes from "prop-types";
+
+// * components
+
 import FirstFind from "../../components/research-dropdowns/table-dropdowns/FirstFind";
 import TextFields from "../../components/TextFields/TextField";
 import TableRadio from "../../components/table-radio/TableRadio";
@@ -250,36 +255,47 @@ export const FindSection = ({
     setTableLoading(false);
   };
   return (
-    <div className="flex items-center gap-2">
-      <FirstFind
-        classes={classes}
-        headerForSearch={headerForSearch}
-        handleTableSearchUsingHeader={handleTableHeaderForSearch}
-        screen={"print"}
-      />
-      <TextFields
-        placeholder="Find Text"
-        value={searchValue}
-        setValue={setSearchValue}
-      />
-      <TableRadio
-        selectedRadioValue={selectedRadioValue}
-        handleChange={handleRadioChange}
-      />
-      <SecondFind
-        classes={classes}
-        secondHeaderForSearch={secondHeaderForSearch}
-        handleSecondSearchUsingHeader={handleSecondTableHeaderForSearch}
-        headerForSearch={headerForSearch}
-        screen={"print"}
-      />
-      <TextFields
-        placeholder="Find Text"
-        value={secondSearchValue}
-        setValue={setSecondSearchValue}
-      />
-      <Button btnText="Find" onClick={handleSearch} bg={"bg-primary"} />
-    </div>
+    <Accordion sx={{ mt: 0.7 }}>
+      <AccordionSummary
+        expandIcon={<ExpandMoreIcon />}
+        aria-controls="panel1-content"
+        id="panel1-header"
+      >
+        Find Filters
+      </AccordionSummary>
+      <AccordionDetails>
+        <div className="flex items-center gap-2">
+          <FirstFind
+            classes={classes}
+            headerForSearch={headerForSearch}
+            handleTableSearchUsingHeader={handleTableHeaderForSearch}
+            screen={"print"}
+          />
+          <TextFields
+            placeholder="Find Text"
+            value={searchValue}
+            setValue={setSearchValue}
+          />
+          <TableRadio
+            selectedRadioValue={selectedRadioValue}
+            handleChange={handleRadioChange}
+          />
+          <SecondFind
+            classes={classes}
+            secondHeaderForSearch={secondHeaderForSearch}
+            handleSecondSearchUsingHeader={handleSecondTableHeaderForSearch}
+            headerForSearch={headerForSearch}
+            screen={"print"}
+          />
+          <TextFields
+            placeholder="Find Text"
+            value={secondSearchValue}
+            setValue={setSecondSearchValue}
+          />
+          <Button btnText="Find" onClick={handleSearch} bg={"bg-primary"} />
+        </div>
+      </AccordionDetails>
+    </Accordion>
   );
 };
 FindSection.propTypes = {

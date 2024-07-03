@@ -129,7 +129,7 @@ const EditDialog = ({ open, setOpen, row }) => {
         data.HEADLINE = formItems.headline;
       }
       if (formItems.summary !== headerData.summary) {
-        data.SUMMARY = formItems.summary;
+        data.HEADSUMMARY = formItems.summary;
       }
       if (formItems.journalist !== headerData.journalist) {
         data.JOURNALIST = formItems.journalist;
@@ -340,14 +340,10 @@ const EditDialog = ({ open, setOpen, row }) => {
               variant="h6"
               component="h6"
               fontSize={"1em"}
-            ></Typography>
+            >
+              Edit Article
+            </Typography>
             <Typography id="edit-dialog-description" component={"div"}>
-              {updateHeaderLoading ? (
-                <CircularProgress size={20} sx={{ mr: 3 }} />
-              ) : (
-                <Button onClick={updateHeaderData}>Save</Button>
-              )}
-
               <IconButton onClick={handleClose}>
                 <CloseOutlined />
               </IconButton>
@@ -403,8 +399,6 @@ const EditDialog = ({ open, setOpen, row }) => {
                     multiline
                     rows={4}
                   />
-                  <Button onClick={handleStitchOpen}>Stitch</Button>
-                  <Button onClick={handleUnStitchOpen}>unStitch</Button>
                 </Box>
               </Grid>
             </Grid>
@@ -412,11 +406,29 @@ const EditDialog = ({ open, setOpen, row }) => {
           <Grid container spacing={1} mt={1}>
             <Grid item xs={12} sm={6}>
               <Card>
-                <CardHeader
+                {/* <CardHeader
                   title={<Typography component={"span"}>Companies</Typography>}
-                />
+                /> */}
                 <CardContent>
-                  <Box sx={{ display: "flex", justifyContent: "center" }}>
+                  <Box display={"flex"} gap={1}>
+                    <Typography component={"div"}>
+                      {" "}
+                      {updateHeaderLoading ? (
+                        <CircularProgress size={20} sx={{ mr: 3 }} />
+                      ) : (
+                        <Button onClick={updateHeaderData} variant="outlined">
+                          Save
+                        </Button>
+                      )}
+                    </Typography>
+                    <Button onClick={handleStitchOpen} variant="outlined">
+                      Stitch
+                    </Button>
+                    <Button onClick={handleUnStitchOpen} variant="outlined">
+                      unStitch
+                    </Button>
+                  </Box>
+                  <Box sx={{ display: "flex" }}>
                     <DebounceSearchCompany
                       setSelectedCompany={setSelectedCompanies}
                     />
@@ -430,7 +442,13 @@ const EditDialog = ({ open, setOpen, row }) => {
                         <CircularProgress size={20} />
                       </Box>
                     ) : (
-                      <Button onClick={handleAddCompany}>Add</Button>
+                      <Button
+                        onClick={handleAddCompany}
+                        // variant="outlined"
+                        // size="small"
+                      >
+                        Add
+                      </Button>
                     )}
                   </Box>
                   <Box height={500} width={"100%"}>

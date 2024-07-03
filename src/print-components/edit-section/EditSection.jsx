@@ -1,9 +1,14 @@
 import { useContext, useEffect, useState } from "react";
 import PropTypes from "prop-types";
-import HeaderForEdits from "../../components/research-dropdowns/table-dropdowns/HeaderForEdits";
-import Button from "../../components/custom/Button";
+import { Accordion, AccordionDetails, AccordionSummary } from "@mui/material";
+import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import { makeStyles } from "@mui/styles";
 import { toast } from "react-toastify";
+
+// * component imports
+import HeaderForEdits from "../../components/research-dropdowns/table-dropdowns/HeaderForEdits";
+import Button from "../../components/custom/Button";
+
 import { ResearchContext } from "../../context/ContextProvider";
 import axios from "axios";
 import TableDropdown from "../../components/dropdowns/TableDropdown";
@@ -347,71 +352,82 @@ const EditSection = ({
 
   return (
     <>
-      <div className="flex items-center gap-2">
-        {/* reporting tone */}
-        <TableDropdown
-          value={reportingTone}
-          setValues={setReportingTone}
-          placeholder={"Tone"}
-          mappingValue={reportingTones}
-        />
-        {/* Prominence */}
-        <TableDropdown
-          value={prominence}
-          setValues={setProminence}
-          placeholder={"Prominence"}
-          mappingValue={prominences}
-        />
-        <div className="flex items-center justify-center gap-2 mt-1">
-          {/* Reporting subject */}
-          <SubjectSearchable
-            label={"Subject"}
-            setSubject={setSubject}
-            subject={subject}
-            width={120}
-          />
-          <SearchableCategory
-            label={"Sub Category"}
-            setCategory={setCategory}
-            category={category}
-            width={120}
-            endpoint="subcategorylist"
-          />
-        </div>
-        <Button
-          btnText={applyLoading ? "Applying" : "Apply"}
-          onClick={handleApplyChanges}
-          isLoading={applyLoading}
-        />
-        <Button
-          btnText={saveLoading ? "Loading" : "Save"}
-          onClick={handleSave}
-          isLoading={saveLoading}
-        />
-        {!!selectedItems.length && (
-          <CustomButton
-            btnText="Delete"
-            onClick={handleDialogOpen}
-            bg="bg-red-500"
-          />
-        )}
-      </div>
-      <div className="flex flex-wrap items-center gap-2 ">
-        <HeaderForEdits
-          editRow={editRow}
-          handleEditRowChange={handleEditRowChange}
-          classes={classes}
-          pageType={"print"}
-        />
-        <span className="mt-3">
-          <input
-            placeholder="select a summary"
-            value={editValue || ""}
-            onChange={(e) => setEditValue(e.target.value)}
-            className="bg-secondory border border-gray-300 rounded-md px-4 outline-none md:w-[800px] sm:w-full hover:border-black"
-          />
-        </span>
-      </div>
+      <Accordion sx={{ mt: 0.2 }}>
+        <AccordionSummary
+          expandIcon={<ExpandMoreIcon />}
+          aria-controls="panel1-content"
+          id="panel1-header"
+        >
+          Apply Filters
+        </AccordionSummary>
+        <AccordionDetails>
+          <div className="flex items-center gap-2">
+            {/* reporting tone */}
+            <TableDropdown
+              value={reportingTone}
+              setValues={setReportingTone}
+              placeholder={"Tone"}
+              mappingValue={reportingTones}
+            />
+            {/* Prominence */}
+            <TableDropdown
+              value={prominence}
+              setValues={setProminence}
+              placeholder={"Prominence"}
+              mappingValue={prominences}
+            />
+            <div className="flex items-center justify-center gap-2 mt-1">
+              {/* Reporting subject */}
+              <SubjectSearchable
+                label={"Subject"}
+                setSubject={setSubject}
+                subject={subject}
+                width={120}
+              />
+              <SearchableCategory
+                label={"Sub Category"}
+                setCategory={setCategory}
+                category={category}
+                width={120}
+                endpoint="subcategorylist"
+              />
+            </div>
+            <Button
+              btnText={applyLoading ? "Applying" : "Apply"}
+              onClick={handleApplyChanges}
+              isLoading={applyLoading}
+            />
+            <Button
+              btnText={saveLoading ? "Loading" : "Save"}
+              onClick={handleSave}
+              isLoading={saveLoading}
+            />
+            {!!selectedItems.length && (
+              <CustomButton
+                btnText="Delete"
+                onClick={handleDialogOpen}
+                bg="bg-red-500"
+              />
+            )}
+          </div>
+          <div className="flex flex-wrap items-center gap-2 ">
+            <HeaderForEdits
+              editRow={editRow}
+              handleEditRowChange={handleEditRowChange}
+              classes={classes}
+              pageType={"print"}
+            />
+            <span className="mt-3">
+              <input
+                placeholder="select a summary"
+                value={editValue || ""}
+                onChange={(e) => setEditValue(e.target.value)}
+                className="bg-secondory border border-gray-300 rounded-md px-4 outline-none md:w-[800px] sm:w-full hover:border-black"
+              />
+            </span>
+          </div>
+        </AccordionDetails>
+      </Accordion>
       <Delete
         open={openDeleteDialog}
         setOpen={setOpenDeleteDialog}

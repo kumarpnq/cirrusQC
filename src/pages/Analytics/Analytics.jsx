@@ -142,6 +142,16 @@ const Analytics = () => {
     return columns;
   }, [selectedHeaders]);
 
+  const column3 = useMemo(
+    () => [
+      { field: "date", headerName: "Date", width: 150 },
+      { field: "slot", headerName: "Time Slot", width: 150 },
+      { field: "qc1", headerName: "QC1", width: 100 },
+      { field: "qc2", headerName: "QC2", width: 100 },
+    ],
+    []
+  );
+
   const articleDataColumn = useMemo(
     () => [
       { field: "USERNAME", headerName: "Username", width: 150 },
@@ -239,8 +249,8 @@ const Analytics = () => {
         };
       case 3:
         return {
-          fromDate: fromDate.split(" ")[0],
-          toDate: toDate.split(" ")[0],
+          fromdate: fromDate.split(" ")[0],
+          todate: toDate.split(" ")[0],
         };
       default:
         throw new Error("Invalid value");
@@ -286,7 +296,8 @@ const Analytics = () => {
       const accesskey =
         (!value && "feed_data") ||
         (value === 1 && "result") ||
-        (value === 2 && "users_data");
+        (value === 2 && "users_data") ||
+        (value === 3 && "qc_data");
       const data = response.data[accesskey] || [];
       if (data.length && value) {
         setGridData(response.data[accesskey]);
@@ -327,13 +338,57 @@ const Analytics = () => {
         : item.TOTAL_HOURS,
   }));
 
+  const transformData = (gridData) => {
+    const rows = [];
+    gridData.forEach((dayData, dateIndex) => {
+      if (dayData.data && Array.isArray(dayData.data)) {
+        dayData.data.forEach((timeSlot, slotIndex) => {
+          rows.push({
+            id: `${dateIndex}-${slotIndex}`,
+            date: dayData.date,
+            slot: timeSlot.slot,
+            qc1: timeSlot.data.qc1,
+            qc2: timeSlot.data.qc2,
+          });
+        });
+      }
+    });
+    return rows;
+  };
+
+  const valueThreeRows = transformData(gridData);
+
   // Function to handle Excel export
   const handleExportToExcel = () => {
-    const articleSheet = XLSX.utils.json_to_sheet(articleRows);
-    const competitionSheet = XLSX.utils.json_to_sheet(competitionRows);
     const wb = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(wb, articleSheet, "Article Data");
-    XLSX.utils.book_append_sheet(wb, competitionSheet, "Competition Data");
+
+    if (value === 2) {
+      // Create the date range data
+      const dateRangeData = [
+        { fromDate: fromDate.split(" ")[0], toDate: toDate.split(" ")[0] },
+      ];
+      const dateRangeSheet = XLSX.utils.json_to_sheet(dateRangeData, {
+        skipHeader: true,
+      });
+      XLSX.utils.book_append_sheet(wb, dateRangeSheet, "Date Range");
+
+      // Add the date range header to the data
+      const dataWithDateRange = [
+        { date: `From: ${fromDate.split(" ")[0]} To: ${toDate.split(" ")[0]}` },
+        ...valueTwoRows,
+      ];
+
+      // Create the data sheet with the date range header
+      const dataSheet = XLSX.utils.json_to_sheet(dataWithDateRange);
+      XLSX.utils.book_append_sheet(wb, dataSheet, "Data");
+    } else {
+      // Add sheets for other values
+      const articleSheet = XLSX.utils.json_to_sheet(articleRows);
+      const competitionSheet = XLSX.utils.json_to_sheet(competitionRows);
+      XLSX.utils.book_append_sheet(wb, articleSheet, "Article Data");
+      XLSX.utils.book_append_sheet(wb, competitionSheet, "Competition Data");
+    }
+
     const excelFileName = "analytics_data.xlsx";
     XLSX.writeFile(wb, excelFileName);
   };
@@ -449,6 +504,28 @@ const Analytics = () => {
               }}
               loading={gridDataLoading && <CircularProgress />}
             />
+          )) ||
+          (value === 3 && (
+            <Box sx={{ height: 500 }}>
+              <DataGrid
+                rows={valueThreeRows}
+                columns={column3}
+                pageSize={5}
+                density="compact"
+                disableColumnFilter
+                disableColumnSelector
+                disableDensitySelector
+                disableRowSelectionOnClick
+                hideFooterSelectedRowCount
+                slots={{ toolbar: GridToolbar }}
+                slotProps={{
+                  toolbar: {
+                    showQuickFilter: true,
+                  },
+                }}
+                loading={gridDataLoading && <CircularProgress />}
+              />
+            </Box>
           ))}
       </Box>
     </div>
