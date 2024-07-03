@@ -4,6 +4,7 @@ print edit component
 
 */
 import { Fragment, useEffect, useState } from "react";
+import PropTypes from "prop-types";
 import {
   Box,
   Button,
@@ -11,9 +12,14 @@ import {
   CardContent,
   CardHeader,
   CircularProgress,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
   Grid,
   IconButton,
   Modal,
+  TextField,
   Typography,
 } from "@mui/material";
 import { CloseOutlined } from "@mui/icons-material";
@@ -26,6 +32,8 @@ import { FaExternalLinkAlt } from "react-icons/fa";
 import StitchModal from "./components/StitchModal";
 import axios from "axios";
 import { url } from "../../constants/baseUrl";
+import { toast } from "react-toastify";
+import CustomButton from "../../@core/CustomButton";
 
 const style = {
   position: "absolute",
@@ -58,6 +66,7 @@ const EditDialog = ({ open, setOpen, row }) => {
   const defaultLink = row?.defaultLink;
   const [articleTagDetails, setArticleTagDetails] = useState([]);
   const [articleTagDetailsLoading, setArticleTagDetailsLoading] = useState([]);
+  const [headerData, setHeaderData] = useState(null);
   const [formItems, setFormItems] = useState({
     headline: "",
     summary: "",
@@ -80,6 +89,7 @@ const EditDialog = ({ open, setOpen, row }) => {
         { headers }
       );
       const headerData = headerResponse.data.article[0] || {};
+      setHeaderData(headerData);
       setFormItems({
         headline: headerData.headline,
         summary: headerData.summary,
@@ -114,12 +124,42 @@ const EditDialog = ({ open, setOpen, row }) => {
       const data = {
         ARTICLEID: articleId,
       };
-      const response = await axios.post(`${url}updatearticleheader/`, [data], {
-        headers,
-      });
-      console.log(response);
+      // Compare each field in formItems with headerData and add to data if modified
+      if (formItems.headline !== headerData.headline) {
+        data.HEADLINE = formItems.headline;
+      }
+      if (formItems.summary !== headerData.summary) {
+        data.SUMMARY = formItems.summary;
+      }
+      if (formItems.journalist !== headerData.journalist) {
+        data.JOURNALIST = formItems.journalist;
+      }
+      if (formItems.page !== headerData.page_number) {
+        data.PAGENUMBER = Number(formItems.page);
+      }
+      if (formItems.articleSummary !== headerData.article_summary) {
+        data.ARTICLE_SUMMARY = formItems.articleSummary;
+      }
+
+      const request_data = {
+        data: [data],
+        qcflag: 1,
+      };
+
+      const response = await axios.post(
+        `${url}updatearticleheader/`,
+        request_data,
+        {
+          headers,
+        }
+      );
+      if (response.data.result?.success?.length) {
+        toast.success("Data updated.");
+      } else {
+        toast.warning("Something wrong try again.");
+      }
     } catch (error) {
-      console.log(error.message);
+      toast.error("Something went wrong.");
     } finally {
       setUpdateHeaderLoading(false);
     }
@@ -139,30 +179,104 @@ const EditDialog = ({ open, setOpen, row }) => {
     });
   };
 
-  const columns = [
-    {
-      field: "Action",
-      headerName: "Action",
-      width: 70,
-      renderCell: () => (
-        <IconButton
-          sx={{ color: "red" }}
-          onClick={() => alert("Yeah You Clicked!")}
-        >
-          <CloseIcon />
-        </IconButton>
-      ),
-    },
-    { field: "CompanyName", headerName: "CompanyName", width: 300 },
-    { field: "keyword", headerName: "Keyword", width: 300 },
-  ];
+  // * add new company
+  const [addCompanyLoading, setAddCompanyLoading] = useState(false);
+  const handleAddCompany = async () => {
+    try {
+      setAddCompanyLoading(true);
+      const request_data = {
+        data: [
+          {
+            UPDATETYPE: "I",
+            ARTICLEID: articleId,
+            COMPANYID: selectedCompanies.value,
+            COMPANYNAME: selectedCompanies.title,
+          },
+        ],
+        qcflag: 1,
+      };
+      const response = await axios.post(
+        `${url}updatearticletagdetails/`,
+        request_data,
+        { headers }
+      );
+      if (response.data.result?.success?.length) {
+        fetchHeaderAndTagDetails();
+        toast.success("Company added.");
+      } else {
+        toast.warning("Something wrong try again.");
+      }
+    } catch (error) {
+      toast.error("Something went wrong.");
+    } finally {
+      setAddCompanyLoading(false);
+    }
+  };
 
-  const rows = articleTagDetails.map((item, index) => ({
-    id: index,
-    companyId: item.company_id,
-    CompanyName: item.company_name,
-    keyword: item.keyword,
-  }));
+  // * verify user
+  const [password, setPassword] = useState("");
+  const [verificationLoading, setVerificationLoading] = useState(false);
+  const userVerification = async () => {
+    try {
+      setVerificationLoading(true);
+      const headers = { Authorization: `Bearer ${userToken}` };
+      const data = { password };
+      const response = await axios.post(`${url}isValidUser/`, data, {
+        headers,
+      });
+      setVerificationLoading(false);
+      return response.data.valid_user;
+    } catch (error) {
+      toast.error(error.message);
+      setVerificationLoading(false);
+    }
+  };
+  // * remove company
+  const [openDelete, setOpenDelete] = useState(false);
+  const [selectedRowForDelete, setSelectedRowForDelete] = useState(null);
+  const handleClickOpen = (selectedRow) => {
+    setSelectedRowForDelete(selectedRow);
+    setOpenDelete(true);
+  };
+
+  const handleCloseDelete = () => {
+    setOpenDelete(false);
+    setSelectedRowForDelete(null);
+  };
+
+  const handleRemoveCompany = async () => {
+    const isValid = await userVerification();
+    if (!isValid) {
+      return toast.warning("User not valid.");
+    }
+    try {
+      const request_data = {
+        data: [
+          {
+            UPDATETYPE: "D",
+            ARTICLEID: articleId,
+            COMPANYID: selectedRowForDelete?.companyId,
+          },
+        ],
+        qcflag: 1,
+      };
+      const response = await axios.post(
+        `${url}updatearticletagdetails/`,
+        request_data,
+        { headers }
+      );
+      if (response.data.result.success.length) {
+        toast.success("Company removed");
+        fetchHeaderAndTagDetails();
+        setOpenDelete(false);
+        setPassword("");
+      } else {
+        toast.warning("Something wrong try again.");
+      }
+    } catch (error) {
+      toast.error("Something went wrong.");
+    }
+  };
 
   // * stitch modal
   const [modalOpen, setModalOpen] = useState(false);
@@ -185,6 +299,32 @@ const EditDialog = ({ open, setOpen, row }) => {
     setModalOpen(true);
   };
 
+  // * grid rows and columns
+  const columns = [
+    {
+      field: "Action",
+      headerName: "Action",
+      width: 70,
+      renderCell: (params) => (
+        <IconButton
+          sx={{ color: "red" }}
+          onClick={() => handleClickOpen(params.row)}
+        >
+          <CloseIcon />
+        </IconButton>
+      ),
+    },
+    { field: "CompanyName", headerName: "CompanyName", width: 300 },
+    { field: "keyword", headerName: "Keyword", width: 300 },
+  ];
+
+  const rows = articleTagDetails.map((item, index) => ({
+    id: index,
+    companyId: item.company_id,
+    CompanyName: item.company_name,
+    keyword: item.keyword,
+  }));
+
   return (
     <Fragment>
       <Modal
@@ -202,7 +342,12 @@ const EditDialog = ({ open, setOpen, row }) => {
               fontSize={"1em"}
             ></Typography>
             <Typography id="edit-dialog-description" component={"div"}>
-              <Button>Save</Button>
+              {updateHeaderLoading ? (
+                <CircularProgress size={20} sx={{ mr: 3 }} />
+              ) : (
+                <Button onClick={updateHeaderData}>Save</Button>
+              )}
+
               <IconButton onClick={handleClose}>
                 <CloseOutlined />
               </IconButton>
@@ -275,7 +420,18 @@ const EditDialog = ({ open, setOpen, row }) => {
                     <DebounceSearchCompany
                       setSelectedCompany={setSelectedCompanies}
                     />
-                    <Button>Add</Button>
+                    {addCompanyLoading ? (
+                      <Box
+                        width={30}
+                        display={"flex"}
+                        justifyContent={"center"}
+                        pt={1}
+                      >
+                        <CircularProgress size={20} />
+                      </Box>
+                    ) : (
+                      <Button onClick={handleAddCompany}>Add</Button>
+                    )}
                   </Box>
                   <Box height={500} width={"100%"}>
                     <DataGrid
@@ -338,8 +494,51 @@ const EditDialog = ({ open, setOpen, row }) => {
         isStitch={stitchUnStitch.stitch}
         isUnStitch={stitchUnStitch.unStitch}
       />
+      <div>
+        <Dialog open={openDelete} onClose={handleCloseDelete}>
+          <DialogTitle fontSize={"1em"}>
+            Enter Password For Confirmation.
+          </DialogTitle>
+          <DialogContent>
+            <TextField
+              type="password"
+              sx={{ outline: "none" }}
+              size="small"
+              placeholder="Password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+            />
+          </DialogContent>
+          <DialogActions>
+            <CustomButton
+              btnText="Cancel"
+              onClick={handleCloseDelete}
+              bg={"bg-primary"}
+            />
+            {verificationLoading ? (
+              <Box width={130} display={"flex"} justifyContent={"center"}>
+                <CircularProgress size={20} />
+              </Box>
+            ) : (
+              <CustomButton
+                btnText="Delete"
+                onClick={handleRemoveCompany}
+                bg={"bg-red-500"}
+              />
+            )}
+          </DialogActions>
+        </Dialog>
+      </div>
     </Fragment>
   );
 };
 
+EditDialog.propTypes = {
+  open: PropTypes.bool.isRequired,
+  setOpen: PropTypes.func.isRequired,
+  row: PropTypes.shape({
+    main_id: PropTypes.number,
+    defaultLink: PropTypes.string,
+  }).isRequired,
+};
 export default EditDialog;

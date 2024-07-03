@@ -209,9 +209,13 @@ const SecondSection = (props) => {
       setSaveLoading(true);
       const headers = { Authorization: `Bearer ${userToken}` };
       if (requestData.length > 0) {
+        const request_data = {
+          data: requestData,
+          qcflag: 2,
+        };
         const res = await axios.post(
           `${url}updatearticletagdetails/`,
-          requestData,
+          request_data,
           { headers }
         );
 
@@ -226,9 +230,17 @@ const SecondSection = (props) => {
       }
 
       if (data.length > 0) {
-        const resp = await axios.post(`${url}updatearticleheader/`, data, {
-          headers,
-        });
+        const request_data = {
+          data: data,
+          qcflag: 2,
+        };
+        const resp = await axios.post(
+          `${url}updatearticleheader/`,
+          request_data,
+          {
+            headers,
+          }
+        );
         if (resp.data) {
           toast.success("Successfully saved changes!");
           setEditableTagData([]);
@@ -346,7 +358,11 @@ const SecondSection = (props) => {
 
   const handleDelete = async () => {
     const isValid = await userVerification();
-    isValid && (await makeRequest(requestData));
+    const request_data = {
+      data: requestData,
+      qcflag: 2,
+    };
+    isValid && (await makeRequest(request_data));
     if (!isValid) {
       return toast.error("Password not match with records");
     }

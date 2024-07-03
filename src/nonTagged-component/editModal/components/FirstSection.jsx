@@ -9,6 +9,7 @@ import CustomSingleSelect from "../../../@core/CustomSingleSelect";
 import useFetchData from "../../../hooks/useFetchData";
 import { url } from "../../../constants/baseUrl";
 import Button from "../../../components/custom/Button";
+import axios from "axios";
 
 const FirstSection = (props) => {
   const { classes, selectedArticle, setEditedSingleArticle } = props;
@@ -111,6 +112,11 @@ const FirstSection = (props) => {
 
   const handleUpdateArticleHeader = async (e) => {
     e.preventDefault();
+    try {
+      const response = await axios.post(`${url}`);
+    } catch (error) {
+      console.log(error);
+    }
   };
   return (
     <form>
@@ -247,7 +253,7 @@ const FirstSection = (props) => {
             width={100}
             isDisabled={true}
           />
-          <Button btnText="update" onClick={handleUpdateArticleHeader} />
+          {/* <Button btnText="update" onClick={handleUpdateArticleHeader} /> */}
         </div>
       </div>
     </form>

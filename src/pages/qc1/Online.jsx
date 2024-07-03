@@ -40,11 +40,7 @@ import axios from "axios";
 import { toast } from "react-toastify";
 import CustomTextField from "../../@core/CutsomTextField";
 import { arrayToString } from "../../utils/arrayToString";
-import {
-  AttachFileOutlined,
-  ControlCameraOutlined,
-  EditAttributesOutlined,
-} from "@mui/icons-material";
+import { EditAttributesOutlined } from "@mui/icons-material";
 
 const useStyle = makeStyles(() => ({
   dropDowns: {
@@ -97,7 +93,6 @@ const Online = () => {
 
   // * table data
   const [tableData, setTableData] = useState([]);
-  const [selectedItems, setSelectedItems] = useState([]);
   const [tableDataLoading, setTableDataLoading] = useState(false);
   const fetchTableData = useCallback(async () => {
     try {
@@ -251,46 +246,6 @@ const Online = () => {
     socialFeedId: item.social_feed_id,
   }));
 
-  // * group & un-group articles
-  const handleSelectionChange = (ids) => {
-    const selectedItem = ids.map((index) => tableData[index]);
-    setSelectedItems(selectedItem);
-  };
-
-  // * group selected articles
-  const [groupLoading, setGroupLoading] = useState(false);
-  const handleClickGroupItems = async () => {
-    if (selectedItems.length === 1) {
-      toast.warning("Select more than one article.");
-      return;
-    }
-    const parentId = selectedItems[0].social_feed_id;
-    const childrenIds = selectedItems
-      .slice(1)
-      .map((item) => item.social_feed_id);
-
-    try {
-      setGroupLoading(true);
-      const request_data = {
-        parent_id: parentId,
-        child_id: arrayToString(childrenIds),
-      };
-      const response = await axios.post(
-        `${url}groupsimilararticles/`,
-        request_data,
-        { headers }
-      );
-      console.log(response);
-    } catch (error) {
-      console.log(error);
-    } finally {
-      setGroupLoading(false);
-    }
-  };
-
-  // * un-group selected items
-  const handleClickUnGroupItems = () => {};
-
   return (
     <Box mx={2}>
       <Accordion>
@@ -412,30 +367,6 @@ const Online = () => {
         </AccordionDetails>
         {/* <AccordionActions></AccordionActions> */}
       </Accordion>
-      {!!selectedItems.length && (
-        <Accordion>
-          <AccordionSummary
-            expandIcon={<ExpandMoreIcon />}
-            aria-controls="panel1-content"
-            id="panel1-header"
-          >
-            Group & Un-Group Articles
-          </AccordionSummary>
-          <AccordionDetails sx={{ display: "flex" }}>
-            <Button
-              btnText={groupLoading ? "Loading" : "group"}
-              icon={<AttachFileOutlined />}
-              onClick={handleClickGroupItems}
-              isLoading={groupLoading}
-            />
-            <Button
-              btnText="ungroup"
-              icon={<ControlCameraOutlined />}
-              onClick={handleClickUnGroupItems}
-            />
-          </AccordionDetails>
-        </Accordion>
-      )}
 
       <Divider sx={{ mt: 1 }} />
       <Box sx={{ height: 550, width: "100%", mt: 1 }}>
@@ -458,12 +389,9 @@ const Online = () => {
           ]}
           density="compact"
           columnBufferPx={1000}
-          checkboxSelection
           loading={tableDataLoading && <CircularProgress />}
           components={{ Toolbar: GridToolbar }}
-          onRowSelectionModelChange={(ids) => {
-            handleSelectionChange(ids);
-          }}
+          hideFooterSelectedRowCount
         />
       </Box>
       <EditDialog

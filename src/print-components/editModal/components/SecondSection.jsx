@@ -177,7 +177,7 @@ const SecondSection = (props) => {
   }, [editableTagData, tagData, manuallyAddedCompanies]);
 
   const handleSaveClick = async () => {
-    if (!(modifiedRows.length > 0 || !!editedSingleArticle)) {
+    if (!(modifiedRows.length > 0)) {
       return toast.warning("No data");
     }
     const invalidRows = modifiedRows.filter((row) =>
@@ -198,13 +198,18 @@ const SecondSection = (props) => {
 
     const requestData = modifiedRows.map((obj) => convertKeys(obj));
 
+    const data_send = {
+      data: requestData,
+      qcflag: 2,
+    };
+
     try {
       setSaveLoading(true);
       const headers = { Authorization: `Bearer ${userToken}` };
       if (requestData.length > 0) {
         const res = await axios.post(
           `${url}updatearticletagdetails/`,
-          requestData,
+          data_send,
           { headers }
         );
 
@@ -309,7 +314,6 @@ const SecondSection = (props) => {
     ARTICLEID: item.article_id,
     COMPANYID: item.company_id,
   }));
-
   const userVerification = async () => {
     try {
       setVerificationLoading(true);
@@ -328,11 +332,14 @@ const SecondSection = (props) => {
 
   const handleDelete = async () => {
     const isValid = await userVerification();
-    isValid && (await makeRequest(requestData));
+    const request_data = {
+      data: requestData,
+      qcflag: 2,
+    };
+    isValid && (await makeRequest(request_data));
     if (!isValid) {
       return toast.error("Password not match with records");
     }
-
     if (error) {
       toast.error("An error occurred while deleting the articles.");
     } else {

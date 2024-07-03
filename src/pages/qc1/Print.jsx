@@ -359,14 +359,44 @@ const Print = () => {
         toast.warning("Something went wrong.");
       }
     } catch (error) {
-      console.log(error);
+      console.log(error.message);
     } finally {
       setGroupLoading(false);
     }
   };
 
   // * un-group selected items
-  const handleClickUnGroupItems = () => {};
+  const [unGroupLoading, setUnGroupLoading] = useState(false);
+  const handleClickUnGroupItems = async () => {
+    if (selectedItems.length === 1) {
+      toast.warning("Select more than one article.");
+      return;
+    }
+    const parentId = selectedItems[0].id;
+    const childrenIds = selectedItems.slice(1).map((item) => item.id);
+
+    try {
+      setUnGroupLoading(true);
+      const request_data = {
+        parent_id: parentId,
+        child_id: arrayToString(childrenIds),
+      };
+      const response = await axios.post(
+        `${url}ungroupsimilararticles/`,
+        request_data,
+        { headers }
+      );
+      if (response.data.status?.success?.length) {
+        toast.success("Articles ungrouped successfully.");
+      } else {
+        toast.warning("Ids not found.");
+      }
+    } catch (error) {
+      console.log(error.message);
+    } finally {
+      setUnGroupLoading(false);
+    }
+  };
 
   return (
     <Box sx={{ px: 1.5 }}>
@@ -616,9 +646,10 @@ const Print = () => {
               isLoading={groupLoading}
             />
             <Button
-              btnText="ungroup"
+              btnText={unGroupLoading ? "ungrouping" : "ungroup"}
               icon={<ControlCameraOutlined />}
               onClick={handleClickUnGroupItems}
+              isLoading={unGroupLoading}
             />
           </AccordionDetails>
         </Accordion>

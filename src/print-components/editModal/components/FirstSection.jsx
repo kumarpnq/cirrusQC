@@ -139,10 +139,17 @@ const FirstSection = (props) => {
         setUpdateLoading(false);
         return;
       }
-
-      const response = await axios.post(`${url}updatearticleheader/`, [data], {
-        headers,
-      });
+      const request_data = {
+        data: [data],
+        qcflag: 2,
+      };
+      const response = await axios.post(
+        `${url}updatearticleheader/`,
+        request_data,
+        {
+          headers,
+        }
+      );
 
       if (response.status === 200) {
         fetchArticleHeader();
