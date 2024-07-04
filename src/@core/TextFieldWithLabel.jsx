@@ -2,7 +2,15 @@
 import PropTypes from "prop-types";
 import { FormControl, TextField } from "@mui/material";
 
-const CustomTextField = ({ id, name, label, value, onChange }) => {
+const CustomTextField = ({
+  id,
+  name,
+  label,
+  value,
+  onChange,
+  isMultiline,
+  isAutoHeight,
+}) => {
   return (
     <FormControl fullWidth>
       <label htmlFor={id} className="text-[0.9em]">
@@ -16,9 +24,10 @@ const CustomTextField = ({ id, name, label, value, onChange }) => {
         InputProps={{
           style: {
             fontSize: "0.8rem",
-            height: 25,
+            height: !isAutoHeight && 25,
           },
         }}
+        multiline={isMultiline}
         value={value}
         margin="dense"
         onChange={onChange}
@@ -33,6 +42,8 @@ CustomTextField.propTypes = {
   label: PropTypes.string.isRequired,
   value: PropTypes.string.isRequired,
   onChange: PropTypes.func.isRequired,
+  isMultiline: PropTypes.bool,
+  isAutoHeight: PropTypes.bool,
 };
 
 export default CustomTextField;

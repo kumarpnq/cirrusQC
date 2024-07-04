@@ -396,8 +396,8 @@ const EditDialog = ({ open, setOpen, row }) => {
                     label="Article Summary"
                     value={formItems.articleSummary}
                     onChange={handleChange}
-                    multiline
-                    rows={4}
+                    isMultiline
+                    isAutoHeight
                   />
                 </Box>
               </Grid>

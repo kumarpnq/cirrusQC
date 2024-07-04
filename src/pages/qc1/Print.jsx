@@ -209,7 +209,7 @@ const Print = () => {
       ),
     },
     { field: "headline", headerName: "Headlines", width: 300 },
-    { field: "head_summary", headerName: "Summary", width: 300 },
+    { field: "head_summary", headerName: "Summary", width: 400 },
     { field: "article_id", headerName: "Article ID", width: 300 },
     { field: "article_date", headerName: "Article Date", width: 150 },
     { field: "publication_name", headerName: "Publication Name", width: 200 },
