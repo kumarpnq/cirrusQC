@@ -78,3 +78,12 @@
 .completed {
   background-color: #b0faa2;
 }
+
+/* analytics total efforts */
+.row-high-value {
+  background-color: lightgreen; /* Example: Green background for high values */
+}
+
+.row-low-value {
+  background-color: lightgrey; /* Example: Light background for low values */
+}

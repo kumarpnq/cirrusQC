@@ -142,16 +142,6 @@ const Analytics = () => {
     return columns;
   }, [selectedHeaders]);
 
-  const column3 = useMemo(
-    () => [
-      { field: "date", headerName: "Date", width: 150 },
-      { field: "slot", headerName: "Time Slot", width: 150 },
-      { field: "qc1", headerName: "QC1", width: 100 },
-      { field: "qc2", headerName: "QC2", width: 100 },
-    ],
-    []
-  );
-
   const articleDataColumn = useMemo(
     () => [
       { field: "USERNAME", headerName: "Username", width: 150 },
@@ -338,25 +328,84 @@ const Analytics = () => {
         : item.TOTAL_HOURS,
   }));
 
-  const transformData = (gridData) => {
-    const rows = [];
-    gridData.forEach((dayData, dateIndex) => {
-      if (dayData.data && Array.isArray(dayData.data)) {
-        dayData.data.forEach((timeSlot, slotIndex) => {
-          rows.push({
-            id: `${dateIndex}-${slotIndex}`,
-            date: dayData.date,
-            slot: timeSlot.slot,
-            qc1: timeSlot.data.qc1,
-            qc2: timeSlot.data.qc2,
-          });
-        });
-      }
-    });
-    return rows;
-  };
+  // * value three grid data and column
+  const dataForFilter = value === 3 ? gridData : [];
+  const filteredData = dataForFilter.map((day) => ({
+    ...day,
+    data: day.data.filter((slot) => slot.data.qc1 !== 0 || slot.data.qc2 !== 0),
+  }));
+  const columnGroupingModel = useMemo(() => {
+    // Extract unique slots from data
+    const uniqueSlots = filteredData.reduce((slots, item) => {
+      item.data.forEach((slotItem) => {
+        if (!slots.includes(slotItem.slot)) {
+          slots.push(slotItem.slot);
+        }
+      });
+      return slots;
+    }, []);
 
-  const valueThreeRows = transformData(gridData);
+    // Generate column grouping model based on unique slots
+    const groupingModel = uniqueSlots.map((slot) => ({
+      groupId: `slot_${slot.replace(":", "-")}`, // Replace ':' with '-' to avoid issues with CSS selectors
+      headerName: slot,
+      description: "",
+      children: [
+        { field: `qc1_${slot}`, headerName: "QC1", width: 100 },
+        { field: `qc2_${slot}`, headerName: "QC2", width: 100 },
+      ],
+    }));
+
+    return groupingModel;
+  }, [filteredData]);
+
+  const columns3 = useMemo(() => {
+    // Create columns array including date and all slot-related fields
+    const dateColumn = { field: "date", headerName: "Date", width: 150 };
+    const slotColumns = columnGroupingModel.reduce((cols, group) => {
+      cols.push(...group.children);
+      return cols;
+    }, []);
+
+    return [dateColumn, ...slotColumns];
+  }, [columnGroupingModel]);
+
+  const rows3 = useMemo(() => {
+    // Flatten data into rows, grouping slots under each date
+    let flattenedRows = [];
+    filteredData.forEach((item, index) => {
+      const rowData = { id: index + 1, date: item.date }; // Use index as id and include date
+      item.data.forEach((slotItem) => {
+        rowData[`qc1_${slotItem.slot}`] = slotItem.data.qc1;
+        rowData[`qc2_${slotItem.slot}`] = slotItem.data.qc2;
+      });
+      flattenedRows.push(rowData);
+    });
+    return flattenedRows;
+  }, [filteredData]);
+
+  const getRowClassName = (params) => {
+    const { data } = params.row;
+
+    // Ensure qc1 and qc2 values are defined
+    if (
+      data &&
+      typeof data.qc1 !== "undefined" &&
+      typeof data.qc2 !== "undefined"
+    ) {
+      const thresholdHigh = 50; // Example threshold for high value
+      const thresholdLow = 10; // Example threshold for low value
+
+      // Check qc1 and qc2 values and return corresponding class name
+      if (data.qc1 > thresholdHigh || data.qc2 > thresholdHigh) {
+        return "row-high-value"; // Apply green background for high values
+      } else if (data.qc1 < thresholdLow || data.qc2 < thresholdLow) {
+        return "row-low-value"; // Apply light background for low values
+      }
+    }
+
+    return ""; // Default class (no additional styling)
+  };
 
   // Function to handle Excel export
   const handleExportToExcel = () => {
@@ -424,7 +473,7 @@ const Analytics = () => {
       />
       <Divider sx={{ my: 1 }} />
       <Box sx={{ height: 500, width: "100%" }}>
-        {(value == 0 && (
+        {(value == 1 && (
           <DataGrid
             rows={rows}
             columns={!value ? columns1 : columns}
@@ -444,7 +493,7 @@ const Analytics = () => {
             loading={gridDataLoading && <CircularProgress />}
           />
         )) ||
-          (value === 1 && (
+          (value === 0 && (
             <Fragment>
               <Box
                 component={"button"}
@@ -508,8 +557,8 @@ const Analytics = () => {
           (value === 3 && (
             <Box sx={{ height: 500 }}>
               <DataGrid
-                rows={valueThreeRows}
-                columns={column3}
+                rows={rows3}
+                columns={columns3}
                 pageSize={5}
                 density="compact"
                 disableColumnFilter
@@ -524,6 +573,8 @@ const Analytics = () => {
                   },
                 }}
                 loading={gridDataLoading && <CircularProgress />}
+                columnGroupingModel={columnGroupingModel}
+                getRowClassName={getRowClassName}
               />
             </Box>
           ))}

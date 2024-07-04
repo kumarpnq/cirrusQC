@@ -57,7 +57,7 @@ const Dump = () => {
   const [selectedClient, setSelectedClient] = useState("");
   const [companies, setCompanies] = useState([]);
   const [selectedCompanies, setSelectedCompanies] = useState([]);
-  const [dateType, setDateType] = useState("upload");
+  const [dateType, setDateType] = useState("article");
   const [fromDate, setFromDate] = useState(formattedDate);
   const [toDate, setToDate] = useState(formattedNextDay);
   const [qc1Done, setQc1Done] = useState("2");
@@ -234,7 +234,6 @@ const Dump = () => {
             <Qc2All
               qc2done={qc2Done}
               setQc2done={setQc2Done}
-              s
               classes={classes}
               qc2Array={qc2Array}
             />

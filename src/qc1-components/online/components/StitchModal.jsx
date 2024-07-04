@@ -19,8 +19,6 @@ import PropTypes from "prop-types";
 
 // * constants
 import { url } from "../../../constants/baseUrl";
-import FromDate from "../../../components/research-dropdowns/FromDate";
-import { formattedDate } from "../../../constants/dates";
 import { toast } from "react-toastify";
 import { arrayToString } from "../../../utils/arrayToString";
 
@@ -49,7 +47,6 @@ const columns = [
 
 const StitchModal = ({ open, setOpen, articleId, isStitch, isUnStitch }) => {
   //* fetch stitched articles
-  const [date, setDate] = useState(formattedDate);
   const [articles, setArticles] = useState([]);
   const [fetchLoading, setFetchLoading] = useState(false);
   const [selectedRows, setSelectedRows] = useState([]);
@@ -59,7 +56,6 @@ const StitchModal = ({ open, setOpen, articleId, isStitch, isUnStitch }) => {
       const params = {
         article_id: articleId, //83600748
       };
-      if (isStitch) params.date = date.split(" ")[0];
       const endpoint =
         (isStitch && "articlestostich/") ||
         (isUnStitch && "getstichedarticles/");
@@ -78,7 +74,7 @@ const StitchModal = ({ open, setOpen, articleId, isStitch, isUnStitch }) => {
 
   useEffect(() => {
     fetchStitchedArticles();
-  }, [articleId, date, open]);
+  }, [articleId, open]);
 
   const rows = articles.map((item) => ({
     id: item.article_id,
@@ -97,7 +93,6 @@ const StitchModal = ({ open, setOpen, articleId, isStitch, isUnStitch }) => {
 
   const handleClose = () => {
     setArticles([]);
-    setDate(formattedDate);
     setOpen(false);
   };
   const handleSelectionChange = (newSelection) => {
@@ -153,8 +148,6 @@ const StitchModal = ({ open, setOpen, articleId, isStitch, isUnStitch }) => {
               display="flex"
               justifyContent={isStitch ? "space-between" : "flex-end"}
             >
-              {isStitch && <FromDate fromDate={date} setFromDate={setDate} />}
-
               <Typography component={"div"}>
                 <Button onClick={handleSave}>Save</Button>
                 {/* <Button>Cancel</Button> */}

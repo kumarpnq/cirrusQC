@@ -2,17 +2,28 @@ import { useCallback, useState } from "react";
 import {
   Box,
   Checkbox,
+  CircularProgress,
   Divider,
   FormControlLabel,
   FormGroup,
   IconButton,
+  Paper,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  Tooltip,
   Typography,
 } from "@mui/material";
+import Popper from "@mui/material/Popper";
 import Accordion from "@mui/material/Accordion";
 import AccordionSummary from "@mui/material/AccordionSummary";
 import AccordionDetails from "@mui/material/AccordionDetails";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
-import { DataGrid } from "@mui/x-data-grid";
+import AttachmentIcon from "@mui/icons-material/Attachment";
+import { DataGrid, GridToolbar } from "@mui/x-data-grid";
 import { makeStyles } from "@mui/styles";
 
 // * icons
@@ -129,6 +140,15 @@ const Print = () => {
     setArticleNumber(rowNumber);
   };
 
+  // * similar articles popper
+  const [anchorEls, setAnchorEls] = useState({});
+
+  const handleSimilarClick = (event, index) => {
+    setAnchorEls((prev) => ({
+      ...prev,
+      [index]: prev[index] ? null : event.currentTarget,
+    }));
+  };
   const columns = [
     {
       field: "edit",
@@ -140,6 +160,54 @@ const Print = () => {
         </IconButton>
       ),
     },
+    {
+      field: "Similar",
+      headerName: "Similar",
+      width: 70,
+      renderCell: (params) => (
+        <>
+          {!!params.row.child_data.length && (
+            <>
+              <Tooltip title="View similar articles">
+                <IconButton
+                  onClick={(event) => handleSimilarClick(event, params.id)}
+                  aria-describedby={params.id}
+                >
+                  <AttachmentIcon className="text-primary" />
+                </IconButton>
+              </Tooltip>
+              <Popper
+                id={params.id}
+                open={Boolean(anchorEls[params.id])}
+                anchorEl={anchorEls[params.id]}
+                popperOptions={{ placement: "right-end", strategy: "absolute" }}
+              >
+                <Box sx={{ border: 1, p: 1, bgcolor: "background.paper" }}>
+                  <TableContainer component={Paper}>
+                    <Table sx={{ maxWidth: 400 }} aria-label="simple table">
+                      <TableHead>
+                        <TableRow>
+                          <TableCell>Publication</TableCell>
+                          <TableCell>Headline</TableCell>
+                        </TableRow>
+                      </TableHead>
+                      <TableBody>
+                        {params.row.child_data.map((row, index) => (
+                          <TableRow key={index}>
+                            <TableCell>{row.publication_name}</TableCell>
+                            <TableCell>{row.headline}</TableCell>
+                          </TableRow>
+                        ))}
+                      </TableBody>
+                    </Table>
+                  </TableContainer>
+                </Box>
+              </Popper>
+            </>
+          )}
+        </>
+      ),
+    },
     { field: "headline", headerName: "Headlines", width: 300 },
     { field: "head_summary", headerName: "Summary", width: 300 },
     { field: "article_id", headerName: "Article ID", width: 300 },
@@ -149,6 +217,7 @@ const Print = () => {
     { field: "pdfSize", headerName: "PDF Size", width: 100 },
     { field: "journalist", headerName: "Journalist", width: 150 },
     { field: "uploadTime", headerName: "Upload Time", width: 150 },
+    { field: "main_id", headerName: "System Id", width: 150 },
     {
       field: "tagTime",
       headerName: "Tag Time",
@@ -159,7 +228,6 @@ const Print = () => {
 
   const rows = gridData.map((item, index) => ({
     id: index,
-    main_id: item.id,
     headline: item.headline,
     head_summary: item.head_summary,
     article_id: item.article_id,
@@ -170,7 +238,35 @@ const Print = () => {
     journalist: item.journalist,
     uploadTime: item.upload_time,
     defaultLink: item.default_link,
+    main_id: item.id,
+    child_data: item.child_data,
   }));
+
+  function mapYesNoAll(value) {
+    switch (value) {
+      case "Yes":
+        return "Y";
+      case "No":
+        return "N";
+      case "All":
+        return "ALL";
+      default:
+        return value;
+    }
+  }
+
+  function mapYesNoAllArticleType(value) {
+    switch (value) {
+      case "Print":
+        return "P";
+      case "Internet":
+        return "I";
+      case "All":
+        return "ALL";
+      default:
+        return value;
+    }
+  }
 
   const fetchListArticleByQC1Print = useCallback(async () => {
     try {
@@ -233,20 +329,33 @@ const Print = () => {
         arrayToString(selectedLanguages),
         params
       );
-      addPropertyIfConditionIsTrue(params, photo, "photo", photo, params);
-      addPropertyIfConditionIsTrue(params, graph, "graph", graph, params);
+      addPropertyIfConditionIsTrue(
+        params,
+        photo,
+        "photo",
+        mapYesNoAll(photo),
+        params
+      );
+      addPropertyIfConditionIsTrue(
+        params,
+        graph,
+        "graph",
+        mapYesNoAll(graph),
+        params
+      );
+      addPropertyIfConditionIsTrue(params, tv, "tv", mapYesNoAll(tv), params);
       addPropertyIfConditionIsTrue(
         params,
         articleType,
         "article_type",
-        articleType,
+        mapYesNoAllArticleType(articleType),
         params
       );
       addPropertyIfConditionIsTrue(
         params,
         stitched,
         "stitched",
-        stitched,
+        mapYesNoAll(stitched),
         params
       );
       addPropertyIfConditionIsTrue(params, tv, "tv", tv, params);
@@ -297,7 +406,8 @@ const Print = () => {
         toast.warning("No data found");
       }
     } catch (error) {
-      console.log(error);
+      toast.error("Error while fetching.");
+      setGridData([]);
     } finally {
       setGridDataLoading(false);
     }
@@ -656,16 +766,27 @@ const Print = () => {
       )}
 
       <Divider sx={{ mt: 1 }} />
-      <Box sx={{ height: 550, width: "100%", mt: 1 }}>
+      <Box sx={{ height: 600, width: "100%", mt: 1 }}>
         <DataGrid
           rows={rows}
           columns={columns}
           pageSize={5}
           rowsPerPageOptions={[5]}
           density="compact"
+          getRowHeight={() => "auto"}
           checkboxSelection
           onRowSelectionModelChange={(ids) => {
             handleSelectionChange(ids);
+          }}
+          loading={gridDataLoading && <CircularProgress />}
+          disableDensitySelector
+          disableColumnSelector
+          disableRowSelectionOnClick
+          slots={{ toolbar: GridToolbar }}
+          slotProps={{
+            toolbar: {
+              showQuickFilter: true,
+            },
           }}
         />
       </Box>

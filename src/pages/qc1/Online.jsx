@@ -153,8 +153,8 @@ const Online = () => {
         "country",
         arrayToString(selectedCountries)
       );
-      addPropertyIfConditionIsTrue(isImage !== 0, "has_image", isImage);
-      addPropertyIfConditionIsTrue(isVideo !== 0, "has_video", isVideo);
+      addPropertyIfConditionIsTrue(isImage !== 0, "has_image", Number(isImage));
+      addPropertyIfConditionIsTrue(isVideo !== 0, "has_video", Number(isVideo));
       addPropertyIfConditionIsTrue(
         socialFeedId !== "",
         "socialfeed_id",
@@ -167,6 +167,7 @@ const Online = () => {
       if (response.data.feed_data.length) {
         setTableData(response.data.feed_data || []);
       } else {
+        setTableData([]);
         toast.warning("No data found.");
       }
     } catch (error) {
@@ -216,7 +217,7 @@ const Online = () => {
       ),
     },
     { field: "headline", headerName: "Headline", width: 250 },
-    { field: "summary", headerName: "Summary", width: 300 },
+    { field: "summary", headerName: "Summary", width: 500 },
     { field: "journalist", headerName: "Journalist", width: 150 },
     { field: "publication", headerName: "Publication", width: 150 },
     {
@@ -233,7 +234,7 @@ const Online = () => {
     { field: "articleDate", headerName: "Article Date", width: 150 },
     { field: "socialFeedId", headerName: "socialFeedId", width: 150 },
   ];
-  const rows = tableData.map((item, index) => ({
+  const rows = tableData?.map((item, index) => ({
     id: index,
     action: "#",
     headline: item.headline,
@@ -369,7 +370,7 @@ const Online = () => {
       </Accordion>
 
       <Divider sx={{ mt: 1 }} />
-      <Box sx={{ height: 550, width: "100%", mt: 1 }}>
+      <Box sx={{ height: 600, width: "100%", mt: 1 }}>
         <DataGrid
           rows={rows}
           columns={columns}
@@ -387,11 +388,13 @@ const Online = () => {
             1000,
             { value: 1000, label: "1,000" },
           ]}
-          // density="compact"
+          disableDensitySelector
+          disableColumnSelector
           columnBufferPx={1000}
           loading={tableDataLoading && <CircularProgress />}
           components={{ Toolbar: GridToolbar }}
           hideFooterSelectedRowCount
+          getRowHeight={() => "auto"}
         />
       </Box>
       <EditDialog
