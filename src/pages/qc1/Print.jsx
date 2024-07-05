@@ -3,6 +3,7 @@ import {
   Box,
   Checkbox,
   CircularProgress,
+  ClickAwayListener,
   Divider,
   FormControlLabel,
   FormGroup,
@@ -163,6 +164,14 @@ const Print = () => {
       [index]: prev[index] ? null : event.currentTarget,
     }));
   };
+
+  const handleClickAway = (index) => {
+    setAnchorEls((prev) => ({
+      ...prev,
+      [index]: null,
+    }));
+  };
+
   const columns = [
     {
       field: "Action",
@@ -218,33 +227,38 @@ const Print = () => {
                   <AttachmentIcon className="text-primary" />
                 </IconButton>
               </Tooltip>
-              <Popper
-                id={params.id}
-                open={Boolean(anchorEls[params.id])}
-                anchorEl={anchorEls[params.id]}
-                popperOptions={{ placement: "right-end", strategy: "absolute" }}
-              >
-                <Box sx={{ border: 1, p: 1, bgcolor: "background.paper" }}>
-                  <TableContainer component={Paper}>
-                    <Table sx={{ maxWidth: 400 }} aria-label="simple table">
-                      <TableHead>
-                        <TableRow>
-                          <TableCell>Publication</TableCell>
-                          <TableCell>Headline</TableCell>
-                        </TableRow>
-                      </TableHead>
-                      <TableBody>
-                        {params.row.child_data.map((row, index) => (
-                          <TableRow key={index}>
-                            <TableCell>{row.publication_name}</TableCell>
-                            <TableCell>{row.headline}</TableCell>
+              <ClickAwayListener onClickAway={() => handleClickAway(params.id)}>
+                <Popper
+                  id={params.id}
+                  open={Boolean(anchorEls[params.id])}
+                  anchorEl={anchorEls[params.id]}
+                  popperOptions={{
+                    placement: "right-end",
+                    strategy: "absolute",
+                  }}
+                >
+                  <Box sx={{ p: 1, bgcolor: "background.paper" }}>
+                    <TableContainer component={Paper}>
+                      <Table sx={{ maxWidth: 400 }} aria-label="simple table">
+                        <TableHead>
+                          <TableRow>
+                            <TableCell>Publication</TableCell>
+                            <TableCell>Headline</TableCell>
                           </TableRow>
-                        ))}
-                      </TableBody>
-                    </Table>
-                  </TableContainer>
-                </Box>
-              </Popper>
+                        </TableHead>
+                        <TableBody>
+                          {params.row.child_data.map((row, index) => (
+                            <TableRow key={index}>
+                              <TableCell>{row.publication_name}</TableCell>
+                              <TableCell>{row.headline}</TableCell>
+                            </TableRow>
+                          ))}
+                        </TableBody>
+                      </Table>
+                    </TableContainer>
+                  </Box>
+                </Popper>
+              </ClickAwayListener>
             </>
           )}
         </div>
