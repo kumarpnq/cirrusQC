@@ -226,7 +226,7 @@ const Print = () => {
     },
   ];
 
-  const rows = gridData.map((item, index) => ({
+  const rows = gridData?.map((item, index) => ({
     id: index,
     headline: item.headline,
     head_summary: item.head_summary,
@@ -243,7 +243,7 @@ const Print = () => {
     link: item.link,
   }));
 
-  function mapYesNoAll(value) {
+  function mapYesNoAllToBinary(value) {
     switch (value) {
       case "Yes":
         return "Y";
@@ -270,7 +270,11 @@ const Print = () => {
   }
 
   const fetchListArticleByQC1Print = useCallback(async () => {
-    const with_category = withCategory ? "Y" : "N";
+    if (!selectedClient) {
+      toast.warning("Please select client");
+      return;
+    }
+    const with_category = withCategory === 0 ? "N" : "Y";
     try {
       setGridDataLoading(true);
       const params = {
@@ -278,8 +282,8 @@ const Print = () => {
         client_id: selectedClient,
         from_date: fromDate,
         to_date: toDate,
-        with_category: with_category,
-
+        // with_category: withCategory,
+        date_type: "ARTICLE",
         // optional params
         // company_id:'',
         // article_id:articleId,
@@ -315,6 +319,13 @@ const Print = () => {
         articleId,
         params
       );
+      addPropertyIfConditionIsTrue(
+        params,
+        withCategory !== "",
+        "with_category",
+        with_category,
+        params
+      );
       addPropertyIfConditionIsTrue(params, qc1By, "qc1_by", qc1By, params);
       addPropertyIfConditionIsTrue(params, qc1Done, "is_qc1", qc1Done, params);
       addPropertyIfConditionIsTrue(
@@ -335,17 +346,23 @@ const Print = () => {
         params,
         photo,
         "photo",
-        mapYesNoAll(photo),
+        mapYesNoAllToBinary(photo),
         params
       );
       addPropertyIfConditionIsTrue(
         params,
         graph,
         "graph",
-        mapYesNoAll(graph),
+        mapYesNoAllToBinary(graph),
         params
       );
-      addPropertyIfConditionIsTrue(params, tv, "tv", mapYesNoAll(tv), params);
+      addPropertyIfConditionIsTrue(
+        params,
+        tv,
+        "tv",
+        mapYesNoAllToBinary(tv),
+        params
+      );
       addPropertyIfConditionIsTrue(
         params,
         articleType,
@@ -357,7 +374,7 @@ const Print = () => {
         params,
         stitched,
         "stitched",
-        mapYesNoAll(stitched),
+        mapYesNoAllToBinary(stitched),
         params
       );
       addPropertyIfConditionIsTrue(params, tv, "tv", tv, params);
@@ -402,14 +419,14 @@ const Print = () => {
         headers: { Authorization: `Bearer ${userToken}` },
         params,
       });
-      if (response.data.feed_data.length) {
+      if (response.data?.feed_data.length) {
         setGridData(response.data.feed_data || []);
       } else {
+        setGridData([]);
         toast.warning("No data found");
       }
     } catch (error) {
       toast.error("Error while fetching.");
-      setGridData([]);
     } finally {
       setGridDataLoading(false);
     }
@@ -417,7 +434,7 @@ const Print = () => {
     selectedClient,
     fromDate,
     toDate,
-    // withCategory,
+    withCategory,
     setGridDataLoading,
     articleId,
     articleType,
