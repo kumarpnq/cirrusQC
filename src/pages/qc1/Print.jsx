@@ -29,6 +29,7 @@ import { makeStyles } from "@mui/styles";
 // * icons
 import {
   AttachFileOutlined,
+  CloseOutlined,
   ControlCameraOutlined,
   EditAttributesOutlined,
 } from "@mui/icons-material";
@@ -603,6 +604,36 @@ const Print = () => {
     }
   };
 
+  // * remove companies from selected items
+  const [removeLoading, setRemoveLoading] = useState(false);
+  const handleClickRemoveCompanies = async () => {
+    const parentId = selectedItems[0].id;
+    const childrenIds = selectedItems.slice(1).map((item) => item.id);
+
+    try {
+      setRemoveLoading(true);
+      const request_data = {
+        parent_id: parentId,
+        child_id: arrayToString(childrenIds),
+      };
+      const response = await axios.post(
+        `${url}removecompanies/`,
+        request_data,
+        { headers }
+      );
+      if (response.data.status?.success?.length) {
+        setSelectionModal([]);
+        setSelectedItems([]);
+        toast.success("Companies removed successfully.");
+      } else {
+        toast.warning("Ids not found.");
+      }
+    } catch (error) {
+      console.log(error.message);
+    } finally {
+      setRemoveLoading(false);
+    }
+  };
   // * icons
   const checkedIcon = (
     <IconButton>
@@ -880,6 +911,13 @@ const Print = () => {
               icon={<ControlCameraOutlined />}
               onClick={handleClickUnGroupItems}
               isLoading={unGroupLoading}
+            />
+            <Button
+              btnText={removeLoading ? "Removing" : "Remove Companies"}
+              icon={<CloseOutlined />}
+              onClick={handleClickRemoveCompanies}
+              isLoading={removeLoading}
+              isDanger
             />
           </AccordionDetails>
         </Accordion>
