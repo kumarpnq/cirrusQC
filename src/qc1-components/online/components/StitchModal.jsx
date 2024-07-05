@@ -48,8 +48,10 @@ const columns = [
 const StitchModal = ({ open, setOpen, articleId, isStitch, isUnStitch }) => {
   //* fetch stitched articles
   const [articles, setArticles] = useState([]);
+  const [stitchedArticles, setStitchedArticles] = useState([]);
   const [fetchLoading, setFetchLoading] = useState(false);
   const [selectedRows, setSelectedRows] = useState([]);
+
   const fetchStitchedArticles = async () => {
     try {
       setFetchLoading(true);
@@ -64,7 +66,11 @@ const StitchModal = ({ open, setOpen, articleId, isStitch, isUnStitch }) => {
         headers: { Authorization: `Bearer ${userToken}` },
         params,
       });
-      setArticles(response.data.articles || []);
+      const getArticles = isUnStitch
+        ? response.data.articles
+        : response.data.articles.unstiched_articles;
+      setArticles(getArticles || []);
+      setStitchedArticles(response.data.articles.stiched_articles || []);
     } catch (error) {
       console.log(error.message);
     } finally {
@@ -116,11 +122,16 @@ const StitchModal = ({ open, setOpen, articleId, isStitch, isUnStitch }) => {
             isStitch ? "stitched" : "un-stitched"
           }.`
         );
+        fetchStitchedArticles();
         setSelectedRows([]);
       }
     } catch (error) {
       toast.error("Something went wrong.");
     }
+  };
+
+  const getRowClassName = (params) => {
+    return stitchedArticles.includes(params.row.id) ? "highlight-row" : "";
   };
 
   return (
@@ -165,6 +176,7 @@ const StitchModal = ({ open, setOpen, articleId, isStitch, isUnStitch }) => {
                   handleSelectionChange(ids);
                 }}
                 density="compact"
+                getRowClassName={getRowClassName}
               />
             </Box>
           </CardContent>

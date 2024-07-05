@@ -169,7 +169,7 @@ const EditDialog = ({ rowData, rowNumber, setRowNumber, open, setOpen }) => {
         toast.warning(errorMSG.warning);
       }
     } catch (error) {
-      console.log(error);
+      console.log(error.message);
     }
   };
 
@@ -353,6 +353,8 @@ const EditDialog = ({ rowData, rowNumber, setRowNumber, open, setOpen }) => {
                       label="Summary"
                       value={formItems.summary}
                       onChange={handleChange}
+                      isAutoHeight
+                      isMultiline
                     />
                   </Grid>
                   <Grid item xs={12} sm={6}>
