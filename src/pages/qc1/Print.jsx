@@ -32,6 +32,11 @@ import {
   ControlCameraOutlined,
   EditAttributesOutlined,
 } from "@mui/icons-material";
+import CheckBoxIcon from "@mui/icons-material/CheckBox";
+import CheckBoxOutlineBlankIcon from "@mui/icons-material/CheckBoxOutlineBlank";
+import PictureAsPdfIcon from "@mui/icons-material/PictureAsPdf";
+import ImageIcon from "@mui/icons-material/Image";
+import HtmlIcon from "@mui/icons-material/Html";
 import { formattedDate, formattedNextDay } from "../../constants/dates";
 
 // * components
@@ -60,6 +65,7 @@ import axios from "axios";
 import { arrayToString } from "../../utils/arrayToString";
 import { addPropertyIfConditionIsTrue } from "../../utils/addProprtyIfConditiontrue";
 import { toast } from "react-toastify";
+import { Link } from "react-router-dom";
 
 const useStyle = makeStyles(() => ({
   dropDowns: {
@@ -82,11 +88,18 @@ const useStyle = makeStyles(() => ({
   },
 }));
 
+const iconCellStyle = {
+  display: "flex",
+  justifyContent: "center",
+  alignItems: "center",
+  height: "100%",
+};
+
 const Print = () => {
   // * state variables for data retrieve
   const [selectedClient, setSelectedClient] = useState("");
   const [selectedCompanies, setSelectedCompanies] = useState([]);
-  const [withCategory, setWithCategory] = useState(1);
+  const [withCategory, setWithCategory] = useState("");
   const [fromDate, setFromDate] = useState(formattedDate);
   const [toDate, setToDate] = useState(formattedNextDay);
   const [uploadDate, setUploadDate] = useState(formattedDate);
@@ -151,21 +164,49 @@ const Print = () => {
   };
   const columns = [
     {
-      field: "edit",
-      headerName: "Edit",
-      width: 70,
+      field: "Action",
+      headerName: "Action",
+      width: 200,
       renderCell: (params) => (
-        <IconButton onClick={() => handleRowClick(params.row, params.id)}>
-          <EditAttributesOutlined className="text-primary" />
-        </IconButton>
-      ),
-    },
-    {
-      field: "Similar",
-      headerName: "Similar",
-      width: 70,
-      renderCell: (params) => (
-        <>
+        <div style={iconCellStyle}>
+          <Tooltip title="View PDF">
+            <IconButton>
+              <Link
+                to={`/articleview/download-file/${params.row.link}`}
+                target="_blank"
+                rel="noreferrer"
+              >
+                <PictureAsPdfIcon />
+              </Link>
+            </IconButton>
+          </Tooltip>
+          <Tooltip title="View JPG">
+            <IconButton>
+              <Link
+                to={`/articleview/download-file/${params.row.link}`}
+                target="_blank"
+                rel="noreferrer"
+              >
+                <ImageIcon />
+              </Link>
+            </IconButton>
+          </Tooltip>
+          <Tooltip title="View HTML">
+            <IconButton>
+              <Link
+                to={`/articleview/download-file/${params.row.link}`}
+                target="_blank"
+                rel="noreferrer"
+              >
+                <HtmlIcon />
+              </Link>
+            </IconButton>
+          </Tooltip>
+          <Tooltip title="Edit article">
+            <IconButton onClick={() => handleRowClick(params.row, params.id)}>
+              <EditAttributesOutlined className="text-primary" />
+            </IconButton>
+          </Tooltip>
           {!!params.row.child_data.length && (
             <>
               <Tooltip title="View similar articles">
@@ -205,11 +246,40 @@ const Print = () => {
               </Popper>
             </>
           )}
-        </>
+        </div>
       ),
     },
-    { field: "headline", headerName: "Headlines", width: 300 },
-    { field: "head_summary", headerName: "Summary", width: 400 },
+
+    {
+      field: "Thumbnail",
+      headerName: "Thumbnail",
+      width: 70,
+      renderCell: (params) => (
+        <div style={iconCellStyle}>
+          <Tooltip
+            title={
+              <img src="https://cirrus.co.in/cirrus/JPGViewID.action?ai=03GURGAON-20240705-TIMES_OF_INDIA-0010-0002.pdf&loginreq=N" />
+            }
+            placement="right"
+            arrow
+          >
+            <img
+              src={`https://cirrus.co.in/cirrus/JPGViewID.action?ai=03GURGAON-20240705-TIMES_OF_INDIA-0010-0002.pdf&loginreq=N`}
+              style={{ width: "70", height: "80" }}
+              title="PDF"
+              className="p-1 border rounded-lg"
+            />
+          </Tooltip>
+        </div>
+      ),
+    },
+    { field: "headline", headerName: "Headlines", width: 300, editable: true },
+    {
+      field: "head_summary",
+      headerName: "Summary",
+      width: 400,
+      editable: true,
+    },
     { field: "article_id", headerName: "Article ID", width: 300 },
     { field: "article_date", headerName: "Article Date", width: 150 },
     { field: "publication_name", headerName: "Publication Name", width: 200 },
@@ -527,6 +597,31 @@ const Print = () => {
     }
   };
 
+  // * icons
+  const checkedIcon = (
+    <IconButton>
+      <CheckBoxIcon />
+    </IconButton>
+  );
+
+  const unCheckedIcon = (
+    <IconButton>
+      <CheckBoxOutlineBlankIcon />
+    </IconButton>
+  );
+
+  // * saving the edited cells
+  const [oldRows, setOldRows] = useState([]);
+  const [newRows, setNewRows] = useState([]);
+
+  const handleSaveManualEditedCells = async () => {};
+
+  // * highlight edit rows
+  const getRowClassName = (params) => {
+    const changedRowIds = newRows.map((i) => i.main_id);
+    return changedRowIds.includes(params.row.main_id) ? "highlight-row" : "";
+  };
+
   return (
     <Box sx={{ px: 1.5 }}>
       <Accordion>
@@ -797,6 +892,10 @@ const Print = () => {
           onRowSelectionModelChange={(ids) => {
             handleSelectionChange(ids);
           }}
+          processRowUpdate={(newRow, oldRow) => {
+            setNewRows((prev) => [...prev, newRow]);
+            setOldRows((prev) => [...prev, oldRow]);
+          }}
           loading={gridDataLoading && <CircularProgress />}
           disableDensitySelector
           disableColumnSelector
@@ -807,6 +906,16 @@ const Print = () => {
               showQuickFilter: true,
             },
           }}
+          components={{
+            BaseCheckbox: (props) => (
+              <Checkbox
+                {...props}
+                checkedIcon={checkedIcon}
+                icon={unCheckedIcon}
+              />
+            ),
+          }}
+          getRowClassName={getRowClassName}
         />
       </Box>
       <EditDialog

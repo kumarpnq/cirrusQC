@@ -347,7 +347,7 @@ const Analytics = () => {
 
     // Generate column grouping model based on unique slots
     const groupingModel = uniqueSlots.map((slot) => ({
-      groupId: `slot_${slot.replace(":", "-")}`, // Replace ':' with '-' to avoid issues with CSS selectors
+      groupId: `slot_${slot.replace(":", "-")}`,
       headerName: slot,
       description: "",
       children: [
@@ -362,23 +362,32 @@ const Analytics = () => {
   const columns3 = useMemo(() => {
     // Create columns array including date and all slot-related fields
     const dateColumn = { field: "date", headerName: "Date", width: 150 };
+    const grandTotalColumn = {
+      field: "total",
+      headerName: " Grand Total",
+      width: 150,
+    };
     const slotColumns = columnGroupingModel.reduce((cols, group) => {
       cols.push(...group.children);
       return cols;
     }, []);
 
-    return [dateColumn, ...slotColumns];
+    return [dateColumn, ...slotColumns, grandTotalColumn];
   }, [columnGroupingModel]);
 
   const rows3 = useMemo(() => {
-    // Flatten data into rows, grouping slots under each date
     let flattenedRows = [];
     filteredData.forEach((item, index) => {
-      const rowData = { id: index + 1, date: item.date }; // Use index as id and include date
+      const rowData = { id: index + 1, date: item.date };
+      let grandTotal = 0;
       item.data.forEach((slotItem) => {
-        rowData[`qc1_${slotItem.slot}`] = slotItem.data.qc1;
-        rowData[`qc2_${slotItem.slot}`] = slotItem.data.qc2;
+        const qc1Value = slotItem.data.qc1;
+        const qc2Value = slotItem.data.qc2;
+        rowData[`qc1_${slotItem.slot}`] = qc1Value;
+        rowData[`qc2_${slotItem.slot}`] = qc2Value;
+        grandTotal += qc1Value + qc2Value;
       });
+      rowData.total = grandTotal;
       flattenedRows.push(rowData);
     });
     return flattenedRows;
