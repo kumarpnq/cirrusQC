@@ -108,7 +108,7 @@ const StitchModal = ({ open, setOpen, articleId, isStitch, isUnStitch }) => {
     try {
       const userToken = localStorage.getItem("user");
       const request_data = {
-        parent_id: articleId, //83600748
+        parent_id: articleId,
         child_id: arrayToString(selectedRows),
       };
       const endpoint =

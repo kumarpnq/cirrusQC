@@ -64,6 +64,7 @@ const EditDialog = ({ open, setOpen, row }) => {
 
   const articleId = row?.main_id;
   const defaultLink = row?.defaultLink;
+  const link = row?.link;
   const [articleTagDetails, setArticleTagDetails] = useState([]);
   const [articleTagDetailsLoading, setArticleTagDetailsLoading] = useState([]);
   const [headerData, setHeaderData] = useState(null);
@@ -477,7 +478,8 @@ const EditDialog = ({ open, setOpen, row }) => {
                       alignItems="center"
                       gap={1}
                       fontSize={"0.9em"}
-                      href={"https://marathi.abplive.com/"}
+                      // href={"https://marathi.abplive.com/"}
+                      href={`/articleview/download-file/${link}`}
                       target="_blank"
                       rel="noreferrer"
                       fontFamily="nunito"

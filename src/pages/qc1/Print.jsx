@@ -86,7 +86,7 @@ const Print = () => {
   // * state variables for data retrieve
   const [selectedClient, setSelectedClient] = useState("");
   const [selectedCompanies, setSelectedCompanies] = useState([]);
-  const [withCategory, setWithCategory] = useState(0);
+  const [withCategory, setWithCategory] = useState(1);
   const [fromDate, setFromDate] = useState(formattedDate);
   const [toDate, setToDate] = useState(formattedNextDay);
   const [uploadDate, setUploadDate] = useState(formattedDate);
@@ -240,6 +240,7 @@ const Print = () => {
     defaultLink: item.default_link,
     main_id: item.id,
     child_data: item.child_data,
+    link: item.link,
   }));
 
   function mapYesNoAll(value) {
@@ -269,6 +270,7 @@ const Print = () => {
   }
 
   const fetchListArticleByQC1Print = useCallback(async () => {
+    const with_category = withCategory ? "Y" : "N";
     try {
       setGridDataLoading(true);
       const params = {
@@ -276,7 +278,7 @@ const Print = () => {
         client_id: selectedClient,
         from_date: fromDate,
         to_date: toDate,
-        date_type: "ARTICLE",
+        with_category: with_category,
 
         // optional params
         // company_id:'',
