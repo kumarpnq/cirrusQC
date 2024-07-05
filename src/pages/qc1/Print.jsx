@@ -526,9 +526,11 @@ const Print = () => {
   ]);
 
   // * group & un-group articles
+  const [selectionModal, setSelectionModal] = useState([]);
   const handleSelectionChange = (ids) => {
     const selectedItem = ids.map((index) => gridData[index]);
     setSelectedItems(selectedItem);
+    setSelectionModal(ids);
   };
 
   // * group selected articles
@@ -554,6 +556,8 @@ const Print = () => {
       );
       if (response.data.status?.success?.length) {
         toast.success("Articles grouped successfully.");
+        setSelectionModal([]);
+        setSelectedItems([]);
       } else {
         toast.warning("Something went wrong.");
       }
@@ -586,6 +590,8 @@ const Print = () => {
         { headers }
       );
       if (response.data.status?.success?.length) {
+        setSelectionModal([]);
+        setSelectedItems([]);
         toast.success("Articles ungrouped successfully.");
       } else {
         toast.warning("Ids not found.");
@@ -889,7 +895,9 @@ const Print = () => {
           density="compact"
           getRowHeight={() => "auto"}
           checkboxSelection
+          rowSelectionModel={selectionModal}
           onRowSelectionModelChange={(ids) => {
+            setSelectionModal(ids);
             handleSelectionChange(ids);
           }}
           processRowUpdate={(newRow, oldRow) => {
