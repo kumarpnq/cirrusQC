@@ -40,7 +40,12 @@ import axios from "axios";
 import { toast } from "react-toastify";
 import CustomTextField from "../../@core/CutsomTextField";
 import { arrayToString } from "../../utils/arrayToString";
-import { CloseOutlined, EditAttributesOutlined } from "@mui/icons-material";
+import {
+  AttachFileOutlined,
+  CloseOutlined,
+  ControlCameraOutlined,
+  EditAttributesOutlined,
+} from "@mui/icons-material";
 
 const useStyle = makeStyles(() => ({
   dropDowns: {
@@ -219,6 +224,76 @@ const Online = () => {
     const selectedItem = ids.map((index) => tableData[index]);
     setSelectedItems(selectedItem);
     setSelectionModal(ids);
+  };
+
+  // * group selected articles
+  const [groupLoading, setGroupLoading] = useState(false);
+  const handleClickGroupItems = async () => {
+    if (selectedItems.length === 1) {
+      toast.warning("Select more than one article.");
+      return;
+    }
+    const parentId = selectedItems[0].id;
+    const childrenIds = selectedItems.slice(1).map((item) => item.id);
+
+    try {
+      setGroupLoading(true);
+      const request_data = {
+        parent_id: parentId,
+        child_id: arrayToString(childrenIds),
+      };
+      const response = await axios.post(
+        `${url}groupsimilarsocialfeeds/`,
+        request_data,
+        { headers }
+      );
+      if (response.data.status?.success?.length) {
+        toast.success("Articles grouped successfully.");
+        setSelectionModal([]);
+        setSelectedItems([]);
+      } else {
+        toast.warning("Something went wrong.");
+      }
+    } catch (error) {
+      console.log(error.message);
+    } finally {
+      setGroupLoading(false);
+    }
+  };
+
+  // * un-group selected items
+  const [unGroupLoading, setUnGroupLoading] = useState(false);
+  const handleClickUnGroupItems = async () => {
+    if (selectedItems.length === 1) {
+      toast.warning("Select more than one article.");
+      return;
+    }
+    const parentId = selectedItems[0].id;
+    const childrenIds = selectedItems.slice(1).map((item) => item.id);
+
+    try {
+      setUnGroupLoading(true);
+      const request_data = {
+        parent_id: parentId,
+        child_id: arrayToString(childrenIds),
+      };
+      const response = await axios.post(
+        `${url}ungroupsimilarsocialfeeds/`,
+        request_data,
+        { headers }
+      );
+      if (response.data.status?.success?.length) {
+        setSelectionModal([]);
+        setSelectedItems([]);
+        toast.success("Articles ungrouped successfully.");
+      } else {
+        toast.warning("Ids not found.");
+      }
+    } catch (error) {
+      console.log(error.message);
+    } finally {
+      setUnGroupLoading(false);
+    }
   };
 
   // * remove companies from selected items
@@ -426,19 +501,19 @@ const Online = () => {
           >
             Group & remove
           </AccordionSummary>
-          <AccordionDetails>
-            {/* <Button
-            btnText={groupLoading ? "Loading" : "group"}
-            icon={<AttachFileOutlined />}
-            onClick={handleClickGroupItems}
-            isLoading={groupLoading}
-          />
-          <Button
-            btnText={unGroupLoading ? "ungrouping" : "ungroup"}
-            icon={<ControlCameraOutlined />}
-            onClick={handleClickUnGroupItems}
-            isLoading={unGroupLoading}
-          /> */}
+          <AccordionDetails sx={{ display: "flex", gap: 1, flexWrap: "wrap" }}>
+            <Button
+              btnText={groupLoading ? "Loading" : "group"}
+              icon={<AttachFileOutlined />}
+              onClick={handleClickGroupItems}
+              isLoading={groupLoading}
+            />
+            <Button
+              btnText={unGroupLoading ? "ungrouping" : "ungroup"}
+              icon={<ControlCameraOutlined />}
+              onClick={handleClickUnGroupItems}
+              isLoading={unGroupLoading}
+            />
             <Button
               btnText={removeLoading ? "Removing" : "Remove Companies"}
               icon={<CloseOutlined />}
