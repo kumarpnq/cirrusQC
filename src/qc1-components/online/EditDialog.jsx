@@ -559,6 +559,7 @@ EditDialog.propTypes = {
   row: PropTypes.shape({
     main_id: PropTypes.number,
     defaultLink: PropTypes.string,
+    link: PropTypes.string,
   }).isRequired,
 };
 export default EditDialog;

@@ -34,8 +34,7 @@ import {
   ControlCameraOutlined,
   EditAttributesOutlined,
 } from "@mui/icons-material";
-import CheckBoxIcon from "@mui/icons-material/CheckBox";
-import CheckBoxOutlineBlankIcon from "@mui/icons-material/CheckBoxOutlineBlank";
+
 import PictureAsPdfIcon from "@mui/icons-material/PictureAsPdf";
 import ImageIcon from "@mui/icons-material/Image";
 import HtmlIcon from "@mui/icons-material/Html";
@@ -68,6 +67,7 @@ import { arrayToString } from "../../utils/arrayToString";
 import { addPropertyIfConditionIsTrue } from "../../utils/addProprtyIfConditiontrue";
 import { toast } from "react-toastify";
 import { Link } from "react-router-dom";
+import { result } from "lodash";
 
 const useStyle = makeStyles(() => ({
   dropDowns: {
@@ -300,7 +300,12 @@ const Print = () => {
     { field: "publication_name", headerName: "Publication Name", width: 200 },
     { field: "page_number", headerName: "Pages", width: 80 },
     { field: "pdfSize", headerName: "PDF Size", width: 100 },
-    { field: "journalist", headerName: "Journalist", width: 150 },
+    {
+      field: "journalist",
+      headerName: "Journalist",
+      width: 150,
+      editable: true,
+    },
     { field: "uploadTime", headerName: "Upload Time", width: 150 },
     { field: "main_id", headerName: "System Id", width: 150 },
     {
@@ -621,58 +626,85 @@ const Print = () => {
   // * remove companies from selected items
   const [removeLoading, setRemoveLoading] = useState(false);
   const handleClickRemoveCompanies = async () => {
-    const parentId = selectedItems[0].id;
-    const childrenIds = selectedItems.slice(1).map((item) => item.id);
+    const articleIds = selectedItems.map((i) => i.id);
 
     try {
       setRemoveLoading(true);
       const request_data = {
-        parent_id: parentId,
-        child_id: arrayToString(childrenIds),
+        client_id: selectedClient,
+        article_ids: arrayToString(articleIds),
+        // company_ids: arrayToString(selectedCompanies),
       };
-      const response = await axios.post(
-        `${url}removecompanies/`,
-        request_data,
-        { headers }
-      );
-      if (response.data.status?.success?.length) {
+      if (selectedCompanies.length) {
+        request_data.company_ids = arrayToString(selectedCompanies);
+      }
+      const response = await axios.delete(`${url}removecompanyprint/`, {
+        headers,
+        params: request_data,
+      });
+      if (response) {
+        toast.success("Companies removed.");
         setSelectionModal([]);
         setSelectedItems([]);
-        toast.success("Companies removed successfully.");
-      } else {
-        toast.warning("Ids not found.");
       }
     } catch (error) {
-      console.log(error.message);
+      toast.error("Something went wrong.");
     } finally {
       setRemoveLoading(false);
     }
   };
-  // * icons
-  const checkedIcon = (
-    <IconButton>
-      <CheckBoxIcon />
-    </IconButton>
-  );
-
-  const unCheckedIcon = (
-    <IconButton>
-      <CheckBoxOutlineBlankIcon />
-    </IconButton>
-  );
 
   // * saving the edited cells
-  const [oldRows, setOldRows] = useState([]);
-  const [newRows, setNewRows] = useState([]);
+  const [oldRows, setOldRows] = useState(null);
+  const [newRows, setNewRows] = useState(null);
+  const [saveLoading, setSaveLoading] = useState(false);
 
-  const handleSaveManualEditedCells = async () => {};
+  const handleSaveManualEditedCells = async () => {
+    if (!newRows) {
+      toast.warning("No changes found.");
+      return;
+    }
+    try {
+      setSaveLoading(true);
+      const request_data = {
+        ARTICLEID: newRows?.main_id,
+      };
+      if (oldRows.headline !== newRows.headline) {
+        request_data.HEADLINE = newRows.headline;
+      }
+      if (oldRows.head_summary !== newRows.head_summary) {
+        request_data.HEADSUMMARY = newRows.head_summary;
+      }
+      if (oldRows.journalist !== newRows.journalist) {
+        request_data.JOURNALIST = newRows.journalist;
+      }
+      const data = {
+        data: [request_data],
+        qcflag: 1,
+      };
+      const response = await axios.post(`${url}updatearticleheader/`, data, {
+        headers,
+      });
+      if (response.data.result?.success?.length) {
+        toast.success("Data updated.");
+        setNewRows(null);
+        setOldRows(null);
+        fetchListArticleByQC1Print();
+      } else {
+        toast.warning("Something wrong try again.");
+      }
+    } catch (error) {
+      toast.error("Something went wrong.");
+    } finally {
+      setSaveLoading(false);
+    }
+  };
 
   // * highlight edit rows
   const getRowClassName = (params) => {
-    const changedRowIds = newRows.map((i) => i.main_id);
-    return changedRowIds.includes(params.row.main_id) ? "highlight-row" : "";
+    return newRows?.main_id === params.row.main_id ? "highlight-row" : "";
   };
-
+  const isShowSecondAccordion = selectedItems.length || Boolean(newRows);
   return (
     <Box sx={{ px: 1.5 }}>
       <Accordion>
@@ -904,7 +936,7 @@ const Print = () => {
           </Box>
         </AccordionDetails>
       </Accordion>
-      {!!selectedItems.length && (
+      {!!isShowSecondAccordion && (
         <Accordion>
           <AccordionSummary
             expandIcon={<ExpandMoreIcon />}
@@ -913,7 +945,7 @@ const Print = () => {
           >
             Group & Un-Group Articles
           </AccordionSummary>
-          <AccordionDetails sx={{ display: "flex" }}>
+          <AccordionDetails sx={{ display: "flex", gap: 1 }}>
             <Button
               btnText={groupLoading ? "Loading" : "group"}
               icon={<AttachFileOutlined />}
@@ -932,6 +964,12 @@ const Print = () => {
               onClick={handleClickRemoveCompanies}
               isLoading={removeLoading}
               isDanger
+            />
+            <Button
+              btnText={saveLoading ? "Saving" : "Save"}
+              // icon={<ControlCameraOutlined />}
+              onClick={handleSaveManualEditedCells}
+              isLoading={saveLoading}
             />
           </AccordionDetails>
         </Accordion>
@@ -953,8 +991,14 @@ const Print = () => {
             handleSelectionChange(ids);
           }}
           processRowUpdate={(newRow, oldRow) => {
-            setNewRows((prev) => [...prev, newRow]);
-            setOldRows((prev) => [...prev, oldRow]);
+            if (newRows) {
+              toast.warning("Please save the changes first.");
+              return;
+            }
+            if (JSON.stringify(newRow) !== JSON.stringify(oldRow)) {
+              setNewRows(newRow);
+              setOldRows(oldRow);
+            }
           }}
           loading={gridDataLoading && <CircularProgress />}
           disableDensitySelector
@@ -965,15 +1009,6 @@ const Print = () => {
             toolbar: {
               showQuickFilter: true,
             },
-          }}
-          components={{
-            BaseCheckbox: (props) => (
-              <Checkbox
-                {...props}
-                checkedIcon={checkedIcon}
-                icon={unCheckedIcon}
-              />
-            ),
           }}
           getRowClassName={getRowClassName}
         />

@@ -40,7 +40,7 @@ import axios from "axios";
 import { toast } from "react-toastify";
 import CustomTextField from "../../@core/CutsomTextField";
 import { arrayToString } from "../../utils/arrayToString";
-import { EditAttributesOutlined } from "@mui/icons-material";
+import { CloseOutlined, EditAttributesOutlined } from "@mui/icons-material";
 
 const useStyle = makeStyles(() => ({
   dropDowns: {
@@ -58,6 +58,13 @@ const useStyle = makeStyles(() => ({
     background: "#d4c8c7",
   },
 }));
+
+const iconCellStyle = {
+  display: "flex",
+  justifyContent: "center",
+  alignItems: "center",
+  height: "100%",
+};
 
 const Online = () => {
   // * state variables for search data
@@ -93,6 +100,7 @@ const Online = () => {
 
   // * table data
   const [tableData, setTableData] = useState([]);
+  const [selectedItems, setSelectedItems] = useState([]);
   const [tableDataLoading, setTableDataLoading] = useState(false);
   const fetchTableData = useCallback(async () => {
     try {
@@ -205,15 +213,56 @@ const Online = () => {
     setArticleNumber(rowNumber);
   };
 
+  // * row selection modal
+  const [selectionModal, setSelectionModal] = useState([]);
+  const handleSelectionChange = (ids) => {
+    const selectedItem = ids.map((index) => tableData[index]);
+    setSelectedItems(selectedItem);
+    setSelectionModal(ids);
+  };
+
+  // * remove companies from selected items
+  const [removeLoading, setRemoveLoading] = useState(false);
+  const handleClickRemoveCompanies = async () => {
+    const socialFeedIds = selectedItems.map((i) => i.social_feed_id);
+
+    try {
+      setRemoveLoading(true);
+      const request_data = {
+        client_id: selectedClient,
+        socialfeed_ids: arrayToString(socialFeedIds),
+        // company_ids: arrayToString(selectedCompanies),
+      };
+      if (selectedCompanies.length) {
+        request_data.company_ids = arrayToString(selectedCompanies);
+      }
+      const response = await axios.delete(`${url}removecompanyonline/`, {
+        headers,
+        params: request_data,
+      });
+      if (response) {
+        toast.success("Companies removed.");
+        setSelectionModal([]);
+        setSelectedItems([]);
+      }
+    } catch (error) {
+      toast.error("Something went wrong.");
+    } finally {
+      setRemoveLoading(false);
+    }
+  };
+
   const columns = [
     {
       field: "action",
       headerName: "Action",
       width: 100,
       renderCell: (params) => (
-        <IconButton onClick={() => handleRowClick(params.row, params.id)}>
-          <EditAttributesOutlined className="text-primary" />
-        </IconButton>
+        <div style={iconCellStyle}>
+          <IconButton onClick={() => handleRowClick(params.row, params.id)}>
+            <EditAttributesOutlined className="text-primary" />
+          </IconButton>
+        </div>
       ),
     },
     { field: "headline", headerName: "Headline", width: 250 },
@@ -368,6 +417,38 @@ const Online = () => {
         </AccordionDetails>
         {/* <AccordionActions></AccordionActions> */}
       </Accordion>
+      {!!selectedItems.length && (
+        <Accordion>
+          <AccordionSummary
+            expandIcon={<ExpandMoreIcon />}
+            aria-controls="panel1-content"
+            id="panel1-header"
+          >
+            Group & remove
+          </AccordionSummary>
+          <AccordionDetails>
+            {/* <Button
+            btnText={groupLoading ? "Loading" : "group"}
+            icon={<AttachFileOutlined />}
+            onClick={handleClickGroupItems}
+            isLoading={groupLoading}
+          />
+          <Button
+            btnText={unGroupLoading ? "ungrouping" : "ungroup"}
+            icon={<ControlCameraOutlined />}
+            onClick={handleClickUnGroupItems}
+            isLoading={unGroupLoading}
+          /> */}
+            <Button
+              btnText={removeLoading ? "Removing" : "Remove Companies"}
+              icon={<CloseOutlined />}
+              onClick={handleClickRemoveCompanies}
+              isLoading={removeLoading}
+              isDanger
+            />
+          </AccordionDetails>
+        </Accordion>
+      )}
 
       <Divider sx={{ mt: 1 }} />
       <Box sx={{ height: 600, width: "100%", mt: 1 }}>
@@ -388,6 +469,12 @@ const Online = () => {
             1000,
             { value: 1000, label: "1,000" },
           ]}
+          checkboxSelection
+          rowSelectionModel={selectionModal}
+          onRowSelectionModelChange={(ids) => {
+            setSelectionModal(ids);
+            handleSelectionChange(ids);
+          }}
           disableDensitySelector
           disableColumnSelector
           columnBufferPx={1000}
