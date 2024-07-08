@@ -67,6 +67,7 @@ import { arrayToString } from "../../utils/arrayToString";
 import { addPropertyIfConditionIsTrue } from "../../utils/addProprtyIfConditiontrue";
 import { toast } from "react-toastify";
 import { Link } from "react-router-dom";
+import SearchFilters from "../../qc1-components/online/components/SearchFilters";
 
 const useStyle = makeStyles(() => ({
   dropDowns: {
@@ -636,7 +637,7 @@ const Print = () => {
       const request_data = {
         client_id: selectedClient,
         article_ids: arrayToString(articleIds),
-        // company_ids: arrayToString(selectedCompanies),
+        company_ids: arrayToString(selectedCompanies),
       };
       if (selectedCompanies.length) {
         request_data.company_ids = arrayToString(selectedCompanies);
@@ -937,6 +938,23 @@ const Print = () => {
               />
             </Typography>
           </Box>
+          <SearchFilters
+            classes={classes}
+            selectedClient={selectedClient}
+            setSelectedClient={setSelectedClient}
+            setSelectedCompanies={setSelectedCompanies}
+            companyData={data?.data?.companies || []}
+            selectedCompanies={selectedCompanies}
+            withCategory={withCategory}
+            setWithCategory={setWithCategory}
+            fromDate={fromDate}
+            toDate={toDate}
+            setToDate={setToDate}
+            uploadDate={uploadDate}
+            setUploadDate={setUploadDate}
+            publicationGroup={publicationGroup}
+            setPublicationGroup={setPublicationGroup}
+          />
         </AccordionDetails>
       </Accordion>
       {!!isShowSecondAccordion && (

@@ -306,7 +306,7 @@ const Online = () => {
       const request_data = {
         client_id: selectedClient,
         socialfeed_ids: arrayToString(socialFeedIds),
-        // company_ids: arrayToString(selectedCompanies),
+        company_ids: arrayToString(selectedCompanies),
       };
       if (selectedCompanies.length) {
         request_data.company_ids = arrayToString(selectedCompanies);
