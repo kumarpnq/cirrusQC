@@ -1,5 +1,9 @@
 import { useContext, useEffect, useState } from "react";
 import { makeStyles } from "@mui/styles";
+import Accordion from "@mui/material/Accordion";
+import AccordionSummary from "@mui/material/AccordionSummary";
+import AccordionDetails from "@mui/material/AccordionDetails";
+import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 // hook
 import useFetchData from "../hooks/useFetchData";
 
@@ -176,99 +180,110 @@ const Dump = () => {
         setValue={setTabValue}
         setSelectedColumnsForDump={setSelectedColumnsForDump}
       />
-      <div className="flex flex-col gap-5">
-        <div className="flex flex-wrap items-center gap-1 mt-2 ">
-          <div className="flex items-center mt-1" style={{ height: 25 }}>
-            <SearchableDropdown
-              options={clients}
-              testclient={selectedClient}
-              setTestClient={setSelectedClient}
-              label="Clients"
-              width={300}
+      <Accordion>
+        <AccordionSummary
+          expandIcon={<ExpandMoreIcon />}
+          aria-controls="panel1-content"
+          id="panel1-header"
+        >
+          Search Filters
+        </AccordionSummary>
+        <AccordionDetails>
+          <div className="flex flex-wrap items-center gap-1 mt-2 ">
+            <div className="flex items-center mt-1" style={{ height: 25 }}>
+              <SearchableDropdown
+                options={clients}
+                testclient={selectedClient}
+                setTestClient={setSelectedClient}
+                label="Clients"
+                width={300}
+              />
+            </div>
+            {/* company */}
+            <CustomAutocomplete
+              companies={selectedCompanies}
+              setCompanies={setSelectedCompanies}
+              company={companies}
             />
-          </div>
-          {/* company */}
-          <CustomAutocomplete
-            companies={selectedCompanies}
-            setCompanies={setSelectedCompanies}
-            company={companies}
-          />
-          <Datetype
-            dateType={dateType}
-            setDateType={setDateType}
-            dateTypes={dateTypes}
-            classes={classes}
-          />
+            <Datetype
+              dateType={dateType}
+              setDateType={setDateType}
+              dateTypes={dateTypes}
+              classes={classes}
+            />
 
-          {
-            // only show when tab is print
-            !!tabValue && (
-              <div className="mb-[2px]">
-                <Permissions
-                  value={qcPermission}
-                  setValue={setQcPermission}
-                  classes={classes}
-                  width={120}
-                  mapValue={qcPermissions}
-                  placeholder="Permission"
-                />
-              </div>
-            )
-          }
+            {
+              // only show when tab is print
+              !!tabValue && (
+                <div className="mb-[2px]">
+                  <Permissions
+                    value={qcPermission}
+                    setValue={setQcPermission}
+                    classes={classes}
+                    width={120}
+                    mapValue={qcPermissions}
+                    placeholder="Permission"
+                  />
+                </div>
+              )
+            }
 
-          <div className="h-[25px] flex items-center justify-center">
-            <FromDate fromDate={fromDate} setFromDate={setFromDate} />
+            <div className="h-[25px] flex items-center justify-center">
+              <FromDate fromDate={fromDate} setFromDate={setFromDate} />
+            </div>
+            <div className="h-[25px] flex items-center justify-center">
+              <ToDate dateNow={toDate} setDateNow={setToDate} isMargin={true} />
+            </div>
+            <div className="h-[25px] flex items-center justify-center">
+              <Qc1All
+                qc1done={qc1Done}
+                setQc1done={setQc1Done}
+                classes={classes}
+                qc1Array={qc1Array}
+              />
+            </div>
+            <div className="h-[25px] flex items-center justify-center">
+              <Qc2All
+                qc2done={qc2Done}
+                setQc2done={setQc2Done}
+                classes={classes}
+                qc2Array={qc2Array}
+              />
+            </div>
+            <div className="h-[25px] flex items-center justify-center">
+              <Qc1By
+                qcUsersData={qcUsersData}
+                qc1by={qc1By}
+                setQc1by={setQc1By}
+                classes={classes}
+              />
+            </div>
+            <div className="h-[25px] flex items-center justify-center">
+              <Qc2By
+                qcUsersData={qcUsersData}
+                classes={classes}
+                qc2by={qc2By}
+                setQc2by={setQc2By}
+              />
+            </div>
+            <div className="h-[25px] flex items-center justify-center">
+              <Button
+                btnText={dumpLoading ? "Searching" : "Search"}
+                onClick={handleDump}
+                isLoading={dumpLoading}
+              />
+            </div>
+            <div className="h-[25px] flex items-center justify-center">
+              <Button
+                btnText={"Reset"}
+                onClick={handleReset}
+                // isLoading={dumpLoading}
+              />
+            </div>
           </div>
-          <div className="h-[25px] flex items-center justify-center">
-            <ToDate dateNow={toDate} setDateNow={setToDate} isMargin={true} />
-          </div>
-          <div className="h-[25px] flex items-center justify-center">
-            <Qc1All
-              qc1done={qc1Done}
-              setQc1done={setQc1Done}
-              classes={classes}
-              qc1Array={qc1Array}
-            />
-          </div>
-          <div className="h-[25px] flex items-center justify-center">
-            <Qc2All
-              qc2done={qc2Done}
-              setQc2done={setQc2Done}
-              classes={classes}
-              qc2Array={qc2Array}
-            />
-          </div>
-          <div className="h-[25px] flex items-center justify-center">
-            <Qc1By
-              qcUsersData={qcUsersData}
-              qc1by={qc1By}
-              setQc1by={setQc1By}
-              classes={classes}
-            />
-          </div>
-          <div className="h-[25px] flex items-center justify-center">
-            <Qc2By
-              qcUsersData={qcUsersData}
-              classes={classes}
-              qc2by={qc2By}
-              setQc2by={setQc2By}
-            />
-          </div>
-          <div className="h-[25px] flex items-center justify-center">
-            <Button
-              btnText={dumpLoading ? "Searching" : "Search"}
-              onClick={handleDump}
-              isLoading={dumpLoading}
-            />
-          </div>
-          <div className="h-[25px] flex items-center justify-center">
-            <Button
-              btnText={"Reset"}
-              onClick={handleReset}
-              // isLoading={dumpLoading}
-            />
-          </div>
-        </div>
+        </AccordionDetails>
+      </Accordion>
+      <div className="flex flex-col gap-5 mt-1">
         <JobDetails rows={jobData} URI={url} />
       </div>
 

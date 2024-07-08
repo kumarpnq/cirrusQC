@@ -544,24 +544,37 @@ const Analytics = () => {
             </Fragment>
           )) ||
           (value === 2 && (
-            <DataGrid
-              rows={valueTwoRows}
-              columns={column2}
-              pageSize={5}
-              density="compact"
-              disableColumnFilter
-              disableColumnSelector
-              disableDensitySelector
-              disableRowSelectionOnClick
-              hideFooterSelectedRowCount
-              slots={{ toolbar: GridToolbar }}
-              slotProps={{
-                toolbar: {
-                  showQuickFilter: true,
-                },
-              }}
-              loading={gridDataLoading && <CircularProgress />}
-            />
+            <Fragment>
+              <Box
+                component={"button"}
+                display={"flex"}
+                alignItems={"center"}
+                className="gap-1 text-primary"
+                onClick={handleExportToExcel}
+                // disabled={!articleData.length}
+              >
+                <AiOutlineDownload />
+                EXPORT
+              </Box>
+              <DataGrid
+                rows={valueTwoRows}
+                columns={column2}
+                pageSize={5}
+                density="compact"
+                disableColumnFilter
+                disableColumnSelector
+                disableDensitySelector
+                disableRowSelectionOnClick
+                hideFooterSelectedRowCount
+                slots={{ toolbar: GridToolbar }}
+                slotProps={{
+                  toolbar: {
+                    showQuickFilter: false,
+                  },
+                }}
+                loading={gridDataLoading && <CircularProgress />}
+              />
+            </Fragment>
           )) ||
           (value === 3 && (
             <Box sx={{ height: 500 }}>

@@ -15,6 +15,12 @@ import {
 } from "@mui/material";
 import { makeStyles } from "@mui/styles";
 import { EditAttributesOutlined } from "@mui/icons-material";
+import Accordion from "@mui/material/Accordion";
+import AccordionSummary from "@mui/material/AccordionSummary";
+import AccordionDetails from "@mui/material/AccordionDetails";
+import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
+
+// * components
 import BasicTabs from "../dump-components/customTabPanel";
 import { formattedDate, formattedNextDay } from "../constants/dates";
 import FromDate from "../components/research-dropdowns/FromDate";
@@ -175,88 +181,100 @@ const NonTagged = () => {
         setValue={setActiveTab}
         setSelectedColumnsForDump={setTableData}
       />
-      <Box display="flex" alignItems="center" gap={1}>
-        <FromDate fromDate={fromDate} setFromDate={setFromDate} />
-        <ToDate dateNow={toDate} setDateNow={setToDate} isMargin />
-        {!activeTab && (
-          <div className="mt-3">
+      <Accordion>
+        <AccordionSummary
+          expandIcon={<ExpandMoreIcon />}
+          aria-controls="panel1-content"
+          id="panel1-header"
+        >
+          Search Filters
+        </AccordionSummary>
+        <AccordionDetails>
+          <Box display="flex" alignItems="center" gap={1}>
+            <FromDate fromDate={fromDate} setFromDate={setFromDate} />
+            <ToDate dateNow={toDate} setDateNow={setToDate} isMargin />
+            {!activeTab && (
+              <div className="mt-3">
+                <CustomTextField
+                  placeholder={"publication"}
+                  value={publication}
+                  setValue={setPublication}
+                />
+              </div>
+            )}
+
+            {!!activeTab && (
+              <>
+                <CustomDebounceDropdown
+                  publicationGroup={debouncePub}
+                  setPublicationGroup={setDebouncePub}
+                  m="mt-3"
+                />
+                <Publication
+                  publicationGroup={debouncePub}
+                  publication={publicationGroup}
+                  setPublication={setPublicationGroup}
+                  classes={classes}
+                  width={150}
+                />{" "}
+              </>
+            )}
+
+            {!activeTab && (
+              <>
+                {" "}
+                <FormGroup>
+                  <FormControlLabel
+                    sx={{ mt: 2 }}
+                    label={
+                      <Typography variant="h6" fontSize={"0.9em"}>
+                        Top Publication
+                      </Typography>
+                    }
+                    control={
+                      <Checkbox
+                        checked={topPublication}
+                        onChange={() => setTopPublication(!topPublication)}
+                      />
+                    }
+                  />
+                </FormGroup>
+                <FormGroup>
+                  <FormControlLabel
+                    sx={{ mt: 2 }}
+                    label={
+                      <Typography variant="h6" fontSize={"0.9em"}>
+                        Non Tagged
+                      </Typography>
+                    }
+                    control={
+                      <Checkbox
+                        checked={nonTagged}
+                        onChange={() => setNonTagged(!nonTagged)}
+                      />
+                    }
+                  />
+                </FormGroup>{" "}
+              </>
+            )}
+
+            <Button
+              btnText={tableDataLoading ? "Searching" : "search"}
+              onClick={handleDataFetch}
+              isLoading={tableDataLoading}
+            />
+          </Box>
+          {!activeTab && (
             <CustomTextField
-              placeholder={"publication"}
-              value={publication}
-              setValue={setPublication}
+              value={searchLink}
+              setValue={setSearchLink}
+              placeholder={"search with link"}
+              width={900}
             />
-          </div>
-        )}
+          )}
+        </AccordionDetails>
+      </Accordion>
 
-        {!!activeTab && (
-          <>
-            <CustomDebounceDropdown
-              publicationGroup={debouncePub}
-              setPublicationGroup={setDebouncePub}
-              m="mt-3"
-            />
-            <Publication
-              publicationGroup={debouncePub}
-              publication={publicationGroup}
-              setPublication={setPublicationGroup}
-              classes={classes}
-              width={150}
-            />{" "}
-          </>
-        )}
-
-        {!activeTab && (
-          <>
-            {" "}
-            <FormGroup>
-              <FormControlLabel
-                sx={{ mt: 2 }}
-                label={
-                  <Typography variant="h6" fontSize={"0.9em"}>
-                    Top Publication
-                  </Typography>
-                }
-                control={
-                  <Checkbox
-                    checked={topPublication}
-                    onChange={() => setTopPublication(!topPublication)}
-                  />
-                }
-              />
-            </FormGroup>
-            <FormGroup>
-              <FormControlLabel
-                sx={{ mt: 2 }}
-                label={
-                  <Typography variant="h6" fontSize={"0.9em"}>
-                    Non Tagged
-                  </Typography>
-                }
-                control={
-                  <Checkbox
-                    checked={nonTagged}
-                    onChange={() => setNonTagged(!nonTagged)}
-                  />
-                }
-              />
-            </FormGroup>{" "}
-          </>
-        )}
-
-        <Button
-          btnText={tableDataLoading ? "Searching" : "search"}
-          onClick={handleDataFetch}
-          isLoading={tableDataLoading}
-        />
-      </Box>
-      {!activeTab && (
-        <CustomTextField
-          value={searchLink}
-          setValue={setSearchLink}
-          placeholder={"search with link"}
-          width={900}
-        />
-      )}
       <Divider sx={{ mt: 1 }} />
       {!!tableData.length && (
         <div className="relative">

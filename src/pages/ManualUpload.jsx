@@ -273,6 +273,10 @@ import {
 import TableCell from "@mui/material/TableCell";
 import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
+import Accordion from "@mui/material/Accordion";
+import AccordionSummary from "@mui/material/AccordionSummary";
+import AccordionDetails from "@mui/material/AccordionDetails";
+import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 
 import UploadDialog from "../manual-upload-components/UploadDialog";
 import Button from "../components/custom/Button";
@@ -390,43 +394,55 @@ const ManualUpload = () => {
   };
   return (
     <div className="mx-4">
-      <Box display="flex" alignItems="center" gap={2} height={50}>
-        <FromDate fromDate={fromDate} setFromDate={setFromDate} />
-        <ToDate dateNow={dateNow} setDateNow={setDateNow} isMargin={true} />
-        <TextFields
-          placeholder="publication"
-          value={publicationValue}
-          setValue={setPublicationValue}
-        />
-        <FormGroup>
-          <FormControlLabel
-            sx={{ mt: 2 }}
-            label={
-              <Typography variant="h6" fontSize={"0.9em"}>
-                Top Publication
-              </Typography>
-            }
-            control={
-              <Checkbox
-                checked={topPublication}
-                onChange={() => setTopPublication(!topPublication)}
+      <Accordion>
+        <AccordionSummary
+          expandIcon={<ExpandMoreIcon />}
+          aria-controls="panel1-content"
+          id="panel1-header"
+        >
+          Search Filters
+        </AccordionSummary>
+        <AccordionDetails>
+          <Box display="flex" alignItems="center" gap={2} height={50}>
+            <FromDate fromDate={fromDate} setFromDate={setFromDate} />
+            <ToDate dateNow={dateNow} setDateNow={setDateNow} isMargin={true} />
+            <TextFields
+              placeholder="publication"
+              value={publicationValue}
+              setValue={setPublicationValue}
+            />
+            <FormGroup>
+              <FormControlLabel
+                sx={{ mt: 2 }}
+                label={
+                  <Typography variant="h6" fontSize={"0.9em"}>
+                    Top Publication
+                  </Typography>
+                }
+                control={
+                  <Checkbox
+                    checked={topPublication}
+                    onChange={() => setTopPublication(!topPublication)}
+                  />
+                }
               />
-            }
+            </FormGroup>
+            <Button
+              btnText={errorListLoading ? "Loading" : "search"}
+              onClick={fetchErrorList}
+              isLoading={errorListLoading}
+            />
+            <Button btnText={"Other link"} onClick={handleUploadURL} />
+          </Box>
+          <CustomTextField
+            value={searchLink}
+            setValue={setSearchLink}
+            placeholder={"link"}
+            width={800}
           />
-        </FormGroup>
-        <Button
-          btnText={errorListLoading ? "Loading" : "search"}
-          onClick={fetchErrorList}
-          isLoading={errorListLoading}
-        />
-        <Button btnText={"Other link"} onClick={handleUploadURL} />
-      </Box>
-      <CustomTextField
-        value={searchLink}
-        setValue={setSearchLink}
-        placeholder={"link"}
-        width={800}
-      />
+        </AccordionDetails>
+      </Accordion>
+
       <Divider sx={{ mt: 1 }} />
       {errorList.length > 0 && (
         <div className="relative">
