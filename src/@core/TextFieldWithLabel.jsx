@@ -10,6 +10,8 @@ const CustomTextField = ({
   onChange,
   isMultiline,
   isAutoHeight,
+  onFocus,
+  onBlur,
 }) => {
   return (
     <FormControl fullWidth>
@@ -31,6 +33,8 @@ const CustomTextField = ({
         value={value}
         margin="dense"
         onChange={onChange}
+        onFocus={onFocus}
+        onBlur={onBlur}
       />
     </FormControl>
   );
@@ -44,6 +48,8 @@ CustomTextField.propTypes = {
   onChange: PropTypes.func.isRequired,
   isMultiline: PropTypes.bool,
   isAutoHeight: PropTypes.bool,
+  onFocus: PropTypes.func,
+  onBlur: PropTypes.func,
 };
 
 export default CustomTextField;

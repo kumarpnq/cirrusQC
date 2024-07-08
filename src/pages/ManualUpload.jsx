@@ -355,7 +355,11 @@ const ManualUpload = () => {
           headers,
         }
       );
-      setErrorList(response.data.download_errors);
+      if (response.data.download_errors.length) {
+        setErrorList(response.data.download_errors);
+      } else {
+        toast.warning("No data found.");
+      }
     } catch (error) {
       toast.error(error.message);
     } finally {

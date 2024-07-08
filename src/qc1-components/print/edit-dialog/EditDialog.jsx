@@ -301,6 +301,12 @@ const EditDialog = ({ rowData, rowNumber, setRowNumber, open, setOpen }) => {
     Keyword: detail.keyword,
   }));
 
+  // * auto height for summary
+  const [summaryAuto, setSummaryAuto] = useState({
+    isAutoHeight: false,
+    isMultiline: false,
+  });
+
   return (
     <Fragment>
       <Modal
@@ -353,8 +359,20 @@ const EditDialog = ({ rowData, rowNumber, setRowNumber, open, setOpen }) => {
                       label="Summary"
                       value={formItems.summary}
                       onChange={handleChange}
-                      isAutoHeight
-                      isMultiline
+                      onFocus={() => {
+                        setSummaryAuto({
+                          isAutoHeight: true,
+                          isMultiline: true,
+                        });
+                      }}
+                      onBlur={() => {
+                        setSummaryAuto({
+                          isAutoHeight: false,
+                          isMultiline: false,
+                        });
+                      }}
+                      isAutoHeight={summaryAuto.isAutoHeight}
+                      isMultiline={summaryAuto.isMultiline}
                     />
                   </Grid>
                   <Grid item xs={12} sm={6}>

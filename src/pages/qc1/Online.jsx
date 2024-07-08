@@ -552,6 +552,7 @@ const Online = () => {
           }}
           disableDensitySelector
           disableColumnSelector
+          disableRowSelectionOnClick
           columnBufferPx={1000}
           loading={tableDataLoading && <CircularProgress />}
           components={{ Toolbar: GridToolbar }}
