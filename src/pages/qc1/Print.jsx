@@ -67,7 +67,6 @@ import { arrayToString } from "../../utils/arrayToString";
 import { addPropertyIfConditionIsTrue } from "../../utils/addProprtyIfConditiontrue";
 import { toast } from "react-toastify";
 import { Link } from "react-router-dom";
-import { result } from "lodash";
 
 const useStyle = makeStyles(() => ({
   dropDowns: {
@@ -273,7 +272,11 @@ const Print = () => {
         <div style={iconCellStyle}>
           <Tooltip
             title={
-              <img src="https://cirrus.co.in/cirrus/JPGViewID.action?ai=03GURGAON-20240705-TIMES_OF_INDIA-0010-0002.pdf&loginreq=N" />
+              <img
+                src={
+                  "https://cirrus.co.in/cirrus/JPGViewID.action?ai=03GURGAON-20240705-TIMES_OF_INDIA-0010-0002.pdf&loginreq=N"
+                }
+              />
             }
             placement="right"
             arrow
