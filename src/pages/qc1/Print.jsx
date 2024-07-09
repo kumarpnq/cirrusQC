@@ -4,9 +4,14 @@ import {
   Checkbox,
   CircularProgress,
   ClickAwayListener,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
   Divider,
   FormControlLabel,
   FormGroup,
+  Grid,
   IconButton,
   Paper,
   Table,
@@ -15,6 +20,7 @@ import {
   TableContainer,
   TableHead,
   TableRow,
+  TextField,
   Tooltip,
   Typography,
 } from "@mui/material";
@@ -68,6 +74,8 @@ import { addPropertyIfConditionIsTrue } from "../../utils/addProprtyIfConditiont
 import { toast } from "react-toastify";
 import { Link } from "react-router-dom";
 import SearchFilters from "../../qc1-components/online/components/SearchFilters";
+import CustomButton from "../../@core/CustomButton";
+import SearchableCategory from "../../components/research-dropdowns/table-dropdowns/SearchableCategory";
 
 const useStyle = makeStyles(() => ({
   dropDowns: {
@@ -102,9 +110,10 @@ const Print = () => {
   const [selectedClient, setSelectedClient] = useState("");
   const [selectedCompanies, setSelectedCompanies] = useState([]);
   const [withCategory, setWithCategory] = useState("");
+  const [category, setCategory] = useState("");
   const [fromDate, setFromDate] = useState(formattedDate);
   const [toDate, setToDate] = useState(formattedNextDay);
-  const [uploadDate, setUploadDate] = useState(formattedDate);
+  const [uploadDate, setUploadDate] = useState(null);
   const [publicationGroup, setPublicationGroup] = useState("");
   const [publication, setPublication] = useState("");
   const [pubType, setPubType] = useState("");
@@ -114,7 +123,7 @@ const Print = () => {
   const [qc1By, setQc1By] = useState("");
   const [photo, setPhoto] = useState("");
   const [graph, setGraph] = useState("");
-  const [articleType, setArticleType] = useState("");
+  // const [articleType, setArticleType] = useState("");
   const [stitched, setStitched] = useState("");
   const [tv, setTv] = useState("");
   const [articleId, setArticleId] = useState(null);
@@ -176,47 +185,72 @@ const Print = () => {
     {
       field: "Action",
       headerName: "Action",
-      width: 200,
+      width: 160,
       renderCell: (params) => (
         <div style={iconCellStyle}>
-          <Tooltip title="View PDF">
-            <IconButton>
-              <Link
-                to={`/articleview/download-file/${params.row.link}`}
-                target="_blank"
-                rel="noreferrer"
-              >
-                <PictureAsPdfIcon />
-              </Link>
-            </IconButton>
-          </Tooltip>
-          <Tooltip title="View JPG">
-            <IconButton>
-              <Link
-                to={`/articleview/download-file/${params.row.link}`}
-                target="_blank"
-                rel="noreferrer"
-              >
-                <ImageIcon />
-              </Link>
-            </IconButton>
-          </Tooltip>
-          <Tooltip title="View HTML">
-            <IconButton>
-              <Link
-                to={`/articleview/download-file/${params.row.link}`}
-                target="_blank"
-                rel="noreferrer"
-              >
-                <HtmlIcon />
-              </Link>
-            </IconButton>
-          </Tooltip>
-          <Tooltip title="Edit article">
-            <IconButton onClick={() => handleRowClick(params.row, params.id)}>
-              <EditAttributesOutlined className="text-primary" />
-            </IconButton>
-          </Tooltip>
+          <Box
+            sx={{
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              justifyContent: "left",
+            }}
+          >
+            <Grid container spacing={1} justifyContent="center">
+              {/* Top Row */}
+              <Grid item>
+                <Tooltip title="View PDF">
+                  <IconButton>
+                    <Link
+                      to={`/articleview/download-file/${params.row.link}`}
+                      target="_blank"
+                      rel="noreferrer"
+                    >
+                      <PictureAsPdfIcon className="text-primary" />
+                    </Link>
+                  </IconButton>
+                </Tooltip>
+              </Grid>
+              <Grid item>
+                <Tooltip title="View JPG">
+                  <IconButton>
+                    <Link
+                      to={`/articleview/download-file/${params.row.link}`}
+                      target="_blank"
+                      rel="noreferrer"
+                    >
+                      <ImageIcon className="text-primary" />
+                    </Link>
+                  </IconButton>
+                </Tooltip>
+              </Grid>
+            </Grid>
+            <Grid container spacing={2} justifyContent="center">
+              {/* Bottom Row */}
+              <Grid item>
+                <Tooltip title="View HTML">
+                  <IconButton>
+                    <Link
+                      to={`/articleview/download-file/${params.row.link}`}
+                      target="_blank"
+                      rel="noreferrer"
+                    >
+                      <HtmlIcon className="text-primary" />
+                    </Link>
+                  </IconButton>
+                </Tooltip>
+              </Grid>
+              <Grid item>
+                <Tooltip title="Edit article">
+                  <IconButton
+                    onClick={() => handleRowClick(params.row, params.id)}
+                  >
+                    <EditAttributesOutlined className="text-primary" />
+                  </IconButton>
+                </Tooltip>
+              </Grid>
+            </Grid>
+          </Box>
           {!!params.row.child_data.length && (
             <>
               <Tooltip title="View similar articles">
@@ -237,20 +271,43 @@ const Print = () => {
                     strategy: "absolute",
                   }}
                 >
-                  <Box sx={{ p: 1, bgcolor: "background.paper" }}>
+                  <Box
+                    sx={{
+                      p: 1,
+                      bgcolor: "background.paper",
+                      // height: 400,
+                      maxWidth: 500,
+                      maxHeight: 500,
+                      overflow: "scroll",
+                    }}
+                  >
                     <TableContainer component={Paper}>
-                      <Table sx={{ maxWidth: 400 }} aria-label="simple table">
+                      <Table
+                        sx={{
+                          color: "white",
+                        }}
+                        className="bg-primary"
+                        aria-label="simple table"
+                      >
                         <TableHead>
                           <TableRow>
-                            <TableCell>Publication</TableCell>
-                            <TableCell>Headline</TableCell>
+                            <TableCell sx={{ color: "#ffff" }}>
+                              Publication
+                            </TableCell>
+                            <TableCell sx={{ color: "#ffff" }}>
+                              Headline
+                            </TableCell>
                           </TableRow>
                         </TableHead>
                         <TableBody>
                           {params.row.child_data.map((row, index) => (
                             <TableRow key={index}>
-                              <TableCell>{row.publication_name}</TableCell>
-                              <TableCell>{row.headline}</TableCell>
+                              <TableCell sx={{ color: "#ffff" }}>
+                                {row.publication_name}
+                              </TableCell>
+                              <TableCell sx={{ color: "#ffff" }}>
+                                {row.headline}
+                              </TableCell>
                             </TableRow>
                           ))}
                         </TableBody>
@@ -296,10 +353,10 @@ const Print = () => {
     {
       field: "head_summary",
       headerName: "Summary",
-      width: 400,
+      width: 450,
       editable: true,
     },
-    { field: "article_id", headerName: "Article ID", width: 300 },
+    { field: "article_id", headerName: "Article ID", width: 160 },
     { field: "article_date", headerName: "Article Date", width: 150 },
     { field: "publication_name", headerName: "Publication Name", width: 200 },
     { field: "page_number", headerName: "Pages", width: 80 },
@@ -350,18 +407,18 @@ const Print = () => {
     }
   }
 
-  function mapYesNoAllArticleType(value) {
-    switch (value) {
-      case "Print":
-        return "P";
-      case "Internet":
-        return "I";
-      case "All":
-        return "ALL";
-      default:
-        return value;
-    }
-  }
+  // function mapYesNoAllArticleType(value) {
+  //   switch (value) {
+  //     case "Print":
+  //       return "P";
+  //     case "Internet":
+  //       return "I";
+  //     case "All":
+  //       return "ALL";
+  //     default:
+  //       return value;
+  //   }
+  // }
 
   const fetchListArticleByQC1Print = useCallback(async () => {
     if (!selectedClient) {
@@ -420,6 +477,13 @@ const Print = () => {
         with_category,
         params
       );
+      addPropertyIfConditionIsTrue(
+        params,
+        category !== "",
+        "category",
+        category,
+        params
+      );
       addPropertyIfConditionIsTrue(params, qc1By, "qc1_by", qc1By, params);
       addPropertyIfConditionIsTrue(params, qc1Done, "is_qc1", qc1Done, params);
       addPropertyIfConditionIsTrue(
@@ -457,13 +521,13 @@ const Print = () => {
         mapYesNoAllToBinary(tv),
         params
       );
-      addPropertyIfConditionIsTrue(
-        params,
-        articleType,
-        "article_type",
-        mapYesNoAllArticleType(articleType),
-        params
-      );
+      // addPropertyIfConditionIsTrue(
+      //   params,
+      //   articleType,
+      //   "article_type",
+      //   mapYesNoAllArticleType(articleType),
+      //   params
+      // );
       addPropertyIfConditionIsTrue(
         params,
         stitched,
@@ -531,7 +595,8 @@ const Print = () => {
     withCategory,
     setGridDataLoading,
     articleId,
-    articleType,
+    // articleType,
+    category,
     graph,
     pageNumber,
     photo,
@@ -628,8 +693,37 @@ const Print = () => {
   };
 
   // * remove companies from selected items
+  const [openDelete, setOpenDelete] = useState(false);
   const [removeLoading, setRemoveLoading] = useState(false);
+  const [password, setPassword] = useState("");
+  const [verificationLoading, setVerificationLoading] = useState(false);
+  const userVerification = async () => {
+    try {
+      setVerificationLoading(true);
+      const headers = { Authorization: `Bearer ${userToken}` };
+      const data = { password };
+      const response = await axios.post(`${url}isValidUser/`, data, {
+        headers,
+      });
+      setVerificationLoading(false);
+      return response.data.valid_user;
+    } catch (error) {
+      toast.error(error.message);
+      setVerificationLoading(false);
+    }
+  };
+  const handleClickOpen = () => {
+    setOpenDelete(true);
+  };
+
+  const handleCloseDelete = () => {
+    setOpenDelete(false);
+  };
   const handleClickRemoveCompanies = async () => {
+    const isValid = await userVerification();
+    if (!isValid) {
+      return toast.warning("User not valid.");
+    }
     const articleIds = selectedItems.map((i) => i.id);
 
     try {
@@ -650,6 +744,7 @@ const Print = () => {
         toast.success("Companies removed.");
         setSelectionModal([]);
         setSelectedItems([]);
+        setOpenDelete(false);
       }
     } catch (error) {
       toast.error("Something went wrong.");
@@ -757,11 +852,38 @@ const Print = () => {
                 width={150}
               />
             </Typography>
+            <Typography
+              component={"div"}
+              className={classes.componentHeight}
+              sx={{ pt: 0.7 }}
+            >
+              <SearchableCategory
+                label="Category"
+                setCategory={setCategory}
+                category={category}
+                width={150}
+                endpoint="categorylist"
+              />
+            </Typography>
             <Typography component={"div"} className={classes.componentHeight}>
               <FromDate fromDate={fromDate} setFromDate={setFromDate} />
             </Typography>
             <Typography component={"div"} className={classes.componentHeight}>
               <ToDate dateNow={toDate} setDateNow={setToDate} isMargin={true} />
+            </Typography>
+            <Typography component={"div"} className={classes.componentHeight}>
+              <Cities
+                classes={classes}
+                city={selectedCity}
+                setCity={setSelectedCity}
+              />
+            </Typography>
+            <Typography component={"div"} className={classes.componentHeight}>
+              <Languages
+                language={selectedLanguages}
+                setLanguage={setSelectedLanguages}
+                classes={classes}
+              />
             </Typography>
             <Typography component={"div"} className={classes.componentHeight}>
               <FromDate fromDate={uploadDate} setFromDate={setUploadDate} />
@@ -808,20 +930,7 @@ const Print = () => {
                 pageType={"print"}
               />
             </Typography>
-            <Typography component={"div"} className={classes.componentHeight}>
-              <Cities
-                classes={classes}
-                city={selectedCity}
-                setCity={setSelectedCity}
-              />
-            </Typography>
-            <Typography component={"div"} className={classes.componentHeight}>
-              <Languages
-                language={selectedLanguages}
-                setLanguage={setSelectedLanguages}
-                classes={classes}
-              />
-            </Typography>
+
             <Typography component={"div"} className={classes.componentHeight}>
               <YesOrNo
                 classes={classes}
@@ -842,7 +951,7 @@ const Print = () => {
                 width={100}
               />
             </Typography>
-            <Typography component={"div"} className={classes.componentHeight}>
+            {/* <Typography component={"div"} className={classes.componentHeight}>
               <YesOrNo
                 classes={classes}
                 mapValue={["Print", "Internet", "All"]}
@@ -851,7 +960,7 @@ const Print = () => {
                 setValue={setArticleType}
                 width={100}
               />
-            </Typography>
+            </Typography> */}
             <Typography component={"div"} className={classes.componentHeight}>
               <YesOrNo
                 classes={classes}
@@ -938,7 +1047,7 @@ const Print = () => {
               />
             </Typography>
           </Box>
-          <SearchFilters
+          {/* <SearchFilters
             classes={classes}
             selectedClient={selectedClient}
             setSelectedClient={setSelectedClient}
@@ -954,7 +1063,7 @@ const Print = () => {
             setUploadDate={setUploadDate}
             publicationGroup={publicationGroup}
             setPublicationGroup={setPublicationGroup}
-          />
+          /> */}
         </AccordionDetails>
       </Accordion>
       {!!isShowSecondAccordion && (
@@ -982,7 +1091,7 @@ const Print = () => {
             <Button
               btnText={removeLoading ? "Removing" : "Remove Companies"}
               icon={<CloseOutlined />}
-              onClick={handleClickRemoveCompanies}
+              onClick={handleClickOpen}
               isLoading={removeLoading}
               isDanger
             />
@@ -1010,6 +1119,14 @@ const Print = () => {
           onRowSelectionModelChange={(ids) => {
             setSelectionModal(ids);
             handleSelectionChange(ids);
+          }}
+          sx={{
+            "& .MuiDataGrid-columnHeaders": {
+              fontSize: "0.875rem",
+            },
+            "& .MuiDataGrid-cell": {
+              fontSize: "0.9em",
+            },
           }}
           processRowUpdate={(newRow, oldRow) => {
             if (newRows) {
@@ -1040,6 +1157,41 @@ const Print = () => {
         row={selectedRow}
         rowNumber={articleNumber}
       />
+      <div>
+        <Dialog open={openDelete} onClose={handleCloseDelete}>
+          <DialogTitle fontSize={"1em"}>
+            Enter Password For Confirmation.
+          </DialogTitle>
+          <DialogContent>
+            <TextField
+              type="password"
+              sx={{ outline: "none" }}
+              size="small"
+              placeholder="Password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+            />
+          </DialogContent>
+          <DialogActions>
+            <CustomButton
+              btnText="Cancel"
+              onClick={handleCloseDelete}
+              bg={"bg-primary"}
+            />
+            {verificationLoading ? (
+              <Box width={130} display={"flex"} justifyContent={"center"}>
+                <CircularProgress size={20} />
+              </Box>
+            ) : (
+              <CustomButton
+                btnText="Delete"
+                onClick={handleClickRemoveCompanies}
+                bg={"bg-red-500"}
+              />
+            )}
+          </DialogActions>
+        </Dialog>
+      </div>
     </Box>
   );
 };

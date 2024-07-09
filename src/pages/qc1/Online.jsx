@@ -1,5 +1,15 @@
 import { useCallback, useState } from "react";
-import { Box, CircularProgress, Divider, IconButton } from "@mui/material";
+import {
+  Box,
+  CircularProgress,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+  Divider,
+  IconButton,
+  TextField,
+} from "@mui/material";
 import Accordion from "@mui/material/Accordion";
 import AccordionSummary from "@mui/material/AccordionSummary";
 import AccordionDetails from "@mui/material/AccordionDetails";
@@ -46,6 +56,7 @@ import {
   ControlCameraOutlined,
   EditAttributesOutlined,
 } from "@mui/icons-material";
+import CustomButton from "../../@core/CustomButton";
 
 const useStyle = makeStyles(() => ({
   dropDowns: {
@@ -298,7 +309,36 @@ const Online = () => {
 
   // * remove companies from selected items
   const [removeLoading, setRemoveLoading] = useState(false);
+  const [openDelete, setOpenDelete] = useState(false);
+  const [password, setPassword] = useState("");
+  const [verificationLoading, setVerificationLoading] = useState(false);
+  const userVerification = async () => {
+    try {
+      setVerificationLoading(true);
+      const headers = { Authorization: `Bearer ${userToken}` };
+      const data = { password };
+      const response = await axios.post(`${url}isValidUser/`, data, {
+        headers,
+      });
+      setVerificationLoading(false);
+      return response.data.valid_user;
+    } catch (error) {
+      toast.error(error.message);
+      setVerificationLoading(false);
+    }
+  };
+  const handleClickOpen = () => {
+    setOpenDelete(true);
+  };
+
+  const handleCloseDelete = () => {
+    setOpenDelete(false);
+  };
   const handleClickRemoveCompanies = async () => {
+    const isValid = await userVerification();
+    if (!isValid) {
+      return toast.warning("User not valid.");
+    }
     const socialFeedIds = selectedItems.map((i) => i.social_feed_id);
 
     try {
@@ -319,6 +359,7 @@ const Online = () => {
         toast.success("Companies removed.");
         setSelectionModal([]);
         setSelectedItems([]);
+        setOpenDelete(false);
       }
     } catch (error) {
       toast.error("Something went wrong.");
@@ -517,7 +558,7 @@ const Online = () => {
             <Button
               btnText={removeLoading ? "Removing" : "Remove Companies"}
               icon={<CloseOutlined />}
-              onClick={handleClickRemoveCompanies}
+              onClick={handleClickOpen}
               isLoading={removeLoading}
               isDanger
             />
@@ -544,6 +585,14 @@ const Online = () => {
             1000,
             { value: 1000, label: "1,000" },
           ]}
+          sx={{
+            "& .MuiDataGrid-columnHeaders": {
+              fontSize: "0.875rem",
+            },
+            "& .MuiDataGrid-cell": {
+              fontSize: "0.9em",
+            },
+          }}
           checkboxSelection
           rowSelectionModel={selectionModal}
           onRowSelectionModelChange={(ids) => {
@@ -567,6 +616,41 @@ const Online = () => {
         rowNumber={articleNumber}
         setRowNumber={setArticleNumber}
       />
+      <div>
+        <Dialog open={openDelete} onClose={handleCloseDelete}>
+          <DialogTitle fontSize={"1em"}>
+            Enter Password For Confirmation.
+          </DialogTitle>
+          <DialogContent>
+            <TextField
+              type="password"
+              sx={{ outline: "none" }}
+              size="small"
+              placeholder="Password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+            />
+          </DialogContent>
+          <DialogActions>
+            <CustomButton
+              btnText="Cancel"
+              onClick={handleCloseDelete}
+              bg={"bg-primary"}
+            />
+            {verificationLoading ? (
+              <Box width={130} display={"flex"} justifyContent={"center"}>
+                <CircularProgress size={20} />
+              </Box>
+            ) : (
+              <CustomButton
+                btnText="Delete"
+                onClick={handleClickRemoveCompanies}
+                bg={"bg-red-500"}
+              />
+            )}
+          </DialogActions>
+        </Dialog>
+      </div>
     </Box>
   );
 };

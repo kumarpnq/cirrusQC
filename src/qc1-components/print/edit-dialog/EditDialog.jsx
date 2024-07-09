@@ -291,7 +291,7 @@ const EditDialog = ({ rowData, rowNumber, setRowNumber, open, setOpen }) => {
         </IconButton>
       ),
     },
-    { field: "CompanyName", headerName: "CompanyName", width: 300 },
+    { field: "CompanyName", headerName: "Company", width: 300 },
     { field: "Keyword", headerName: "Keyword", width: 300 },
   ];
 

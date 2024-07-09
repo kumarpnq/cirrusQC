@@ -315,7 +315,7 @@ const EditDialog = ({ open, setOpen, row }) => {
         </IconButton>
       ),
     },
-    { field: "CompanyName", headerName: "CompanyName", width: 300 },
+    { field: "CompanyName", headerName: "Company", width: 300 },
     { field: "keyword", headerName: "Keyword", width: 300 },
   ];
 
