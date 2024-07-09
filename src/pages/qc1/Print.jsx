@@ -1,4 +1,4 @@
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import {
   Box,
   Checkbox,
@@ -106,6 +106,11 @@ const iconCellStyle = {
 };
 
 const Print = () => {
+  // * token and headers
+  const userToken = localStorage.getItem("user");
+  const headers = {
+    Authorization: `Bearer ${userToken}`,
+  };
   // * state variables for data retrieve
   const [selectedClient, setSelectedClient] = useState("");
   const [selectedCompanies, setSelectedCompanies] = useState([]);
@@ -144,11 +149,25 @@ const Print = () => {
   );
   const { data: qcUserData } = useFetchData(`${url}qcuserlist/`, {});
 
-  // * token and headers
-  const userToken = localStorage.getItem("user");
-  const headers = {
-    Authorization: `Bearer ${userToken}`,
-  };
+  // * fetching user list
+  useEffect(() => {
+    const fetchUserList = async () => {
+      try {
+        const params = {
+          from_date: fromDate,
+          to_date: toDate,
+        };
+        const response = await axios.get(`${url}qc1userlistprint/`, {
+          headers,
+          params,
+        });
+        console.log(response);
+      } catch (error) {
+        console.log(error);
+      }
+    };
+    fetchUserList();
+  }, [fromDate, toDate, headers]);
 
   // * mui classes
   const classes = useStyle();
@@ -166,12 +185,28 @@ const Print = () => {
 
   // * similar articles popper
   const [anchorEls, setAnchorEls] = useState({});
-
-  const handleSimilarClick = (event, index) => {
+  const [similarLoading, setSimilarLoading] = useState(false);
+  const [childArticles, setChildArticles] = useState([]);
+  const handleSimilarClick = async (event, params) => {
+    const articleId = params.row.main_id;
+    const index = params.id;
     setAnchorEls((prev) => ({
       ...prev,
       [index]: prev[index] ? null : event.currentTarget,
     }));
+    setSimilarLoading(false);
+    try {
+      setSimilarLoading(true);
+      const response = await axios.get(
+        `${url}similararticles/?article_id=${articleId}`,
+        { headers }
+      );
+      setChildArticles(response.data.child_articles);
+    } catch (error) {
+      console.log(error.message);
+    } finally {
+      setSimilarLoading(false);
+    }
   };
 
   const handleClickAway = (index) => {
@@ -179,6 +214,7 @@ const Print = () => {
       ...prev,
       [index]: null,
     }));
+    setSimilarLoading(false);
   };
 
   const columns = [
@@ -251,11 +287,11 @@ const Print = () => {
               </Grid>
             </Grid>
           </Box>
-          {!!params.row.child_data.length && (
+          {params.row.similar_articles === "Yes" && (
             <>
               <Tooltip title="View similar articles">
                 <IconButton
-                  onClick={(event) => handleSimilarClick(event, params.id)}
+                  onClick={(event) => handleSimilarClick(event, params)}
                   aria-describedby={params.id}
                 >
                   <AttachmentIcon className="text-primary" />
@@ -277,7 +313,7 @@ const Print = () => {
                       bgcolor: "background.paper",
                       // height: 400,
                       maxWidth: 500,
-                      maxHeight: 500,
+                      maxHeight: 400,
                       overflow: "scroll",
                     }}
                   >
@@ -300,16 +336,33 @@ const Print = () => {
                           </TableRow>
                         </TableHead>
                         <TableBody>
-                          {params.row.child_data.map((row, index) => (
-                            <TableRow key={index}>
-                              <TableCell sx={{ color: "#ffff" }}>
-                                {row.publication_name}
-                              </TableCell>
-                              <TableCell sx={{ color: "#ffff" }}>
-                                {row.headline}
-                              </TableCell>
-                            </TableRow>
-                          ))}
+                          {similarLoading ? (
+                            <Box
+                              sx={{ display: "flex", justifyContent: "center" }}
+                            >
+                              <CircularProgress />
+                            </Box>
+                          ) : (
+                            <>
+                              {" "}
+                              {childArticles.length ? (
+                                childArticles.map((row, index) => (
+                                  <TableRow key={index}>
+                                    <TableCell sx={{ color: "#ffff" }}>
+                                      {row.publication_name}
+                                    </TableCell>
+                                    <TableCell sx={{ color: "#ffff" }}>
+                                      {row.headline}
+                                    </TableCell>
+                                  </TableRow>
+                                ))
+                              ) : (
+                                <TableCell sx={{ color: "#ffff" }}>
+                                  No Data found
+                                </TableCell>
+                              )}
+                            </>
+                          )}
                         </TableBody>
                       </Table>
                     </TableContainer>
@@ -390,7 +443,7 @@ const Print = () => {
     uploadTime: item.upload_time,
     defaultLink: item.default_link,
     main_id: item.id,
-    child_data: item.child_data,
+    similar_articles: item.similar_articles,
     link: item.link,
   }));
 
@@ -577,6 +630,7 @@ const Print = () => {
         headers: { Authorization: `Bearer ${userToken}` },
         params,
       });
+
       if (response.data?.feed_data.length) {
         setGridData(response.data.feed_data || []);
       } else {

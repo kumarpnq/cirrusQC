@@ -1,4 +1,4 @@
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import {
   Box,
   CircularProgress,
@@ -107,12 +107,30 @@ const Online = () => {
     selectedClient ? `${url}companylist/${selectedClient}` : ""
   );
   const { data: qcUserData } = useFetchData(`${url}qcuserlist/`);
-
   // * token and headers
   const userToken = localStorage.getItem("user");
   const headers = {
     Authorization: `Bearer ${userToken}`,
   };
+  // * fetching user list
+  useEffect(() => {
+    const fetchUserList = async () => {
+      try {
+        const params = {
+          from_date: fromDate,
+          to_date: dateNow,
+        };
+        const response = await axios.get(`${url}qc1userlistonline/`, {
+          headers,
+          params,
+        });
+        console.log(response);
+      } catch (error) {
+        console.log(error);
+      }
+    };
+    fetchUserList();
+  }, [fromDate, dateNow, headers]);
 
   // * table data
   const [tableData, setTableData] = useState([]);
