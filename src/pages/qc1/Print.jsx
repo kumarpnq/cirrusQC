@@ -467,6 +467,18 @@ const Print = () => {
         return value;
     }
   }
+  function mapBinaryToYesNoAll(value) {
+    switch (value) {
+      case 1:
+        return "Y";
+      case "0":
+        return "N";
+      case 2:
+        return "ALL";
+      default:
+        return value;
+    }
+  }
 
   const fetchListArticleByQC1Print = useCallback(async () => {
     const with_category = withCategory === 0 ? "N" : "Y";
@@ -509,9 +521,16 @@ const Print = () => {
       );
       addPropertyIfConditionIsTrue(
         params,
-        articleId !== null,
+        articleId !== null || "",
         "article_id",
         articleId,
+        params
+      );
+      addPropertyIfConditionIsTrue(
+        params,
+        systemArticleId !== null || "",
+        "system_article_id",
+        systemArticleId,
         params
       );
       addPropertyIfConditionIsTrue(
@@ -533,7 +552,7 @@ const Print = () => {
         params,
         qc1Done,
         "is_qc1",
-        mapYesNoAllToBinary(qc1Done),
+        mapBinaryToYesNoAll(qc1Done),
         params
       );
       addPropertyIfConditionIsTrue(

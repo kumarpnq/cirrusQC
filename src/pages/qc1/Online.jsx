@@ -212,7 +212,7 @@ const Online = () => {
       addPropertyIfConditionIsTrue(
         socialFeedId !== "",
         "socialfeed_id",
-        socialFeedId
+        Number(socialFeedId)
       );
       const response = await axios.get(`${url}listArticlebyQC1/`, {
         headers,
