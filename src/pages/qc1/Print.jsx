@@ -496,7 +496,7 @@ const Print = () => {
       addPropertyIfConditionIsTrue(
         params,
         selectedCompanies.length > 0,
-        "company_ids",
+        "company_id",
         arrayToString(selectedCompanies),
         params
       );
