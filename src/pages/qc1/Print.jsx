@@ -150,24 +150,24 @@ const Print = () => {
 
   // * fetching user list
   const [userList, setUserList] = useState([]);
-  // useEffect(() => {
-  //   const fetchUserList = async () => {
-  //     try {
-  //       const params = {
-  //         from_date: "2024-06-24",
-  //         to_date: "2024-07-10",
-  //       };
-  //       const response = await axios.get(`${url}qc1userlistprint/`, {
-  //         headers,
-  //         params,
-  //       });
-  //       setUserList(response.data.qc_users);
-  //     } catch (error) {
-  //       console.log(error);
-  //     }
-  //   };
-  //   fetchUserList();
-  // }, [fromDate, toDate]);
+  useEffect(() => {
+    const fetchUserList = async () => {
+      try {
+        const params = {
+          from_date: fromDate.split(" ")[0],
+          to_date: toDate.split(" ")[0],
+        };
+        const response = await axios.get(`${url}qc1userlistprint/`, {
+          headers,
+          params,
+        });
+        setUserList(response.data.qc_users);
+      } catch (error) {
+        console.log(error.message);
+      }
+    };
+    fetchUserList();
+  }, [fromDate, toDate]);
 
   // * mui classes
   const classes = useStyle();
