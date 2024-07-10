@@ -112,7 +112,7 @@ const DDComp = () => {
     qc1By,
     qc2By,
   });
-  const qcUsersData = qcUserData?.data?.qc_users || [];
+  const qcUsersData = qcUserData?.data?.  || [];
   const [city, setCity] = useState([]);
   const [languages, setLanguages] = useState([]);
   // main TableData

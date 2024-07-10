@@ -147,28 +147,27 @@ const Print = () => {
     selectedClient ? `${url}companylist/${selectedClient}` : "",
     selectedClient
   );
-  const { data: qcUserData } = useFetchData(`${url}qcuserlist/`, {});
 
   // * fetching user list
   const [userList, setUserList] = useState([]);
-  useEffect(() => {
-    const fetchUserList = async () => {
-      try {
-        const params = {
-          from_date: "2024-06-24",
-          to_date: "2024-07-10",
-        };
-        const response = await axios.get(`${url}qc1userlistprint/`, {
-          headers,
-          params,
-        });
-        setUserList(response.data.qc_users);
-      } catch (error) {
-        console.log(error);
-      }
-    };
-    fetchUserList();
-  }, [fromDate, toDate, headers]);
+  // useEffect(() => {
+  //   const fetchUserList = async () => {
+  //     try {
+  //       const params = {
+  //         from_date: "2024-06-24",
+  //         to_date: "2024-07-10",
+  //       };
+  //       const response = await axios.get(`${url}qc1userlistprint/`, {
+  //         headers,
+  //         params,
+  //       });
+  //       setUserList(response.data.qc_users);
+  //     } catch (error) {
+  //       console.log(error);
+  //     }
+  //   };
+  //   fetchUserList();
+  // }, [fromDate, toDate]);
 
   // * mui classes
   const classes = useStyle();
@@ -323,7 +322,7 @@ const Print = () => {
                         sx={{
                           color: "white",
                         }}
-                        className="bg-primary"
+                        className="bg-[#5abafa]"
                         aria-label="simple table"
                       >
                         <TableHead>
@@ -558,13 +557,7 @@ const Print = () => {
         mapYesNoAllToBinary(tv),
         params
       );
-      // addPropertyIfConditionIsTrue(
-      //   params,
-      //   articleType,
-      //   "article_type",
-      //   mapYesNoAllArticleType(articleType),
-      //   params
-      // );
+
       addPropertyIfConditionIsTrue(
         params,
         stitched,

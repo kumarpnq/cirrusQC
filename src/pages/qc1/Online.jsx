@@ -114,24 +114,24 @@ const Online = () => {
   };
   // * fetching user list
   const [userList, setUserList] = useState([]);
-  useEffect(() => {
-    const fetchUserList = async () => {
-      try {
-        const params = {
-          from_date: fromDate,
-          to_date: dateNow,
-        };
-        const response = await axios.get(`${url}qc1userlistonline/`, {
-          headers,
-          params,
-        });
-        setUserList(response.data.qc_users);
-      } catch (error) {
-        console.log(error);
-      }
-    };
-    fetchUserList();
-  }, [fromDate, dateNow, headers]);
+  // useEffect(() => {
+  //   const fetchUserList = async () => {
+  //     try {
+  //       const params = {
+  //         from_date: fromDate,
+  //         to_date: dateNow,
+  //       };
+  //       const response = await axios.get(`${url}qc1userlistonline/`, {
+  //         headers,
+  //         params,
+  //       });
+  //       setUserList(response.data.qc_users);
+  //     } catch (error) {
+  //       console.log(error);
+  //     }
+  //   };
+  //   fetchUserList();
+  // }, [fromDate, dateNow, headers]);
 
   // * table data
   const [tableData, setTableData] = useState([]);
