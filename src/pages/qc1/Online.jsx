@@ -15,7 +15,15 @@ import AccordionSummary from "@mui/material/AccordionSummary";
 import AccordionDetails from "@mui/material/AccordionDetails";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import { makeStyles } from "@mui/styles";
-import { DataGrid, GridToolbar } from "@mui/x-data-grid";
+import {
+  DataGrid,
+  GridToolbar,
+  GridToolbarColumnsButton,
+  GridToolbarContainer,
+  GridToolbarDensitySelector,
+  GridToolbarFilterButton,
+  GridToolbarQuickFilter,
+} from "@mui/x-data-grid";
 
 // *component imports
 import SearchableDropdown from "../../components/dropdowns/SearchableDropdown";
@@ -494,6 +502,21 @@ const Online = () => {
 
   const isShowSecondAccordion = selectedItems.length || Boolean(newRows);
 
+  // * custom toolbar
+  function CustomToolbar() {
+    return (
+      <GridToolbarContainer
+        sx={{ display: "flex", justifyContent: "space-between" }}
+      >
+        <GridToolbarColumnsButton />
+        <GridToolbarFilterButton />
+        <GridToolbarDensitySelector />
+        <GridToolbarQuickFilter />
+        {/* Export button is not included */}
+      </GridToolbarContainer>
+    );
+  }
+
   return (
     <Box mx={2}>
       <Accordion>
@@ -658,7 +681,7 @@ const Online = () => {
         <DataGrid
           rows={rows}
           columns={columns}
-          slots={{ toolbar: GridToolbar }}
+          slots={{ toolbar: CustomToolbar }}
           slotProps={{
             toolbar: {
               showQuickFilter: true,
@@ -701,7 +724,7 @@ const Online = () => {
           disableRowSelectionOnClick
           columnBufferPx={1000}
           loading={tableDataLoading && <CircularProgress />}
-          components={{ Toolbar: GridToolbar }}
+          components={{ Toolbar: CustomToolbar }}
           hideFooterSelectedRowCount
           getRowHeight={() => "auto"}
           getRowClassName={getRowClassName}

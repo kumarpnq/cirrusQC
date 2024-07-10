@@ -30,7 +30,15 @@ import AccordionSummary from "@mui/material/AccordionSummary";
 import AccordionDetails from "@mui/material/AccordionDetails";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import AttachmentIcon from "@mui/icons-material/Attachment";
-import { DataGrid, GridToolbar } from "@mui/x-data-grid";
+import {
+  DataGrid,
+  GridToolbar,
+  GridToolbarColumnsButton,
+  GridToolbarContainer,
+  GridToolbarDensitySelector,
+  GridToolbarFilterButton,
+  GridToolbarQuickFilter,
+} from "@mui/x-data-grid";
 import { makeStyles } from "@mui/styles";
 
 // * icons
@@ -521,7 +529,13 @@ const Print = () => {
         params
       );
       addPropertyIfConditionIsTrue(params, qc1By, "qc1_by", qc1By, params);
-      addPropertyIfConditionIsTrue(params, qc1Done, "is_qc1", qc1Done, params);
+      addPropertyIfConditionIsTrue(
+        params,
+        qc1Done,
+        "is_qc1",
+        mapYesNoAllToBinary(qc1Done),
+        params
+      );
       addPropertyIfConditionIsTrue(
         params,
         selectedCity.length > 0,
@@ -634,6 +648,7 @@ const Print = () => {
     setGridDataLoading,
     articleId,
     // articleType,
+    uploadDate,
     category,
     graph,
     pageNumber,
@@ -811,7 +826,7 @@ const Print = () => {
         ARTICLEID: newRows?.main_id,
       };
       if (oldRows.headline !== newRows.headline) {
-        request_data.HEADLINE = newRows.headline;
+        request_data.HEADLINES = newRows.headline;
       }
       if (oldRows.head_summary !== newRows.head_summary) {
         request_data.HEADSUMMARY = newRows.head_summary;
@@ -846,6 +861,21 @@ const Print = () => {
     return newRows?.main_id === params.row.main_id ? "highlight-row" : "";
   };
   const isShowSecondAccordion = selectedItems.length || Boolean(newRows);
+
+  // * custom toolbar
+  function CustomToolbar() {
+    return (
+      <GridToolbarContainer
+        sx={{ display: "flex", justifyContent: "space-between" }}
+      >
+        <GridToolbarColumnsButton />
+        <GridToolbarFilterButton />
+        <GridToolbarDensitySelector />
+        <GridToolbarQuickFilter />
+        {/* Export button is not included */}
+      </GridToolbarContainer>
+    );
+  }
   return (
     <Box sx={{ px: 1.5 }}>
       <Accordion>
@@ -1053,7 +1083,7 @@ const Print = () => {
             >
               <CustomTextField
                 placeholder={"ArticleId"}
-                type={"number"}
+                // type={"number"}
                 width={100}
                 value={articleId}
                 setValue={setArticleId}
@@ -1184,7 +1214,7 @@ const Print = () => {
           disableDensitySelector
           disableColumnSelector
           disableRowSelectionOnClick
-          slots={{ toolbar: GridToolbar }}
+          slots={{ toolbar: CustomToolbar }}
           slotProps={{
             toolbar: {
               showQuickFilter: true,
