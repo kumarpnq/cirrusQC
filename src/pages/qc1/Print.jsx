@@ -139,9 +139,9 @@ const Print = () => {
   // const [articleType, setArticleType] = useState("");
   const [stitched, setStitched] = useState("");
   const [tv, setTv] = useState("");
-  const [articleId, setArticleId] = useState(null);
-  const [systemArticleId, setSystemArticleId] = useState(null);
-  const [pageNumber, setPageNumber] = useState(null);
+  const [articleId, setArticleId] = useState("");
+  const [systemArticleId, setSystemArticleId] = useState("");
+  const [pageNumber, setPageNumber] = useState("");
   const [isNoCompany, setIsNoCompany] = useState(false);
   const [searchKeyword, setSearchKeyword] = useState("");
 
@@ -521,14 +521,14 @@ const Print = () => {
       );
       addPropertyIfConditionIsTrue(
         params,
-        articleId !== null || "",
+        articleId !== "",
         "article_id",
         articleId,
         params
       );
       addPropertyIfConditionIsTrue(
         params,
-        systemArticleId !== null || "",
+        systemArticleId !== "",
         "system_article_id",
         systemArticleId,
         params
@@ -623,7 +623,7 @@ const Print = () => {
       addPropertyIfConditionIsTrue(params, pubType, "pubtype", pubType, params);
       addPropertyIfConditionIsTrue(
         params,
-        pageNumber !== null,
+        pageNumber !== "",
         "pagenumber",
         pageNumber,
         params
@@ -667,6 +667,7 @@ const Print = () => {
     setGridDataLoading,
     articleId,
     // articleType,
+    systemArticleId,
     uploadDate,
     category,
     graph,
