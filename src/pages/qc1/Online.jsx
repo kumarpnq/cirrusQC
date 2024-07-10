@@ -137,6 +137,10 @@ const Online = () => {
   const [selectedItems, setSelectedItems] = useState([]);
   const [tableDataLoading, setTableDataLoading] = useState(false);
   const fetchTableData = useCallback(async () => {
+    if (!selectedClient) {
+      toast.warning("Please select a client");
+      return;
+    }
     try {
       setTableDataLoading(true);
 

@@ -150,18 +150,19 @@ const Print = () => {
   const { data: qcUserData } = useFetchData(`${url}qcuserlist/`, {});
 
   // * fetching user list
+  const [userList, setUserList] = useState([]);
   useEffect(() => {
     const fetchUserList = async () => {
       try {
         const params = {
-          from_date: fromDate,
-          to_date: toDate,
+          from_date: "2024-06-24",
+          to_date: "2024-07-10",
         };
         const response = await axios.get(`${url}qc1userlistprint/`, {
           headers,
           params,
         });
-        console.log(response);
+        setUserList(response.data.qc_users);
       } catch (error) {
         console.log(error);
       }
