@@ -461,24 +461,7 @@ const Print = () => {
     }
   }
 
-  // function mapYesNoAllArticleType(value) {
-  //   switch (value) {
-  //     case "Print":
-  //       return "P";
-  //     case "Internet":
-  //       return "I";
-  //     case "All":
-  //       return "ALL";
-  //     default:
-  //       return value;
-  //   }
-  // }
-
   const fetchListArticleByQC1Print = useCallback(async () => {
-    // if (!selectedClient) {
-    //   toast.warning("Please select client");
-    //   return;
-    // }
     const with_category = withCategory === 0 ? "N" : "Y";
     try {
       setGridDataLoading(true);
@@ -513,7 +496,7 @@ const Print = () => {
       addPropertyIfConditionIsTrue(
         params,
         selectedCompanies.length > 0,
-        "company_id",
+        "company_ids",
         arrayToString(selectedCompanies),
         params
       );
