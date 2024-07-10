@@ -113,6 +113,7 @@ const Online = () => {
     Authorization: `Bearer ${userToken}`,
   };
   // * fetching user list
+  const [userList, setUserList] = useState([]);
   useEffect(() => {
     const fetchUserList = async () => {
       try {
@@ -124,7 +125,7 @@ const Online = () => {
           headers,
           params,
         });
-        console.log(response);
+        setUserList(response.data.qc_users);
       } catch (error) {
         console.log(error);
       }
@@ -482,7 +483,7 @@ const Online = () => {
               qc1Array={qc1Array}
             />
             <Qc1By
-              qcUsersData={qcUserData?.data?.qc_users || []}
+              qcUsersData={userList || []}
               qc1by={qc1By}
               setQc1by={setQc1By}
               classes={classes}

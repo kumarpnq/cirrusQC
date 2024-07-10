@@ -475,10 +475,10 @@ const Print = () => {
   // }
 
   const fetchListArticleByQC1Print = useCallback(async () => {
-    if (!selectedClient) {
-      toast.warning("Please select client");
-      return;
-    }
+    // if (!selectedClient) {
+    //   toast.warning("Please select client");
+    //   return;
+    // }
     const with_category = withCategory === 0 ? "N" : "Y";
     try {
       setGridDataLoading(true);
@@ -978,7 +978,7 @@ const Print = () => {
             </Typography>
             <Typography component={"div"} className={classes.componentHeight}>
               <Qc1By
-                qcUsersData={qcUserData?.data?.qc_users || []}
+                qcUsersData={userList}
                 qc1by={qc1By}
                 setQc1by={setQc1By}
                 classes={classes}
