@@ -403,9 +403,14 @@ const Online = () => {
         </div>
       ),
     },
-    { field: "headline", headerName: "Headline", width: 250 },
-    { field: "summary", headerName: "Summary", width: 500 },
-    { field: "journalist", headerName: "Journalist", width: 150 },
+    { field: "headline", headerName: "Headline", width: 250, editable: true },
+    { field: "summary", headerName: "Summary", width: 500, editable: true },
+    {
+      field: "journalist",
+      headerName: "Journalist",
+      width: 150,
+      editable: true,
+    },
     { field: "publication", headerName: "Publication", width: 150 },
     {
       field: "url",
@@ -433,6 +438,61 @@ const Online = () => {
     articleDate: item.feed_date_time,
     socialFeedId: item.social_feed_id,
   }));
+
+  // * saving the edited cells
+  const [oldRows, setOldRows] = useState(null);
+  const [newRows, setNewRows] = useState(null);
+  const [saveLoading, setSaveLoading] = useState(false);
+
+  const handleSaveManualEditedCells = async () => {
+    if (!newRows) {
+      toast.warning("No changes found.");
+      return;
+    }
+    try {
+      setSaveLoading(true);
+      const request_data = {
+        SOCIALFEEDID: newRows?.socialFeedId,
+      };
+      if (oldRows.headline !== newRows.headline) {
+        request_data.HEADLINE = newRows.headline;
+      }
+      if (oldRows.summary !== newRows.summary) {
+        request_data.SUMMARY = newRows.summary;
+      }
+      if (oldRows.journalist !== newRows.journalist) {
+        request_data.JOURNALIST = newRows.journalist;
+      }
+      const data = {
+        data: [request_data],
+        qcflag: 1,
+      };
+      const response = await axios.post(`${url}updatesocialfeedheader/`, data, {
+        headers,
+      });
+      if (response.data.result?.success?.length) {
+        toast.success("Data updated.");
+        setNewRows(null);
+        setOldRows(null);
+        fetchTableData();
+      } else {
+        toast.warning("Something wrong try again.");
+      }
+    } catch (error) {
+      toast.error("Something went wrong.");
+    } finally {
+      setSaveLoading(false);
+    }
+  };
+
+  // * highlight edit rows
+  const getRowClassName = (params) => {
+    return newRows?.socialFeedId === params.row.socialFeedId
+      ? "highlight-row"
+      : "";
+  };
+
+  const isShowSecondAccordion = selectedItems.length || Boolean(newRows);
 
   return (
     <Box mx={2}>
@@ -555,7 +615,7 @@ const Online = () => {
         </AccordionDetails>
         {/* <AccordionActions></AccordionActions> */}
       </Accordion>
-      {!!selectedItems.length && (
+      {!!isShowSecondAccordion && (
         <Accordion>
           <AccordionSummary
             expandIcon={<ExpandMoreIcon />}
@@ -583,6 +643,11 @@ const Online = () => {
               onClick={handleClickOpen}
               isLoading={removeLoading}
               isDanger
+            />
+            <Button
+              btnText={saveLoading ? "saving" : "save"}
+              onClick={handleSaveManualEditedCells}
+              isLoading={saveLoading}
             />
           </AccordionDetails>
         </Accordion>
@@ -621,6 +686,16 @@ const Online = () => {
             setSelectionModal(ids);
             handleSelectionChange(ids);
           }}
+          processRowUpdate={(newRow, oldRow) => {
+            if (newRows) {
+              toast.warning("Please save the changes first.");
+              return;
+            }
+            if (JSON.stringify(newRow) !== JSON.stringify(oldRow)) {
+              setNewRows(newRow);
+              setOldRows(oldRow);
+            }
+          }}
           disableDensitySelector
           disableColumnSelector
           disableRowSelectionOnClick
@@ -629,6 +704,7 @@ const Online = () => {
           components={{ Toolbar: GridToolbar }}
           hideFooterSelectedRowCount
           getRowHeight={() => "auto"}
+          getRowClassName={getRowClassName}
         />
       </Box>
       <EditDialog

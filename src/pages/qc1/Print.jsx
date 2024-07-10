@@ -261,7 +261,7 @@ const Print = () => {
                 </Tooltip>
               </Grid>
             </Grid>
-            <Grid container spacing={2} justifyContent="center">
+            <Grid container spacing={1} justifyContent="center">
               {/* Bottom Row */}
               <Grid item>
                 <Tooltip title="View HTML">
@@ -322,7 +322,7 @@ const Print = () => {
                         sx={{
                           color: "white",
                         }}
-                        className="bg-[#5abafa]"
+                        className="bg-[#5AACCA]"
                         aria-label="simple table"
                       >
                         <TableHead>

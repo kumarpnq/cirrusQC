@@ -4,7 +4,6 @@ import {
   Modal,
   Box,
   Typography,
-  Button,
   IconButton,
   Card,
   CardHeader,
@@ -31,6 +30,7 @@ import axios from "axios";
 import { url } from "../../../constants/baseUrl";
 import CustomButton from "../../../@core/CustomButton";
 import { toast } from "react-toastify";
+import Button from "../../../components/custom/Button";
 
 const style = {
   position: "absolute",
@@ -325,10 +325,12 @@ const EditDialog = ({ rowData, rowNumber, setRowNumber, open, setOpen }) => {
             >
               Edit
             </Typography>
-            <Typography id="edit-dialog-description" component={"div"}>
-              <Button variant="outlined" onClick={handleSubmit}>
-                Save & Next
-              </Button>
+            <Typography
+              id="edit-dialog-description"
+              component={"div"}
+              display={"flex"}
+            >
+              <Button btnText="Save & Next" onClick={handleSubmit} />
               <IconButton onClick={handleClose}>
                 <CloseOutlined />
               </IconButton>
@@ -406,11 +408,20 @@ const EditDialog = ({ rowData, rowNumber, setRowNumber, open, setOpen }) => {
                   }
                 />
                 <CardContent>
-                  <Box sx={{ display: "flex", justifyContent: "center" }}>
+                  <Box
+                    sx={{
+                      display: "flex",
+                      justifyContent: "center",
+                      alignItems: "center",
+                      gap: 1,
+                    }}
+                  >
                     <DebounceSearchCompany
                       setSelectedCompany={setSelectedCompanies}
                     />
-                    <Button onClick={handleAddCompany}>Add</Button>
+                    <span className="pb-1">
+                      <Button onClick={handleAddCompany} btnText="Add" />
+                    </span>
                   </Box>
                   <Box height={500} width={"100%"}>
                     <DataGrid

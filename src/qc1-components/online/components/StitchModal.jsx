@@ -1,6 +1,5 @@
 import {
   Box,
-  Button,
   Card,
   CardContent,
   CardHeader,
@@ -10,7 +9,7 @@ import {
   Typography,
 } from "@mui/material";
 import { CloseOutlined } from "@mui/icons-material";
-import { DataGrid } from "@mui/x-data-grid";
+import { DataGrid, GridToolbar } from "@mui/x-data-grid";
 import { useEffect, useState } from "react";
 
 // * third party imports
@@ -21,6 +20,7 @@ import PropTypes from "prop-types";
 import { url } from "../../../constants/baseUrl";
 import { toast } from "react-toastify";
 import { arrayToString } from "../../../utils/arrayToString";
+import Button from "../../../components/custom/Button";
 
 // Styles
 const style = {
@@ -155,13 +155,9 @@ const StitchModal = ({ open, setOpen, articleId, isStitch, isUnStitch }) => {
             }
           />
           <CardContent>
-            <Box
-              display="flex"
-              justifyContent={isStitch ? "space-between" : "flex-end"}
-            >
+            <Box display="flex" justifyContent={"flex-end"} my={1}>
               <Typography component={"div"}>
-                <Button onClick={handleSave}>Save</Button>
-                {/* <Button>Cancel</Button> */}
+                <Button onClick={handleSave} btnText="save" />
               </Typography>
             </Box>
             <Box sx={{ height: 400, width: "100%" }}>
@@ -174,6 +170,16 @@ const StitchModal = ({ open, setOpen, articleId, isStitch, isUnStitch }) => {
                 loading={fetchLoading && <CircularProgress />}
                 onRowSelectionModelChange={(ids) => {
                   handleSelectionChange(ids);
+                }}
+                disableDensitySelector
+                disableColumnSelector
+                disableRowSelectionOnClick
+                components={{ Toolbar: GridToolbar }}
+                slots={{ toolbar: GridToolbar }}
+                slotProps={{
+                  toolbar: {
+                    showQuickFilter: true,
+                  },
                 }}
                 density="compact"
                 getRowClassName={getRowClassName}

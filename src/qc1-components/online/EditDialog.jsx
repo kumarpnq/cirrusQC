@@ -7,7 +7,7 @@ import { Fragment, useEffect, useState } from "react";
 import PropTypes from "prop-types";
 import {
   Box,
-  Button,
+  // Button,
   Card,
   CardContent,
   CardHeader,
@@ -34,6 +34,7 @@ import axios from "axios";
 import { url } from "../../constants/baseUrl";
 import { toast } from "react-toastify";
 import CustomButton from "../../@core/CustomButton";
+import Button from "../../components/custom/Button";
 
 const style = {
   position: "absolute",
@@ -407,50 +408,29 @@ const EditDialog = ({ open, setOpen, row }) => {
           <Grid container spacing={1} mt={1}>
             <Grid item xs={12} sm={6}>
               <Card>
-                {/* <CardHeader
-                  title={<Typography component={"span"}>Companies</Typography>}
-                /> */}
                 <CardContent>
                   <Box display={"flex"} gap={1}>
-                    <Typography component={"div"}>
-                      {" "}
-                      {updateHeaderLoading ? (
-                        <CircularProgress size={20} sx={{ mr: 3 }} />
-                      ) : (
-                        <Button onClick={updateHeaderData} variant="outlined">
-                          Save
-                        </Button>
-                      )}
-                    </Typography>
-                    <Button onClick={handleStitchOpen} variant="outlined">
-                      Stitch
-                    </Button>
-                    <Button onClick={handleUnStitchOpen} variant="outlined">
-                      unStitch
-                    </Button>
+                    <Button
+                      btnText={updateHeaderLoading ? "saving" : "save"}
+                      onClick={updateHeaderData}
+                      isLoading={updateHeaderLoading}
+                    />
+
+                    <Button btnText="Stitch" onClick={handleStitchOpen} />
+
+                    <Button onClick={handleUnStitchOpen} btnText="unStitch" />
                   </Box>
-                  <Box sx={{ display: "flex" }}>
+                  <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
                     <DebounceSearchCompany
                       setSelectedCompany={setSelectedCompanies}
                     />
-                    {addCompanyLoading ? (
-                      <Box
-                        width={30}
-                        display={"flex"}
-                        justifyContent={"center"}
-                        pt={1}
-                      >
-                        <CircularProgress size={20} />
-                      </Box>
-                    ) : (
+                    <span className="pb-1">
                       <Button
                         onClick={handleAddCompany}
-                        // variant="outlined"
-                        // size="small"
-                      >
-                        Add
-                      </Button>
-                    )}
+                        isLoading={addCompanyLoading}
+                        btnText={addCompanyLoading ? "adding" : "Add"}
+                      />
+                    </span>
                   </Box>
                   <Box height={500} width={"100%"}>
                     <DataGrid
