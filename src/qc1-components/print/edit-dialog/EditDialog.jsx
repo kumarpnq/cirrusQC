@@ -100,7 +100,7 @@ const EditDialog = ({ rowData, rowNumber, setRowNumber, open, setOpen }) => {
         headline: headerData.headline,
         summary: headerData.headsummary,
         journalist: headerData.author_name,
-        tag: "",
+        tag: headerData.tags,
       });
 
       const tagDetailsResponse = await axios.get(
