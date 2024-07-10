@@ -470,7 +470,7 @@ const Print = () => {
         from_date: fromDate,
         to_date: toDate,
         // with_category: withCategory,
-        date_type: "ARTICLE",
+        // date_type: "ARTICLE",
         // optional params
         // company_id:'',
         // article_id:articleId,
@@ -534,6 +534,13 @@ const Print = () => {
         selectedLanguages.length > 0,
         "language",
         arrayToString(selectedLanguages),
+        params
+      );
+      addPropertyIfConditionIsTrue(
+        params,
+        uploadDate !== null,
+        "upload_date",
+        uploadDate,
         params
       );
       addPropertyIfConditionIsTrue(
@@ -644,6 +651,10 @@ const Print = () => {
     isNoCompany,
     searchKeyword,
   ]);
+
+  useEffect(() => {
+    fetchListArticleByQC1Print();
+  }, []);
 
   // * group & un-group articles
   const [selectionModal, setSelectionModal] = useState([]);
