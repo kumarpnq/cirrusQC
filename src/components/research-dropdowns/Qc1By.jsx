@@ -23,8 +23,8 @@ const Qc1By = ({ qcUsersData, qc1by, setQc1by, classes, isId, title }) => {
           >
             <em>{title ? title : "Qc1 by"}</em>
           </MenuItem>
-          {qcUsersData &&
-            qcUsersData.map((item) => (
+          {!!qcUsersData &&
+            qcUsersData?.map((item) => (
               <MenuItem
                 key={item.usersid}
                 value={isId ? item.usersid : item.username}

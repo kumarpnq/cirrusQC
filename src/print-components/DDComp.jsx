@@ -112,7 +112,7 @@ const DDComp = () => {
     qc1By,
     qc2By,
   });
-  const qcUsersData = qcUserData?.data || [];
+  const qcUsersData = qcUserData?.data?.qc_users || [];
   const [city, setCity] = useState([]);
   const [languages, setLanguages] = useState([]);
   // main TableData
@@ -445,7 +445,7 @@ const DDComp = () => {
             </div>
             <div className="h-[25px] flex items-center justify-center">
               <Qc1By
-                qcUsersData={qcUsersData}
+                qcUsersData={qcUsersData || []}
                 qc1by={qc1By}
                 setQc1by={setQc1By}
                 classes={classes}
@@ -454,7 +454,7 @@ const DDComp = () => {
             </div>
             <div className="h-[25px] flex items-center justify-center">
               <Qc2By
-                qcUsersData={qcUsersData}
+                qcUsersData={qcUsersData || []}
                 classes={classes}
                 qc2by={qc2By}
                 setQc2by={setQc2By}
