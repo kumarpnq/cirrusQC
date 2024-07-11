@@ -110,7 +110,6 @@ const EditDialog = ({ rowData, rowNumber, setRowNumber, open, setOpen }) => {
 
       setSocialFeedTagDetails(tagDetailsResponse.data.socialfeed_details || []);
     } catch (error) {
-      // toast.error("Error While fetching data.");
       console.log(error.message);
     } finally {
       setSocialFeedTagDetailsLoading(false);

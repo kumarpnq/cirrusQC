@@ -977,8 +977,19 @@ const Print = () => {
                 classes={classes}
               />
             </Typography>
-            <Typography component={"div"} className={classes.componentHeight}>
-              <FromDate fromDate={uploadDate} setFromDate={setUploadDate} />
+            <Typography
+              component={"div"}
+              className={`${classes.componentHeight} pt-3`}
+            >
+              {/* <FromDate fromDate={uploadDate} setFromDate={setUploadDate} /> */}
+              <input
+                className="border border-gray-400 rounded-[3px] h-6 text-[0.8em] w-[180px] px-2"
+                type="datetime-local"
+                id="dateTimeInput"
+                name="dateTimeInput"
+                value={uploadDate}
+                onChange={(e) => setUploadDate(e.target.value)}
+              />
             </Typography>
             <Typography component={"div"} className={classes.componentHeight}>
               <CustomDebounceDropdown

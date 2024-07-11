@@ -469,7 +469,7 @@ const Online = () => {
         request_data.SUMMARY = newRows.summary;
       }
       if (oldRows.journalist !== newRows.journalist) {
-        request_data.JOURNALIST = newRows.journalist;
+        request_data.AUTHOR = newRows.journalist;
       }
       const data = {
         data: [request_data],
