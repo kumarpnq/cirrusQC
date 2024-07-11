@@ -131,7 +131,7 @@ const Print = () => {
   const [pubType, setPubType] = useState("");
   const [selectedCity, setSelectedCity] = useState([]);
   const [selectedLanguages, setSelectedLanguages] = useState([]);
-  const [qc1Done, setQc1Done] = useState("");
+  const [qc1Done, setQc1Done] = useState("0");
   const [qc1By, setQc1By] = useState("");
   const [photo, setPhoto] = useState("");
   const [graph, setGraph] = useState("");

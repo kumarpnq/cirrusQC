@@ -102,7 +102,7 @@ const EditDialog = ({ rowData, rowNumber, setRowNumber, open, setOpen }) => {
         journalist: headerData.author_name,
         tag: headerData.tags,
       });
-
+      console.log(headerData);
       const tagDetailsResponse = await axios.get(
         `${url}qc1onlinetagdetails/?socialfeed_id=${socialFeedId}`,
         { headers }
@@ -124,6 +124,12 @@ const EditDialog = ({ rowData, rowNumber, setRowNumber, open, setOpen }) => {
     setRow(null);
     setSocialFeedTagDetails([]);
     setOpen(false);
+    setFormItems({
+      headline: "",
+      summary: "",
+      journalist: "",
+      tag: "",
+    });
   };
 
   const handleChange = (event) => {
