@@ -32,7 +32,7 @@ import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import AttachmentIcon from "@mui/icons-material/Attachment";
 import {
   DataGrid,
-  GridToolbar,
+  // GridToolbar,
   GridToolbarColumnsButton,
   GridToolbarContainer,
   GridToolbarDensitySelector,
@@ -48,11 +48,9 @@ import {
   ControlCameraOutlined,
   EditAttributesOutlined,
 } from "@mui/icons-material";
-import { CiEdit } from "react-icons/ci";
 import { MdHtml } from "react-icons/md";
 import PictureAsPdfIcon from "@mui/icons-material/PictureAsPdf";
 import ImageIcon from "@mui/icons-material/Image";
-import HtmlIcon from "@mui/icons-material/Html";
 import { formattedDate, formattedNextDay } from "../../constants/dates";
 
 // * components
@@ -925,7 +923,7 @@ const Print = () => {
                 label="Client"
                 client={selectedClient}
                 setClient={setSelectedClient}
-                width={200}
+                width={300}
                 setCompanies={setSelectedCompanies}
               />
             </Typography>

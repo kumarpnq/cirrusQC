@@ -67,7 +67,7 @@ const SearchableDropdown = ({
         options={options || []}
         getOptionLabel={(option) => option.clientname}
         renderValue={(selected) => selected.join(", ")}
-        disableClearable
+        // disableClearable
         ListboxProps={{ style: { maxHeight: 200 } }}
         renderInput={(params) => (
           <TextField
