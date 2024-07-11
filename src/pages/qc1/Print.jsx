@@ -48,7 +48,8 @@ import {
   ControlCameraOutlined,
   EditAttributesOutlined,
 } from "@mui/icons-material";
-
+import { CiEdit } from "react-icons/ci";
+import { MdHtml } from "react-icons/md";
 import PictureAsPdfIcon from "@mui/icons-material/PictureAsPdf";
 import ImageIcon from "@mui/icons-material/Image";
 import HtmlIcon from "@mui/icons-material/Html";
@@ -81,7 +82,7 @@ import { arrayToString } from "../../utils/arrayToString";
 import { addPropertyIfConditionIsTrue } from "../../utils/addProprtyIfConditiontrue";
 import { toast } from "react-toastify";
 import { Link } from "react-router-dom";
-import SearchFilters from "../../qc1-components/online/components/SearchFilters";
+// import SearchFilters from "../../qc1-components/online/components/SearchFilters";
 import CustomButton from "../../@core/CustomButton";
 import SearchableCategory from "../../components/research-dropdowns/table-dropdowns/SearchableCategory";
 
@@ -279,7 +280,7 @@ const Print = () => {
                       target="_blank"
                       rel="noreferrer"
                     >
-                      <HtmlIcon className="text-primary" />
+                      <MdHtml className="text-primary" />
                     </Link>
                   </IconButton>
                 </Tooltip>
@@ -1054,16 +1055,6 @@ const Print = () => {
                 width={100}
               />
             </Typography>
-            {/* <Typography component={"div"} className={classes.componentHeight}>
-              <YesOrNo
-                classes={classes}
-                mapValue={["Print", "Internet", "All"]}
-                placeholder="ArticleType"
-                value={articleType}
-                setValue={setArticleType}
-                width={100}
-              />
-            </Typography> */}
             <Typography component={"div"} className={classes.componentHeight}>
               <YesOrNo
                 classes={classes}

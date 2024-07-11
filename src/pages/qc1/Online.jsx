@@ -145,8 +145,8 @@ const Online = () => {
   const [selectedItems, setSelectedItems] = useState([]);
   const [tableDataLoading, setTableDataLoading] = useState(false);
   const fetchTableData = useCallback(async () => {
-    if (!selectedClient) {
-      toast.warning("Please select a client");
+    if (!selectedClient || !selectedDateType) {
+      toast.warning("Please select a client or date type.");
       return;
     }
     try {
