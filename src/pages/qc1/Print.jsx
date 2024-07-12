@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import {
   Box,
   Checkbox,
@@ -33,11 +33,13 @@ import AttachmentIcon from "@mui/icons-material/Attachment";
 import {
   DataGrid,
   // GridToolbar,
+  GridCellModes,
   GridToolbarColumnsButton,
   GridToolbarContainer,
   GridToolbarDensitySelector,
   GridToolbarFilterButton,
   GridToolbarQuickFilter,
+  useGridApiRef,
 } from "@mui/x-data-grid";
 import { makeStyles } from "@mui/styles";
 
@@ -118,6 +120,7 @@ const Print = () => {
   const headers = {
     Authorization: `Bearer ${userToken}`,
   };
+
   // * state variables for data retrieve
   const [selectedClient, setSelectedClient] = useState("");
   const [selectedCompanies, setSelectedCompanies] = useState([]);
@@ -234,14 +237,30 @@ const Print = () => {
           <Box
             sx={{
               display: "flex",
-              flexDirection: "column",
+              // flexDirection: "column",
               alignItems: "center",
               justifyContent: "left",
             }}
           >
-            <Grid container spacing={1} justifyContent="center">
-              {/* Top Row */}
-              <Grid item>
+            <Tooltip title="View PDF">
+              <IconButton>
+                <Link
+                  to={`/articleview/download-file/${params.row.link}`}
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  <PictureAsPdfIcon className="text-primary" />
+                </Link>
+              </IconButton>
+            </Tooltip>
+            <Tooltip title="Edit article">
+              <IconButton onClick={() => handleRowClick(params.row, params.id)}>
+                <EditAttributesOutlined className="text-primary" />
+              </IconButton>
+            </Tooltip>
+            {/* <Grid container spacing={1} justifyContent="center"> */}
+            {/* Top Row */}
+            {/* <Grid item>
                 <Tooltip title="View PDF">
                   <IconButton>
                     <Link
@@ -266,11 +285,11 @@ const Print = () => {
                     </Link>
                   </IconButton>
                 </Tooltip>
-              </Grid>
-            </Grid>
-            <Grid container spacing={1} justifyContent="center">
-              {/* Bottom Row */}
-              <Grid item>
+              </Grid> */}
+            {/* </Grid> */}
+            {/* <Grid container spacing={1} justifyContent="center"> */}
+            {/* Bottom Row */}
+            {/* <Grid item>
                 <Tooltip title="View HTML">
                   <IconButton>
                     <Link
@@ -291,8 +310,8 @@ const Print = () => {
                     <EditAttributesOutlined className="text-primary" />
                   </IconButton>
                 </Tooltip>
-              </Grid>
-            </Grid>
+              </Grid> */}
+            {/* </Grid> */}
           </Box>
           {params.row.similar_articles === "Yes" && (
             <>
@@ -382,39 +401,54 @@ const Print = () => {
       ),
     },
 
+    // {
+    //   field: "Thumbnail",
+    //   headerName: "Thumbnail",
+    //   width: 70,
+    //   renderCell: (params) => (
+    //     <div style={iconCellStyle}>
+    //       <Tooltip
+    //         title={
+    //           <img
+    //             src={
+    //               "https://cirrus.co.in/cirrus/JPGViewID.action?ai=03GURGAON-20240705-TIMES_OF_INDIA-0010-0002.pdf&loginreq=N"
+    //             }
+    //           />
+    //         }
+    //         placement="right"
+    //         arrow
+    //       >
+    //         <img
+    //           src={`https://cirrus.co.in/cirrus/JPGViewID.action?ai=03GURGAON-20240705-TIMES_OF_INDIA-0010-0002.pdf&loginreq=N`}
+    //           style={{ width: "70", height: "80" }}
+    //           title="PDF"
+    //           className="p-1 border rounded-lg"
+    //         />
+    //       </Tooltip>
+    //     </div>
+    //   ),
+    // },
     {
-      field: "Thumbnail",
-      headerName: "Thumbnail",
-      width: 70,
+      field: "headline",
+      headerName: "Headlines",
+      width: 300,
+      editable: true,
       renderCell: (params) => (
-        <div style={iconCellStyle}>
-          <Tooltip
-            title={
-              <img
-                src={
-                  "https://cirrus.co.in/cirrus/JPGViewID.action?ai=03GURGAON-20240705-TIMES_OF_INDIA-0010-0002.pdf&loginreq=N"
-                }
-              />
-            }
-            placement="right"
-            arrow
-          >
-            <img
-              src={`https://cirrus.co.in/cirrus/JPGViewID.action?ai=03GURGAON-20240705-TIMES_OF_INDIA-0010-0002.pdf&loginreq=N`}
-              style={{ width: "70", height: "80" }}
-              title="PDF"
-              className="p-1 border rounded-lg"
-            />
-          </Tooltip>
+        <div style={{ whiteSpace: "pre-wrap", wordWrap: "break-word" }}>
+          {params.value}
         </div>
       ),
     },
-    { field: "headline", headerName: "Headlines", width: 300, editable: true },
     {
       field: "head_summary",
       headerName: "Summary",
       width: 450,
       editable: true,
+      renderCell: (params) => (
+        <div style={{ whiteSpace: "pre-wrap", wordWrap: "break-word" }}>
+          {params.value}
+        </div>
+      ),
     },
     { field: "article_id", headerName: "Article ID", width: 160 },
     { field: "article_date", headerName: "Article Date", width: 150 },
@@ -641,6 +675,7 @@ const Print = () => {
         searchKeyword,
         params
       );
+
       const userToken = localStorage.getItem("user");
       const response = await axios.get(`${url}listArticlebyQC1Print/`, {
         headers: { Authorization: `Bearer ${userToken}` },
@@ -830,56 +865,7 @@ const Print = () => {
   };
 
   // * saving the edited cells
-  const [oldRows, setOldRows] = useState(null);
-  const [newRows, setNewRows] = useState(null);
   const [saveLoading, setSaveLoading] = useState(false);
-
-  const handleSaveManualEditedCells = async () => {
-    if (!newRows) {
-      toast.warning("No changes found.");
-      return;
-    }
-    try {
-      setSaveLoading(true);
-      const request_data = {
-        ARTICLEID: newRows?.main_id,
-      };
-      if (oldRows.headline !== newRows.headline) {
-        request_data.HEADLINES = newRows.headline;
-      }
-      if (oldRows.head_summary !== newRows.head_summary) {
-        request_data.HEADSUMMARY = newRows.head_summary;
-      }
-      if (oldRows.journalist !== newRows.journalist) {
-        request_data.JOURNALIST = newRows.journalist;
-      }
-      const data = {
-        data: [request_data],
-        qcflag: 1,
-      };
-      const response = await axios.post(`${url}updatearticleheader/`, data, {
-        headers,
-      });
-      if (response.data.result?.success?.length) {
-        toast.success("Data updated.");
-        setNewRows(null);
-        setOldRows(null);
-        fetchListArticleByQC1Print();
-      } else {
-        toast.warning("Something wrong try again.");
-      }
-    } catch (error) {
-      toast.error("Something went wrong.");
-    } finally {
-      setSaveLoading(false);
-    }
-  };
-
-  // * highlight edit rows
-  const getRowClassName = (params) => {
-    return newRows?.main_id === params.row.main_id ? "highlight-row" : "";
-  };
-  const isShowSecondAccordion = selectedItems.length || Boolean(newRows);
 
   // * custom toolbar
   function CustomToolbar() {
@@ -895,6 +881,100 @@ const Print = () => {
       </GridToolbarContainer>
     );
   }
+
+  // * test
+  const apiRef = useGridApiRef();
+
+  const [hasUnsavedRows, setHasUnsavedRows] = useState(false);
+  // const [isSaving, setIsSaving] = useState(false);
+  const unsavedChangesRef = useRef({
+    unsavedRows: {},
+    rowsBeforeChange: {},
+  });
+
+  const processRowUpdate = useCallback((newRow, oldRow) => {
+    const rowId = newRow.main_id;
+
+    // Update unsaved rows
+    unsavedChangesRef.current.unsavedRows[rowId] = newRow;
+
+    // Store initial state before any changes are made
+    if (!unsavedChangesRef.current.rowsBeforeChange[rowId]) {
+      unsavedChangesRef.current.rowsBeforeChange[rowId] = oldRow;
+    }
+
+    setHasUnsavedRows(true);
+
+    return newRow;
+  }, []);
+
+  const handleSaveManualEditedCells = async () => {
+    const changedRows = unsavedChangesRef.current.unsavedRows;
+    const rowsBeforeChange = unsavedChangesRef.current.rowsBeforeChange;
+
+    if (Object.keys(changedRows).length === 0) {
+      toast.warning("No changes found.");
+      return;
+    }
+
+    try {
+      setSaveLoading(true);
+
+      const requestData = Object.keys(changedRows).map((rowId) => {
+        const newRow = changedRows[rowId];
+        const oldRow = rowsBeforeChange[rowId];
+        const request_data = {
+          ARTICLEID: newRow.main_id,
+        };
+
+        if (oldRow.headline !== newRow.headline) {
+          request_data.HEADLINES = newRow.headline;
+        }
+        if (oldRow.head_summary !== newRow.head_summary) {
+          request_data.HEADSUMMARY = newRow.head_summary;
+        }
+        if (oldRow.journalist !== newRow.journalist) {
+          request_data.JOURNALIST = newRow.journalist;
+        }
+
+        return request_data;
+      });
+
+      const data = {
+        data: requestData,
+        qcflag: 1,
+      };
+
+      const response = await axios.post(`${url}updatearticleheader/`, data, {
+        headers,
+      });
+
+      if (response.data.result?.success?.length) {
+        toast.success("Data updated.");
+        unsavedChangesRef.current.unsavedRows = {};
+        unsavedChangesRef.current.rowsBeforeChange = {};
+        fetchListArticleByQC1Print();
+      } else {
+        toast.warning("Something went wrong, please try again.");
+      }
+    } catch (error) {
+      toast.error("Something went wrong.");
+    } finally {
+      setSaveLoading(false);
+    }
+  };
+
+  // * highlight edit rows
+  const getRowClassName = (params) => {
+    return unsavedChangesRef.current.unsavedRows[params.row.main_id]
+      ? "highlight-row"
+      : "";
+  };
+
+  const isShowSecondAccordion =
+    selectedItems.length > 0 ||
+    Object.keys(unsavedChangesRef.current.unsavedRows).length > 0;
+
   return (
     <Box sx={{ px: 1.5 }}>
       <Accordion>
@@ -1207,6 +1287,8 @@ const Print = () => {
           density="compact"
           getRowHeight={() => "auto"}
           checkboxSelection
+          apiRef={apiRef}
+          ignoreValueFormatterDuringExport
           rowSelectionModel={selectionModal}
           onRowSelectionModelChange={(ids) => {
             setSelectionModal(ids);
@@ -1219,17 +1301,14 @@ const Print = () => {
             "& .MuiDataGrid-cell": {
               fontSize: "0.9em",
             },
+            root: {
+              "& .MuiDataGrid-cell": {
+                whiteSpace: "normal",
+                wordWrap: "break-word",
+              },
+            },
           }}
-          processRowUpdate={(newRow, oldRow) => {
-            if (newRows) {
-              toast.warning("Please save the changes first.");
-              return;
-            }
-            if (JSON.stringify(newRow) !== JSON.stringify(oldRow)) {
-              setNewRows(newRow);
-              setOldRows(oldRow);
-            }
-          }}
+          processRowUpdate={processRowUpdate}
           loading={gridDataLoading && <CircularProgress />}
           disableDensitySelector
           disableColumnSelector
