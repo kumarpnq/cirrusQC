@@ -191,7 +191,7 @@ const Online = () => {
       );
       addPropertyIfConditionIsTrue(qc1By !== "", "qc_1by", qc1By);
       addPropertyIfConditionIsTrue(link !== "", "link", link);
-      addPropertyIfConditionIsTrue(isQc1Done !== 0, "is_qc1", isQc1Done);
+      addPropertyIfConditionIsTrue(isQc1Done !== "", "is_qc1", isQc1Done);
       addPropertyIfConditionIsTrue(
         selectedLanguages.length > 0,
         "language",
