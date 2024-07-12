@@ -770,13 +770,25 @@ const Print = () => {
 
   // * un-group selected items
   const [unGroupLoading, setUnGroupLoading] = useState(false);
-  const handleClickUnGroupItems = async () => {
-    if (selectedItems.length === 1) {
-      toast.warning("Select more than one article.");
-      return;
+  const fetchSimilarArticles = async (articleId) => {
+    const urlFetchSimilarArticles = `${url}similararticles/?article_id=${articleId}`;
+
+    try {
+      const response = await axios.get(urlFetchSimilarArticles, { headers });
+      return response.data.child_articles;
+    } catch (error) {
+      console.error("Error fetching similar articles:", error);
+      return []; // Return empty array or handle error as needed
     }
+  };
+  const handleClickUnGroupItems = async () => {
+    if (selectedItems.length !== 1)
+      return toast.warning("Please select only one item.");
     const parentId = selectedItems[0].id;
-    const childrenIds = selectedItems.slice(1).map((item) => item.id);
+    const similarArticles = await fetchSimilarArticles(parentId);
+    if (!similarArticles.length)
+      return toast.warning("No similar articles found.");
+    const childrenIds = similarArticles.map((item) => item.article);
 
     try {
       setUnGroupLoading(true);
@@ -792,6 +804,7 @@ const Print = () => {
       if (response.data.status?.success?.length) {
         setSelectionModal([]);
         setSelectedItems([]);
+        fetchListArticleByQC1Print();
         toast.success("Articles ungrouped successfully.");
       } else {
         toast.warning("Ids not found.");

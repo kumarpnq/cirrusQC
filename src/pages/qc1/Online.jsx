@@ -8,6 +8,7 @@ import {
   DialogTitle,
   Divider,
   IconButton,
+  Modal,
   TextField,
 } from "@mui/material";
 import Accordion from "@mui/material/Accordion";
@@ -17,7 +18,7 @@ import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import { makeStyles } from "@mui/styles";
 import {
   DataGrid,
-  GridToolbar,
+  // GridToolbar,
   GridToolbarColumnsButton,
   GridToolbarContainer,
   GridToolbarDensitySelector,
@@ -65,6 +66,7 @@ import {
   EditAttributesOutlined,
 } from "@mui/icons-material";
 import CustomButton from "../../@core/CustomButton";
+import GroupModal from "../../qc1-components/online/components/GroupModal";
 
 const useStyle = makeStyles(() => ({
   dropDowns: {
@@ -88,6 +90,20 @@ const iconCellStyle = {
   justifyContent: "center",
   alignItems: "center",
   height: "100%",
+};
+
+const groupModalStyle = {
+  position: "absolute",
+  top: "50%",
+  left: "50%",
+  transform: "translate(-50%, -50%)",
+  width: 400,
+  bgcolor: "background.paper",
+  border: "2px solid #000",
+  boxShadow: 24,
+  pt: 2,
+  px: 4,
+  pb: 3,
 };
 
 const Online = () => {
@@ -267,8 +283,15 @@ const Online = () => {
     setSelectionModal(ids);
   };
 
+  //* Group modal
+  const [openGroupModal, setGroupModal] = useState(false);
+  const handleGroupModalOpen = () => {
+    setGroupModal(true);
+  };
+
   // * group selected articles
   const [groupLoading, setGroupLoading] = useState(false);
+  const [headlineForGroup, setHeadlineForGroup] = useState("");
   const handleClickGroupItems = async () => {
     if (selectedItems.length === 1) {
       toast.warning("Select more than one article.");
@@ -647,31 +670,39 @@ const Online = () => {
           >
             Group & remove
           </AccordionSummary>
-          <AccordionDetails sx={{ display: "flex", gap: 1, flexWrap: "wrap" }}>
-            <Button
-              btnText={groupLoading ? "Loading" : "group"}
-              icon={<AttachFileOutlined />}
-              onClick={handleClickGroupItems}
-              isLoading={groupLoading}
+          <AccordionDetails>
+            <CustomTextField
+              value={headlineForGroup}
+              setValue={setHeadlineForGroup}
+              type={"text"}
+              placeholder={"Headline"}
             />
-            <Button
-              btnText={unGroupLoading ? "ungrouping" : "ungroup"}
-              icon={<ControlCameraOutlined />}
-              onClick={handleClickUnGroupItems}
-              isLoading={unGroupLoading}
-            />
-            <Button
-              btnText={removeLoading ? "Removing" : "Remove Companies"}
-              icon={<CloseOutlined />}
-              onClick={handleClickOpen}
-              isLoading={removeLoading}
-              isDanger
-            />
-            <Button
-              btnText={saveLoading ? "saving" : "save"}
-              onClick={handleSaveManualEditedCells}
-              isLoading={saveLoading}
-            />
+            <Box sx={{ display: "flex", gap: 1, flexWrap: "wrap" }}>
+              <Button
+                btnText={groupLoading ? "Loading" : "group"}
+                icon={<AttachFileOutlined />}
+                onClick={handleGroupModalOpen}
+                isLoading={groupLoading}
+              />
+              <Button
+                btnText={unGroupLoading ? "ungrouping" : "ungroup"}
+                icon={<ControlCameraOutlined />}
+                onClick={handleClickUnGroupItems}
+                isLoading={unGroupLoading}
+              />
+              <Button
+                btnText={removeLoading ? "Removing" : "Remove Companies"}
+                icon={<CloseOutlined />}
+                onClick={handleClickOpen}
+                isLoading={removeLoading}
+                isDanger
+              />
+              <Button
+                btnText={saveLoading ? "saving" : "save"}
+                onClick={handleSaveManualEditedCells}
+                isLoading={saveLoading}
+              />
+            </Box>
           </AccordionDetails>
         </Accordion>
       )}
@@ -772,6 +803,11 @@ const Online = () => {
           </DialogActions>
         </Dialog>
       </div>
+      <GroupModal
+        openGroupModal={openGroupModal}
+        setOpenGroupModal={setGroupModal}
+        selectedItems={selectedItems}
+      />
     </Box>
   );
 };

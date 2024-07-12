@@ -57,8 +57,21 @@ const UploadDialog = ({
     };
     fetchHeaderData();
   }, [selectedRow, socialfeedId, userToken]);
+
+  // * for clearing the data after closing the modal
+  const [tableDataList, setTableDataList] = useState([]);
+  const [editableTagData, setEditableTagData] = useState([]);
+  const [modifiedRows, setModifiedRows] = useState([]);
+
+  const handleSecondaryClose = () => {
+    handleClose();
+    setTableDataList([]);
+    setEditableTagData([]);
+    setModifiedRows([]);
+  };
+
   return (
-    <Modal open={open} onClose={handleClose}>
+    <Modal open={open} onClose={handleSecondaryClose}>
       <Box sx={style}>
         <DialogTitle
           display={"flex"}
@@ -66,7 +79,7 @@ const UploadDialog = ({
           justifyContent={"space-between"}
         >
           <Typography> Article Edit</Typography>
-          <Button onClick={handleClose}>Close</Button>
+          <Button onClick={handleSecondaryClose}>Close</Button>
         </DialogTitle>
         <DialogContent>
           <Box sx={{ display: "flex", flexDirection: "column" }}>
@@ -82,6 +95,12 @@ const UploadDialog = ({
               setFetchAfterSave={setFetchAfterSave}
               tableData={tableData}
               setTableData={setTableData}
+              tableDataList={tableDataList}
+              setTableDataList={setTableDataList}
+              editableTagData={editableTagData}
+              setEditableTagData={setEditableTagData}
+              modifiedRows={modifiedRows}
+              setModifiedRows={setModifiedRows}
             />
           </Box>
         </DialogContent>

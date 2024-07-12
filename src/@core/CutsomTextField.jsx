@@ -19,6 +19,7 @@ const CustomTextField = ({
       variant="outlined"
       size="small"
       type={type}
+      fullWidth
       sx={{ width: width }}
       InputProps={{
         style: {

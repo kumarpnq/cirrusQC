@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useLayoutEffect, useState } from "react";
 import {
   Card,
   Tooltip,
@@ -11,11 +11,11 @@ import {
   Box,
   Typography,
 } from "@mui/material";
+import { toast } from "react-toastify";
 import CloseIcon from "@mui/icons-material/Close";
 import axios from "axios";
 import PropTypes from "prop-types";
 
-import { toast } from "react-toastify";
 import useProtectedRequest from "../../hooks/useProtectedRequest";
 import { url } from "../../constants/baseUrl";
 import useFetchData from "../../hooks/useFetchData";
@@ -30,58 +30,58 @@ const ClientSection = ({
   setFetchAfterSave,
   tableData,
   setTableData,
+  // * cleared states
+  tableDataList,
+  setTableDataList,
+  editableTagData,
+  setEditableTagData,
+  modifiedRows,
+  setModifiedRows,
 }) => {
   const [selectedCompany, setSelectedCompany] = useState("");
-  const [tableDataList, setTableDataList] = useState([]);
   const [tableDataLoading, setTableDataLoading] = useState(false);
-  const [editableTagData, setEditableTagData] = useState([]);
   const [verificationLoading, setVerificationLoading] = useState(false);
   const [password, setPassword] = useState("");
-  const [fetchTagDataAfterChange, setFetchTagDataAfterChange] = useState(false);
-  const [modifiedRows, setModifiedRows] = useState([]);
   const { loading, error, data, makeRequest } = useProtectedRequest(
     userToken,
     "updatesocialfeedtagdetails/"
   );
   const [open, setOpen] = useState(false);
-  const [isFirstRender, setIsFirstRender] = useState(false);
-  useEffect(() => {
-    setIsFirstRender((prev) => !prev);
-  }, []);
 
   const handleClose = () => {
-    setTableDataList([]);
-    modifiedRows([]);
     setOpen(false);
   };
-  useEffect(() => {
-    if (isFirstRender || fetchTagDataAfterChange) {
-      const fetchData = async () => {
-        try {
-          setTableDataLoading(true);
-          setEditableTagData([]);
-          const headers = {
-            Authorization: `Bearer ${userToken}`,
-          };
 
-          const response = await axios.get(
-            `${url}socialfeedtagdetails/?socialfeed_id=${selectedArticle.social_feed_id}`,
-            {
-              headers: headers,
-            }
-          );
-          const data = response.data ? response.data.socialfeed_details : [];
-          setTableDataList(data);
-          setTableDataLoading(false);
-          setFetchTagDataAfterChange(false);
-        } catch (error) {
-          console.error("Error fetching data:", error);
-        }
+  // * fetching main table data
+  const socialFeedId = selectedArticle?.social_feed_id;
+  const fetchData = async () => {
+    try {
+      setTableDataLoading(true);
+      setTableDataList([]);
+      const headers = {
+        Authorization: `Bearer ${userToken}`,
       };
 
-      fetchData();
+      const response = await axios.get(
+        `${url}socialfeedtagdetails/?socialfeed_id=${socialFeedId}`,
+        {
+          headers: headers,
+        }
+      );
+      const data = response.data.socialfeed_details;
+      const realData = data && Object.keys(data).length > 0 ? data : [];
+      setTableDataList(realData);
+      setTableDataLoading(false);
+    } catch (error) {
+      setTableDataList([]);
+      setTableDataLoading(false);
+      console.error("Error fetching data:", error.message);
     }
-  }, [userToken, selectedArticle, fetchTagDataAfterChange, isFirstRender]);
+  };
+
+  useLayoutEffect(() => {
+    fetchData();
+  }, [socialFeedId]);
   const [subjects, setSubjects] = useState([]);
 
   const { data: subjectLists } = useFetchData(`${url}reportingsubjectlist`);
@@ -100,12 +100,6 @@ const ClientSection = ({
 
   const { data: tones } = useFetchData(`${url}reportingtonelist`);
   const reportingTones = tones?.data?.reportingtones_list || [];
-
-  useEffect(() => {
-    if (tableDataList.length > 0) {
-      setEditableTagData(tableDataList);
-    }
-  }, [tableDataList]);
 
   const handleChange = (index, key, value) => {
     const updatedRow = {
@@ -177,7 +171,7 @@ const ClientSection = ({
           .join(", ");
         if (successOrError === "company added") {
           toast.success(successOrError);
-          setFetchTagDataAfterChange(true);
+          fetchData();
         } else if (successOrError === "something went wrong") {
           toast.warning(errorMessage);
         }
@@ -231,10 +225,12 @@ const ClientSection = ({
       toast.error("An error occurred while deleting the articles.");
     } else {
       toast.success("Article deleted successfully.");
+
       setOpen(false);
+      fetchData();
       setPassword("");
       setEditableTagData([]);
-      setFetchTagDataAfterChange(true);
+      // setFetchTagDataAfterChange(true);
       setSelectedRowForDelete(null);
       setFetchAfterSave(true);
     }
@@ -275,12 +271,13 @@ const ClientSection = ({
         const latestRows = tableData.filter(
           (item) => selectedArticle.social_feed_id !== item.socialfeedid
         );
+        fetchData();
         setTableData(latestRows);
         toast.success("Updated successfully");
         setModifiedRows([]);
 
-        setFetchTagDataAfterChange(true);
-        // setFetchAfterSave(true);
+        // setFetchTagDataAfterChange(true);
+        setFetchAfterSave(true);
       } else {
         toast.error("Something went wrong");
       }
@@ -326,7 +323,7 @@ const ClientSection = ({
                 <CircularProgress />
               </Box>
             ) : (
-              editableTagData.map((item, index) => (
+              tableDataList.map((item, index) => (
                 <tr
                   key={item.socialfeed_id + item.company_id}
                   className="border border-gray-300"
@@ -463,10 +460,58 @@ const ClientSection = ({
 };
 
 ClientSection.propTypes = {
-  selectedArticle: PropTypes.object.isRequired,
+  selectedArticle: PropTypes.shape({
+    social_feed_id: PropTypes.number.isRequired,
+  }).isRequired,
   userToken: PropTypes.string.isRequired,
   setFetchAfterSave: PropTypes.func.isRequired,
-  tableData: PropTypes.array.isRequired,
+  tableData: PropTypes.arrayOf(
+    PropTypes.shape({
+      socialfeedid: PropTypes.number.isRequired,
+      // Add other relevant fields here
+    })
+  ).isRequired,
   setTableData: PropTypes.func.isRequired,
+  tableDataList: PropTypes.arrayOf(
+    PropTypes.shape({
+      socialfeed_id: PropTypes.number.isRequired,
+      company_id: PropTypes.number,
+      company_name: PropTypes.string,
+      reporting_subject: PropTypes.string,
+      prominence: PropTypes.string,
+      reporting_tone: PropTypes.string,
+      detail_summary: PropTypes.string,
+      remarks: PropTypes.string,
+    })
+  ).isRequired,
+  setTableDataList: PropTypes.func.isRequired,
+  editableTagData: PropTypes.arrayOf(
+    PropTypes.shape({
+      socialfeed_id: PropTypes.number.isRequired,
+      company_id: PropTypes.number,
+      company_name: PropTypes.string,
+      reporting_subject: PropTypes.string,
+      prominence: PropTypes.string,
+      reporting_tone: PropTypes.string,
+      detail_summary: PropTypes.string,
+      remarks: PropTypes.string,
+    })
+  ).isRequired,
+  setEditableTagData: PropTypes.func.isRequired,
+  modifiedRows: PropTypes.arrayOf(
+    PropTypes.shape({
+      socialfeed_id: PropTypes.number.isRequired,
+      company_id: PropTypes.number,
+      company_name: PropTypes.string,
+      reporting_subject: PropTypes.string,
+      prominence: PropTypes.string,
+      reporting_tone: PropTypes.string,
+      detail_summary: PropTypes.string,
+      remarks: PropTypes.string,
+      UPDATETYPE: PropTypes.string.isRequired,
+    })
+  ).isRequired,
+  setModifiedRows: PropTypes.func.isRequired,
 };
+
 export default ClientSection;

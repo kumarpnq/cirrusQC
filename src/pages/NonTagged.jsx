@@ -163,6 +163,8 @@ const NonTagged = () => {
   const [editedSingleArticle, setEditedSingleArticle] = useState(null);
   const [selectedArticle, setSelectedArticle] = useState(null);
 
+  // Table states from edit section
+
   const handleClose = () => {
     setSelectedArticle(null);
     setEditedSingleArticle(null);
