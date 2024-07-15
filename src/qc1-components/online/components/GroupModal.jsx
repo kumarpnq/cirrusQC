@@ -2,6 +2,7 @@ import PropTypes from "prop-types";
 import { Box, Modal, Paper, Typography } from "@mui/material";
 import { DataGrid } from "@mui/x-data-grid";
 import Button from "../../../components/custom/Button";
+import { useState } from "react";
 
 const groupModalStyle = {
   position: "absolute",
@@ -16,9 +17,27 @@ const groupModalStyle = {
   px: 1,
   pb: 3,
 };
-const GroupModal = ({ openGroupModal, setOpenGroupModal, selectedItems }) => {
+const GroupModal = ({
+  openGroupModal,
+  setOpenGroupModal,
+  selectedItems,
+  screen,
+  selectionModelForGroup,
+  setSelectionModelForGroup,
+  handleSave,
+  groupLoading,
+}) => {
   const handleGroupModalClose = () => {
     setOpenGroupModal(false);
+  };
+
+  const handleSelectionChange = (newSelection) => {
+    if (newSelection.length > 1) {
+      // Select the last item in the new selection
+      setSelectionModelForGroup([newSelection[newSelection.length - 1]]);
+    } else {
+      setSelectionModelForGroup(newSelection);
+    }
   };
 
   const columns = [
@@ -33,9 +52,9 @@ const GroupModal = ({ openGroupModal, setOpenGroupModal, selectedItems }) => {
   ];
 
   const rows = selectedItems.map((item) => ({
-    id: item.social_feed_id,
+    id: screen === "online" ? item.social_feed_id : item.id,
     headline: item.headline,
-    publication: item.publication,
+    publication: screen === "online" ? item.publication : item.publication_name,
   }));
   return (
     <Modal
@@ -57,8 +76,11 @@ const GroupModal = ({ openGroupModal, setOpenGroupModal, selectedItems }) => {
         >
           <span>Basic Details</span>
           <span className="flex gap-1">
-            <Button btnText="Cancel" />
-            <Button btnText="Save" />
+            <Button btnText="Cancel" onClick={handleGroupModalClose} />
+            <Button
+              btnText={groupLoading ? "saving" : "save"}
+              onClick={handleSave}
+            />
           </span>
         </Typography>
         <Box sx={{ height: 400, width: "100%", mt: 1 }}>
@@ -68,6 +90,11 @@ const GroupModal = ({ openGroupModal, setOpenGroupModal, selectedItems }) => {
             pageSize={5}
             rowsPerPageOptions={[5]}
             checkboxSelection
+            rowSelectionModel={selectionModelForGroup}
+            onRowSelectionModelChange={(ids) => {
+              // setSelectionModel(ids);
+              handleSelectionChange(ids);
+            }}
             sx={{
               "& .MuiDataGrid-columnHeaders": {
                 fontSize: "0.875rem",
@@ -87,6 +114,7 @@ GroupModal.propTypes = {
   openGroupModal: PropTypes.bool.isRequired,
   setOpenGroupModal: PropTypes.func.isRequired,
   selectedItems: PropTypes.array.isRequired,
+  screen: PropTypes.string.isRequired,
 };
 
 export default GroupModal;

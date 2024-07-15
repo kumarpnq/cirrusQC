@@ -7,19 +7,13 @@ import { Fragment, useEffect, useState } from "react";
 import PropTypes from "prop-types";
 import {
   Box,
-  // Button,
   Card,
   CardContent,
   CardHeader,
   CircularProgress,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogTitle,
   Grid,
   IconButton,
   Modal,
-  TextField,
   Typography,
 } from "@mui/material";
 import { CloseOutlined } from "@mui/icons-material";
@@ -33,9 +27,9 @@ import StitchModal from "./components/StitchModal";
 import axios from "axios";
 import { url } from "../../constants/baseUrl";
 import { toast } from "react-toastify";
-import CustomButton from "../../@core/CustomButton";
 import Button from "../../components/custom/Button";
-
+import PDFViewer from "../components/PDFViewer";
+// import PDFViewer from "../components/PDFViewer";
 const style = {
   position: "absolute",
   top: "50%",
@@ -215,49 +209,15 @@ const EditDialog = ({ open, setOpen, row }) => {
     }
   };
 
-  // * verify user
-  const [password, setPassword] = useState("");
-  const [verificationLoading, setVerificationLoading] = useState(false);
-  const userVerification = async () => {
-    try {
-      setVerificationLoading(true);
-      const headers = { Authorization: `Bearer ${userToken}` };
-      const data = { password };
-      const response = await axios.post(`${url}isValidUser/`, data, {
-        headers,
-      });
-      setVerificationLoading(false);
-      return response.data.valid_user;
-    } catch (error) {
-      toast.error(error.message);
-      setVerificationLoading(false);
-    }
-  };
   // * remove company
-  const [openDelete, setOpenDelete] = useState(false);
-  const [selectedRowForDelete, setSelectedRowForDelete] = useState(null);
-  const handleClickOpen = (selectedRow) => {
-    setSelectedRowForDelete(selectedRow);
-    setOpenDelete(true);
-  };
-
-  const handleCloseDelete = () => {
-    setOpenDelete(false);
-    setSelectedRowForDelete(null);
-  };
-
-  const handleRemoveCompany = async () => {
-    const isValid = await userVerification();
-    if (!isValid) {
-      return toast.warning("User not valid.");
-    }
+  const handleRemoveCompany = async (selectedRow) => {
     try {
       const request_data = {
         data: [
           {
             UPDATETYPE: "D",
             ARTICLEID: articleId,
-            COMPANYID: selectedRowForDelete?.companyId,
+            COMPANYID: selectedRow?.companyId,
           },
         ],
         qcflag: 1,
@@ -270,8 +230,6 @@ const EditDialog = ({ open, setOpen, row }) => {
       if (response.data.result.success.length) {
         toast.success("Company removed");
         fetchHeaderAndTagDetails();
-        setOpenDelete(false);
-        setPassword("");
       } else {
         toast.warning("Something wrong try again.");
       }
@@ -310,7 +268,7 @@ const EditDialog = ({ open, setOpen, row }) => {
       renderCell: (params) => (
         <IconButton
           sx={{ color: "red" }}
-          onClick={() => handleClickOpen(params.row)}
+          onClick={() => handleRemoveCompany(params.row)}
         >
           <CloseIcon />
         </IconButton>
@@ -476,6 +434,7 @@ const EditDialog = ({ open, setOpen, row }) => {
                   }
                 />
                 <CardContent>
+                  {/* <PDFViewer url={url + defaultLink} /> */}
                   <iframe
                     src={url + defaultLink}
                     frameBorder="0"
@@ -494,41 +453,6 @@ const EditDialog = ({ open, setOpen, row }) => {
         isStitch={stitchUnStitch.stitch}
         isUnStitch={stitchUnStitch.unStitch}
       />
-      <div>
-        <Dialog open={openDelete} onClose={handleCloseDelete}>
-          <DialogTitle fontSize={"1em"}>
-            Enter Password For Confirmation.
-          </DialogTitle>
-          <DialogContent>
-            <TextField
-              type="password"
-              sx={{ outline: "none" }}
-              size="small"
-              placeholder="Password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-            />
-          </DialogContent>
-          <DialogActions>
-            <CustomButton
-              btnText="Cancel"
-              onClick={handleCloseDelete}
-              bg={"bg-primary"}
-            />
-            {verificationLoading ? (
-              <Box width={130} display={"flex"} justifyContent={"center"}>
-                <CircularProgress size={20} />
-              </Box>
-            ) : (
-              <CustomButton
-                btnText="Delete"
-                onClick={handleRemoveCompany}
-                bg={"bg-red-500"}
-              />
-            )}
-          </DialogActions>
-        </Dialog>
-      </div>
     </Fragment>
   );
 };

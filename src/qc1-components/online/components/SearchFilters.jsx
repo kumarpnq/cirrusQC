@@ -11,8 +11,6 @@ import PropTypes from "prop-types";
 import Client from "../../../print-components/dropdowns/Client";
 import Company from "../../../print-components/dropdowns/Company";
 import Category from "../../../print-components/dropdowns/Category";
-import FromDate from "../../../components/research-dropdowns/FromDate";
-import ToDate from "../../../components/research-dropdowns/ToDate";
 import CustomDebounceDropdown from "../../../@core/CustomDebounceDropdown";
 import Publication from "../../../print-components/dropdowns/Publication";
 import PubType from "../../../print-components/dropdowns/PubType";
@@ -23,6 +21,7 @@ import Languages from "../../../components/research-dropdowns/Languages";
 import YesOrNo from "../../../@core/YesOrNo";
 import CustomTextField from "../../../@core/CutsomTextField";
 import Button from "../../../components/custom/Button";
+import SearchableCategory from "../../../components/research-dropdowns/table-dropdowns/SearchableCategory";
 
 const SearchFilters = ({
   classes,
@@ -33,12 +32,16 @@ const SearchFilters = ({
   selectedCompanies,
   withCategory,
   setWithCategory,
+  category,
+  setCategory,
   fromDate,
   setFromDate,
   toDate,
   setToDate,
-  uploadDate,
-  setUploadDate,
+  uploadFromDate,
+  setUploadFromDate,
+  uploadToDate,
+  setUploadToDate,
   publicationGroup,
   setPublicationGroup,
   publication,
@@ -59,8 +62,6 @@ const SearchFilters = ({
   setPhoto,
   graph,
   setGraph,
-  articleType,
-  setArticleType,
   stitched,
   setStitched,
   tv,
@@ -96,7 +97,7 @@ const SearchFilters = ({
           label="Client"
           client={selectedClient}
           setClient={setSelectedClient}
-          width={200}
+          width={300}
           setCompanies={setSelectedCompanies}
         />
       </Typography>
@@ -116,14 +117,87 @@ const SearchFilters = ({
           width={150}
         />
       </Typography>
+      <Typography
+        component={"div"}
+        className={classes.componentHeight}
+        sx={{ pt: 0.7 }}
+      >
+        <SearchableCategory
+          label="Category"
+          setCategory={setCategory}
+          category={category}
+          width={150}
+          endpoint="categorylist"
+        />
+      </Typography>
+      <Typography
+        component={"div"}
+        className={`${classes.componentHeight} pt-3`}
+      >
+        <div className="flex border text-[0.8em] px-2 border-gray-400 rounded-[3px] h-6">
+          <label htmlFor="upload-date" className="mr-2">
+            Article Date :
+          </label>
+          <input
+            className="outline-none"
+            type="datetime-local"
+            id="dateTimeInput"
+            name="dateTimeInput"
+            value={fromDate}
+            onChange={(e) => setFromDate(e.target.value)}
+          />
+          <span className="px-2">To</span>
+          <input
+            className="outline-none"
+            type="datetime-local"
+            id="dateTimeInput"
+            name="dateTimeInput"
+            value={toDate}
+            onChange={(e) => setToDate(e.target.value)}
+          />
+        </div>
+      </Typography>
+
       <Typography component={"div"} className={classes.componentHeight}>
-        <FromDate fromDate={fromDate} setFromDate={setFromDate} />
+        <Cities
+          classes={classes}
+          city={selectedCity}
+          setCity={setSelectedCity}
+        />
       </Typography>
       <Typography component={"div"} className={classes.componentHeight}>
-        <ToDate dateNow={toDate} setDateNow={setToDate} isMargin={true} />
+        <Languages
+          language={selectedLanguages}
+          setLanguage={setSelectedLanguages}
+          classes={classes}
+        />
       </Typography>
-      <Typography component={"div"} className={classes.componentHeight}>
-        <FromDate fromDate={uploadDate} setFromDate={setUploadDate} />
+      <Typography
+        component={"div"}
+        className={`${classes.componentHeight} pt-3`}
+      >
+        <div className="flex border text-[0.8em] px-2 border-gray-400 rounded-[3px] h-6">
+          <label htmlFor="upload-date" className="mr-2">
+            Upload Date :
+          </label>
+          <input
+            className="outline-none"
+            type="datetime-local"
+            id="dateTimeInput"
+            name="dateTimeInput"
+            value={uploadFromDate}
+            onChange={(e) => setUploadFromDate(e.target.value)}
+          />
+          <span className="px-2">To</span>
+          <input
+            className="outline-none"
+            type="datetime-local"
+            id="dateTimeInput"
+            name="dateTimeInput"
+            value={uploadToDate}
+            onChange={(e) => setUploadToDate(e.target.value)}
+          />
+        </div>
       </Typography>
       <Typography component={"div"} className={classes.componentHeight}>
         <CustomDebounceDropdown
@@ -167,20 +241,7 @@ const SearchFilters = ({
           pageType={"print"}
         />
       </Typography>
-      <Typography component={"div"} className={classes.componentHeight}>
-        <Cities
-          classes={classes}
-          city={selectedCity}
-          setCity={setSelectedCity}
-        />
-      </Typography>
-      <Typography component={"div"} className={classes.componentHeight}>
-        <Languages
-          language={selectedLanguages}
-          setLanguage={setSelectedLanguages}
-          classes={classes}
-        />
-      </Typography>
+
       <Typography component={"div"} className={classes.componentHeight}>
         <YesOrNo
           classes={classes}
@@ -201,16 +262,7 @@ const SearchFilters = ({
           width={100}
         />
       </Typography>
-      <Typography component={"div"} className={classes.componentHeight}>
-        <YesOrNo
-          classes={classes}
-          mapValue={["Print", "Internet", "All"]}
-          placeholder="ArticleType"
-          value={articleType}
-          setValue={setArticleType}
-          width={100}
-        />
-      </Typography>
+
       <Typography component={"div"} className={classes.componentHeight}>
         <YesOrNo
           classes={classes}
@@ -309,12 +361,16 @@ SearchFilters.propTypes = {
   selectedCompanies: PropTypes.array.isRequired,
   withCategory: PropTypes.bool.isRequired,
   setWithCategory: PropTypes.func.isRequired,
+  category: PropTypes.string.isRequired,
+  setCategory: PropTypes.func.isRequired,
   fromDate: PropTypes.instanceOf(Date).isRequired,
   setFromDate: PropTypes.func.isRequired,
   toDate: PropTypes.instanceOf(Date).isRequired,
   setToDate: PropTypes.func.isRequired,
-  uploadDate: PropTypes.instanceOf(Date).isRequired,
-  setUploadDate: PropTypes.func.isRequired,
+  uploadFromDate: PropTypes.instanceOf(Date).isRequired,
+  setUploadFromDate: PropTypes.func.isRequired,
+  uploadToDate: PropTypes.instanceOf(Date).isRequired,
+  setUploadToDate: PropTypes.func.isRequired,
   publicationGroup: PropTypes.string.isRequired,
   setPublicationGroup: PropTypes.func.isRequired,
   publication: PropTypes.string.isRequired,
@@ -335,8 +391,6 @@ SearchFilters.propTypes = {
   setPhoto: PropTypes.func.isRequired,
   graph: PropTypes.string.isRequired,
   setGraph: PropTypes.func.isRequired,
-  articleType: PropTypes.string.isRequired,
-  setArticleType: PropTypes.func.isRequired,
   stitched: PropTypes.string.isRequired,
   setStitched: PropTypes.func.isRequired,
   tv: PropTypes.string.isRequired,

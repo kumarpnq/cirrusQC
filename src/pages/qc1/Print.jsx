@@ -1,7 +1,9 @@
 import { useCallback, useEffect, useRef, useState } from "react";
+import axios from "axios";
+import { toast } from "react-toastify";
+import { Link } from "react-router-dom";
 import {
   Box,
-  Checkbox,
   CircularProgress,
   ClickAwayListener,
   Dialog,
@@ -9,9 +11,6 @@ import {
   DialogContent,
   DialogTitle,
   Divider,
-  FormControlLabel,
-  FormGroup,
-  Grid,
   IconButton,
   Paper,
   Table,
@@ -22,7 +21,6 @@ import {
   TableRow,
   TextField,
   Tooltip,
-  Typography,
 } from "@mui/material";
 import Popper from "@mui/material/Popper";
 import Accordion from "@mui/material/Accordion";
@@ -32,8 +30,6 @@ import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import AttachmentIcon from "@mui/icons-material/Attachment";
 import {
   DataGrid,
-  // GridToolbar,
-  GridCellModes,
   GridToolbarColumnsButton,
   GridToolbarContainer,
   GridToolbarDensitySelector,
@@ -50,41 +46,25 @@ import {
   ControlCameraOutlined,
   EditAttributesOutlined,
 } from "@mui/icons-material";
-import { MdHtml } from "react-icons/md";
 import PictureAsPdfIcon from "@mui/icons-material/PictureAsPdf";
-import ImageIcon from "@mui/icons-material/Image";
 import { formattedDate, formattedNextDay } from "../../constants/dates";
 
 // * components
-import Client from "../../print-components/dropdowns/Client";
-import Category from "../../print-components/dropdowns/Category";
 import useFetchData from "../../hooks/useFetchData";
-import Company from "../../print-components/dropdowns/Company";
-import CustomDebounceDropdown from "../../@core/CustomDebounceDropdown";
-import Publication from "../../print-components/dropdowns/Publication";
-import FromDate from "../../components/research-dropdowns/FromDate";
-import ToDate from "../../components/research-dropdowns/ToDate";
-import PubType from "../../print-components/dropdowns/PubType";
-import Qc1All from "../../components/research-dropdowns/Qc1All";
-import YesOrNo from "../../@core/YesOrNo";
-import Cities from "../../print-components/dropdowns/Cities";
-import Languages from "../../components/research-dropdowns/Languages";
-import Qc1By from "../../components/research-dropdowns/Qc1By";
-import CustomTextField from "../../@core/CutsomTextField";
 import Button from "../../components/custom/Button";
 import EditDialog from "../../qc1-components/online/EditDialog";
+import CustomButton from "../../@core/CustomButton";
+import SearchFilters from "../../qc1-components/online/components/SearchFilters";
 
 // * constants
 import { url } from "../../constants/baseUrl";
 import { qc1Array } from "../../constants/dataArray";
-import axios from "axios";
 import { arrayToString } from "../../utils/arrayToString";
 import { addPropertyIfConditionIsTrue } from "../../utils/addProprtyIfConditiontrue";
-import { toast } from "react-toastify";
-import { Link } from "react-router-dom";
-// import SearchFilters from "../../qc1-components/online/components/SearchFilters";
-import CustomButton from "../../@core/CustomButton";
-import SearchableCategory from "../../components/research-dropdowns/table-dropdowns/SearchableCategory";
+
+import { convertDateFormat } from "../../utils/convertDateFormat";
+import AddCompaniesModal from "../../qc1-components/components/AddCompanyModal";
+import GroupModal from "../../qc1-components/online/components/GroupModal";
 
 const useStyle = makeStyles(() => ({
   dropDowns: {
@@ -128,7 +108,8 @@ const Print = () => {
   const [category, setCategory] = useState("");
   const [fromDate, setFromDate] = useState(formattedDate);
   const [toDate, setToDate] = useState(formattedNextDay);
-  const [uploadDate, setUploadDate] = useState(null);
+  const [uploadFromDate, setUploadFromDate] = useState(null);
+  const [uploadToDate, setUploadToDate] = useState(null);
   const [publicationGroup, setPublicationGroup] = useState("");
   const [publication, setPublication] = useState("");
   const [pubType, setPubType] = useState("");
@@ -138,7 +119,6 @@ const Print = () => {
   const [qc1By, setQc1By] = useState("");
   const [photo, setPhoto] = useState("");
   const [graph, setGraph] = useState("");
-  // const [articleType, setArticleType] = useState("");
   const [stitched, setStitched] = useState("");
   const [tv, setTv] = useState("");
   const [articleId, setArticleId] = useState("");
@@ -450,17 +430,18 @@ const Print = () => {
         </div>
       ),
     },
-    { field: "article_id", headerName: "Article ID", width: 160 },
-    { field: "article_date", headerName: "Article Date", width: 150 },
-    { field: "publication_name", headerName: "Publication Name", width: 200 },
-    { field: "page_number", headerName: "Pages", width: 80 },
-    { field: "pdfSize", headerName: "PDF Size", width: 100 },
     {
       field: "journalist",
       headerName: "Journalist",
       width: 150,
       editable: true,
     },
+    { field: "article_id", headerName: "Article ID", width: 160 },
+    { field: "article_date", headerName: "Article Date", width: 150 },
+    { field: "publication_name", headerName: "Publication Name", width: 200 },
+    { field: "page_number", headerName: "Pages", width: 80 },
+    { field: "pdfSize", headerName: "PDF Size", width: 100 },
+
     { field: "uploadTime", headerName: "Upload Time", width: 150 },
     { field: "main_id", headerName: "System Id", width: 150 },
     {
@@ -520,8 +501,8 @@ const Print = () => {
       const params = {
         // comp params
         client_id: selectedClient,
-        from_date: fromDate,
-        to_date: toDate,
+        from_date: convertDateFormat(fromDate),
+        to_date: convertDateFormat(toDate),
         // with_category: withCategory,
         // date_type: "ARTICLE",
         // optional params
@@ -602,11 +583,19 @@ const Print = () => {
         arrayToString(selectedLanguages),
         params
       );
+
       addPropertyIfConditionIsTrue(
         params,
-        uploadDate !== null,
-        "upload_date",
-        uploadDate,
+        uploadFromDate !== null,
+        "upload_from_date",
+        convertDateFormat(uploadFromDate),
+        params
+      );
+      addPropertyIfConditionIsTrue(
+        params,
+        uploadToDate !== null,
+        "upload_to_date",
+        convertDateFormat(uploadToDate),
         params
       );
       addPropertyIfConditionIsTrue(
@@ -700,9 +689,9 @@ const Print = () => {
     withCategory,
     setGridDataLoading,
     articleId,
-    // articleType,
     systemArticleId,
-    uploadDate,
+    uploadFromDate,
+    uploadToDate,
     category,
     graph,
     pageNumber,
@@ -732,16 +721,24 @@ const Print = () => {
     setSelectedItems(selectedItem);
     setSelectionModal(ids);
   };
-
   // * group selected articles
+  const [openGroupModal, setGroupModal] = useState(false);
+  const handleGroupModalOpen = () => {
+    setGroupModal(true);
+  };
   const [groupLoading, setGroupLoading] = useState(false);
+  const [selectionModalForGroup, setSelectionModalForGroup] = useState([]);
+
   const handleClickGroupItems = async () => {
     if (selectedItems.length === 1) {
       toast.warning("Select more than one article.");
       return;
     }
-    const parentId = selectedItems[0].id;
-    const childrenIds = selectedItems.slice(1).map((item) => item.id);
+    if (!selectionModalForGroup.length)
+      return toast.warning("Please select parent Article.");
+    const parentId = selectionModalForGroup[0];
+    const bulkChildrenIds = selectedItems.map((item) => item.id);
+    const childrenIds = bulkChildrenIds.filter((i) => i !== parentId);
 
     try {
       setGroupLoading(true);
@@ -756,6 +753,8 @@ const Print = () => {
       );
       if (response.data.status?.success?.length) {
         toast.success("Articles grouped successfully.");
+        fetchListArticleByQC1Print();
+        setGroupModal(false);
         setSelectionModal([]);
         setSelectedItems([]);
       } else {
@@ -781,6 +780,7 @@ const Print = () => {
       return []; // Return empty array or handle error as needed
     }
   };
+
   const handleClickUnGroupItems = async () => {
     if (selectedItems.length !== 1)
       return toast.warning("Please select only one item.");
@@ -890,16 +890,14 @@ const Print = () => {
         <GridToolbarFilterButton />
         <GridToolbarDensitySelector />
         <GridToolbarQuickFilter />
-        {/* Export button is not included */}
       </GridToolbarContainer>
     );
   }
 
-  // * test
+  //* inline editing
   const apiRef = useGridApiRef();
 
   const [hasUnsavedRows, setHasUnsavedRows] = useState(false);
-  // const [isSaving, setIsSaving] = useState(false);
   const unsavedChangesRef = useRef({
     unsavedRows: {},
     rowsBeforeChange: {},
@@ -955,10 +953,9 @@ const Print = () => {
 
       const data = {
         data: requestData,
-        qcflag: 1,
       };
 
-      const response = await axios.post(`${url}updatearticleheader/`, data, {
+      const response = await axios.post(`${url}updateqc1printheader/`, data, {
         headers,
       });
 
@@ -984,6 +981,10 @@ const Print = () => {
       : "";
   };
 
+  // * add companies
+  const [openAddCompanies, setOpenAddCompanies] = useState(false);
+  const [selectedArticleIds, setSelectedArticleIds] = useState([]);
+
   const isShowSecondAccordion =
     selectedItems.length > 0 ||
     Object.keys(unsavedChangesRef.current.unsavedRows).length > 0;
@@ -999,240 +1000,7 @@ const Print = () => {
           Search Filters
         </AccordionSummary>
         <AccordionDetails>
-          <Box
-            sx={{
-              display: "flex",
-              alignItems: "center",
-              flexWrap: "wrap",
-              gap: 1,
-            }}
-          >
-            <Typography
-              component={"div"}
-              className={classes.componentHeight}
-              sx={{ pt: 1 }}
-            >
-              <Client
-                label="Client"
-                client={selectedClient}
-                setClient={setSelectedClient}
-                width={300}
-                setCompanies={setSelectedCompanies}
-              />
-            </Typography>
-            <Typography component={"div"} className={classes.componentHeight}>
-              <Company
-                companyData={data?.data?.companies || []}
-                companies={selectedCompanies}
-                setCompanies={setSelectedCompanies}
-                isMt={true}
-              />
-            </Typography>
-            <Typography component={"div"} className={classes.componentHeight}>
-              <Category
-                category={withCategory}
-                setCategory={setWithCategory}
-                classes={classes}
-                width={150}
-              />
-            </Typography>
-            <Typography
-              component={"div"}
-              className={classes.componentHeight}
-              sx={{ pt: 0.7 }}
-            >
-              <SearchableCategory
-                label="Category"
-                setCategory={setCategory}
-                category={category}
-                width={150}
-                endpoint="categorylist"
-              />
-            </Typography>
-            <Typography component={"div"} className={classes.componentHeight}>
-              <FromDate fromDate={fromDate} setFromDate={setFromDate} />
-            </Typography>
-            <Typography component={"div"} className={classes.componentHeight}>
-              <ToDate dateNow={toDate} setDateNow={setToDate} isMargin={true} />
-            </Typography>
-            <Typography component={"div"} className={classes.componentHeight}>
-              <Cities
-                classes={classes}
-                city={selectedCity}
-                setCity={setSelectedCity}
-              />
-            </Typography>
-            <Typography component={"div"} className={classes.componentHeight}>
-              <Languages
-                language={selectedLanguages}
-                setLanguage={setSelectedLanguages}
-                classes={classes}
-              />
-            </Typography>
-            <Typography
-              component={"div"}
-              className={`${classes.componentHeight} pt-3`}
-            >
-              {/* <FromDate fromDate={uploadDate} setFromDate={setUploadDate} /> */}
-              <input
-                className="border border-gray-400 rounded-[3px] h-6 text-[0.8em] w-[180px] px-2"
-                type="datetime-local"
-                id="dateTimeInput"
-                name="dateTimeInput"
-                value={uploadDate}
-                onChange={(e) => setUploadDate(e.target.value)}
-              />
-            </Typography>
-            <Typography component={"div"} className={classes.componentHeight}>
-              <CustomDebounceDropdown
-                publicationGroup={publicationGroup}
-                setPublicationGroup={setPublicationGroup}
-                bg="secondory"
-                m="mt-3"
-              />
-            </Typography>
-            <Typography component={"div"} className={classes.componentHeight}>
-              <Publication
-                publicationGroup={publicationGroup}
-                publication={publication}
-                setPublication={setPublication}
-                classes={classes}
-                width={150}
-              />
-            </Typography>
-            <Typography component={"div"} className={classes.componentHeight}>
-              <PubType
-                pubType={pubType}
-                setPubType={setPubType}
-                classes={classes}
-                width={150}
-              />
-            </Typography>
-            <Typography component={"div"} className={classes.componentHeight}>
-              <Qc1All
-                qc1done={qc1Done}
-                setQc1done={setQc1Done}
-                classes={classes}
-                qc1Array={qc1Array}
-              />
-            </Typography>
-            <Typography component={"div"} className={classes.componentHeight}>
-              <Qc1By
-                qcUsersData={userList}
-                qc1by={qc1By}
-                setQc1by={setQc1By}
-                classes={classes}
-                pageType={"print"}
-              />
-            </Typography>
-
-            <Typography component={"div"} className={classes.componentHeight}>
-              <YesOrNo
-                classes={classes}
-                mapValue={["Yes", "No", "All"]}
-                placeholder="Photo"
-                value={photo}
-                setValue={setPhoto}
-                width={100}
-              />
-            </Typography>
-            <Typography component={"div"} className={classes.componentHeight}>
-              <YesOrNo
-                classes={classes}
-                mapValue={["Yes", "No", "All"]}
-                placeholder="Graph"
-                value={graph}
-                setValue={setGraph}
-                width={100}
-              />
-            </Typography>
-            <Typography component={"div"} className={classes.componentHeight}>
-              <YesOrNo
-                classes={classes}
-                mapValue={["Yes", "No", "All"]}
-                placeholder="Stitch"
-                value={stitched}
-                setValue={setStitched}
-                width={100}
-              />
-            </Typography>
-            <Typography component={"div"} className={classes.componentHeight}>
-              <YesOrNo
-                classes={classes}
-                mapValue={["Yes", "No", "All"]}
-                placeholder="TV"
-                value={tv}
-                setValue={setTv}
-                width={100}
-              />
-            </Typography>
-            <Typography
-              component={"div"}
-              className={classes.componentHeight}
-              sx={{ pt: 1 }}
-            >
-              <FormGroup>
-                <FormControlLabel
-                  label={
-                    <Typography variant="h6" fontSize={"0.9em"}>
-                      No company
-                    </Typography>
-                  }
-                  control={
-                    <Checkbox
-                      size="small"
-                      checked={isNoCompany}
-                      onChange={() => setIsNoCompany((prev) => !prev)}
-                    />
-                  }
-                />
-              </FormGroup>
-            </Typography>
-
-            <Typography
-              component={"div"}
-              className={classes.componentHeight}
-              sx={{ gap: 1, pt: 1 }}
-            >
-              <CustomTextField
-                placeholder={"ArticleId"}
-                // type={"number"}
-                width={100}
-                value={articleId}
-                setValue={setArticleId}
-              />
-              <CustomTextField
-                placeholder={"SystemArticleId"}
-                type={"number"}
-                width={100}
-                value={systemArticleId}
-                setValue={setSystemArticleId}
-              />
-              <CustomTextField
-                placeholder={"PageNumber"}
-                type={"number"}
-                width={100}
-                value={pageNumber}
-                setValue={setPageNumber}
-              />
-              <CustomTextField
-                placeholder={"Search Keyword"}
-                type={"text"}
-                width={200}
-                value={searchKeyword}
-                setValue={setSearchKeyword}
-              />
-            </Typography>
-
-            <Typography component={"div"} className={classes.componentHeight}>
-              <Button
-                btnText={gridDataLoading ? "Searching" : "Search"}
-                onClick={fetchListArticleByQC1Print}
-                isLoading={gridDataLoading}
-              />
-            </Typography>
-          </Box>
-          {/* <SearchFilters
+          <SearchFilters
             classes={classes}
             selectedClient={selectedClient}
             setSelectedClient={setSelectedClient}
@@ -1241,14 +1009,53 @@ const Print = () => {
             selectedCompanies={selectedCompanies}
             withCategory={withCategory}
             setWithCategory={setWithCategory}
+            category={category}
+            setCategory={setCategory}
             fromDate={fromDate}
+            setFromDate={setFromDate}
             toDate={toDate}
             setToDate={setToDate}
-            uploadDate={uploadDate}
-            setUploadDate={setUploadDate}
+            uploadFromDate={uploadFromDate}
+            setUploadFromDate={setUploadFromDate}
+            uploadToDate={uploadToDate}
+            setUploadToDate={setUploadToDate}
             publicationGroup={publicationGroup}
             setPublicationGroup={setPublicationGroup}
-          /> */}
+            publication={publication}
+            setPublication={setPublication}
+            pubType={pubType}
+            setPubType={setPubType}
+            qc1Done={qc1Done}
+            setQc1Done={setQc1Done}
+            qc1Array={qc1Array}
+            qcUserData={userList}
+            qc1By={qc1By}
+            setQc1By={setQc1By}
+            selectedCity={selectedCity}
+            setSelectedCity={setSelectedCity}
+            selectedLanguages={selectedLanguages}
+            setSelectedLanguages={setSelectedLanguages}
+            photo={photo}
+            setPhoto={setPhoto}
+            graph={graph}
+            setGraph={setGraph}
+            stitched={stitched}
+            setStitched={setStitched}
+            tv={tv}
+            setTv={setTv}
+            isNoCompany={isNoCompany}
+            setIsNoCompany={setIsNoCompany}
+            articleId={articleId}
+            setArticleId={setArticleId}
+            systemArticleId={systemArticleId}
+            setSystemArticleId={setSystemArticleId}
+            pageNumber={pageNumber}
+            setPageNumber={setPageNumber}
+            searchKeyword={searchKeyword}
+            setSearchKeyword={setSearchKeyword}
+            gridDataLoading={gridDataLoading}
+            fetchListArticleByQC1Print={fetchListArticleByQC1Print}
+          />
         </AccordionDetails>
       </Accordion>
       {!!isShowSecondAccordion && (
@@ -1264,7 +1071,7 @@ const Print = () => {
             <Button
               btnText={groupLoading ? "Loading" : "group"}
               icon={<AttachFileOutlined />}
-              onClick={handleClickGroupItems}
+              onClick={handleGroupModalOpen}
               isLoading={groupLoading}
             />
             <Button
@@ -1274,12 +1081,21 @@ const Print = () => {
               isLoading={unGroupLoading}
             />
             <Button
+              btnText="Add & Remove Companies"
+              onClick={() => {
+                setSelectedArticleIds(selectedItems.map((i) => i.id));
+                setOpenAddCompanies(true);
+              }}
+            />
+            {/* <Button
               btnText={removeLoading ? "Removing" : "Remove Companies"}
               icon={<CloseOutlined />}
               onClick={handleClickOpen}
               isLoading={removeLoading}
               isDanger
-            />
+            /> */}
+            <Button btnText="Stitch" />
+            <Button btnText="UnStitch" />
             <Button
               btnText={saveLoading ? "Saving" : "Save"}
               // icon={<ControlCameraOutlined />}
@@ -1340,6 +1156,22 @@ const Print = () => {
         setOpen={setOpen}
         row={selectedRow}
         rowNumber={articleNumber}
+      />
+      <GroupModal
+        openGroupModal={openGroupModal}
+        setOpenGroupModal={setGroupModal}
+        selectedItems={selectedItems}
+        screen="print"
+        selectionModelForGroup={selectionModalForGroup}
+        setSelectionModelForGroup={setSelectionModalForGroup}
+        handleSave={handleClickGroupItems}
+        groupLoading={groupLoading}
+      />
+      <AddCompaniesModal
+        open={openAddCompanies}
+        setOpen={setOpenAddCompanies}
+        selectedRows={selectedArticleIds}
+        setSelectedRows={setSelectedArticleIds}
       />
       <div>
         <Dialog open={openDelete} onClose={handleCloseDelete}>

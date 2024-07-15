@@ -807,6 +807,7 @@ const Online = () => {
         openGroupModal={openGroupModal}
         setOpenGroupModal={setGroupModal}
         selectedItems={selectedItems}
+        screen="online"
       />
     </Box>
   );

@@ -2,18 +2,18 @@ import * as React from "react";
 import { useContext } from "react";
 import { NavLink, useLocation, useNavigate } from "react-router-dom";
 
-import { toast } from "react-toastify";
-import { styled, alpha } from "@mui/material/styles";
+// import { toast } from "react-toastify";
+// import { styled, alpha } from "@mui/material/styles";
 import AppBar from "@mui/material/AppBar";
 import Box from "@mui/material/Box";
 import Toolbar from "@mui/material/Toolbar";
 import IconButton from "@mui/material/IconButton";
 import Typography from "@mui/material/Typography";
-import InputBase from "@mui/material/InputBase";
+// import InputBase from "@mui/material/InputBase";
 import MenuItem from "@mui/material/MenuItem";
 import Menu from "@mui/material/Menu";
 import MenuIcon from "@mui/icons-material/Menu";
-import SearchIcon from "@mui/icons-material/Search";
+// import SearchIcon from "@mui/icons-material/Search";
 import AccountCircle from "@mui/icons-material/AccountCircle";
 import UploadFileIcon from "@mui/icons-material/UploadFile";
 import BookmarkBorderIcon from "@mui/icons-material/BookmarkBorder";
@@ -38,45 +38,45 @@ import { FaDumpster } from "react-icons/fa";
 import { ResearchContext } from "../../context/ContextProvider";
 import { getInitials } from "../../utils/getInitialName";
 
-const Search = styled("div")(({ theme }) => ({
-  position: "relative",
-  borderRadius: theme.shape.borderRadius,
-  backgroundColor: alpha(theme.palette.common.white, 0.15),
-  "&:hover": {
-    backgroundColor: alpha(theme.palette.common.white, 0.25),
-  },
-  marginRight: theme.spacing(2),
-  marginLeft: 0,
-  width: "100%",
-  [theme.breakpoints.up("sm")]: {
-    marginLeft: theme.spacing(3),
-    width: "auto",
-  },
-}));
+// const Search = styled("div")(({ theme }) => ({
+//   position: "relative",
+//   borderRadius: theme.shape.borderRadius,
+//   backgroundColor: alpha(theme.palette.common.white, 0.15),
+//   "&:hover": {
+//     backgroundColor: alpha(theme.palette.common.white, 0.25),
+//   },
+//   marginRight: theme.spacing(2),
+//   marginLeft: 0,
+//   width: "100%",
+//   [theme.breakpoints.up("sm")]: {
+//     marginLeft: theme.spacing(3),
+//     width: "auto",
+//   },
+// }));
 
-const SearchIconWrapper = styled("div")(({ theme }) => ({
-  padding: theme.spacing(0, 2),
-  height: "100%",
-  position: "absolute",
-  pointerEvents: "none",
-  display: "flex",
-  alignItems: "center",
-  justifyContent: "center",
-}));
+// const SearchIconWrapper = styled("div")(({ theme }) => ({
+//   padding: theme.spacing(0, 2),
+//   height: "100%",
+//   position: "absolute",
+//   pointerEvents: "none",
+//   display: "flex",
+//   alignItems: "center",
+//   justifyContent: "center",
+// }));
 
-const StyledInputBase = styled(InputBase)(({ theme }) => ({
-  color: "inherit",
-  "& .MuiInputBase-input": {
-    padding: theme.spacing(1, 1, 1, 0),
-    // vertical padding + font size from searchIcon
-    paddingLeft: `calc(1em + ${theme.spacing(4)})`,
-    transition: theme.transitions.create("width"),
-    width: "100%",
-    [theme.breakpoints.up("md")]: {
-      width: "20ch",
-    },
-  },
-}));
+// const StyledInputBase = styled(InputBase)(({ theme }) => ({
+//   color: "inherit",
+//   "& .MuiInputBase-input": {
+//     padding: theme.spacing(1, 1, 1, 0),
+//     // vertical padding + font size from searchIcon
+//     paddingLeft: `calc(1em + ${theme.spacing(4)})`,
+//     transition: theme.transitions.create("width"),
+//     width: "100%",
+//     [theme.breakpoints.up("md")]: {
+//       width: "20ch",
+//     },
+//   },
+// }));
 
 export default function MainNav() {
   const navigate = useNavigate();
@@ -88,7 +88,7 @@ export default function MainNav() {
   const [anchorEl, setAnchorEl] = React.useState(null);
   const [mobileMoreAnchorEl, setMobileMoreAnchorEl] = React.useState(null);
   const [open, setOpen] = React.useState(false);
-  const [searchValue, setSearchValue] = React.useState();
+  // const [searchValue, setSearchValue] = React.useState();
   // const [filteredNavItems, setFilteredNavItems] = React.useState([]);
 
   // * vars
@@ -204,23 +204,23 @@ export default function MainNav() {
     handleLogout();
   };
 
-  const handleSearchValue = React.useCallback((event) => {
-    const { value } = event.target;
-    setSearchValue(value);
-  }, []);
+  // const handleSearchValue = React.useCallback((event) => {
+  //   const { value } = event.target;
+  //   setSearchValue(value);
+  // }, []);
 
-  const handleEnterKeyPress = (event) => {
-    if (event.key === "Enter") {
-      const foundItem = navList.find(
-        (item) => item.title.toLowerCase() === searchValue.toLowerCase()
-      );
-      if (foundItem) {
-        navigate(foundItem.path);
-      } else {
-        toast.error("No such page found.");
-      }
-    }
-  };
+  // const handleEnterKeyPress = (event) => {
+  //   if (event.key === "Enter") {
+  //     const foundItem = navList.find(
+  //       (item) => item.title.toLowerCase() === searchValue.toLowerCase()
+  //     );
+  //     if (foundItem) {
+  //       navigate(foundItem.path);
+  //     } else {
+  //       toast.error("No such page found.");
+  //     }
+  //   }
+  // };
 
   const menuId = "primary-search-account-menu";
   const renderMenu = (
@@ -279,10 +279,12 @@ export default function MainNav() {
     <Box sx={{ width: 200 }} role="presentation" onClick={toggleDrawer(false)}>
       <List>
         {navList.map((item) => (
-          <ListItem key={item.id} disablePadding>
+          <ListItem key={item.id} disablePadding sx={{ width: 180 }}>
             <NavLink
               to={item.path}
-              className={location.pathname === item.path && "bg-primary"}
+              className={
+                location.pathname === item.path && "bg-primary text-gray-300"
+              }
             >
               <ListItemButton
                 onClick={(e) => {
@@ -300,7 +302,17 @@ export default function MainNav() {
                   }
                 }}
               >
-                <ListItemIcon>{item.icon}</ListItemIcon>
+                <ListItemIcon>
+                  {" "}
+                  <span
+                    className={
+                      location.pathname === item.path &&
+                      "bg-primary text-gray-300"
+                    }
+                  >
+                    {item.icon}
+                  </span>
+                </ListItemIcon>
                 <ListItemText primary={item.title} />
               </ListItemButton>
             </NavLink>
@@ -309,6 +321,10 @@ export default function MainNav() {
       </List>
     </Box>
   );
+
+  const activeTabTitle = navList.find(
+    (item) => item.path === location.pathname
+  )?.title;
 
   return (
     <Box sx={{ flexGrow: 1 }}>
@@ -352,7 +368,16 @@ export default function MainNav() {
                 </>
               )}
             </Typography>
-            <Search>
+
+            <Typography
+              component={"span"}
+              ml={5}
+              className="italic border-b border-gray-400 hover:border-gray-600"
+            >
+              {activeTabTitle}
+            </Typography>
+
+            {/* <Search>
               <SearchIconWrapper>
                 <SearchIcon />
               </SearchIconWrapper>
@@ -363,7 +388,7 @@ export default function MainNav() {
                 onChange={handleSearchValue}
                 onKeyDown={handleEnterKeyPress}
               />
-            </Search>
+            </Search> */}
 
             <Box sx={{ flexGrow: 1 }} />
             <Box sx={{ display: { xs: "none", md: "flex" } }}>
