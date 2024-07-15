@@ -24,12 +24,16 @@ const AddCompaniesModal = ({
   const [selectedCompany, setSelectedCompany] = useState(null);
   const [addCompanyLoading, setAddCompanyLoading] = useState(false);
 
+  console.log(fetchedCompanies);
+  console.log(selectedRows);
+
   // * fetch tagged companies
   const fetchTaggedCompanies = async () => {
+    const sample = [83841411, 83839685, 83650608];
     try {
       setFetchLoading(true);
       const params = {
-        article_ids: arrayToString(selectedRows),
+        article_ids: arrayToString(sample),
       };
       const userToken = localStorage.getItem("user");
       const response = await axios.get(`${url}taggedcompaniesprint/`, {
@@ -81,6 +85,26 @@ const AddCompaniesModal = ({
 
   const handleDeleteRow = async (row) => {
     console.log(row);
+    try {
+      const sample = [83841411, 83839685, 83650608];
+      const userToken = localStorage.getItem("user");
+      const company_id = row?.company_id;
+      const request_data = {
+        article_ids: arrayToString(sample),
+        company_id,
+      };
+      const response = await axios.delete(
+        `${url}modifycompanyforprintarticles/`,
+        // request_data,
+        {
+          headers: { Authorization: `Bearer ${userToken}` },
+          params: request_data,
+        }
+      );
+      console.log(response);
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   const columns = [
@@ -100,12 +124,37 @@ const AddCompaniesModal = ({
     { field: "keyword", headerName: "Keyword", width: 250 },
   ];
 
-  const rows = fetchedCompanies.map((i, index) => ({
-    id: index,
-    company: i.company_name,
-    article_id: i.article_id,
-    keyword: i.keyword,
-  }));
+  const rows = [];
+
+  fetchedCompanies.forEach((company, index) => {
+    if (company.keyword_article_pair) {
+      company.keyword_article_pair.forEach((pair) => {
+        rows.push({
+          id: rows.length,
+          company: company.company_name,
+          article_id: pair.article_id,
+          keyword: pair.keyword,
+          company_id: company.company_id,
+        });
+      });
+    } else if (company.keyword) {
+      rows.push({
+        id: rows.length,
+        company: company.company_name,
+        article_id: null,
+        keyword: company.keyword,
+        company_id: company.company_id,
+      });
+    } else {
+      rows.push({
+        id: rows.length,
+        company: company.company_name,
+        article_id: null,
+        keyword: null,
+        company_id: company.company_id,
+      });
+    }
+  });
   const handleClose = () => {
     setOpen(false);
     setSelectedRows([]);
