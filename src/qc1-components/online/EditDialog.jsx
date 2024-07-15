@@ -28,7 +28,7 @@ import axios from "axios";
 import { url } from "../../constants/baseUrl";
 import { toast } from "react-toastify";
 import Button from "../../components/custom/Button";
-import PDFViewer from "../components/PDFViewer";
+// import PDFViewer from "../components/PDFViewer";
 // import PDFViewer from "../components/PDFViewer";
 const style = {
   position: "absolute",
