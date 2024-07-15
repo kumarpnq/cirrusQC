@@ -106,16 +106,24 @@ const AddCompaniesModal = ({
   };
 
   const columns = [
-    //   { field: "id", headerName: "ID", width: 90 },
+    // { field: "id", headerName: "ID", width: 90 },
     {
       field: "action",
       headerName: "Action",
       width: 50,
-      renderCell: (params) => (
-        <IconButton color="error" onClick={() => handleDeleteRow(params.row)}>
-          <GridCloseIcon />
-        </IconButton>
-      ),
+      renderCell: (params) => {
+        if (params.row.showAction) {
+          return (
+            <IconButton
+              color="error"
+              onClick={() => handleDeleteRow(params.row)}
+            >
+              <GridCloseIcon />
+            </IconButton>
+          );
+        }
+        return null;
+      },
     },
     { field: "company", headerName: "Company", width: 150 },
     { field: "article_id", headerName: "Article ID", width: 150 },
@@ -125,15 +133,19 @@ const AddCompaniesModal = ({
   const rows = [];
 
   fetchedCompanies.forEach((company, index) => {
+    let firstPair = true; // Flag to check if it's the first row for pairs
     if (company.keyword_article_pair) {
       company.keyword_article_pair.forEach((pair) => {
         rows.push({
           id: rows.length,
-          company: company.company_name,
+          company: firstPair ? company.company_name : "", // Show company name only for the first pair
           article_id: pair.article_id,
           keyword: pair.keyword,
           company_id: company.company_id,
+          isPairFlag: true,
+          showAction: firstPair, // Show action button only for the first pair
         });
+        firstPair = false; // Set the flag to false after the first iteration
       });
     } else if (company.keyword) {
       rows.push({
@@ -142,6 +154,8 @@ const AddCompaniesModal = ({
         article_id: null,
         keyword: company.keyword,
         company_id: company.company_id,
+        isPairFlag: false,
+        showAction: true, // Show action button since there's no pair
       });
     } else {
       rows.push({
@@ -150,9 +164,12 @@ const AddCompaniesModal = ({
         article_id: null,
         keyword: null,
         company_id: company.company_id,
+        isPairFlag: false,
+        showAction: true, // Show action button since there's no pair
       });
     }
   });
+
   const handleClose = () => {
     setOpen(false);
     setSelectedRows([]);
