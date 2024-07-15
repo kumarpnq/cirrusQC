@@ -26,11 +26,10 @@ const AddCompaniesModal = ({
 
   // * fetch tagged companies
   const fetchTaggedCompanies = async () => {
-    const sample = [83841411, 83839685, 83650608];
     try {
       setFetchLoading(true);
       const params = {
-        article_ids: arrayToString(sample),
+        article_ids: arrayToString(selectedRows),
       };
       const userToken = localStorage.getItem("user");
       const response = await axios.get(`${url}taggedcompaniesprint/`, {
@@ -82,11 +81,10 @@ const AddCompaniesModal = ({
 
   const handleDeleteRow = async (row) => {
     try {
-      const sample = [83841411, 83839685, 83650608];
       const userToken = localStorage.getItem("user");
       const company_id = row?.company_id;
       const request_data = {
-        article_ids: arrayToString(sample),
+        article_ids: arrayToString(selectedRows),
         company_id,
       };
       const response = await axios.delete(
