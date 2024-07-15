@@ -3,7 +3,7 @@ import { Accordion, AccordionSummary, AccordionDetails } from "@mui/material";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import AttachFileOutlined from "@mui/icons-material/AttachFileOutlined";
 import ControlCameraOutlined from "@mui/icons-material/ControlCameraOutlined";
-import Button from "./Button"; // Adjust the import path as necessary
+import Button from "../../components/custom/Button";
 
 const GroupUnGroupAccordion = ({
   isShowSecondAccordion,
