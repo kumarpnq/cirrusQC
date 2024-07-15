@@ -24,9 +24,6 @@ const AddCompaniesModal = ({
   const [selectedCompany, setSelectedCompany] = useState(null);
   const [addCompanyLoading, setAddCompanyLoading] = useState(false);
 
-  console.log(fetchedCompanies);
-  console.log(selectedRows);
-
   // * fetch tagged companies
   const fetchTaggedCompanies = async () => {
     const sample = [83841411, 83839685, 83650608];
@@ -84,7 +81,6 @@ const AddCompaniesModal = ({
   };
 
   const handleDeleteRow = async (row) => {
-    console.log(row);
     try {
       const sample = [83841411, 83839685, 83650608];
       const userToken = localStorage.getItem("user");
@@ -101,9 +97,13 @@ const AddCompaniesModal = ({
           params: request_data,
         }
       );
-      console.log(response);
+      if (response) {
+        toast.success("Company removed.");
+        fetchTaggedCompanies();
+      }
     } catch (error) {
       console.log(error);
+      toast.error("Something went wrong.");
     }
   };
 
