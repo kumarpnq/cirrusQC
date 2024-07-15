@@ -836,7 +836,7 @@ const Print = () => {
         setSelectedRows={setSelectedArticleIds}
       />
       <DeleteConfirmationDialog
-        open={open}
+        open={openDelete}
         handleClose={handleCloseDelete}
         password={password}
         setPassword={setPassword}
