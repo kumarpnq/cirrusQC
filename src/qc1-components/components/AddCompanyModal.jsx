@@ -66,11 +66,9 @@ const AddCompaniesModal = ({
         request_data,
         { headers: { Authorization: `Bearer ${userToken}` } }
       );
-      if (response.data?.result?.success?.length) {
+      if (response) {
         toast.success("Company added");
         fetchTaggedCompanies();
-      } else {
-        toast.warning("Something wrong try again.");
       }
     } catch (error) {
       console.log(error);

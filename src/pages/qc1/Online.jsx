@@ -1,3 +1,5 @@
+// * print component is inside the qc1-components/components/online
+
 import { useCallback, useEffect, useState } from "react";
 import {
   Box,
@@ -8,7 +10,6 @@ import {
   DialogTitle,
   Divider,
   IconButton,
-  Modal,
   TextField,
 } from "@mui/material";
 import Accordion from "@mui/material/Accordion";
@@ -90,20 +91,6 @@ const iconCellStyle = {
   justifyContent: "center",
   alignItems: "center",
   height: "100%",
-};
-
-const groupModalStyle = {
-  position: "absolute",
-  top: "50%",
-  left: "50%",
-  transform: "translate(-50%, -50%)",
-  width: 400,
-  bgcolor: "background.paper",
-  border: "2px solid #000",
-  boxShadow: 24,
-  pt: 2,
-  px: 4,
-  pb: 3,
 };
 
 const Online = () => {
@@ -539,6 +526,23 @@ const Online = () => {
       </GridToolbarContainer>
     );
   }
+  // * buttons permission
+  const [buttonsPermission, setButtonsPermission] = useState(null);
+  useEffect(() => {
+    const fetchPermission = async () => {
+      try {
+        const response = await axios.get(
+          `${url}buttonspermissions/?screen=print`,
+          { headers }
+        );
+        setButtonsPermission(response.data.permission_data[0]);
+      } catch (error) {
+        console.log(error.message);
+      }
+    };
+    fetchPermission();
+  }, []);
+  console.log(buttonsPermission);
 
   return (
     <Box mx={2}>

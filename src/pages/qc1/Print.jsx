@@ -1,35 +1,14 @@
+// * print component is inside the qc1-components/components/online
+
 import { useCallback, useEffect, useRef, useState } from "react";
 import axios from "axios";
 import { toast } from "react-toastify";
-import { Link } from "react-router-dom";
-import {
-  Box,
-  CircularProgress,
-  ClickAwayListener,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogTitle,
-  Divider,
-  IconButton,
-  Paper,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
-  TextField,
-  Tooltip,
-} from "@mui/material";
-import Popper from "@mui/material/Popper";
+import { Box, Divider } from "@mui/material";
 import Accordion from "@mui/material/Accordion";
 import AccordionSummary from "@mui/material/AccordionSummary";
 import AccordionDetails from "@mui/material/AccordionDetails";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
-import AttachmentIcon from "@mui/icons-material/Attachment";
 import {
-  DataGrid,
   GridToolbarColumnsButton,
   GridToolbarContainer,
   GridToolbarDensitySelector,
@@ -40,20 +19,13 @@ import {
 import { makeStyles } from "@mui/styles";
 
 // * icons
-import {
-  AttachFileOutlined,
-  CloseOutlined,
-  ControlCameraOutlined,
-  EditAttributesOutlined,
-} from "@mui/icons-material";
-import PictureAsPdfIcon from "@mui/icons-material/PictureAsPdf";
+import { AttachFileOutlined, ControlCameraOutlined } from "@mui/icons-material";
 import { formattedDate, formattedNextDay } from "../../constants/dates";
 
 // * components
 import useFetchData from "../../hooks/useFetchData";
 import Button from "../../components/custom/Button";
 import EditDialog from "../../qc1-components/online/EditDialog";
-import CustomButton from "../../@core/CustomButton";
 import SearchFilters from "../../qc1-components/online/components/SearchFilters";
 
 // * constants
@@ -65,6 +37,9 @@ import { addPropertyIfConditionIsTrue } from "../../utils/addProprtyIfConditiont
 import { convertDateFormat } from "../../utils/convertDateFormat";
 import AddCompaniesModal from "../../qc1-components/components/AddCompanyModal";
 import GroupModal from "../../qc1-components/online/components/GroupModal";
+import MainTable from "../../qc1-components/online/MainTable";
+import DeleteConfirmationDialog from "../../@core/DeleteDialog";
+import GroupUnGroupAccordion from "../../qc1-components/online/GroupUngroup";
 
 const useStyle = makeStyles(() => ({
   dropDowns: {
@@ -86,13 +61,6 @@ const useStyle = makeStyles(() => ({
     alignItems: "center",
   },
 }));
-
-const iconCellStyle = {
-  display: "flex",
-  justifyContent: "center",
-  alignItems: "center",
-  height: "100%",
-};
 
 const Print = () => {
   // * token and headers
@@ -206,268 +174,6 @@ const Print = () => {
     }));
     setSimilarLoading(false);
   };
-
-  const columns = [
-    {
-      field: "Action",
-      headerName: "Action",
-      width: 160,
-      renderCell: (params) => (
-        <div style={iconCellStyle}>
-          <Box
-            sx={{
-              display: "flex",
-              // flexDirection: "column",
-              alignItems: "center",
-              justifyContent: "left",
-            }}
-          >
-            <Tooltip title="View PDF">
-              <IconButton>
-                <Link
-                  to={`/articleview/download-file/${params.row.link}`}
-                  target="_blank"
-                  rel="noreferrer"
-                >
-                  <PictureAsPdfIcon className="text-primary" />
-                </Link>
-              </IconButton>
-            </Tooltip>
-            <Tooltip title="Edit article">
-              <IconButton onClick={() => handleRowClick(params.row, params.id)}>
-                <EditAttributesOutlined className="text-primary" />
-              </IconButton>
-            </Tooltip>
-            {/* <Grid container spacing={1} justifyContent="center"> */}
-            {/* Top Row */}
-            {/* <Grid item>
-                <Tooltip title="View PDF">
-                  <IconButton>
-                    <Link
-                      to={`/articleview/download-file/${params.row.link}`}
-                      target="_blank"
-                      rel="noreferrer"
-                    >
-                      <PictureAsPdfIcon className="text-primary" />
-                    </Link>
-                  </IconButton>
-                </Tooltip>
-              </Grid>
-              <Grid item>
-                <Tooltip title="View JPG">
-                  <IconButton>
-                    <Link
-                      to={`/articleview/download-file/${params.row.link}`}
-                      target="_blank"
-                      rel="noreferrer"
-                    >
-                      <ImageIcon className="text-primary" />
-                    </Link>
-                  </IconButton>
-                </Tooltip>
-              </Grid> */}
-            {/* </Grid> */}
-            {/* <Grid container spacing={1} justifyContent="center"> */}
-            {/* Bottom Row */}
-            {/* <Grid item>
-                <Tooltip title="View HTML">
-                  <IconButton>
-                    <Link
-                      to={`/articleview/download-file/${params.row.link}`}
-                      target="_blank"
-                      rel="noreferrer"
-                    >
-                      <MdHtml className="text-primary" />
-                    </Link>
-                  </IconButton>
-                </Tooltip>
-              </Grid>
-              <Grid item>
-                <Tooltip title="Edit article">
-                  <IconButton
-                    onClick={() => handleRowClick(params.row, params.id)}
-                  >
-                    <EditAttributesOutlined className="text-primary" />
-                  </IconButton>
-                </Tooltip>
-              </Grid> */}
-            {/* </Grid> */}
-          </Box>
-          {params.row.similar_articles === "Yes" && (
-            <>
-              <Tooltip title="View similar articles">
-                <IconButton
-                  onClick={(event) => handleSimilarClick(event, params)}
-                  aria-describedby={params.id}
-                >
-                  <AttachmentIcon className="text-primary" />
-                </IconButton>
-              </Tooltip>
-              <ClickAwayListener onClickAway={() => handleClickAway(params.id)}>
-                <Popper
-                  id={params.id}
-                  open={Boolean(anchorEls[params.id])}
-                  anchorEl={anchorEls[params.id]}
-                  popperOptions={{
-                    placement: "right-end",
-                    strategy: "absolute",
-                  }}
-                >
-                  <Box
-                    sx={{
-                      p: 1,
-                      bgcolor: "background.paper",
-                      // height: 400,
-                      maxWidth: 500,
-                      maxHeight: 400,
-                      overflow: "scroll",
-                    }}
-                  >
-                    <TableContainer component={Paper}>
-                      <Table
-                        sx={{
-                          color: "white",
-                        }}
-                        className="bg-[#5AACCA]"
-                        aria-label="simple table"
-                      >
-                        <TableHead>
-                          <TableRow>
-                            <TableCell sx={{ color: "#ffff" }}>
-                              Publication
-                            </TableCell>
-                            <TableCell sx={{ color: "#ffff" }}>
-                              Headline
-                            </TableCell>
-                          </TableRow>
-                        </TableHead>
-                        <TableBody>
-                          {similarLoading ? (
-                            <Box
-                              sx={{ display: "flex", justifyContent: "center" }}
-                            >
-                              <CircularProgress />
-                            </Box>
-                          ) : (
-                            <>
-                              {" "}
-                              {childArticles.length ? (
-                                childArticles.map((row, index) => (
-                                  <TableRow key={index}>
-                                    <TableCell sx={{ color: "#ffff" }}>
-                                      {row.publication_name}
-                                    </TableCell>
-                                    <TableCell sx={{ color: "#ffff" }}>
-                                      {row.headline}
-                                    </TableCell>
-                                  </TableRow>
-                                ))
-                              ) : (
-                                <TableCell sx={{ color: "#ffff" }}>
-                                  No Data found
-                                </TableCell>
-                              )}
-                            </>
-                          )}
-                        </TableBody>
-                      </Table>
-                    </TableContainer>
-                  </Box>
-                </Popper>
-              </ClickAwayListener>
-            </>
-          )}
-        </div>
-      ),
-    },
-
-    // {
-    //   field: "Thumbnail",
-    //   headerName: "Thumbnail",
-    //   width: 70,
-    //   renderCell: (params) => (
-    //     <div style={iconCellStyle}>
-    //       <Tooltip
-    //         title={
-    //           <img
-    //             src={
-    //               "https://cirrus.co.in/cirrus/JPGViewID.action?ai=03GURGAON-20240705-TIMES_OF_INDIA-0010-0002.pdf&loginreq=N"
-    //             }
-    //           />
-    //         }
-    //         placement="right"
-    //         arrow
-    //       >
-    //         <img
-    //           src={`https://cirrus.co.in/cirrus/JPGViewID.action?ai=03GURGAON-20240705-TIMES_OF_INDIA-0010-0002.pdf&loginreq=N`}
-    //           style={{ width: "70", height: "80" }}
-    //           title="PDF"
-    //           className="p-1 border rounded-lg"
-    //         />
-    //       </Tooltip>
-    //     </div>
-    //   ),
-    // },
-    {
-      field: "headline",
-      headerName: "Headlines",
-      width: 300,
-      editable: true,
-      renderCell: (params) => (
-        <div style={{ whiteSpace: "pre-wrap", wordWrap: "break-word" }}>
-          {params.value}
-        </div>
-      ),
-    },
-    {
-      field: "head_summary",
-      headerName: "Summary",
-      width: 450,
-      editable: true,
-      renderCell: (params) => (
-        <div style={{ whiteSpace: "pre-wrap", wordWrap: "break-word" }}>
-          {params.value}
-        </div>
-      ),
-    },
-    {
-      field: "journalist",
-      headerName: "Journalist",
-      width: 150,
-      editable: true,
-    },
-    { field: "article_id", headerName: "Article ID", width: 160 },
-    { field: "article_date", headerName: "Article Date", width: 150 },
-    { field: "publication_name", headerName: "Publication Name", width: 200 },
-    { field: "page_number", headerName: "Pages", width: 80 },
-    { field: "pdfSize", headerName: "PDF Size", width: 100 },
-
-    { field: "uploadTime", headerName: "Upload Time", width: 150 },
-    { field: "main_id", headerName: "System Id", width: 150 },
-    {
-      field: "tagTime",
-      headerName: "Tag Time",
-      width: 150,
-      renderCell: (params) => <a href="#">{params.value}</a>,
-    },
-  ];
-
-  const rows = gridData?.map((item, index) => ({
-    id: index,
-    headline: item.headline,
-    head_summary: item.head_summary,
-    article_id: item.article_id,
-    article_date: item.article_date,
-    publication_name: item.publication_name,
-    page_number: item.page_number,
-    pdfSize: item.pdfSize,
-    journalist: item.journalist,
-    uploadTime: item.upload_time,
-    defaultLink: item.default_link,
-    main_id: item.id,
-    similar_articles: item.similar_articles,
-    link: item.link,
-  }));
 
   function mapYesNoAllToBinary(value) {
     switch (value) {
@@ -777,7 +483,7 @@ const Print = () => {
       return response.data.child_articles;
     } catch (error) {
       console.error("Error fetching similar articles:", error);
-      return []; // Return empty array or handle error as needed
+      return [];
     }
   };
 
@@ -985,6 +691,23 @@ const Print = () => {
   const [openAddCompanies, setOpenAddCompanies] = useState(false);
   const [selectedArticleIds, setSelectedArticleIds] = useState([]);
 
+  // * buttons permission
+  const [buttonsPermission, setButtonsPermission] = useState(null);
+  useEffect(() => {
+    const fetchPermission = async () => {
+      try {
+        const response = await axios.get(
+          `${url}buttonspermissions/?screen=online`,
+          { headers }
+        );
+        setButtonsPermission(response.data.permission_data[0]);
+      } catch (error) {
+        console.log(error.message);
+      }
+    };
+    fetchPermission();
+  }, []);
+
   const isShowSecondAccordion =
     selectedItems.length > 0 ||
     Object.keys(unsavedChangesRef.current.unsavedRows).length > 0;
@@ -1058,99 +781,40 @@ const Print = () => {
           />
         </AccordionDetails>
       </Accordion>
-      {!!isShowSecondAccordion && (
-        <Accordion>
-          <AccordionSummary
-            expandIcon={<ExpandMoreIcon />}
-            aria-controls="panel1-content"
-            id="panel1-header"
-          >
-            Group & Un-Group Articles
-          </AccordionSummary>
-          <AccordionDetails sx={{ display: "flex", gap: 1 }}>
-            <Button
-              btnText={groupLoading ? "Loading" : "group"}
-              icon={<AttachFileOutlined />}
-              onClick={handleGroupModalOpen}
-              isLoading={groupLoading}
-            />
-            <Button
-              btnText={unGroupLoading ? "ungrouping" : "ungroup"}
-              icon={<ControlCameraOutlined />}
-              onClick={handleClickUnGroupItems}
-              isLoading={unGroupLoading}
-            />
-            <Button
-              btnText="Add & Remove Companies"
-              onClick={() => {
-                setSelectedArticleIds(selectedItems.map((i) => i.id));
-                setOpenAddCompanies(true);
-              }}
-            />
-            {/* <Button
-              btnText={removeLoading ? "Removing" : "Remove Companies"}
-              icon={<CloseOutlined />}
-              onClick={handleClickOpen}
-              isLoading={removeLoading}
-              isDanger
-            /> */}
-            <Button btnText="Stitch" />
-            <Button btnText="UnStitch" />
-            <Button
-              btnText={saveLoading ? "Saving" : "Save"}
-              // icon={<ControlCameraOutlined />}
-              onClick={handleSaveManualEditedCells}
-              isLoading={saveLoading}
-            />
-          </AccordionDetails>
-        </Accordion>
-      )}
+      <GroupUnGroupAccordion
+        isShowSecondAccordion={isShowSecondAccordion}
+        buttonsPermission={buttonsPermission}
+        groupLoading={groupLoading}
+        handleGroupModalOpen={handleGroupModalOpen}
+        unGroupLoading={unGroupLoading}
+        handleClickUnGroupItems={handleClickGroupItems}
+        setSelectedArticleIds={setSelectedArticleIds}
+        selectedItems={selectedItems}
+        setOpenAddCompanies={setOpenAddCompanies}
+        saveLoading={saveLoading}
+        handleSaveManualEditedCells={handleSaveManualEditedCells}
+      />
 
       <Divider sx={{ mt: 1 }} />
-      <Box sx={{ height: 600, width: "100%", mt: 1 }}>
-        <DataGrid
-          rows={rows}
-          columns={columns}
-          pageSize={5}
-          rowsPerPageOptions={[5]}
-          density="compact"
-          getRowHeight={() => "auto"}
-          checkboxSelection
-          apiRef={apiRef}
-          ignoreValueFormatterDuringExport
-          rowSelectionModel={selectionModal}
-          onRowSelectionModelChange={(ids) => {
-            setSelectionModal(ids);
-            handleSelectionChange(ids);
-          }}
-          sx={{
-            "& .MuiDataGrid-columnHeaders": {
-              fontSize: "0.875rem",
-            },
-            "& .MuiDataGrid-cell": {
-              fontSize: "0.9em",
-            },
-            root: {
-              "& .MuiDataGrid-cell": {
-                whiteSpace: "normal",
-                wordWrap: "break-word",
-              },
-            },
-          }}
-          processRowUpdate={processRowUpdate}
-          loading={gridDataLoading && <CircularProgress />}
-          disableDensitySelector
-          disableColumnSelector
-          disableRowSelectionOnClick
-          slots={{ toolbar: CustomToolbar }}
-          slotProps={{
-            toolbar: {
-              showQuickFilter: true,
-            },
-          }}
-          getRowClassName={getRowClassName}
-        />
-      </Box>
+      {/* Main table */}
+      <MainTable
+        gridData={gridData}
+        apiRef={apiRef}
+        selectionModal={selectionModal}
+        setSelectionModal={setSelectionModal}
+        handleSelectionChange={handleSelectionChange}
+        handleRowClick={handleRowClick}
+        handleSimilarClick={handleSimilarClick}
+        handleClickAway={handleClickAway}
+        anchorEls={anchorEls}
+        similarLoading={similarLoading}
+        childArticles={childArticles}
+        processRowUpdate={processRowUpdate}
+        gridDataLoading={gridDataLoading}
+        CustomToolbar={CustomToolbar}
+        getRowClassName={getRowClassName}
+      />
+
       <EditDialog
         open={open}
         setOpen={setOpen}
@@ -1173,41 +837,14 @@ const Print = () => {
         selectedRows={selectedArticleIds}
         setSelectedRows={setSelectedArticleIds}
       />
-      <div>
-        <Dialog open={openDelete} onClose={handleCloseDelete}>
-          <DialogTitle fontSize={"1em"}>
-            Enter Password For Confirmation.
-          </DialogTitle>
-          <DialogContent>
-            <TextField
-              type="password"
-              sx={{ outline: "none" }}
-              size="small"
-              placeholder="Password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-            />
-          </DialogContent>
-          <DialogActions>
-            <CustomButton
-              btnText="Cancel"
-              onClick={handleCloseDelete}
-              bg={"bg-primary"}
-            />
-            {verificationLoading ? (
-              <Box width={130} display={"flex"} justifyContent={"center"}>
-                <CircularProgress size={20} />
-              </Box>
-            ) : (
-              <CustomButton
-                btnText="Delete"
-                onClick={handleClickRemoveCompanies}
-                bg={"bg-red-500"}
-              />
-            )}
-          </DialogActions>
-        </Dialog>
-      </div>
+      <DeleteConfirmationDialog
+        open={open}
+        handleClose={handleCloseDelete}
+        password={password}
+        setPassword={setPassword}
+        verificationLoading={verificationLoading}
+        handleClickRemove={handleClickRemoveCompanies}
+      />
     </Box>
   );
 };
