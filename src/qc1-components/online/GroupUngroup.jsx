@@ -17,6 +17,8 @@ const GroupUnGroupAccordion = ({
   setOpenAddCompanies,
   saveLoading,
   handleSaveManualEditedCells,
+  stitchLoading,
+  setStitchModalOpen,
 }) => {
   if (!isShowSecondAccordion) {
     return null;
@@ -57,7 +59,13 @@ const GroupUnGroupAccordion = ({
             }}
           />
         )}
-        {buttonsPermission?.stitch === "Yes" && <Button btnText="Stitch" />}
+        {buttonsPermission?.stitch === "Yes" && (
+          <Button
+            btnText="Stitch"
+            isLoading={stitchLoading}
+            onClick={() => setStitchModalOpen(true)}
+          />
+        )}
         {buttonsPermission?.unstitch === "Yes" && <Button btnText="UnStitch" />}
         {buttonsPermission?.save === "Yes" && (
           <Button
@@ -83,6 +91,8 @@ GroupUnGroupAccordion.propTypes = {
   setOpenAddCompanies: PropTypes.func.isRequired,
   saveLoading: PropTypes.bool.isRequired,
   handleSaveManualEditedCells: PropTypes.func.isRequired,
+  stitchLoading: PropTypes.bool.isRequired,
+  setStitchModalOpen: PropTypes.func.isRequired,
 };
 
 export default GroupUnGroupAccordion;

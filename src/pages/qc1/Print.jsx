@@ -385,6 +385,8 @@ const Print = () => {
       toast.error("Error while fetching.");
     } finally {
       setGridDataLoading(false);
+      unsavedChangesRef.current.unsavedRows = {};
+      unsavedChangesRef.current.rowsBeforeChange = {};
     }
   }, [
     selectedClient,
@@ -509,6 +511,7 @@ const Print = () => {
         setSelectionModal([]);
         setSelectedItems([]);
         fetchListArticleByQC1Print();
+
         toast.success("Articles ungrouped successfully.");
       } else {
         toast.warning("Ids not found.");
@@ -655,18 +658,19 @@ const Print = () => {
         return request_data;
       });
 
-      const data = {
-        data: requestData,
-      };
-
-      const response = await axios.post(`${url}updateqc1printheader/`, data, {
-        headers,
-      });
+      const response = await axios.post(
+        `${url}updateqc1printheader/`,
+        requestData,
+        {
+          headers,
+        }
+      );
 
       if (response.data.result?.success?.length) {
         toast.success("Data updated.");
         unsavedChangesRef.current.unsavedRows = {};
         unsavedChangesRef.current.rowsBeforeChange = {};
+        setHasUnsavedRows(false);
         fetchListArticleByQC1Print();
       } else {
         toast.warning("Something went wrong, please try again.");
@@ -677,7 +681,6 @@ const Print = () => {
       setSaveLoading(false);
     }
   };
-
   // * highlight edit rows
   const getRowClassName = (params) => {
     return unsavedChangesRef.current.unsavedRows[params.row.main_id]
@@ -706,9 +709,17 @@ const Print = () => {
     fetchPermission();
   }, []);
 
+  // * stitch modal
+  const [stitchModalOpen, setStitchModalOpen] = useState(false);
+  const [stitchLoading, setStitchLoading] = useState(false);
+  const handleStitchItems = () => {};
+
   const isShowSecondAccordion =
     selectedItems.length > 0 ||
     Object.keys(unsavedChangesRef.current.unsavedRows).length > 0;
+
+  console.log(apiRef);
+  console.log(unsavedChangesRef);
 
   return (
     <Box sx={{ px: 1.5 }}>
@@ -791,6 +802,8 @@ const Print = () => {
         setOpenAddCompanies={setOpenAddCompanies}
         saveLoading={saveLoading}
         handleSaveManualEditedCells={handleSaveManualEditedCells}
+        stitchLoading={stitchLoading}
+        setStitchModalOpen={setStitchModalOpen}
       />
 
       <Divider sx={{ mt: 1 }} />
@@ -818,6 +831,16 @@ const Print = () => {
         setOpen={setOpen}
         row={selectedRow}
         rowNumber={articleNumber}
+      />
+      <GroupModal
+        openGroupModal={stitchModalOpen}
+        setOpenGroupModal={setStitchModalOpen}
+        selectedItems={selectedItems}
+        screen="print"
+        selectionModelForGroup={selectionModalForGroup}
+        setSelectionModelForGroup={setSelectionModalForGroup}
+        handleSave={handleStitchItems}
+        groupLoading={stitchLoading}
       />
       <GroupModal
         openGroupModal={openGroupModal}

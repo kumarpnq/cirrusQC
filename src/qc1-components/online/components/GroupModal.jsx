@@ -2,7 +2,6 @@ import PropTypes from "prop-types";
 import { Box, Modal, Paper, Typography } from "@mui/material";
 import { DataGrid } from "@mui/x-data-grid";
 import Button from "../../../components/custom/Button";
-import { useState } from "react";
 
 const groupModalStyle = {
   position: "absolute",
@@ -115,6 +114,10 @@ GroupModal.propTypes = {
   setOpenGroupModal: PropTypes.func.isRequired,
   selectedItems: PropTypes.array.isRequired,
   screen: PropTypes.string.isRequired,
+  selectionModelForGroup: PropTypes.array.isRequired,
+  setSelectionModelForGroup: PropTypes.func.isRequired,
+  handleSave: PropTypes.func.isRequired,
+  groupLoading: PropTypes.bool.isRequired,
 };
 
 export default GroupModal;
