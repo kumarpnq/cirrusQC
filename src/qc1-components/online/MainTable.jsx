@@ -157,7 +157,7 @@ const MainTable = ({
                       p: 1,
                       bgcolor: "background.paper",
                       // height: 400,
-                      maxWidth: 500,
+                      maxWidth: 700,
                       maxHeight: 400,
                       overflow: "scroll",
                     }}

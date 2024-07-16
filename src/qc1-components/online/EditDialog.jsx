@@ -71,6 +71,9 @@ const EditDialog = ({ open, setOpen, row }) => {
     articleSummary: "",
   });
 
+  // * page for filter articles
+  const [pageNumber, setPageNumber] = useState(null);
+
   // * fetch data
   const fetchHeaderAndTagDetails = async () => {
     try {
@@ -151,6 +154,7 @@ const EditDialog = ({ open, setOpen, row }) => {
       );
       if (response.data.result?.success?.length) {
         toast.success("Data updated.");
+        setOpen(false);
       } else {
         toast.warning("Something wrong try again.");
       }
@@ -161,7 +165,7 @@ const EditDialog = ({ open, setOpen, row }) => {
     }
   };
 
-  const [selectedCompanies, setSelectedCompanies] = useState(null);
+  const [selectedCompanies, setSelectedCompanies] = useState([]);
 
   const handleClose = () => {
     setOpen(false);
@@ -177,18 +181,18 @@ const EditDialog = ({ open, setOpen, row }) => {
 
   // * add new company
   const [addCompanyLoading, setAddCompanyLoading] = useState(false);
+
   const handleAddCompany = async () => {
     try {
       setAddCompanyLoading(true);
+      const dataToSend = selectedCompanies.map((i) => ({
+        UPDATETYPE: "I",
+        ARTICLEID: articleId,
+        COMPANYID: i.value,
+        COMPANYNAME: i.label,
+      }));
       const request_data = {
-        data: [
-          {
-            UPDATETYPE: "I",
-            ARTICLEID: articleId,
-            COMPANYID: selectedCompanies.value,
-            COMPANYNAME: selectedCompanies.title,
-          },
-        ],
+        data: dataToSend,
         qcflag: 1,
       };
       const response = await axios.post(
@@ -367,20 +371,36 @@ const EditDialog = ({ open, setOpen, row }) => {
             <Grid item xs={12} sm={6}>
               <Card>
                 <CardContent>
-                  <Box display={"flex"} gap={1}>
+                  <Box display={"flex"} gap={1} flexWrap={"wrap"}>
                     <Button
                       btnText={updateHeaderLoading ? "saving" : "save"}
                       onClick={updateHeaderData}
                       isLoading={updateHeaderLoading}
                     />
-
+                    {/* <Box width={50}>
+                      <CustomTextField />
+                    </Box> */}
+                    <input
+                      type="number"
+                      value={pageNumber}
+                      onChange={(e) => setPageNumber(e.target.value)}
+                      placeholder="page"
+                      className="h-[23px] outline-none border border-gray-400 mt-3 rounded-[3px] w-28 px-2 text-sm"
+                    />
                     <Button btnText="Stitch" onClick={handleStitchOpen} />
 
                     <Button onClick={handleUnStitchOpen} btnText="unStitch" />
                   </Box>
-                  <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+                  <Box
+                    sx={{
+                      display: "flex",
+                      alignItems: "center",
+                      gap: 1,
+                    }}
+                  >
                     <DebounceSearchCompany
                       setSelectedCompany={setSelectedCompanies}
+                      isMultiple
                     />
                     <span className="pb-1">
                       <Button
@@ -452,6 +472,8 @@ const EditDialog = ({ open, setOpen, row }) => {
         articleId={articleId}
         isStitch={stitchUnStitch.stitch}
         isUnStitch={stitchUnStitch.unStitch}
+        pageNumber={pageNumber}
+        setPageNumber={setPageNumber}
       />
     </Fragment>
   );

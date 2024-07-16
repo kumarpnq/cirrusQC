@@ -5,16 +5,17 @@ import { IoMdArrowDropup, IoMdArrowDropdown } from "react-icons/io";
 import PropTypes from "prop-types";
 import { url } from "../constants/baseUrl";
 
-const DebounceSearchCompany = ({ setSelectedCompany }) => {
+const DebounceSearchCompany = ({ setSelectedCompany, isMultiple }) => {
   const [searchResults, setSearchResults] = useState([]);
-  const [selectedOption, setSelectedOption] = useState(null);
-  const [showResults, setShowResults] = useState(false); // State to manage visibility
+  const [selectedOptions, setSelectedOptions] = useState(
+    isMultiple ? [] : null
+  );
+  const [showResults, setShowResults] = useState(false);
   const userToken = localStorage.getItem("user");
   const containerRef = useRef(null);
 
   const headers = { Authorization: `Bearer ${userToken}` };
   useEffect(() => {
-    // Event listener to detect clicks outside the component
     const handleClickOutside = (event) => {
       if (
         containerRef.current &&
@@ -60,14 +61,35 @@ const DebounceSearchCompany = ({ setSelectedCompany }) => {
   };
 
   const handleSelectOption = (option) => {
-    if (selectedOption && selectedOption.value === option.value) {
-      setSelectedOption(null);
-      setSelectedCompany(null);
+    if (isMultiple) {
+      const isSelected = selectedOptions.some((o) => o.value === option.value);
+      if (isSelected) {
+        const newOptions = selectedOptions.filter(
+          (o) => o.value !== option.value
+        );
+        setSelectedOptions(newOptions);
+        setSelectedCompany(newOptions);
+      } else {
+        const newOptions = [...selectedOptions, option];
+        setSelectedOptions(newOptions);
+        setSelectedCompany(newOptions);
+      }
     } else {
-      setSelectedOption(option);
+      setSelectedOptions(option);
       setSelectedCompany(option);
+      setShowResults(false);
     }
-    setShowResults(false);
+  };
+
+  // Function to render the header based on selected options count
+  const renderHeader = () => {
+    if (isMultiple && selectedOptions.length > 0) {
+      return `${selectedOptions.length} selected`;
+    } else if (selectedOptions) {
+      return selectedOptions.label;
+    } else {
+      return <span className="italic text-gray-500">Company</span>;
+    }
   };
 
   return (
@@ -81,11 +103,7 @@ const DebounceSearchCompany = ({ setSelectedCompany }) => {
           className="text-[0.9em] flex-1 ml-1 "
           onClick={() => setShowResults(!showResults)}
         >
-          {selectedOption ? (
-            selectedOption.label
-          ) : (
-            <span className="italic text-gray-500">Company</span>
-          )}
+          {renderHeader()}
         </h2>
         <div onClick={() => setShowResults(!showResults)}>
           {showResults ? (
@@ -104,7 +122,7 @@ const DebounceSearchCompany = ({ setSelectedCompany }) => {
               type="text"
               placeholder="Search companies..."
               onChange={(e) => handleSearchTermChange(e.target.value)}
-              //   onFocus={() => setShowResults(true)} // Show results when input is focused
+              // onFocus={() => setShowResults(true)} // Show results when input is focused
             />
           </li>
 
@@ -114,7 +132,10 @@ const DebounceSearchCompany = ({ setSelectedCompany }) => {
                 key={option.value}
                 onClick={() => handleSelectOption(option)}
                 className={`my-1 cursor-pointer text-[0.8em] ${
-                  selectedOption === option ? "bg-blue-200" : ""
+                  isMultiple &&
+                  selectedOptions.some((o) => o.value === option.value)
+                    ? "bg-blue-200"
+                    : ""
                 }`}
               >
                 {option.label}
@@ -131,6 +152,11 @@ const DebounceSearchCompany = ({ setSelectedCompany }) => {
 
 DebounceSearchCompany.propTypes = {
   setSelectedCompany: PropTypes.func.isRequired,
+  isMultiple: PropTypes.bool,
+};
+
+DebounceSearchCompany.defaultProps = {
+  isMultiple: false,
 };
 
 export default DebounceSearchCompany;

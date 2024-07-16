@@ -4,12 +4,21 @@ import {
   CardContent,
   CardHeader,
   CircularProgress,
+  FormControl,
   IconButton,
+  InputLabel,
+  MenuItem,
   Modal,
+  Select,
   Typography,
 } from "@mui/material";
 import { CloseOutlined } from "@mui/icons-material";
-import { DataGrid, GridToolbar } from "@mui/x-data-grid";
+import {
+  DataGrid,
+  GridToolbarContainer,
+  GridToolbarFilterButton,
+  GridToolbarQuickFilter,
+} from "@mui/x-data-grid";
 import { useEffect, useState } from "react";
 
 // * third party imports
@@ -21,7 +30,6 @@ import { url } from "../../../constants/baseUrl";
 import { toast } from "react-toastify";
 import { arrayToString } from "../../../utils/arrayToString";
 import Button from "../../../components/custom/Button";
-
 // Styles
 const style = {
   position: "absolute",
@@ -45,18 +53,36 @@ const columns = [
   { field: "reporting_subject", headerName: "Reporting Subject", width: 200 },
 ];
 
-const StitchModal = ({ open, setOpen, articleId, isStitch, isUnStitch }) => {
+const StitchModal = ({
+  open,
+  setOpen,
+  articleId,
+  isStitch,
+  isUnStitch,
+  pageNumber,
+  setPageNumber,
+}) => {
   //* fetch stitched articles
   const [articles, setArticles] = useState([]);
   const [stitchedArticles, setStitchedArticles] = useState([]);
   const [fetchLoading, setFetchLoading] = useState(false);
   const [selectedRows, setSelectedRows] = useState([]);
+  const [filteredArticles, setFilteredArticles] = useState([]);
+
+  useEffect(() => {
+    if (!pageNumber) {
+      setFilteredArticles([...articles]);
+    } else {
+      const data = articles.filter((i) => i.page_number === pageNumber);
+      setFilteredArticles(data);
+    }
+  }, [pageNumber, articles]);
 
   const fetchStitchedArticles = async () => {
     try {
       setFetchLoading(true);
       const params = {
-        article_id: articleId, //83600748
+        article_id: articleId,
       };
       const endpoint =
         (isStitch && "articlestostich/") ||
@@ -82,7 +108,7 @@ const StitchModal = ({ open, setOpen, articleId, isStitch, isUnStitch }) => {
     fetchStitchedArticles();
   }, [articleId, open]);
 
-  const rows = articles.map((item) => ({
+  const rows = filteredArticles.map((item) => ({
     id: item.article_id,
     article_id: item.article_id,
 
@@ -134,6 +160,67 @@ const StitchModal = ({ open, setOpen, articleId, isStitch, isUnStitch }) => {
     return stitchedArticles.includes(params.row.id) ? "highlight-row" : "";
   };
 
+  // * page dropdown
+  const pageNumbers = articles.map((i) => i.page_number);
+  const uniqueNumbers = [...new Set(pageNumbers)].sort((a, b) => a - b);
+
+  const PageFilter = () => {
+    return (
+      <>
+        <Box sx={{ minWidth: 120 }}>
+          <FormControl fullWidth>
+            <InputLabel id="demo-simple-select-label" sx={{ mt: -1 }}>
+              Page
+            </InputLabel>
+            <Select
+              labelId="demo-simple-select-label"
+              id="demo-simple-select"
+              value={pageNumber}
+              label="Page"
+              size="small"
+              onChange={(e) => setPageNumber(e.target.value)}
+              sx={{ width: 90 }}
+              MenuProps={{
+                PaperProps: {
+                  style: {
+                    maxHeight: 200,
+                    fontSize: "0.8em",
+                  },
+                },
+              }}
+            >
+              <MenuItem onClick={() => setPageNumber(null)}>
+                {" "}
+                <button>Clear</button>
+              </MenuItem>
+              {uniqueNumbers.map((i) => (
+                <MenuItem value={i} key={i}>
+                  {i}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+        </Box>
+      </>
+    );
+  };
+
+  // * custom toolbar
+  function CustomToolbar() {
+    return (
+      <GridToolbarContainer
+        sx={{ display: "flex", justifyContent: "space-between" }}
+      >
+        <GridToolbarFilterButton />
+
+        <Box sx={{ display: "flex", gap: 1 }}>
+          <PageFilter />
+          <GridToolbarQuickFilter />
+        </Box>
+      </GridToolbarContainer>
+    );
+  }
+
   return (
     <Modal
       open={open}
@@ -174,8 +261,8 @@ const StitchModal = ({ open, setOpen, articleId, isStitch, isUnStitch }) => {
                 disableDensitySelector
                 disableColumnSelector
                 disableRowSelectionOnClick
-                components={{ Toolbar: GridToolbar }}
-                slots={{ toolbar: GridToolbar }}
+                // components={{ Toolbar: GridToolbar }}
+                slots={{ toolbar: CustomToolbar }}
                 slotProps={{
                   toolbar: {
                     showQuickFilter: true,

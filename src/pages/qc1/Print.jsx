@@ -38,6 +38,7 @@ import GroupModal from "../../qc1-components/online/components/GroupModal";
 import MainTable from "../../qc1-components/online/MainTable";
 import DeleteConfirmationDialog from "../../@core/DeleteDialog";
 import GroupUnGroupAccordion from "../../qc1-components/online/GroupUngroup";
+import { extractDate } from "../../utils/extractDate";
 
 const useStyle = makeStyles(() => ({
   dropDowns: {
@@ -110,8 +111,8 @@ const Print = () => {
     const fetchUserList = async () => {
       try {
         const params = {
-          from_date: fromDate.split(" ")[0],
-          to_date: toDate.split(" ")[0],
+          from_date: extractDate(fromDate),
+          to_date: extractDate(toDate),
         };
         const response = await axios.get(`${url}qc1userlistprint/`, {
           headers,
@@ -440,17 +441,13 @@ const Print = () => {
       toast.warning("Select more than one article.");
       return;
     }
-    if (!selectionModalForGroup.length)
-      return toast.warning("Please select parent Article.");
-    const parentId = selectionModalForGroup[0];
+
     const bulkChildrenIds = selectedItems.map((item) => item.id);
-    const childrenIds = bulkChildrenIds.filter((i) => i !== parentId);
 
     try {
       setGroupLoading(true);
       const request_data = {
-        parent_id: parentId,
-        child_id: arrayToString(childrenIds),
+        article_ids: bulkChildrenIds,
       };
       const response = await axios.post(
         `${url}groupsimilararticles/`,
@@ -795,6 +792,7 @@ const Print = () => {
         handleSaveManualEditedCells={handleSaveManualEditedCells}
         stitchLoading={stitchLoading}
         setStitchModalOpen={setStitchModalOpen}
+        handleClickGroupItems={handleClickGroupItems}
       />
 
       <Divider sx={{ mt: 1 }} />

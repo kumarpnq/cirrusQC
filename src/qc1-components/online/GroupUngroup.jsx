@@ -9,8 +9,8 @@ const GroupUnGroupAccordion = ({
   isShowSecondAccordion,
   buttonsPermission,
   groupLoading,
-  handleGroupModalOpen,
   unGroupLoading,
+  handleClickGroupItems,
   handleClickUnGroupItems,
   setOpenAddCompanies,
   saveLoading,
@@ -36,7 +36,7 @@ const GroupUnGroupAccordion = ({
           <Button
             btnText={groupLoading ? "Loading" : "group"}
             icon={<AttachFileOutlined />}
-            onClick={handleGroupModalOpen}
+            onClick={handleClickGroupItems}
             isLoading={groupLoading}
           />
         )}
@@ -80,7 +80,7 @@ GroupUnGroupAccordion.propTypes = {
   isShowSecondAccordion: PropTypes.bool.isRequired,
   buttonsPermission: PropTypes.object.isRequired,
   groupLoading: PropTypes.bool.isRequired,
-  handleGroupModalOpen: PropTypes.func.isRequired,
+  handleClickGroupItems: PropTypes.func.isRequired,
   unGroupLoading: PropTypes.bool.isRequired,
   handleClickUnGroupItems: PropTypes.func.isRequired,
   setSelectedArticleIds: PropTypes.func.isRequired,
