@@ -718,9 +718,6 @@ const Print = () => {
     selectedItems.length > 0 ||
     Object.keys(unsavedChangesRef.current.unsavedRows).length > 0;
 
-  console.log(apiRef);
-  console.log(unsavedChangesRef);
-
   return (
     <Box sx={{ px: 1.5 }}>
       <Accordion>
