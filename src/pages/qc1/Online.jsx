@@ -1,17 +1,7 @@
 // * print component is inside the qc1-components/components/online
 
 import { useCallback, useEffect, useState } from "react";
-import {
-  Box,
-  CircularProgress,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogTitle,
-  Divider,
-  IconButton,
-  TextField,
-} from "@mui/material";
+import { Box, CircularProgress, Divider, IconButton } from "@mui/material";
 import Accordion from "@mui/material/Accordion";
 import AccordionSummary from "@mui/material/AccordionSummary";
 import AccordionDetails from "@mui/material/AccordionDetails";
@@ -28,19 +18,8 @@ import {
 } from "@mui/x-data-grid";
 
 // *component imports
-import SearchableDropdown from "../../components/dropdowns/SearchableDropdown";
-import FromDate from "../../components/research-dropdowns/FromDate";
-import ToDate from "../../components/research-dropdowns/ToDate";
-import Qc1All from "../../components/research-dropdowns/Qc1All";
-import Qc1By from "../../components/research-dropdowns/Qc1By";
-import Languages from "../../components/research-dropdowns/Languages";
-import Continents from "../../components/research-dropdowns/Continents";
-import Countries from "../../components/research-dropdowns/Countries";
-import CheckboxComp from "../../components/checkbox/Checkbox";
 import Button from "../../components/custom/Button";
 import EditDialog from "../../qc1-components/print/edit-dialog/EditDialog";
-import CustomAutocomplete from "../../components/custom/Autocomplet";
-import Datetype from "../../components/research-dropdowns/Datetype";
 
 // * data hooks
 import useFetchData from "../../hooks/useFetchData";
@@ -66,8 +45,9 @@ import {
   ControlCameraOutlined,
   EditAttributesOutlined,
 } from "@mui/icons-material";
-import CustomButton from "../../@core/CustomButton";
 import GroupModal from "../../qc1-components/online/components/GroupModal";
+import CustomAccordionDetails from "../../qc1-components/print/edit-dialog/SearchFilters";
+import DeleteConfirmationDialog from "../../@core/DeleteDialog";
 
 const useStyle = makeStyles(() => ({
   dropDowns: {
@@ -532,7 +512,7 @@ const Online = () => {
     const fetchPermission = async () => {
       try {
         const response = await axios.get(
-          `${url}buttonspermissions/?screen=print`,
+          `${url}buttonspermissions/?screen=online`,
           { headers }
         );
         setButtonsPermission(response.data.permission_data[0]);
@@ -542,7 +522,6 @@ const Online = () => {
     };
     fetchPermission();
   }, []);
-  console.log(buttonsPermission);
 
   return (
     <Box mx={2}>
@@ -554,116 +533,50 @@ const Online = () => {
         >
           Search Filters
         </AccordionSummary>
-        <AccordionDetails>
-          <Box
-            sx={{
-              display: "flex",
-              alignItems: "center",
-              flexFlow: "wrap",
-              gap: 1,
-            }}
-          >
-            <div className="flex items-center mt-1" style={{ height: 25 }}>
-              <SearchableDropdown
-                options={clientData?.data?.clients || []}
-                testclient={selectedClient}
-                setTestClient={setSelectedClient}
-                label="Clients"
-                width={300}
-              />
-            </div>
-            <CustomAutocomplete
-              companies={selectedCompanies}
-              setCompanies={setSelectedCompanies}
-              company={companyData?.data?.companies || []}
-            />
-            <Datetype
-              classes={classes}
-              dateTypes={dateTypes}
-              dateType={selectedDateType}
-              setDateType={setSelectedDateType}
-            />
-            <FromDate fromDate={fromDate} setFromDate={setFromDate} />
-            <ToDate dateNow={dateNow} setDateNow={setDateNow} isMargin={true} />
-            <Qc1All
-              qc1done={isQc1Done}
-              setQc1done={setIsQc1Done}
-              classes={classes}
-              qc1Array={qc1Array}
-            />
-            <Qc1By
-              qcUsersData={userList || []}
-              qc1by={qc1By}
-              setQc1by={setQc1By}
-              classes={classes}
-              pageType={"print"}
-            />
-            <Languages
-              language={selectedLanguages}
-              setLanguage={setSelectedLanguages}
-              classes={classes}
-            />
-            <Continents
-              continent={selectedContinents}
-              setContinent={setSelectedContinents}
-              countriesByContinent={countriesByContinent}
-              setFilteredCountries={setFilteredCountries}
-              continents={continents}
-              classes={classes}
-            />
-            {/* countries */}
-            <Countries
-              country={selectedCountries}
-              setCountry={setSelectedCountries}
-              classes={classes}
-              filteredCountries={filteredCountries}
-            />
-            <div className="flex flex-wrap items-center" style={{ height: 25 }}>
-              <CheckboxComp
-                value={isImage}
-                setValue={setIsImage}
-                label={"Image"}
-              />
-              <CheckboxComp
-                value={isVideo}
-                setValue={setIsVideo}
-                label={"Video"}
-              />
-            </div>
-            <div
-              className="flex flex-wrap items-center gap-2 pt-2"
-              style={{ height: 25 }}
-            >
-              <CustomTextField
-                width={200}
-                placeholder="Summary/Headline"
-                type="text"
-                value={headOrSummary}
-                setValue={setHeadOrSummary}
-              />
-              <CustomTextField
-                width={200}
-                placeholder="Link"
-                type="text"
-                value={link}
-                setValue={setLink}
-              />
-              <CustomTextField
-                width={200}
-                placeholder={"socialFeedId"}
-                type={"number"}
-                value={socialFeedId}
-                setValue={setSocialFeedId}
-              />
-            </div>
-            <Button
-              btnText={tableDataLoading ? "searching" : "search"}
-              isLoading={tableDataLoading}
-              onClick={fetchTableData}
-            />
-          </Box>
-        </AccordionDetails>
-        {/* <AccordionActions></AccordionActions> */}
+        <CustomAccordionDetails
+          clientData={clientData}
+          selectedClient={selectedClient}
+          setSelectedClient={setSelectedClient}
+          selectedCompanies={selectedCompanies}
+          setSelectedCompanies={setSelectedCompanies}
+          companyData={companyData}
+          classes={classes}
+          dateTypes={dateTypes}
+          selectedDateType={selectedDateType}
+          setSelectedDateType={setSelectedDateType}
+          fromDate={fromDate}
+          setFromDate={setFromDate}
+          dateNow={dateNow}
+          setDateNow={setDateNow}
+          isQc1Done={isQc1Done}
+          setIsQc1Done={setIsQc1Done}
+          qc1Array={qc1Array}
+          userList={userList}
+          qc1By={qc1By}
+          setQc1By={setQc1By}
+          selectedLanguages={selectedLanguages}
+          setSelectedLanguages={setSelectedLanguages}
+          selectedContinents={selectedContinents}
+          setSelectedContinents={setSelectedContinents}
+          countriesByContinent={countriesByContinent}
+          filteredCountries={filteredCountries}
+          setFilteredCountries={setFilteredCountries}
+          continents={continents}
+          selectedCountries={selectedCountries}
+          setSelectedCountries={setSelectedCountries}
+          isImage={isImage}
+          setIsImage={setIsImage}
+          isVideo={isVideo}
+          setIsVideo={setIsVideo}
+          headOrSummary={headOrSummary}
+          setHeadOrSummary={setHeadOrSummary}
+          link={link}
+          setLink={setLink}
+          socialFeedId={socialFeedId}
+          setSocialFeedId={setSocialFeedId}
+          tableDataLoading={tableDataLoading}
+          fetchTableData={fetchTableData}
+        />
       </Accordion>
       {!!isShowSecondAccordion && (
         <Accordion>
@@ -682,30 +595,38 @@ const Online = () => {
               placeholder={"Headline"}
             />
             <Box sx={{ display: "flex", gap: 1, flexWrap: "wrap" }}>
-              <Button
-                btnText={groupLoading ? "Loading" : "group"}
-                icon={<AttachFileOutlined />}
-                onClick={handleGroupModalOpen}
-                isLoading={groupLoading}
-              />
-              <Button
-                btnText={unGroupLoading ? "ungrouping" : "ungroup"}
-                icon={<ControlCameraOutlined />}
-                onClick={handleClickUnGroupItems}
-                isLoading={unGroupLoading}
-              />
-              <Button
-                btnText={removeLoading ? "Removing" : "Remove Companies"}
-                icon={<CloseOutlined />}
-                onClick={handleClickOpen}
-                isLoading={removeLoading}
-                isDanger
-              />
-              <Button
-                btnText={saveLoading ? "saving" : "save"}
-                onClick={handleSaveManualEditedCells}
-                isLoading={saveLoading}
-              />
+              {!!buttonsPermission?.group === "Yes" && (
+                <Button
+                  btnText={groupLoading ? "Loading" : "group"}
+                  icon={<AttachFileOutlined />}
+                  onClick={handleGroupModalOpen}
+                  isLoading={groupLoading}
+                />
+              )}
+              {!!buttonsPermission?.un_group === "Yes" && (
+                <Button
+                  btnText={unGroupLoading ? "ungrouping" : "ungroup"}
+                  icon={<ControlCameraOutlined />}
+                  onClick={handleClickUnGroupItems}
+                  isLoading={unGroupLoading}
+                />
+              )}
+              {!!buttonsPermission?.add_and_remove_company === "Yes" && (
+                <Button
+                  btnText={removeLoading ? "Removing" : "Remove Companies"}
+                  icon={<CloseOutlined />}
+                  onClick={handleClickOpen}
+                  isLoading={removeLoading}
+                  isDanger
+                />
+              )}
+              {!!buttonsPermission?.save === "Yes" && (
+                <Button
+                  btnText={saveLoading ? "saving" : "save"}
+                  onClick={handleSaveManualEditedCells}
+                  isLoading={saveLoading}
+                />
+              )}
             </Box>
           </AccordionDetails>
         </Accordion>
@@ -772,41 +693,15 @@ const Online = () => {
         rowNumber={articleNumber}
         setRowNumber={setArticleNumber}
       />
-      <div>
-        <Dialog open={openDelete} onClose={handleCloseDelete}>
-          <DialogTitle fontSize={"1em"}>
-            Enter Password For Confirmation.
-          </DialogTitle>
-          <DialogContent>
-            <TextField
-              type="password"
-              sx={{ outline: "none" }}
-              size="small"
-              placeholder="Password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-            />
-          </DialogContent>
-          <DialogActions>
-            <CustomButton
-              btnText="Cancel"
-              onClick={handleCloseDelete}
-              bg={"bg-primary"}
-            />
-            {verificationLoading ? (
-              <Box width={130} display={"flex"} justifyContent={"center"}>
-                <CircularProgress size={20} />
-              </Box>
-            ) : (
-              <CustomButton
-                btnText="Delete"
-                onClick={handleClickRemoveCompanies}
-                bg={"bg-red-500"}
-              />
-            )}
-          </DialogActions>
-        </Dialog>
-      </div>
+      <DeleteConfirmationDialog
+        open={openDelete}
+        handleClose={handleCloseDelete}
+        password={password}
+        setPassword={setPassword}
+        handleClickRemove={handleClickRemoveCompanies}
+        verificationLoading={verificationLoading}
+      />
+
       <GroupModal
         openGroupModal={openGroupModal}
         setOpenGroupModal={setGroupModal}
