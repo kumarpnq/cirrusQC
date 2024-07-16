@@ -12,8 +12,6 @@ const GroupUnGroupAccordion = ({
   handleGroupModalOpen,
   unGroupLoading,
   handleClickUnGroupItems,
-  setSelectedArticleIds,
-  selectedItems,
   setOpenAddCompanies,
   saveLoading,
   handleSaveManualEditedCells,
@@ -54,7 +52,6 @@ const GroupUnGroupAccordion = ({
           <Button
             btnText="Add & Remove Companies"
             onClick={() => {
-              setSelectedArticleIds(selectedItems.map((i) => i.id));
               setOpenAddCompanies(true);
             }}
           />

@@ -313,14 +313,14 @@ const SearchFilters = ({
       >
         <CustomTextField
           placeholder={"ArticleId"}
-          type={"number"}
+          type={"text"}
           width={100}
           value={articleId}
           setValue={setArticleId}
         />
         <CustomTextField
-          placeholder={"SystemArticleId"}
-          type={"number"}
+          placeholder={"SystemId"}
+          // type={"number"}
           width={100}
           value={systemArticleId}
           setValue={setSystemArticleId}

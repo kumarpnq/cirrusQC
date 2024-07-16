@@ -543,9 +543,6 @@ const Print = () => {
       setVerificationLoading(false);
     }
   };
-  const handleClickOpen = () => {
-    setOpenDelete(true);
-  };
 
   const handleCloseDelete = () => {
     setOpenDelete(false);
@@ -690,7 +687,6 @@ const Print = () => {
 
   // * add companies
   const [openAddCompanies, setOpenAddCompanies] = useState(false);
-  const [selectedArticleIds, setSelectedArticleIds] = useState([]);
 
   // * buttons permission
   const [buttonsPermission, setButtonsPermission] = useState(null);
@@ -794,8 +790,6 @@ const Print = () => {
         handleGroupModalOpen={handleGroupModalOpen}
         unGroupLoading={unGroupLoading}
         handleClickUnGroupItems={handleClickGroupItems}
-        setSelectedArticleIds={setSelectedArticleIds}
-        selectedItems={selectedItems}
         setOpenAddCompanies={setOpenAddCompanies}
         saveLoading={saveLoading}
         handleSaveManualEditedCells={handleSaveManualEditedCells}
@@ -852,8 +846,7 @@ const Print = () => {
       <AddCompaniesModal
         open={openAddCompanies}
         setOpen={setOpenAddCompanies}
-        selectedRows={selectedArticleIds}
-        setSelectedRows={setSelectedArticleIds}
+        selectedRows={selectedItems}
       />
       <DeleteConfirmationDialog
         open={openDelete}

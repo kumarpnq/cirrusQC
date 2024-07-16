@@ -11,14 +11,17 @@ import { arrayToString } from "../../utils/arrayToString";
 import DebounceSearchCompany from "../../@core/DebounceSearchCompany";
 import Button from "../../components/custom/Button";
 
-const AddCompaniesModal = ({
-  open,
-  setOpen,
-  selectedRows,
-  setSelectedRows,
-}) => {
+const AddCompaniesModal = ({ open, setOpen, selectedRows }) => {
   const [fetchedCompanies, setFetchedCompanies] = useState([]);
   const [fetchLoading, setFetchLoading] = useState(false);
+
+  const articleIds = selectedRows.map((i) => i.id);
+
+  // * handle close  modal
+  const handleClose = () => {
+    setFetchedCompanies([]);
+    setOpen(false);
+  };
 
   // * company selection
   const [selectedCompany, setSelectedCompany] = useState(null);
@@ -29,7 +32,7 @@ const AddCompaniesModal = ({
     try {
       setFetchLoading(true);
       const params = {
-        article_ids: arrayToString(selectedRows),
+        article_ids: arrayToString(articleIds),
       };
       const userToken = localStorage.getItem("user");
       const response = await axios.get(`${url}taggedcompaniesprint/`, {
@@ -45,8 +48,10 @@ const AddCompaniesModal = ({
   };
 
   useEffect(() => {
-    fetchTaggedCompanies();
-  }, [selectedRows]);
+    if (open) {
+      fetchTaggedCompanies();
+    }
+  }, [open]);
 
   // * handle add company
   const handleAddCompany = async () => {
@@ -130,20 +135,20 @@ const AddCompaniesModal = ({
 
   const rows = [];
 
-  fetchedCompanies.forEach((company, index) => {
-    let firstPair = true; // Flag to check if it's the first row for pairs
+  fetchedCompanies.forEach((company) => {
+    let firstPair = true;
     if (company.keyword_article_pair) {
       company.keyword_article_pair.forEach((pair) => {
         rows.push({
           id: rows.length,
-          company: firstPair ? company.company_name : "", // Show company name only for the first pair
+          company: firstPair ? company.company_name : "",
           article_id: pair.article_id,
           keyword: pair.keyword,
           company_id: company.company_id,
           isPairFlag: true,
-          showAction: firstPair, // Show action button only for the first pair
+          showAction: firstPair,
         });
-        firstPair = false; // Set the flag to false after the first iteration
+        firstPair = false;
       });
     } else if (company.keyword) {
       rows.push({
@@ -153,7 +158,7 @@ const AddCompaniesModal = ({
         keyword: company.keyword,
         company_id: company.company_id,
         isPairFlag: false,
-        showAction: true, // Show action button since there's no pair
+        showAction: true,
       });
     } else {
       rows.push({
@@ -163,15 +168,10 @@ const AddCompaniesModal = ({
         keyword: null,
         company_id: company.company_id,
         isPairFlag: false,
-        showAction: true, // Show action button since there's no pair
+        showAction: true,
       });
     }
   });
-
-  const handleClose = () => {
-    setOpen(false);
-    setSelectedRows([]);
-  };
 
   return (
     <div>
@@ -251,7 +251,6 @@ AddCompaniesModal.propTypes = {
   open: PropTypes.bool.isRequired,
   setOpen: PropTypes.func.isRequired,
   selectedRows: PropTypes.arrayOf(PropTypes.number).isRequired,
-  setSelectedRows: PropTypes.func.isRequired,
 };
 
 export default AddCompaniesModal;
