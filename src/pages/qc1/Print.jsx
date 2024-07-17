@@ -201,6 +201,11 @@ const Print = () => {
     const with_category = withCategory === 0 ? "N" : "Y";
     try {
       setGridDataLoading(true);
+      const dateCaseOne = (fromDate && !toDate) || (toDate && !fromDate);
+      const dateCaseTwo =
+        (uploadFromDate && !uploadToDate) || (uploadToDate && !uploadFromDate);
+      if (dateCaseOne || dateCaseTwo)
+        return toast.warning("Please select date combo.");
       const params = {
         // comp params
         client_id: selectedClient,
@@ -451,7 +456,6 @@ const Print = () => {
       if (response.data.status?.success?.length) {
         toast.success("Articles grouped successfully.");
         fetchListArticleByQC1Print();
-        setGroupModal(false);
         setSelectionModal([]);
         setSelectedItems([]);
       } else {
@@ -466,6 +470,8 @@ const Print = () => {
 
   // * un-group selected items
   const [unGroupLoading, setUnGroupLoading] = useState(false);
+
+  // * fetch similar articles
   const fetchSimilarArticles = async (articleId) => {
     const urlFetchSimilarArticles = `${url}similararticles/?article_id=${articleId}`;
 

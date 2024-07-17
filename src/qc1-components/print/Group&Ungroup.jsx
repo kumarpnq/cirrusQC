@@ -9,7 +9,6 @@ import Button from "../../components/custom/Button";
 import { CopyToClipboard } from "react-copy-to-clipboard";
 import { url } from "../../constants/baseUrl";
 import axios from "axios";
-import { arrayToString } from "../../utils/arrayToString";
 
 const groupModalStyle = {
   position: "absolute",
@@ -30,7 +29,6 @@ const GroupUnGroupModal = ({
   selectedItems,
   setSelectedItems,
   setSelectionModal,
-  groupOrUnGroup,
   fetchMainData,
 }) => {
   const handleGroupModalClose = () => {
@@ -122,49 +120,6 @@ const GroupUnGroupModal = ({
     }
   };
 
-  const handleUnGroup = async () => {
-    if (selectedItems.length === 1) {
-      toast.warning("Select more than one article.");
-      return;
-    }
-    const parentId = selectionModelForGroup[0];
-    const childrenIds = selectedItems.map((item) => item.social_feed_id) || [];
-    const filteredChildrenIds = childrenIds.filter((item) => item !== parentId);
-
-    try {
-      setGroupLoading(true);
-      const userToken = localStorage.getItem("user");
-      const headers = { Authorization: `Bearer ${userToken}` };
-
-      const request_data = {
-        parent_id: parentId,
-        child_id: arrayToString(filteredChildrenIds),
-      };
-      const response = await axios.post(
-        `${url}ungroupsimilarsocialfeeds/`,
-        request_data,
-        {
-          headers,
-          // params: request_data,
-        }
-      );
-      if (response.data.status?.success?.length) {
-        toast.success("Articles ungrouped successfully.");
-        setOpenGroupModal(false);
-        setSelectionModelForGroup([]);
-        setSelectedItems([]);
-        setSelectionModal([]);
-        fetchMainData();
-      } else {
-        toast.warning("Error while un-grouping.");
-      }
-    } catch (error) {
-      toast.error("Something went wrong.");
-    } finally {
-      setGroupLoading(false);
-    }
-  };
-
   return (
     <>
       <Modal
@@ -189,21 +144,17 @@ const GroupUnGroupModal = ({
               <Button btnText="Cancel" onClick={handleGroupModalClose} />
               <Button
                 btnText={groupLoading ? "saving" : "save"}
-                onClick={
-                  groupOrUnGroup === "group" ? handleGroup : handleUnGroup
-                }
+                onClick={handleGroup}
                 isLoading={groupLoading}
               />
             </span>
           </Typography>
-          {groupOrUnGroup === "group" && (
-            <CustomTextField
-              value={headlineForGroup}
-              setValue={setHeadlineForGroup}
-              type={"text"}
-              placeholder={"Headline"}
-            />
-          )}
+          <CustomTextField
+            value={headlineForGroup}
+            setValue={setHeadlineForGroup}
+            type={"text"}
+            placeholder={"Headline"}
+          />
 
           <Box sx={{ height: 400, width: "100%", mt: 1 }}>
             <DataGrid

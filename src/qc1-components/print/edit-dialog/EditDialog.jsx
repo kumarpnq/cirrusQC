@@ -75,7 +75,7 @@ const EditDialog = ({ rowData, rowNumber, setRowNumber, open, setOpen }) => {
     tag: "",
   });
 
-  const [selectedCompanies, setSelectedCompanies] = useState(null);
+  const [selectedCompanies, setSelectedCompanies] = useState([]);
   const [socialFeedTagDetails, setSocialFeedTagDetails] = useState([]);
   const [socialFeedTagDetailsLoading, setSocialFeedTagDetailsLoading] =
     useState(false);
@@ -116,8 +116,10 @@ const EditDialog = ({ rowData, rowNumber, setRowNumber, open, setOpen }) => {
     }
   };
   useEffect(() => {
-    fetchHeaderAndTagDetails();
-  }, [socialFeedId]);
+    if (open) {
+      fetchHeaderAndTagDetails();
+    }
+  }, [socialFeedId, open]);
 
   const handleClose = () => {
     setRowNumber(0);
@@ -178,17 +180,18 @@ const EditDialog = ({ rowData, rowNumber, setRowNumber, open, setOpen }) => {
     }
   };
 
+  const [addLoading, setAddLoading] = useState(false);
   const handleAddCompany = async () => {
     try {
+      setAddLoading(true);
+      const dataToSend = selectedCompanies.map((i) => ({
+        UPDATETYPE: "I",
+        SOCIALFEEDID: socialFeedId,
+        COMPANYID: i.value,
+        COMPANYNAME: i.label,
+      }));
       const requestData = {
-        data: [
-          {
-            UPDATETYPE: "I",
-            SOCIALFEEDID: socialFeedId,
-            COMPANYID: selectedCompanies.value,
-            COMPANYNAME: selectedCompanies.label,
-          },
-        ],
+        data: dataToSend,
         qcflag: 1,
       };
       const response = await axios.post(
@@ -204,6 +207,8 @@ const EditDialog = ({ rowData, rowNumber, setRowNumber, open, setOpen }) => {
       }
     } catch (error) {
       console.log("Something went wrong");
+    } finally {
+      setAddLoading(false);
     }
   };
 
@@ -423,9 +428,14 @@ const EditDialog = ({ rowData, rowNumber, setRowNumber, open, setOpen }) => {
                   >
                     <DebounceSearchCompany
                       setSelectedCompany={setSelectedCompanies}
+                      isMultiple
                     />
                     <span className="pb-1">
-                      <Button onClick={handleAddCompany} btnText="Add" />
+                      <Button
+                        onClick={handleAddCompany}
+                        btnText={addLoading ? "adding" : "Add"}
+                        isLoading={addLoading}
+                      />
                     </span>
                   </Box>
                   <Box height={500} width={"100%"}>

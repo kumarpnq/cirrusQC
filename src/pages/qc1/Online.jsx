@@ -1,21 +1,12 @@
-// * print component is inside the qc1-components/components/online
+// * online component is inside the qc1-components/components/online
 
 import { useCallback, useEffect, useState } from "react";
-import { Box, CircularProgress, Divider, IconButton } from "@mui/material";
+import { Box, Divider } from "@mui/material";
 import Accordion from "@mui/material/Accordion";
 import AccordionSummary from "@mui/material/AccordionSummary";
 import AccordionDetails from "@mui/material/AccordionDetails";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import { makeStyles } from "@mui/styles";
-import {
-  DataGrid,
-  // GridToolbar,
-  GridToolbarColumnsButton,
-  GridToolbarContainer,
-  GridToolbarDensitySelector,
-  GridToolbarFilterButton,
-  GridToolbarQuickFilter,
-} from "@mui/x-data-grid";
 
 // *component imports
 import Button from "../../components/custom/Button";
@@ -42,11 +33,11 @@ import {
   AttachFileOutlined,
   CloseOutlined,
   ControlCameraOutlined,
-  EditAttributesOutlined,
 } from "@mui/icons-material";
 import CustomAccordionDetails from "../../qc1-components/print/edit-dialog/SearchFilters";
 import DeleteConfirmationDialog from "../../@core/DeleteDialog";
 import GroupUnGroupModal from "../../qc1-components/print/Group&Ungroup";
+import MainTable from "../../qc1-components/print/MainTable";
 
 const useStyle = makeStyles(() => ({
   dropDowns: {
@@ -64,13 +55,6 @@ const useStyle = makeStyles(() => ({
     background: "#d4c8c7",
   },
 }));
-
-const iconCellStyle = {
-  display: "flex",
-  justifyContent: "center",
-  alignItems: "center",
-  height: "100%",
-};
 
 const Online = () => {
   // * state variables for search data
@@ -256,9 +240,41 @@ const Online = () => {
   };
 
   // * un-group selected items
-  const [openUnGroupModal, setOpenUnGroupModal] = useState(false);
-  const handleUnGroupModalOpen = () => {
-    setOpenUnGroupModal(true);
+  const [unGroupLoading, setUnGroupLoading] = useState(false);
+  const handleUnGroup = async () => {
+    if (selectedItems.length !== 1) {
+      return toast.warning("Please select exactly one item");
+    }
+    const parent_id = selectedItems[0]?.social_feed_id;
+    try {
+      setUnGroupLoading(true);
+      const userToken = localStorage.getItem("user");
+      const headers = { Authorization: `Bearer ${userToken}` };
+
+      const request_data = {
+        parent_id: parent_id,
+      };
+      const response = await axios.post(
+        `${url}ungroupsimilarsocialfeeds/`,
+        request_data,
+        {
+          headers,
+          // params: request_data,
+        }
+      );
+      if (response.data.status?.success?.length) {
+        toast.success("Articles ungrouped successfully.");
+        setSelectedItems([]);
+        setSelectionModal([]);
+        fetchTableData();
+      } else {
+        toast.warning("Error while un-grouping.");
+      }
+    } catch (error) {
+      toast.error("Something went wrong.");
+    } finally {
+      setUnGroupLoading(false);
+    }
   };
 
   // * remove companies from selected items
@@ -322,55 +338,6 @@ const Online = () => {
     }
   };
 
-  const columns = [
-    {
-      field: "action",
-      headerName: "Action",
-      width: 100,
-      renderCell: (params) => (
-        <div style={iconCellStyle}>
-          <IconButton onClick={() => handleRowClick(params.row, params.id)}>
-            <EditAttributesOutlined className="text-primary" />
-          </IconButton>
-        </div>
-      ),
-    },
-    { field: "headline", headerName: "Headline", width: 250, editable: true },
-    { field: "summary", headerName: "Summary", width: 500, editable: true },
-    {
-      field: "journalist",
-      headerName: "Journalist",
-      width: 150,
-      editable: true,
-    },
-    { field: "publication", headerName: "Publication", width: 150 },
-    {
-      field: "url",
-      headerName: "URL",
-      width: 100,
-      renderCell: (params) => (
-        <a href={params.value} target="_blank" rel="noopener noreferrer">
-          Link
-        </a>
-      ),
-    },
-    { field: "qcDone", headerName: "QC Done", width: 100 },
-    { field: "articleDate", headerName: "Article Date", width: 150 },
-    { field: "socialFeedId", headerName: "socialFeedId", width: 150 },
-  ];
-  const rows = tableData?.map((item, index) => ({
-    id: index,
-    action: "#",
-    headline: item.headline,
-    summary: item.detail_summary,
-    journalist: item.journalist,
-    publication: item.publication,
-    url: item.link,
-    qcDone: item.qc1_done,
-    articleDate: item.feed_date_time,
-    socialFeedId: item.social_feed_id,
-  }));
-
   // * saving the edited cells
   const [oldRows, setOldRows] = useState(null);
   const [newRows, setNewRows] = useState(null);
@@ -426,20 +393,6 @@ const Online = () => {
 
   const isShowSecondAccordion = selectedItems.length || Boolean(newRows);
 
-  // * custom toolbar
-  function CustomToolbar() {
-    return (
-      <GridToolbarContainer
-        sx={{ display: "flex", justifyContent: "space-between" }}
-      >
-        <GridToolbarColumnsButton />
-        <GridToolbarFilterButton />
-        <GridToolbarDensitySelector />
-        <GridToolbarQuickFilter />
-        {/* Export button is not included */}
-      </GridToolbarContainer>
-    );
-  }
   // * buttons permission
   const [buttonsPermission, setButtonsPermission] = useState(null);
   useEffect(() => {
@@ -532,18 +485,18 @@ const Online = () => {
               )}
               {buttonsPermission?.un_group === "Yes" && (
                 <Button
-                  btnText={"unGroup"}
+                  btnText={unGroupLoading ? "loading" : "unGroup"}
                   icon={<ControlCameraOutlined />}
-                  onClick={handleUnGroupModalOpen}
+                  onClick={handleUnGroup}
+                  isLoading={unGroupLoading}
                 />
               )}
               {buttonsPermission?.add_and_remove_company === "Yes" && (
                 <Button
-                  btnText={removeLoading ? "Removing" : "Remove Companies"}
+                  btnText={"Add & Remove Companies"}
                   icon={<CloseOutlined />}
                   onClick={handleClickOpen}
                   isLoading={removeLoading}
-                  isDanger
                 />
               )}
               {buttonsPermission?.save === "Yes" && (
@@ -559,59 +512,18 @@ const Online = () => {
       )}
 
       <Divider sx={{ mt: 1 }} />
-      <Box sx={{ height: 600, width: "100%", mt: 1 }}>
-        <DataGrid
-          rows={rows}
-          columns={columns}
-          slots={{ toolbar: CustomToolbar }}
-          slotProps={{
-            toolbar: {
-              showQuickFilter: true,
-            },
-          }}
-          pageSize={5}
-          pageSizeOptions={[
-            10,
-            100,
-            200,
-            1000,
-            { value: 1000, label: "1,000" },
-          ]}
-          sx={{
-            "& .MuiDataGrid-columnHeaders": {
-              fontSize: "0.875rem",
-            },
-            "& .MuiDataGrid-cell": {
-              fontSize: "0.9em",
-            },
-          }}
-          checkboxSelection
-          rowSelectionModel={selectionModal}
-          onRowSelectionModelChange={(ids) => {
-            setSelectionModal(ids);
-            handleSelectionChange(ids);
-          }}
-          processRowUpdate={(newRow, oldRow) => {
-            if (newRows) {
-              toast.warning("Please save the changes first.");
-              return;
-            }
-            if (JSON.stringify(newRow) !== JSON.stringify(oldRow)) {
-              setNewRows(newRow);
-              setOldRows(oldRow);
-            }
-          }}
-          disableDensitySelector
-          disableColumnSelector
-          disableRowSelectionOnClick
-          columnBufferPx={1000}
-          loading={tableDataLoading && <CircularProgress />}
-          components={{ Toolbar: CustomToolbar }}
-          hideFooterSelectedRowCount
-          getRowHeight={() => "auto"}
-          getRowClassName={getRowClassName}
-        />
-      </Box>
+      <MainTable
+        tableData={tableData}
+        tableDataLoading={tableDataLoading}
+        selectionModal={selectionModal}
+        setSelectionModal={setSelectionModal}
+        handleSelectionChange={handleSelectionChange}
+        handleRowClick={handleRowClick}
+        newRows={newRows}
+        setNewRows={setNewRows}
+        setOldRows={setOldRows}
+        getRowClassName={getRowClassName}
+      />
       <EditDialog
         open={open}
         setOpen={setOpen}
@@ -635,14 +547,7 @@ const Online = () => {
         setSelectedItems={setSelectedItems}
         setSelectionModal={setSelectionModal}
         groupOrUnGroup="group"
-      />
-      <GroupUnGroupModal
-        openGroupModal={openUnGroupModal}
-        setOpenGroupModal={setOpenUnGroupModal}
-        selectedItems={selectedItems}
-        setSelectedItems={setSelectedItems}
-        setSelectionModal={setSelectionModal}
-        groupOrUnGroup="unGroup"
+        fetchMainData={fetchTableData}
       />
     </Box>
   );
