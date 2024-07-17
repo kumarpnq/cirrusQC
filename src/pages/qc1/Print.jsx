@@ -9,9 +9,7 @@ import AccordionSummary from "@mui/material/AccordionSummary";
 import AccordionDetails from "@mui/material/AccordionDetails";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import {
-  GridToolbarColumnsButton,
   GridToolbarContainer,
-  GridToolbarDensitySelector,
   GridToolbarFilterButton,
   GridToolbarQuickFilter,
   useGridApiRef,
@@ -587,9 +585,7 @@ const Print = () => {
       <GridToolbarContainer
         sx={{ display: "flex", justifyContent: "space-between" }}
       >
-        <GridToolbarColumnsButton />
         <GridToolbarFilterButton />
-        <GridToolbarDensitySelector />
         <GridToolbarQuickFilter />
       </GridToolbarContainer>
     );
@@ -786,7 +782,7 @@ const Print = () => {
         groupLoading={groupLoading}
         handleGroupModalOpen={handleGroupModalOpen}
         unGroupLoading={unGroupLoading}
-        handleClickUnGroupItems={handleClickGroupItems}
+        handleClickUnGroupItems={handleClickUnGroupItems}
         setOpenAddCompanies={setOpenAddCompanies}
         saveLoading={saveLoading}
         handleSaveManualEditedCells={handleSaveManualEditedCells}

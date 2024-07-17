@@ -98,7 +98,10 @@ const DebounceSearchCompany = ({ setSelectedCompany, isMultiple }) => {
       className="relative z-50 mt-2"
       ref={containerRef}
     >
-      <div className="flex items-center pr-8 border border-gray-400 rounded-sm ">
+      <div
+        className="flex items-center h-6 pr-8 border border-gray-400 rounded-sm"
+        onClick={() => setShowResults(!showResults)}
+      >
         <h2
           className="text-[0.9em] flex-1 ml-1 "
           onClick={() => setShowResults(!showResults)}
