@@ -2,6 +2,9 @@ import PropTypes from "prop-types";
 import { Box, Modal, Paper, Typography } from "@mui/material";
 import { DataGrid } from "@mui/x-data-grid";
 import Button from "../../../components/custom/Button";
+import StitchModal from "./StitchModal";
+import { useEffect, useState } from "react";
+import { toast } from "react-toastify";
 
 const groupModalStyle = {
   position: "absolute",
@@ -23,8 +26,7 @@ const GroupModal = ({
   screen,
   selectionModelForGroup,
   setSelectionModelForGroup,
-  handleSave,
-  groupLoading,
+  stitchOrUnStitch,
 }) => {
   const handleGroupModalClose = () => {
     setOpenGroupModal(false);
@@ -34,6 +36,7 @@ const GroupModal = ({
     if (newSelection.length > 1) {
       // Select the last item in the new selection
       setSelectionModelForGroup([newSelection[newSelection.length - 1]]);
+      // setArticleId(newSelection[0]);
     } else {
       setSelectionModelForGroup(newSelection);
     }
@@ -55,57 +58,89 @@ const GroupModal = ({
     headline: item.headline,
     publication: screen === "online" ? item.publication : item.publication_name,
   }));
+
+  // * stitch modal
+  const [modalOpen, setModalOpen] = useState(false);
+  const [stitchUnStitch, setStitchUnStitch] = useState({
+    stitch: Boolean(stitchOrUnStitch === "stitch"),
+    unStitch: Boolean(stitchOrUnStitch === "unStitch"),
+  });
+  const [pageNumber, setPageNumber] = useState(null);
+  const [articleId, setArticleId] = useState(null);
+
+  useEffect(() => {
+    if (selectionModelForGroup.length > 0) {
+      setArticleId(selectionModelForGroup[0]);
+    }
+  }, [selectionModelForGroup]);
+
+  const buttonName = stitchOrUnStitch === "stitch" ? "stitch" : "unStitch";
+  const handleStitchUnStitchOpen = () => {
+    if (!selectionModelForGroup.length) {
+      return toast.warning("Please select a article.");
+    }
+    setModalOpen(!modalOpen);
+  };
+
   return (
-    <Modal
-      open={openGroupModal}
-      onClose={handleGroupModalClose}
-      aria-labelledby="child-modal-title"
-      aria-describedby="child-modal-description"
-    >
-      <Box sx={groupModalStyle}>
-        <Typography component={Paper} px={1} py={1}>
-          Parent Article&apos;s Association
-        </Typography>
-        <Typography
-          component={"div"}
-          display={"flex"}
-          justifyContent={"space-between"}
-          px={1}
-          py={1}
-        >
-          <span>Basic Details</span>
-          <span className="flex gap-1">
-            <Button btnText="Cancel" onClick={handleGroupModalClose} />
-            <Button
-              btnText={groupLoading ? "saving" : "save"}
-              onClick={handleSave}
+    <>
+      <Modal
+        open={openGroupModal}
+        onClose={handleGroupModalClose}
+        aria-labelledby="child-modal-title"
+        aria-describedby="child-modal-description"
+      >
+        <Box sx={groupModalStyle}>
+          <Typography component={Paper} px={1} py={1}>
+            Parent Article&apos;s Association
+          </Typography>
+          <Typography
+            component={"div"}
+            display={"flex"}
+            justifyContent={"space-between"}
+            px={1}
+            py={1}
+          >
+            <span>Basic Details</span>
+            <span className="flex gap-1">
+              <Button btnText="Cancel" onClick={handleGroupModalClose} />
+              <Button btnText={buttonName} onClick={handleStitchUnStitchOpen} />
+            </span>
+          </Typography>
+          <Box sx={{ height: 400, width: "100%", mt: 1 }}>
+            <DataGrid
+              rows={rows}
+              columns={columns}
+              pageSize={5}
+              rowsPerPageOptions={[5]}
+              checkboxSelection
+              rowSelectionModel={selectionModelForGroup}
+              onRowSelectionModelChange={(ids) => {
+                // setSelectionModel(ids);
+                handleSelectionChange(ids);
+              }}
+              sx={{
+                "& .MuiDataGrid-columnHeaders": {
+                  fontSize: "0.875rem",
+                },
+                "& .MuiDataGrid-cell": {
+                  fontSize: "0.9em",
+                },
+              }}
             />
-          </span>
-        </Typography>
-        <Box sx={{ height: 400, width: "100%", mt: 1 }}>
-          <DataGrid
-            rows={rows}
-            columns={columns}
-            pageSize={5}
-            rowsPerPageOptions={[5]}
-            checkboxSelection
-            rowSelectionModel={selectionModelForGroup}
-            onRowSelectionModelChange={(ids) => {
-              // setSelectionModel(ids);
-              handleSelectionChange(ids);
-            }}
-            sx={{
-              "& .MuiDataGrid-columnHeaders": {
-                fontSize: "0.875rem",
-              },
-              "& .MuiDataGrid-cell": {
-                fontSize: "0.9em",
-              },
-            }}
-          />
+          </Box>
         </Box>
-      </Box>
-    </Modal>
+      </Modal>
+      <StitchModal
+        open={modalOpen}
+        setOpen={setModalOpen}
+        articleId={articleId}
+        isStitch={stitchUnStitch.stitch}
+        isUnStitch={stitchUnStitch.unStitch}
+        pageNumber={pageNumber}
+        setPageNumber={setPageNumber}
+      />
+    </>
   );
 };
 
@@ -116,8 +151,7 @@ GroupModal.propTypes = {
   screen: PropTypes.string.isRequired,
   selectionModelForGroup: PropTypes.array.isRequired,
   setSelectionModelForGroup: PropTypes.func.isRequired,
-  handleSave: PropTypes.func.isRequired,
-  groupLoading: PropTypes.bool.isRequired,
+  stitchOrUnStitch: PropTypes.string.isRequired,
 };
 
 export default GroupModal;

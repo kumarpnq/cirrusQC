@@ -427,10 +427,6 @@ const Print = () => {
     setSelectionModal(ids);
   };
   // * group selected articles
-  const [openGroupModal, setGroupModal] = useState(false);
-  const handleGroupModalOpen = () => {
-    setGroupModal(true);
-  };
   const [groupLoading, setGroupLoading] = useState(false);
   const [selectionModalForGroup, setSelectionModalForGroup] = useState([]);
 
@@ -698,10 +694,9 @@ const Print = () => {
     fetchPermission();
   }, []);
 
-  // * stitch modal
+  // * stitch and unStitch modal
   const [stitchModalOpen, setStitchModalOpen] = useState(false);
-  const [stitchLoading, setStitchLoading] = useState(false);
-  const handleStitchItems = () => {};
+  const [unStitchModalOpen, setUnStitchModalOpen] = useState(false);
 
   const isShowSecondAccordion =
     selectedItems.length > 0 ||
@@ -780,14 +775,13 @@ const Print = () => {
         isShowSecondAccordion={isShowSecondAccordion}
         buttonsPermission={buttonsPermission}
         groupLoading={groupLoading}
-        handleGroupModalOpen={handleGroupModalOpen}
         unGroupLoading={unGroupLoading}
         handleClickUnGroupItems={handleClickUnGroupItems}
         setOpenAddCompanies={setOpenAddCompanies}
         saveLoading={saveLoading}
         handleSaveManualEditedCells={handleSaveManualEditedCells}
-        stitchLoading={stitchLoading}
         setStitchModalOpen={setStitchModalOpen}
+        setUnStitchModalOpen={setUnStitchModalOpen}
         handleClickGroupItems={handleClickGroupItems}
       />
 
@@ -824,18 +818,16 @@ const Print = () => {
         screen="print"
         selectionModelForGroup={selectionModalForGroup}
         setSelectionModelForGroup={setSelectionModalForGroup}
-        handleSave={handleStitchItems}
-        groupLoading={stitchLoading}
+        stitchOrUnStitch="stitch"
       />
       <GroupModal
-        openGroupModal={openGroupModal}
-        setOpenGroupModal={setGroupModal}
+        openGroupModal={unStitchModalOpen}
+        setOpenGroupModal={setUnStitchModalOpen}
         selectedItems={selectedItems}
         screen="print"
         selectionModelForGroup={selectionModalForGroup}
         setSelectionModelForGroup={setSelectionModalForGroup}
-        handleSave={handleClickGroupItems}
-        groupLoading={groupLoading}
+        stitchOrUnStitch="unStitch"
       />
       <AddCompaniesModal
         open={openAddCompanies}

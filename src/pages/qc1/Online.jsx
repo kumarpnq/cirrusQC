@@ -37,7 +37,6 @@ import { formattedDate, formattedNextDay } from "../../constants/dates";
 // * third party imports
 import axios from "axios";
 import { toast } from "react-toastify";
-import CustomTextField from "../../@core/CutsomTextField";
 import { arrayToString } from "../../utils/arrayToString";
 import {
   AttachFileOutlined,
@@ -45,9 +44,9 @@ import {
   ControlCameraOutlined,
   EditAttributesOutlined,
 } from "@mui/icons-material";
-import GroupModal from "../../qc1-components/online/components/GroupModal";
 import CustomAccordionDetails from "../../qc1-components/print/edit-dialog/SearchFilters";
 import DeleteConfirmationDialog from "../../@core/DeleteDialog";
+import GroupUnGroupModal from "../../qc1-components/print/Group&Ungroup";
 
 const useStyle = makeStyles(() => ({
   dropDowns: {
@@ -251,80 +250,15 @@ const Online = () => {
   };
 
   //* Group modal
-  const [openGroupModal, setGroupModal] = useState(false);
+  const [openGroupModal, setOpenGroupModal] = useState(false);
   const handleGroupModalOpen = () => {
-    setGroupModal(true);
-  };
-
-  // * group selected articles
-  const [groupLoading, setGroupLoading] = useState(false);
-  const [headlineForGroup, setHeadlineForGroup] = useState("");
-  const handleClickGroupItems = async () => {
-    if (selectedItems.length === 1) {
-      toast.warning("Select more than one article.");
-      return;
-    }
-    const parentId = selectedItems[0].id;
-    const childrenIds = selectedItems.slice(1).map((item) => item.id);
-
-    try {
-      setGroupLoading(true);
-      const request_data = {
-        parent_id: parentId,
-        child_id: arrayToString(childrenIds),
-      };
-      const response = await axios.post(
-        `${url}groupsimilarsocialfeeds/`,
-        request_data,
-        { headers }
-      );
-      if (response.data.status?.success?.length) {
-        toast.success("Articles grouped successfully.");
-        setSelectionModal([]);
-        setSelectedItems([]);
-      } else {
-        toast.warning("Something went wrong.");
-      }
-    } catch (error) {
-      console.log(error.message);
-    } finally {
-      setGroupLoading(false);
-    }
+    setOpenGroupModal(true);
   };
 
   // * un-group selected items
-  const [unGroupLoading, setUnGroupLoading] = useState(false);
-  const handleClickUnGroupItems = async () => {
-    if (selectedItems.length === 1) {
-      toast.warning("Select more than one article.");
-      return;
-    }
-    const parentId = selectedItems[0].id;
-    const childrenIds = selectedItems.slice(1).map((item) => item.id);
-
-    try {
-      setUnGroupLoading(true);
-      const request_data = {
-        parent_id: parentId,
-        child_id: arrayToString(childrenIds),
-      };
-      const response = await axios.post(
-        `${url}ungroupsimilarsocialfeeds/`,
-        request_data,
-        { headers }
-      );
-      if (response.data.status?.success?.length) {
-        setSelectionModal([]);
-        setSelectedItems([]);
-        toast.success("Articles ungrouped successfully.");
-      } else {
-        toast.warning("Ids not found.");
-      }
-    } catch (error) {
-      console.log(error.message);
-    } finally {
-      setUnGroupLoading(false);
-    }
+  const [openUnGroupModal, setOpenUnGroupModal] = useState(false);
+  const handleUnGroupModalOpen = () => {
+    setOpenUnGroupModal(true);
   };
 
   // * remove companies from selected items
@@ -578,7 +512,7 @@ const Online = () => {
           fetchTableData={fetchTableData}
         />
       </Accordion>
-      {!!isShowSecondAccordion && (
+      {isShowSecondAccordion && (
         <Accordion>
           <AccordionSummary
             expandIcon={<ExpandMoreIcon />}
@@ -588,30 +522,22 @@ const Online = () => {
             Group & remove
           </AccordionSummary>
           <AccordionDetails>
-            <CustomTextField
-              value={headlineForGroup}
-              setValue={setHeadlineForGroup}
-              type={"text"}
-              placeholder={"Headline"}
-            />
             <Box sx={{ display: "flex", gap: 1, flexWrap: "wrap" }}>
-              {!!buttonsPermission?.group === "Yes" && (
+              {buttonsPermission?.group === "Yes" && (
                 <Button
-                  btnText={groupLoading ? "Loading" : "group"}
+                  btnText={"group"}
                   icon={<AttachFileOutlined />}
                   onClick={handleGroupModalOpen}
-                  isLoading={groupLoading}
                 />
               )}
-              {!!buttonsPermission?.un_group === "Yes" && (
+              {buttonsPermission?.un_group === "Yes" && (
                 <Button
-                  btnText={unGroupLoading ? "ungrouping" : "ungroup"}
+                  btnText={"unGroup"}
                   icon={<ControlCameraOutlined />}
-                  onClick={handleClickUnGroupItems}
-                  isLoading={unGroupLoading}
+                  onClick={handleUnGroupModalOpen}
                 />
               )}
-              {!!buttonsPermission?.add_and_remove_company === "Yes" && (
+              {buttonsPermission?.add_and_remove_company === "Yes" && (
                 <Button
                   btnText={removeLoading ? "Removing" : "Remove Companies"}
                   icon={<CloseOutlined />}
@@ -620,7 +546,7 @@ const Online = () => {
                   isDanger
                 />
               )}
-              {!!buttonsPermission?.save === "Yes" && (
+              {buttonsPermission?.save === "Yes" && (
                 <Button
                   btnText={saveLoading ? "saving" : "save"}
                   onClick={handleSaveManualEditedCells}
@@ -702,11 +628,21 @@ const Online = () => {
         verificationLoading={verificationLoading}
       />
 
-      <GroupModal
+      <GroupUnGroupModal
         openGroupModal={openGroupModal}
-        setOpenGroupModal={setGroupModal}
+        setOpenGroupModal={setOpenGroupModal}
         selectedItems={selectedItems}
-        screen="online"
+        setSelectedItems={setSelectedItems}
+        setSelectionModal={setSelectionModal}
+        groupOrUnGroup="group"
+      />
+      <GroupUnGroupModal
+        openGroupModal={openUnGroupModal}
+        setOpenGroupModal={setOpenUnGroupModal}
+        selectedItems={selectedItems}
+        setSelectedItems={setSelectedItems}
+        setSelectionModal={setSelectionModal}
+        groupOrUnGroup="unGroup"
       />
     </Box>
   );

@@ -61,7 +61,8 @@ const EditDialog = ({ open, setOpen, row }) => {
   const defaultLink = row?.defaultLink;
   const link = row?.link;
   const [articleTagDetails, setArticleTagDetails] = useState([]);
-  const [articleTagDetailsLoading, setArticleTagDetailsLoading] = useState([]);
+  const [articleTagDetailsLoading, setArticleTagDetailsLoading] =
+    useState(false);
   const [headerData, setHeaderData] = useState(null);
   const [formItems, setFormItems] = useState({
     headline: "",
@@ -169,6 +170,8 @@ const EditDialog = ({ open, setOpen, row }) => {
 
   const handleClose = () => {
     setOpen(false);
+    setPageNumber(null);
+    setArticleTagDetails([]);
   };
 
   const handleChange = (event) => {
