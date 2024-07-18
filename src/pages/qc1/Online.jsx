@@ -107,6 +107,18 @@ const Online = () => {
     fetchUserList();
   }, [fromDate, dateNow]);
 
+  function mapBinaryToYesNoAll(value) {
+    switch (value) {
+      case 1:
+        return "Y";
+      case "0":
+        return "N";
+      case 2:
+        return "ALL";
+      default:
+        return value;
+    }
+  }
   // * table data
   const [tableData, setTableData] = useState([]);
   const [selectedItems, setSelectedItems] = useState([]);
@@ -158,7 +170,11 @@ const Online = () => {
       );
       addPropertyIfConditionIsTrue(qc1By !== "", "qc_1by", qc1By);
       addPropertyIfConditionIsTrue(link !== "", "link", link);
-      addPropertyIfConditionIsTrue(isQc1Done !== "", "is_qc1", isQc1Done);
+      addPropertyIfConditionIsTrue(
+        isQc1Done !== "",
+        "is_qc1",
+        mapBinaryToYesNoAll(isQc1Done)
+      );
       addPropertyIfConditionIsTrue(
         selectedLanguages.length > 0,
         "language",
@@ -411,7 +427,7 @@ const Online = () => {
 
   // * highlight edit rows
   const getRowClassName = (params) => {
-    return unsavedChangesRef.current.unsavedRows[params.row.main_id]
+    return unsavedChangesRef.current.unsavedRows[params.row.socialFeedId]
       ? "highlight-row"
       : "";
   };

@@ -1,6 +1,7 @@
 import PropTypes from "prop-types";
 import { EditAttributesOutlined } from "@mui/icons-material";
 import AttachmentIcon from "@mui/icons-material/Attachment";
+import VisibilityIcon from "@mui/icons-material/Visibility";
 import {
   Box,
   CircularProgress,
@@ -104,6 +105,9 @@ const MainTable = ({
         <div style={iconCellStyle}>
           <IconButton onClick={() => handleRowClick(params.row, params.id)}>
             <EditAttributesOutlined className="text-primary" />
+          </IconButton>
+          <IconButton>
+            <VisibilityIcon className="text-primary" />
           </IconButton>
           {params.row.similar_articles === "Yes" && (
             <>
