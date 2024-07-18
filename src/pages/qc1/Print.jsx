@@ -236,6 +236,20 @@ const Print = () => {
       // Add optional params using the helper function
       addPropertyIfConditionIsTrue(
         params,
+        fromDate !== null,
+        "from_date",
+        convertDateFormat(fromDate),
+        params
+      );
+      addPropertyIfConditionIsTrue(
+        params,
+        toDate !== null,
+        "to_date",
+        convertDateFormat(toDate),
+        params
+      );
+      addPropertyIfConditionIsTrue(
+        params,
         selectedCompanies.length > 0,
         "company_id",
         arrayToString(selectedCompanies),
