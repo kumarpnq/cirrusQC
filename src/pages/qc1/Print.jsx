@@ -505,19 +505,16 @@ const Print = () => {
     const similarArticles = await fetchSimilarArticles(parentId);
     if (!similarArticles.length)
       return toast.warning("No similar articles found.");
-    const childrenIds = similarArticles.map((item) => item.article);
 
     try {
       setUnGroupLoading(true);
       const request_data = {
         parent_id: parentId,
-        child_id: arrayToString(childrenIds),
       };
-      const response = await axios.post(
-        `${url}ungroupsimilararticles/`,
-        request_data,
-        { headers }
-      );
+      const response = await axios.delete(`${url}ungroupsimilararticles/`, {
+        headers,
+        params: request_data,
+      });
       if (response.data.status?.success?.length) {
         setSelectionModal([]);
         setSelectedItems([]);

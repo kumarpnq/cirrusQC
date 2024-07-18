@@ -254,21 +254,15 @@ const Online = () => {
       const request_data = {
         parent_id: parent_id,
       };
-      const response = await axios.post(
-        `${url}ungroupsimilarsocialfeeds/`,
-        request_data,
-        {
-          headers,
-          // params: request_data,
-        }
-      );
-      if (response.data.status?.success?.length) {
+      const response = await axios.delete(`${url}ungroupsimilarsocialfeeds/`, {
+        headers,
+        params: request_data,
+      });
+      if (response.data) {
         toast.success("Articles ungrouped successfully.");
         setSelectedItems([]);
         setSelectionModal([]);
         fetchTableData();
-      } else {
-        toast.warning("Error while un-grouping.");
       }
     } catch (error) {
       toast.error("Something went wrong.");
