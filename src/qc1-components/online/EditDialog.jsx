@@ -75,6 +75,19 @@ const EditDialog = ({ open, setOpen, row }) => {
   // * page for filter articles
   const [pageNumber, setPageNumber] = useState(null);
 
+  const handleClose = () => {
+    setFormItems({
+      headline: "",
+      summary: "",
+      journalist: "",
+      page: "",
+      articleSummary: "",
+    });
+    setOpen(false);
+    setPageNumber(null);
+    setArticleTagDetails([]);
+  };
+
   // * fetch data
   const fetchHeaderAndTagDetails = async () => {
     try {
@@ -167,12 +180,6 @@ const EditDialog = ({ open, setOpen, row }) => {
   };
 
   const [selectedCompanies, setSelectedCompanies] = useState([]);
-
-  const handleClose = () => {
-    setOpen(false);
-    setPageNumber(null);
-    setArticleTagDetails([]);
-  };
 
   const handleChange = (event) => {
     const { name, value } = event.target;
@@ -380,13 +387,11 @@ const EditDialog = ({ open, setOpen, row }) => {
                       onClick={updateHeaderData}
                       isLoading={updateHeaderLoading}
                     />
-                    {/* <Box width={50}>
-                      <CustomTextField />
-                    </Box> */}
+
                     <input
                       type="number"
                       value={pageNumber}
-                      onChange={(e) => setPageNumber(e.target.value)}
+                      onChange={(e) => setPageNumber(Number(e.target.value))}
                       placeholder="page"
                       className="h-[23px] outline-none border border-gray-400 mt-3 rounded-[3px] w-28 px-2 text-sm"
                     />

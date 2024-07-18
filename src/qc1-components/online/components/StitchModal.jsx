@@ -68,6 +68,7 @@ const StitchModal = ({
   const [fetchLoading, setFetchLoading] = useState(false);
   const [selectedRows, setSelectedRows] = useState([]);
   const [filteredArticles, setFilteredArticles] = useState([]);
+  console.log(pageNumber);
 
   useEffect(() => {
     if (!pageNumber) {
@@ -105,7 +106,9 @@ const StitchModal = ({
   };
 
   useEffect(() => {
-    fetchStitchedArticles();
+    if (open) {
+      fetchStitchedArticles();
+    }
   }, [articleId, open]);
 
   const rows = filteredArticles.map((item) => ({
@@ -166,42 +169,40 @@ const StitchModal = ({
 
   const PageFilter = () => {
     return (
-      <>
-        <Box sx={{ minWidth: 120 }}>
-          <FormControl fullWidth>
-            <InputLabel id="demo-simple-select-label" sx={{ mt: -1 }}>
-              Page
-            </InputLabel>
-            <Select
-              labelId="demo-simple-select-label"
-              id="demo-simple-select"
-              value={pageNumber}
-              label="Page"
-              size="small"
-              onChange={(e) => setPageNumber(e.target.value)}
-              sx={{ width: 90 }}
-              MenuProps={{
-                PaperProps: {
-                  style: {
-                    maxHeight: 200,
-                    fontSize: "0.8em",
-                  },
+      <Box sx={{ minWidth: 120 }}>
+        <FormControl fullWidth>
+          <InputLabel id="demo-simple-select-label" sx={{ mt: -1 }}>
+            Page
+          </InputLabel>
+          <Select
+            labelId="demo-simple-select-label"
+            id="demo-simple-select"
+            value={pageNumber}
+            label="Page"
+            size="small"
+            onChange={(e) => setPageNumber(e.target.value)}
+            sx={{ width: 90 }}
+            MenuProps={{
+              PaperProps: {
+                style: {
+                  maxHeight: 200,
+                  fontSize: "0.8em",
                 },
-              }}
-            >
-              <MenuItem onClick={() => setPageNumber(null)}>
-                {" "}
-                <button>Clear</button>
+              },
+            }}
+          >
+            <MenuItem onClick={() => setPageNumber(null)}>
+              {" "}
+              <button>Clear</button>
+            </MenuItem>
+            {uniqueNumbers.map((i) => (
+              <MenuItem value={i} key={i}>
+                {i}
               </MenuItem>
-              {uniqueNumbers.map((i) => (
-                <MenuItem value={i} key={i}>
-                  {i}
-                </MenuItem>
-              ))}
-            </Select>
-          </FormControl>
-        </Box>
-      </>
+            ))}
+          </Select>
+        </FormControl>
+      </Box>
     );
   };
 
@@ -285,5 +286,7 @@ StitchModal.propTypes = {
   articleId: PropTypes.number.isRequired,
   isStitch: PropTypes.bool,
   isUnStitch: PropTypes.bool,
+  pageNumber: PropTypes.any,
+  setPageNumber: PropTypes.func,
 };
 export default StitchModal;

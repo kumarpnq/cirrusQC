@@ -24,7 +24,7 @@ import PictureAsPdfIcon from "@mui/icons-material/PictureAsPdf";
 
 const iconCellStyle = {
   display: "flex",
-  justifyContent: "center",
+  justifyContent: "left",
   alignItems: "center",
   height: "100%",
 };

@@ -82,6 +82,18 @@ const EditDialog = ({ rowData, rowNumber, setRowNumber, open, setOpen }) => {
   const [selectRowForDelete, setSelectRowForDelete] = useState({});
   const [verificationLoading, setVerificationLoading] = useState(false);
 
+  const handleClose = () => {
+    setFormItems({
+      headline: "",
+      summary: "",
+      journalist: "",
+      tag: "",
+    });
+    setRowNumber(0);
+    setRow(null);
+    setSocialFeedTagDetails([]);
+    setOpen(false);
+  };
   // * fetching header & tag details
   const fetchHeaderAndTagDetails = async () => {
     try {
@@ -102,7 +114,6 @@ const EditDialog = ({ rowData, rowNumber, setRowNumber, open, setOpen }) => {
         journalist: headerData.author_name,
         tag: headerData.tags,
       });
-      console.log(headerData);
       const tagDetailsResponse = await axios.get(
         `${url}qc1onlinetagdetails/?socialfeed_id=${socialFeedId}`,
         { headers }
@@ -120,19 +131,6 @@ const EditDialog = ({ rowData, rowNumber, setRowNumber, open, setOpen }) => {
       fetchHeaderAndTagDetails();
     }
   }, [socialFeedId, open]);
-
-  const handleClose = () => {
-    setRowNumber(0);
-    setRow(null);
-    setSocialFeedTagDetails([]);
-    setOpen(false);
-    setFormItems({
-      headline: "",
-      summary: "",
-      journalist: "",
-      tag: "",
-    });
-  };
 
   const handleChange = (event) => {
     const { name, value } = event.target;
@@ -166,6 +164,12 @@ const EditDialog = ({ rowData, rowNumber, setRowNumber, open, setOpen }) => {
       );
       if (response.data?.result?.success?.length) {
         if (rowNumber < rowData.length - 1) {
+          setFormItems({
+            headline: "",
+            summary: "",
+            journalist: "",
+            tag: "",
+          });
           setRowNumber((prev) => prev + 1);
         } else {
           toast.success("This is the last article.");

@@ -29,7 +29,7 @@ import { toast } from "react-toastify";
 
 const iconCellStyle = {
   display: "flex",
-  justifyContent: "center",
+  justifyContent: "left",
   alignItems: "center",
   height: "100%",
 };
