@@ -25,7 +25,6 @@ import {
 import axios from "axios";
 import { useState } from "react";
 import { url } from "../../constants/baseUrl";
-import { toast } from "react-toastify";
 
 const iconCellStyle = {
   display: "flex",
@@ -55,10 +54,8 @@ const MainTable = ({
   setSelectionModal,
   handleSelectionChange,
   handleRowClick,
-  newRows,
-  setNewRows,
-  setOldRows,
   getRowClassName,
+  processRowUpdate,
 }) => {
   const userToken = localStorage.getItem("user");
   const headers = {
@@ -266,16 +263,7 @@ const MainTable = ({
           setSelectionModal(ids);
           handleSelectionChange(ids);
         }}
-        processRowUpdate={(newRow, oldRow) => {
-          if (newRows) {
-            toast.warning("Please save the changes first.");
-            return;
-          }
-          if (JSON.stringify(newRow) !== JSON.stringify(oldRow)) {
-            setNewRows(newRow);
-            setOldRows(oldRow);
-          }
-        }}
+        processRowUpdate={processRowUpdate}
         disableDensitySelector
         disableColumnSelector
         disableRowSelectionOnClick
@@ -297,10 +285,8 @@ MainTable.propTypes = {
   setSelectionModal: PropTypes.func.isRequired,
   handleSelectionChange: PropTypes.func.isRequired,
   handleRowClick: PropTypes.func.isRequired,
-  newRows: PropTypes.array.isRequired,
-  setNewRows: PropTypes.func.isRequired,
-  setOldRows: PropTypes.func.isRequired,
   getRowClassName: PropTypes.func.isRequired,
+  processRowUpdate: PropTypes.func.isRequired,
 };
 
 export default MainTable;

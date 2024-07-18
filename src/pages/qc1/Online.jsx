@@ -1,6 +1,6 @@
 // * online component is inside the qc1-components/components/online
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { Box, Divider } from "@mui/material";
 import Accordion from "@mui/material/Accordion";
 import AccordionSummary from "@mui/material/AccordionSummary";
@@ -35,9 +35,10 @@ import {
   ControlCameraOutlined,
 } from "@mui/icons-material";
 import CustomAccordionDetails from "../../qc1-components/print/edit-dialog/SearchFilters";
-import DeleteConfirmationDialog from "../../@core/DeleteDialog";
+// import DeleteConfirmationDialog from "../../@core/DeleteDialog";
 import GroupUnGroupModal from "../../qc1-components/print/Group&Ungroup";
 import MainTable from "../../qc1-components/print/MainTable";
+import AddCompaniesModal from "../../qc1-components/components/AddCompanyModal";
 
 const useStyle = makeStyles(() => ({
   dropDowns: {
@@ -271,93 +272,123 @@ const Online = () => {
     }
   };
 
-  // * remove companies from selected items
-  const [removeLoading, setRemoveLoading] = useState(false);
-  const [openDelete, setOpenDelete] = useState(false);
-  const [password, setPassword] = useState("");
-  const [verificationLoading, setVerificationLoading] = useState(false);
-  const userVerification = async () => {
-    try {
-      setVerificationLoading(true);
-      const headers = { Authorization: `Bearer ${userToken}` };
-      const data = { password };
-      const response = await axios.post(`${url}isValidUser/`, data, {
-        headers,
-      });
-      setVerificationLoading(false);
-      return response.data.valid_user;
-    } catch (error) {
-      toast.error(error.message);
-      setVerificationLoading(false);
-    }
-  };
-  const handleClickOpen = () => {
-    setOpenDelete(true);
-  };
+  // // * remove companies from selected items
+  // const [removeLoading, setRemoveLoading] = useState(false);
+  // const [openDelete, setOpenDelete] = useState(false);
+  // const [password, setPassword] = useState("");
+  // const [verificationLoading, setVerificationLoading] = useState(false);
+  // const userVerification = async () => {
+  //   try {
+  //     setVerificationLoading(true);
+  //     const headers = { Authorization: `Bearer ${userToken}` };
+  //     const data = { password };
+  //     const response = await axios.post(`${url}isValidUser/`, data, {
+  //       headers,
+  //     });
+  //     setVerificationLoading(false);
+  //     return response.data.valid_user;
+  //   } catch (error) {
+  //     toast.error(error.message);
+  //     setVerificationLoading(false);
+  //   }
+  // };
+  // const handleClickOpen = () => {
+  //   setOpenDelete(true);
+  // };
 
-  const handleCloseDelete = () => {
-    setOpenDelete(false);
-  };
-  const handleClickRemoveCompanies = async () => {
-    const isValid = await userVerification();
-    if (!isValid) {
-      return toast.warning("User not valid.");
-    }
-    const socialFeedIds = selectedItems.map((i) => i.social_feed_id);
+  // const handleCloseDelete = () => {
+  //   setOpenDelete(false);
+  // };
+  // const handleClickRemoveCompanies = async () => {
+  //   const isValid = await userVerification();
+  //   if (!isValid) {
+  //     return toast.warning("User not valid.");
+  //   }
+  //   const socialFeedIds = selectedItems.map((i) => i.social_feed_id);
 
-    try {
-      setRemoveLoading(true);
-      const request_data = {
-        client_id: selectedClient,
-        socialfeed_ids: arrayToString(socialFeedIds),
-        company_ids: arrayToString(selectedCompanies),
-      };
-      if (selectedCompanies.length) {
-        request_data.company_ids = arrayToString(selectedCompanies);
-      }
-      const response = await axios.delete(`${url}removecompanyonline/`, {
-        headers,
-        params: request_data,
-      });
-      if (response) {
-        toast.success("Companies removed.");
-        setSelectionModal([]);
-        setSelectedItems([]);
-        setOpenDelete(false);
-      }
-    } catch (error) {
-      toast.error("Something went wrong.");
-    } finally {
-      setRemoveLoading(false);
-    }
-  };
+  //   try {
+  //     setRemoveLoading(true);
+  //     const request_data = {
+  //       client_id: selectedClient,
+  //       socialfeed_ids: arrayToString(socialFeedIds),
+  //       company_ids: arrayToString(selectedCompanies),
+  //     };
+  //     if (selectedCompanies.length) {
+  //       request_data.company_ids = arrayToString(selectedCompanies);
+  //     }
+  //     const response = await axios.delete(`${url}removecompanyonline/`, {
+  //       headers,
+  //       params: request_data,
+  //     });
+  //     if (response) {
+  //       toast.success("Companies removed.");
+  //       setSelectionModal([]);
+  //       setSelectedItems([]);
+  //       setOpenDelete(false);
+  //     }
+  //   } catch (error) {
+  //     toast.error("Something went wrong.");
+  //   } finally {
+  //     setRemoveLoading(false);
+  //   }
+  // };
 
   // * saving the edited cells
-  const [oldRows, setOldRows] = useState(null);
-  const [newRows, setNewRows] = useState(null);
+
   const [saveLoading, setSaveLoading] = useState(false);
+  const [hasUnsavedRows, setHasUnsavedRows] = useState(false);
+  const unsavedChangesRef = useRef({
+    unsavedRows: {},
+    rowsBeforeChange: {},
+  });
+
+  const processRowUpdate = useCallback((newRow, oldRow) => {
+    const rowId = newRow.socialFeedId;
+
+    // Update unsaved rows
+    unsavedChangesRef.current.unsavedRows[rowId] = newRow;
+
+    // Store initial state before any changes are made
+    if (!unsavedChangesRef.current.rowsBeforeChange[rowId]) {
+      unsavedChangesRef.current.rowsBeforeChange[rowId] = oldRow;
+    }
+
+    setHasUnsavedRows(true);
+
+    return newRow;
+  }, []);
 
   const handleSaveManualEditedCells = async () => {
-    if (!newRows) {
+    const changedRows = unsavedChangesRef.current.unsavedRows;
+    const rowsBeforeChange = unsavedChangesRef.current.rowsBeforeChange;
+
+    if (Object.keys(changedRows).length === 0) {
       toast.warning("No changes found.");
       return;
     }
     try {
       setSaveLoading(true);
-      const request_data = {
-        SOCIALFEEDID: newRows?.socialFeedId,
-      };
-      if (oldRows.headline !== newRows.headline) {
-        request_data.HEADLINE = newRows.headline;
-      }
-      if (oldRows.summary !== newRows.summary) {
-        request_data.SUMMARY = newRows.summary;
-      }
-      if (oldRows.journalist !== newRows.journalist) {
-        request_data.AUTHOR = newRows.journalist;
-      }
+
+      const requestData = Object.keys(changedRows).map((rowId) => {
+        const newRow = changedRows[rowId];
+        const oldRow = rowsBeforeChange[rowId];
+        const request_data = {
+          SOCIALFEEDID: newRow.socialFeedId,
+        };
+
+        if (oldRow.headline !== newRow.headline) {
+          request_data.HEADLINE = newRow.headline;
+        }
+        if (oldRow.summary !== newRow.summary) {
+          request_data.SUMMARY = newRow.summary;
+        }
+        if (oldRow.journalist !== newRow.journalist) {
+          request_data.AUTHOR = newRow.journalist;
+        }
+        return request_data;
+      });
       const data = {
-        data: [request_data],
+        data: requestData,
         qcflag: 1,
       };
       const response = await axios.post(`${url}updatesocialfeedheader/`, data, {
@@ -365,8 +396,8 @@ const Online = () => {
       });
       if (response.data.result?.success?.length) {
         toast.success("Data updated.");
-        setNewRows(null);
-        setOldRows(null);
+        unsavedChangesRef.current.unsavedRows = {};
+        unsavedChangesRef.current.rowsBeforeChange = {};
         fetchTableData();
       } else {
         toast.warning("Something wrong try again.");
@@ -380,12 +411,14 @@ const Online = () => {
 
   // * highlight edit rows
   const getRowClassName = (params) => {
-    return newRows?.socialFeedId === params.row.socialFeedId
+    return unsavedChangesRef.current.unsavedRows[params.row.main_id]
       ? "highlight-row"
       : "";
   };
 
-  const isShowSecondAccordion = selectedItems.length || Boolean(newRows);
+  const isShowSecondAccordion =
+    selectedItems.length ||
+    Object.keys(unsavedChangesRef.current.unsavedRows).length > 0;
 
   // * buttons permission
   const [buttonsPermission, setButtonsPermission] = useState(null);
@@ -403,6 +436,9 @@ const Online = () => {
     };
     fetchPermission();
   }, []);
+
+  // * add companies
+  const [openAddCompanies, setOpenAddCompanies] = useState(false);
 
   return (
     <Box mx={2}>
@@ -489,8 +525,7 @@ const Online = () => {
                 <Button
                   btnText={"Add & Remove Companies"}
                   icon={<CloseOutlined />}
-                  onClick={handleClickOpen}
-                  isLoading={removeLoading}
+                  onClick={() => setOpenAddCompanies(true)}
                 />
               )}
               {buttonsPermission?.save === "Yes" && (
@@ -513,10 +548,8 @@ const Online = () => {
         setSelectionModal={setSelectionModal}
         handleSelectionChange={handleSelectionChange}
         handleRowClick={handleRowClick}
-        newRows={newRows}
-        setNewRows={setNewRows}
-        setOldRows={setOldRows}
         getRowClassName={getRowClassName}
+        processRowUpdate={processRowUpdate}
       />
       <EditDialog
         open={open}
@@ -525,14 +558,14 @@ const Online = () => {
         rowNumber={articleNumber}
         setRowNumber={setArticleNumber}
       />
-      <DeleteConfirmationDialog
+      {/* <DeleteConfirmationDialog
         open={openDelete}
         handleClose={handleCloseDelete}
         password={password}
         setPassword={setPassword}
         handleClickRemove={handleClickRemoveCompanies}
         verificationLoading={verificationLoading}
-      />
+      /> */}
 
       <GroupUnGroupModal
         openGroupModal={openGroupModal}
@@ -542,6 +575,12 @@ const Online = () => {
         setSelectionModal={setSelectionModal}
         groupOrUnGroup="group"
         fetchMainData={fetchTableData}
+      />
+      {/* Combine for print & online */}
+      <AddCompaniesModal
+        open={openAddCompanies}
+        setOpen={setOpenAddCompanies}
+        selectedRows={selectedItems}
       />
     </Box>
   );
