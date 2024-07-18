@@ -126,8 +126,10 @@ const EditDialog = ({ open, setOpen, row }) => {
   };
 
   useEffect(() => {
-    fetchHeaderAndTagDetails();
-  }, [articleId]);
+    if (open) {
+      fetchHeaderAndTagDetails();
+    }
+  }, [articleId, open]);
 
   // * updating header data
   const [updateHeaderLoading, setUpdateHeaderLoading] = useState(false);

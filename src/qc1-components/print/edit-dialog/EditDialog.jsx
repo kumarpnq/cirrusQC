@@ -170,6 +170,7 @@ const EditDialog = ({ rowData, rowNumber, setRowNumber, open, setOpen }) => {
             journalist: "",
             tag: "",
           });
+          setSelectedCompanies([]);
           setRowNumber((prev) => prev + 1);
         } else {
           toast.success("This is the last article.");
@@ -206,6 +207,7 @@ const EditDialog = ({ rowData, rowNumber, setRowNumber, open, setOpen }) => {
         }
       );
       if (response.status === 200) {
+        setSelectedCompanies([]);
         fetchHeaderAndTagDetails();
         toast.success("Company added.");
       }

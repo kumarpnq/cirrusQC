@@ -11,11 +11,13 @@ import { useEffect, useState } from "react";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import CalendarViewDayIcon from "@mui/icons-material/CalendarViewDay";
 import { Link } from "react-router-dom";
+import TextView from "./components/TextView";
 
 const ArticleView = ({ open, setOpen }) => {
   const [scrolled, setScrolled] = useState(false);
   const handleClose = () => setOpen(false);
   const [articleData, setArticleData] = useState(null);
+  const [openTextView, setOpenTextView] = useState(false);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -159,13 +161,14 @@ const ArticleView = ({ open, setOpen }) => {
                 Article View
               </Link>
             </Button>
-            <Button>
+            <Button onClick={() => setOpenTextView(true)}>
               <CalendarViewDayIcon />
               Text
             </Button>
           </Box>
         </Box>
       </Modal>
+      <TextView open={openTextView} setOpen={setOpenTextView} />
     </div>
   );
 };
