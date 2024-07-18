@@ -11,11 +11,12 @@ import { arrayToString } from "../../utils/arrayToString";
 import DebounceSearchCompany from "../../@core/DebounceSearchCompany";
 import Button from "../../components/custom/Button";
 
-const AddCompaniesModal = ({ open, setOpen, selectedRows }) => {
+const AddCompaniesModal = ({ open, setOpen, selectedRows, screen }) => {
   const [fetchedCompanies, setFetchedCompanies] = useState([]);
   const [fetchLoading, setFetchLoading] = useState(false);
 
   const articleIds = selectedRows.map((i) => i.id);
+  const socialFeedIds = selectedRows.map((i) => i.social_feed_id);
 
   // * handle close  modal
   const handleClose = () => {
@@ -31,11 +32,17 @@ const AddCompaniesModal = ({ open, setOpen, selectedRows }) => {
   const fetchTaggedCompanies = async () => {
     try {
       setFetchLoading(true);
+      const Ids = screen === "online" ? socialFeedIds : articleIds;
+      const paramKey = screen === "online" ? "socialfeed_ids" : "article_ids";
       const params = {
-        article_ids: arrayToString(articleIds),
+        [paramKey]: arrayToString(Ids),
       };
       const userToken = localStorage.getItem("user");
-      const response = await axios.get(`${url}taggedcompaniesprint/`, {
+      const endpoint =
+        screen === "online"
+          ? "taggedcompaniesonline/"
+          : "taggedcompaniesprint/";
+      const response = await axios.get(`${url + endpoint}`, {
         headers: { Authorization: `Bearer ${userToken}` },
         params,
       });
@@ -61,16 +68,20 @@ const AddCompaniesModal = ({ open, setOpen, selectedRows }) => {
     }
     try {
       setAddCompanyLoading(true);
+      const ids = screen === "online" ? socialFeedIds : articleIds;
+      const paramKey = screen === "online" ? "socialfeed_ids" : "article_ids";
       const request_data = {
-        article_ids: selectedRows,
+        [paramKey]: ids,
         company_id: selectedCompany?.value,
       };
       const userToken = localStorage.getItem("user");
-      const response = await axios.post(
-        `${url}tagcompanytoarticles/`,
-        request_data,
-        { headers: { Authorization: `Bearer ${userToken}` } }
-      );
+      const endpoint =
+        screen === "online"
+          ? "tagcompanytosocialfeeds"
+          : "tagcompanytoarticles/";
+      const response = await axios.post(`${url + endpoint}`, request_data, {
+        headers: { Authorization: `Bearer ${userToken}` },
+      });
       if (response) {
         toast.success("Company added");
         fetchTaggedCompanies();
@@ -81,17 +92,22 @@ const AddCompaniesModal = ({ open, setOpen, selectedRows }) => {
       setAddCompanyLoading(false);
     }
   };
-
   const handleDeleteRow = async (row) => {
     try {
       const userToken = localStorage.getItem("user");
       const company_id = row?.company_id;
+      const paramKey = screen === "online" ? "socialfeed_ids" : "article_ids";
+      const ids = screen === "online" ? socialFeedIds : articleIds;
       const request_data = {
-        article_ids: arrayToString(selectedRows),
+        [paramKey]: arrayToString(ids),
         company_id,
       };
+      const endpoint =
+        screen === "online"
+          ? "modifycompanyforonlinearticles/"
+          : "modifycompanyforprintarticles/";
       const response = await axios.delete(
-        `${url}modifycompanyforprintarticles/`,
+        `${url + endpoint}`,
         // request_data,
         {
           headers: { Authorization: `Bearer ${userToken}` },
@@ -103,7 +119,6 @@ const AddCompaniesModal = ({ open, setOpen, selectedRows }) => {
         fetchTaggedCompanies();
       }
     } catch (error) {
-      console.log(error);
       toast.error("Something went wrong.");
     }
   };
@@ -129,7 +144,11 @@ const AddCompaniesModal = ({ open, setOpen, selectedRows }) => {
       },
     },
     { field: "company", headerName: "Company", width: 150 },
-    { field: "article_id", headerName: "Article ID", width: 150 },
+    {
+      field: "article_id",
+      headerName: screen === "online" ? "SocialFeed ID" : "Article ID",
+      width: 150,
+    },
     { field: "keyword", headerName: "Keyword", width: 250 },
   ];
 
@@ -142,7 +161,8 @@ const AddCompaniesModal = ({ open, setOpen, selectedRows }) => {
         rows.push({
           id: rows.length,
           company: firstPair ? company.company_name : "",
-          article_id: pair.article_id,
+          article_id:
+            screen === "online" ? pair.socialfeed_id : pair.article_id,
           keyword: pair.keyword,
           company_id: company.company_id,
           isPairFlag: true,
@@ -251,6 +271,7 @@ AddCompaniesModal.propTypes = {
   open: PropTypes.bool.isRequired,
   setOpen: PropTypes.func.isRequired,
   selectedRows: PropTypes.arrayOf(PropTypes.number).isRequired,
+  screen: PropTypes.string.isRequired,
 };
 
 export default AddCompaniesModal;

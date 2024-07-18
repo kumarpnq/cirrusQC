@@ -597,6 +597,7 @@ const Online = () => {
         open={openAddCompanies}
         setOpen={setOpenAddCompanies}
         selectedRows={selectedItems}
+        screen={"online"}
       />
     </Box>
   );

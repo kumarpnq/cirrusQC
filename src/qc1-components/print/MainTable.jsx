@@ -26,6 +26,7 @@ import {
 import axios from "axios";
 import { useState } from "react";
 import { url } from "../../constants/baseUrl";
+import ArticleView from "./ArticleView";
 
 const iconCellStyle = {
   display: "flex",
@@ -67,6 +68,10 @@ const MainTable = ({
   const [anchorEls, setAnchorEls] = useState({});
   const [similarLoading, setSimilarLoading] = useState(false);
   const [childArticles, setChildArticles] = useState([]);
+  const [open, setOpen] = useState(false);
+
+  const handleOpen = () => setOpen(true);
+
   const handleSimilarClick = async (event, params) => {
     const socialFeedId = params.row.socialFeedId;
     const index = params.id;
@@ -106,7 +111,7 @@ const MainTable = ({
           <IconButton onClick={() => handleRowClick(params.row, params.id)}>
             <EditAttributesOutlined className="text-primary" />
           </IconButton>
-          <IconButton>
+          <IconButton onClick={handleOpen}>
             <VisibilityIcon className="text-primary" />
           </IconButton>
           {params.row.similar_articles === "Yes" && (
@@ -241,44 +246,53 @@ const MainTable = ({
     similar_articles: item.similar_articles,
   }));
   return (
-    <Box sx={{ height: 600, width: "100%", mt: 1 }}>
-      <DataGrid
-        rows={rows}
-        columns={columns}
-        slots={{ toolbar: CustomToolbar }}
-        slotProps={{
-          toolbar: {
-            showQuickFilter: true,
-          },
-        }}
-        pageSize={5}
-        pageSizeOptions={[10, 100, 200, 1000, { value: 1000, label: "1,000" }]}
-        sx={{
-          "& .MuiDataGrid-columnHeaders": {
-            fontSize: "0.875rem",
-          },
-          "& .MuiDataGrid-cell": {
-            fontSize: "0.9em",
-          },
-        }}
-        checkboxSelection
-        rowSelectionModel={selectionModal}
-        onRowSelectionModelChange={(ids) => {
-          setSelectionModal(ids);
-          handleSelectionChange(ids);
-        }}
-        processRowUpdate={processRowUpdate}
-        disableDensitySelector
-        disableColumnSelector
-        disableRowSelectionOnClick
-        columnBufferPx={1000}
-        loading={tableDataLoading && <CircularProgress />}
-        components={{ Toolbar: CustomToolbar }}
-        hideFooterSelectedRowCount
-        getRowHeight={() => "auto"}
-        getRowClassName={getRowClassName}
-      />
-    </Box>
+    <>
+      <Box sx={{ height: 600, width: "100%", mt: 1 }}>
+        <DataGrid
+          rows={rows}
+          columns={columns}
+          slots={{ toolbar: CustomToolbar }}
+          slotProps={{
+            toolbar: {
+              showQuickFilter: true,
+            },
+          }}
+          pageSize={5}
+          pageSizeOptions={[
+            10,
+            100,
+            200,
+            1000,
+            { value: 1000, label: "1,000" },
+          ]}
+          sx={{
+            "& .MuiDataGrid-columnHeaders": {
+              fontSize: "0.875rem",
+            },
+            "& .MuiDataGrid-cell": {
+              fontSize: "0.9em",
+            },
+          }}
+          checkboxSelection
+          rowSelectionModel={selectionModal}
+          onRowSelectionModelChange={(ids) => {
+            setSelectionModal(ids);
+            handleSelectionChange(ids);
+          }}
+          processRowUpdate={processRowUpdate}
+          disableDensitySelector
+          disableColumnSelector
+          disableRowSelectionOnClick
+          columnBufferPx={1000}
+          loading={tableDataLoading && <CircularProgress />}
+          components={{ Toolbar: CustomToolbar }}
+          hideFooterSelectedRowCount
+          getRowHeight={() => "auto"}
+          getRowClassName={getRowClassName}
+        />
+      </Box>
+      <ArticleView open={open} setOpen={setOpen} />
+    </>
   );
 };
 

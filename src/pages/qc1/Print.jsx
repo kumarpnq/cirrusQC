@@ -850,6 +850,7 @@ const Print = () => {
         open={openAddCompanies}
         setOpen={setOpenAddCompanies}
         selectedRows={selectedItems}
+        screen="print"
       />
       {/* <DeleteConfirmationDialog
         open={openDelete}
