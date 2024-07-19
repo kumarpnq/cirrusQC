@@ -267,7 +267,7 @@ const SearchFilters = ({
         <YesOrNo
           classes={classes}
           mapValue={["Yes", "No", "All"]}
-          placeholder="Stitched"
+          placeholder="Stitch"
           value={stitched}
           setValue={setStitched}
           width={100}

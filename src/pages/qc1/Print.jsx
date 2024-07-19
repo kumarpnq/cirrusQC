@@ -350,7 +350,7 @@ const Print = () => {
       addPropertyIfConditionIsTrue(
         params,
         stitched,
-        "stitched",
+        "stitch",
         mapYesNoAllToBinary(stitched),
         params
       );
