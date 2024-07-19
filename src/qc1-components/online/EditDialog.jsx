@@ -162,20 +162,31 @@ const EditDialog = ({
         ARTICLEID: articleId,
       };
       // Compare each field in formItems with headerData and add to data if modified
+      let isModified = false;
       if (formItems.headline !== headerData.headline) {
         data.HEADLINE = formItems.headline;
+        isModified = true;
       }
       if (formItems.summary !== headerData.summary) {
         data.HEADSUMMARY = formItems.summary;
+        isModified = true;
       }
       if (formItems.journalist !== headerData.journalist) {
         data.JOURNALIST = formItems.journalist;
+        isModified = true;
       }
       if (formItems.page !== headerData.page_number) {
         data.PAGENUMBER = Number(formItems.page);
+        isModified = true;
       }
       if (formItems.articleSummary !== headerData.article_summary) {
         data.ARTICLE_SUMMARY = formItems.articleSummary;
+        isModified = true;
+      }
+
+      if (!isModified) {
+        toast.warning("No changes detected.");
+        return;
       }
 
       const request_data = {
