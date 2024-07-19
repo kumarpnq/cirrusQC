@@ -119,6 +119,7 @@ const Print = () => {
         setUserList(response.data.qc_users);
       } catch (error) {
         console.log(error.message);
+        setUserList([]);
       }
     };
     fetchUserList();
@@ -201,6 +202,10 @@ const Print = () => {
     const with_category = withCategory === 0 ? "N" : "Y";
     try {
       setGridDataLoading(true);
+      if (!fromDate && !toDate && !uploadFromDate && !uploadToDate) {
+        toast.warning("Please select date.");
+        return;
+      }
       const dateCaseOne = (fromDate && !toDate) || (toDate && !fromDate);
       const dateCaseTwo =
         (uploadFromDate && !uploadToDate) || (uploadToDate && !uploadFromDate);

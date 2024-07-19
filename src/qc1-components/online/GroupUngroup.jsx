@@ -1,3 +1,4 @@
+import { useState } from "react";
 import PropTypes from "prop-types";
 import { Accordion, AccordionSummary, AccordionDetails } from "@mui/material";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
@@ -18,71 +19,76 @@ const GroupUnGroupAccordion = ({
   setStitchModalOpen,
   setUnStitchModalOpen,
 }) => {
+  const [multipleEditOpen, setMultipleEditOpen] = useState(false);
   if (!isShowSecondAccordion) {
     return null;
   }
 
   return (
-    <Accordion>
-      <AccordionSummary
-        expandIcon={<ExpandMoreIcon />}
-        aria-controls="panel1-content"
-        id="panel1-header"
-      >
-        Group & Un-Group Articles
-      </AccordionSummary>
-      <AccordionDetails sx={{ display: "flex", gap: 1 }}>
-        {buttonsPermission?.group === "Yes" && (
-          <Button
-            btnText={groupLoading ? "Loading" : "group"}
-            icon={<AttachFileOutlined />}
-            onClick={handleClickGroupItems}
-            isLoading={groupLoading}
-          />
-        )}
-        {buttonsPermission?.un_group === "Yes" && (
-          <Button
-            btnText={unGroupLoading ? "ungrouping" : "ungroup"}
-            icon={<ControlCameraOutlined />}
-            onClick={handleClickUnGroupItems}
-            isLoading={unGroupLoading}
-          />
-        )}
-        {buttonsPermission?.add_and_remove_company === "Yes" && (
-          <Button
-            btnText="Add & Remove Companies"
-            onClick={() => {
-              setOpenAddCompanies(true);
-            }}
-          />
-        )}
-        {buttonsPermission?.stitch === "Yes" && (
-          <Button
-            btnText="Stitch"
-            // isLoading={stitchLoading}
-            onClick={() => setStitchModalOpen(true)}
-          />
-        )}
-        {buttonsPermission?.unstitch === "Yes" && (
-          <Button
-            btnText="UnStitch"
-            onClick={() => setUnStitchModalOpen(true)}
-          />
-        )}
-        {buttonsPermission?.save === "Yes" && (
-          <Button
-            btnText={saveLoading ? "Saving" : "Save"}
-            onClick={handleSaveManualEditedCells}
-            isLoading={saveLoading}
-          />
-        )}
-      </AccordionDetails>
-    </Accordion>
+    <>
+      <Accordion>
+        <AccordionSummary
+          expandIcon={<ExpandMoreIcon />}
+          aria-controls="panel1-content"
+          id="panel1-header"
+        >
+          Group & Un-Group Articles
+        </AccordionSummary>
+        <AccordionDetails sx={{ display: "flex", gap: 1 }}>
+          <Button btnText="Edit" onClick={() => setMultipleEditOpen(true)} />
+          {buttonsPermission?.group === "Yes" && (
+            <Button
+              btnText={groupLoading ? "Loading" : "group"}
+              icon={<AttachFileOutlined />}
+              onClick={handleClickGroupItems}
+              isLoading={groupLoading}
+            />
+          )}
+          {buttonsPermission?.un_group === "Yes" && (
+            <Button
+              btnText={unGroupLoading ? "ungrouping" : "ungroup"}
+              icon={<ControlCameraOutlined />}
+              onClick={handleClickUnGroupItems}
+              isLoading={unGroupLoading}
+            />
+          )}
+          {buttonsPermission?.add_and_remove_company === "Yes" && (
+            <Button
+              btnText="Add & Remove Companies"
+              onClick={() => {
+                setOpenAddCompanies(true);
+              }}
+            />
+          )}
+          {buttonsPermission?.stitch === "Yes" && (
+            <Button
+              btnText="Stitch"
+              // isLoading={stitchLoading}
+              onClick={() => setStitchModalOpen(true)}
+            />
+          )}
+          {buttonsPermission?.unstitch === "Yes" && (
+            <Button
+              btnText="UnStitch"
+              onClick={() => setUnStitchModalOpen(true)}
+            />
+          )}
+          {buttonsPermission?.save === "Yes" && (
+            <Button
+              btnText={saveLoading ? "Saving" : "Save"}
+              onClick={handleSaveManualEditedCells}
+              isLoading={saveLoading}
+            />
+          )}
+        </AccordionDetails>
+      </Accordion>
+    </>
   );
 };
 
 GroupUnGroupAccordion.propTypes = {
   isShowSecondAccordion: PropTypes.bool.isRequired,
+  setMultipleEditOpen: PropTypes.bool.isRequired,
   buttonsPermission: PropTypes.object.isRequired,
   groupLoading: PropTypes.bool.isRequired,
   handleClickGroupItems: PropTypes.func.isRequired,
