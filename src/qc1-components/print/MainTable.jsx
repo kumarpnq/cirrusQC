@@ -111,9 +111,9 @@ const MainTable = ({
           <IconButton onClick={() => handleRowClick(params.row, params.id)}>
             <EditAttributesOutlined className="text-primary" />
           </IconButton>
-          <IconButton onClick={handleOpen}>
+          {/* <IconButton onClick={handleOpen}>
             <VisibilityIcon className="text-primary" />
-          </IconButton>
+          </IconButton> */}
           {params.row.similar_articles === "Yes" && (
             <>
               <Tooltip title="View similar articles">
