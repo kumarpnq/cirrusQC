@@ -1,4 +1,4 @@
-import { Fragment, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import PropTypes from "prop-types";
 import {
   Modal,
@@ -10,11 +10,6 @@ import {
   CardContent,
   Grid,
   CircularProgress,
-  DialogActions,
-  DialogTitle,
-  DialogContent,
-  TextField,
-  Dialog,
 } from "@mui/material";
 import { DataGrid } from "@mui/x-data-grid";
 
@@ -28,7 +23,6 @@ import CustomTextField from "../../../@core/TextFieldWithLabel";
 import DebounceSearchCompany from "../../../@core/DebounceSearchCompany";
 import axios from "axios";
 import { url } from "../../../constants/baseUrl";
-import CustomButton from "../../../@core/CustomButton";
 import { toast } from "react-toastify";
 import Button from "../../../components/custom/Button";
 
@@ -79,8 +73,6 @@ const EditDialog = ({ rowData, rowNumber, setRowNumber, open, setOpen }) => {
   const [socialFeedTagDetails, setSocialFeedTagDetails] = useState([]);
   const [socialFeedTagDetailsLoading, setSocialFeedTagDetailsLoading] =
     useState(false);
-  const [selectRowForDelete, setSelectRowForDelete] = useState({});
-  const [verificationLoading, setVerificationLoading] = useState(false);
 
   const handleClose = () => {
     setFormItems({
