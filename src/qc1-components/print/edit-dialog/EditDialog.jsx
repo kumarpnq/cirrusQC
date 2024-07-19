@@ -218,34 +218,7 @@ const EditDialog = ({ rowData, rowNumber, setRowNumber, open, setOpen }) => {
     }
   };
 
-  const userVerification = async () => {
-    try {
-      setVerificationLoading(true);
-      const headers = { Authorization: `Bearer ${userToken}` };
-      const data = { password };
-      const response = await axios.post(`${url}isValidUser/`, data, {
-        headers,
-      });
-      setVerificationLoading(false);
-      return response.data.valid_user;
-    } catch (error) {
-      console.log("Error:", error.message);
-      setVerificationLoading(false);
-    }
-  };
-
-  // * delete dialog
-  const [password, setPassword] = useState("");
-
   const handleDeleteCompany = async (selectedRow) => {
-    const isValid = await userVerification();
-    if (!isValid) {
-      return toast.error("Password not match with records");
-    }
-
-    if (!selectedRow) {
-      return toast.warning("No Company match");
-    }
     try {
       const requestData = {
         data: [
@@ -269,7 +242,6 @@ const EditDialog = ({ rowData, rowNumber, setRowNumber, open, setOpen }) => {
       if (response.data?.result?.success?.length) {
         fetchHeaderAndTagDetails();
         toast.success("Company removed");
-        setPassword("");
       } else {
         const errorMSG = response.data?.result?.error[0] || {};
         toast.warning(errorMSG.error);
