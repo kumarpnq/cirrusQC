@@ -2,6 +2,7 @@ import PropTypes from "prop-types";
 import { FormControl, Select, MenuItem } from "@mui/material";
 import useFetchData from "../../hooks/useFetchData";
 import { url } from "../../constants/baseUrl";
+import { useEffect, useState } from "react";
 
 const Publication = ({
   publicationGroup,
@@ -11,13 +12,23 @@ const Publication = ({
   width,
 }) => {
   const { data } = useFetchData(
-    publicationGroup && `${url}publications/${publicationGroup}`,
+    publicationGroup ? `${url}publications/${publicationGroup}` : null,
     publication
   );
-  const publicationGroups = data?.data?.publications || [];
+  const [publications, setPublications] = useState([]);
+
   const handleChange = (e) => {
     setPublication(e.target.value);
   };
+
+  useEffect(() => {
+    if (publicationGroup === null) {
+      setPublication("");
+      setPublications([]);
+    } else {
+      setPublications(data?.data?.publications || []);
+    }
+  }, [publicationGroup, data]);
 
   const formControlStyle = {
     width: `${width}px`,
@@ -35,7 +46,7 @@ const Publication = ({
         <MenuItem value="" sx={{ fontSize: "0.8em", opacity: 0.7 }}>
           <em>Publication</em>
         </MenuItem>
-        {publicationGroups.map((group) => (
+        {publications.map((group) => (
           <MenuItem
             key={group.publicationid}
             value={group.publicationid}

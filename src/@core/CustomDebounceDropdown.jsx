@@ -111,7 +111,12 @@ const CustomDebounceDropdown = ({
           {pubTitleForShow ? (
             pubTitleForShow
           ) : (
-            <p className="italic text-[0.9em]">Publication Group</p>
+            <span
+              className="italic text-[0.9em] py-1"
+              onClick={() => setPublicationGroup(null)}
+            >
+              Publication Group
+            </span>
           )}
         </div>
         <span
@@ -144,14 +149,14 @@ const CustomDebounceDropdown = ({
           >
             Publication group
           </li>
-          {publicationGroups.map((item) => (
+          {publicationGroups.map((item, index) => (
             <li
               className={`cursor-pointer text-[0.9em] flex items-center justify-start ml-3 py-1 ${
                 item.publicationgroupid === publicationGroup
                   ? "bg-[#e6faf9]"
                   : " "
               }`}
-              key={item.publicationgroupid}
+              key={item.publicationgroupid + index}
               onClick={() => handleMenuItemClick(item.publicationgroupid)}
             >
               {item.publicationgroupname}
