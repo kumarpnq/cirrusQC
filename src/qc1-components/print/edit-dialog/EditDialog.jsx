@@ -235,26 +235,13 @@ const EditDialog = ({ rowData, rowNumber, setRowNumber, open, setOpen }) => {
   };
 
   // * delete dialog
-  const [openDelete, setOpenDelete] = useState(false);
   const [password, setPassword] = useState("");
 
-  const handleCloseDelete = () => {
-    setOpenDelete(false);
-  };
-
-  const handleDeleteClick = (rowData) => {
-    setSelectRowForDelete(rowData);
-    setOpenDelete(true);
-  };
-
-  const handleDeleteCompany = async () => {
+  const handleDeleteCompany = async (selectedRow) => {
     const isValid = await userVerification();
     if (!isValid) {
       return toast.error("Password not match with records");
     }
-    const selectedRow = socialFeedTagDetails.find(
-      (i) => i.company_name === selectRowForDelete.CompanyName
-    );
 
     if (!selectedRow) {
       return toast.warning("No Company match");
@@ -283,13 +270,12 @@ const EditDialog = ({ rowData, rowNumber, setRowNumber, open, setOpen }) => {
         fetchHeaderAndTagDetails();
         toast.success("Company removed");
         setPassword("");
-        setOpenDelete(false);
       } else {
         const errorMSG = response.data?.result?.error[0] || {};
         toast.warning(errorMSG.error);
       }
     } catch (error) {
-      console.log(error);
+      toast.error("Getting error.");
     }
   };
 
@@ -301,7 +287,7 @@ const EditDialog = ({ rowData, rowNumber, setRowNumber, open, setOpen }) => {
       renderCell: (params) => (
         <IconButton
           sx={{ color: "red" }}
-          onClick={() => handleDeleteClick(params.row)}
+          onClick={() => handleDeleteCompany(params.row)}
         >
           <CloseIcon />
         </IconButton>
@@ -324,216 +310,181 @@ const EditDialog = ({ rowData, rowNumber, setRowNumber, open, setOpen }) => {
   });
 
   return (
-    <Fragment>
-      <Modal
-        open={open}
-        onClose={handleClose}
-        aria-labelledby="edit-dialog-title"
-        aria-describedby="edit-dialog-description"
-      >
-        <Box sx={style}>
-          <Box sx={titleStyle}>
-            <Typography
-              id="edit-dialog-title"
-              variant="h6"
-              component="h6"
-              fontSize={"1em"}
-            >
-              Edit
-            </Typography>
-            <Typography
-              id="edit-dialog-description"
-              component={"div"}
-              display={"flex"}
-            >
-              <Button btnText="Save & Next" onClick={handleSubmit} />
-              <IconButton onClick={handleClose}>
-                <CloseOutlined />
-              </IconButton>
-            </Typography>
-          </Box>
-
-          <Card>
-            {" "}
-            <CardHeader
-              title={<Typography component={"span"}>Basic Details</Typography>}
-            />
-            <CardContent>
-              <Box component="form">
-                <Grid container spacing={1}>
-                  <Grid item xs={12} sm={6}>
-                    <CustomTextField
-                      id="headline"
-                      name="headline"
-                      label="Headline"
-                      value={formItems.headline}
-                      onChange={handleChange}
-                    />
-                  </Grid>
-                  <Grid item xs={12} sm={6}>
-                    <CustomTextField
-                      id="summary"
-                      name="summary"
-                      label="Summary"
-                      value={formItems.summary}
-                      onChange={handleChange}
-                      onFocus={() => {
-                        setSummaryAuto({
-                          isAutoHeight: true,
-                          isMultiline: true,
-                        });
-                      }}
-                      onBlur={() => {
-                        setSummaryAuto({
-                          isAutoHeight: false,
-                          isMultiline: false,
-                        });
-                      }}
-                      isAutoHeight={summaryAuto.isAutoHeight}
-                      isMultiline={summaryAuto.isMultiline}
-                    />
-                  </Grid>
-                  <Grid item xs={12} sm={6}>
-                    <CustomTextField
-                      id="journalist"
-                      name="journalist"
-                      label="Journalist"
-                      value={formItems.journalist}
-                      onChange={handleChange}
-                    />
-                  </Grid>
-                  <Grid item xs={12} sm={6}>
-                    <CustomTextField
-                      id="tag"
-                      name="tag"
-                      label="Tag"
-                      value={formItems.tag}
-                      onChange={handleChange}
-                    />
-                  </Grid>
-                </Grid>
-              </Box>
-            </CardContent>
-          </Card>
-          <Grid container spacing={1} mt={1}>
-            <Grid item xs={12} sm={6}>
-              <Card>
-                <CardHeader
-                  title={
-                    <Typography component={"span"}>Tagged Companies</Typography>
-                  }
-                />
-                <CardContent>
-                  <Box
-                    sx={{
-                      display: "flex",
-                      justifyContent: "center",
-                      alignItems: "center",
-                      gap: 1,
-                    }}
-                  >
-                    <DebounceSearchCompany
-                      setSelectedCompany={setSelectedCompanies}
-                      isMultiple
-                    />
-                    <span className="pb-1">
-                      <Button
-                        onClick={handleAddCompany}
-                        btnText={addLoading ? "adding" : "Add"}
-                        isLoading={addLoading}
-                      />
-                    </span>
-                  </Box>
-                  <Box height={500} width={"100%"}>
-                    <DataGrid
-                      rows={rows}
-                      columns={columns}
-                      density="compact"
-                      loading={
-                        socialFeedTagDetailsLoading && <CircularProgress />
-                      }
-                      pageSize={5}
-                      pageSizeOptions={[10, 100, 200, 1000]}
-                      columnBufferPx={1000}
-                      hideFooterSelectedRowCount
-                    />
-                  </Box>
-                </CardContent>
-              </Card>
-            </Grid>
-            <Grid item xs={12} sm={6}>
-              <Card>
-                <CardHeader
-                  title={
-                    <Typography
-                      variant="h6"
-                      component={"a"}
-                      display="flex"
-                      alignItems="center"
-                      gap={1}
-                      fontSize={"0.9em"}
-                      href={iframeURI}
-                      target="_blank"
-                      rel="noreferrer"
-                      fontFamily="nunito"
-                      className="underline text-primary"
-                    >
-                      Article View
-                      <FaExternalLinkAlt
-                        style={{
-                          fontSize: "1.2em",
-                          fontFamily: "nunito",
-                        }}
-                      />
-                    </Typography>
-                  }
-                />
-                <CardContent>
-                  <iframe
-                    src={iframeURI}
-                    frameBorder="0"
-                    style={{ width: "100%", height: "540px" }}
-                  />
-                </CardContent>
-              </Card>
-            </Grid>
-          </Grid>
+    <Modal
+      open={open}
+      onClose={handleClose}
+      aria-labelledby="edit-dialog-title"
+      aria-describedby="edit-dialog-description"
+    >
+      <Box sx={style}>
+        <Box sx={titleStyle}>
+          <Typography
+            id="edit-dialog-title"
+            variant="h6"
+            component="h6"
+            fontSize={"1em"}
+          >
+            Edit
+          </Typography>
+          <Typography
+            id="edit-dialog-description"
+            component={"div"}
+            display={"flex"}
+          >
+            <Button btnText="Save & Next" onClick={handleSubmit} />
+            <IconButton onClick={handleClose}>
+              <CloseOutlined />
+            </IconButton>
+          </Typography>
         </Box>
-      </Modal>
-      <Dialog open={openDelete} onClose={handleCloseDelete}>
-        <DialogTitle fontSize={"1em"}>
-          Enter Password For Confirmation.
-        </DialogTitle>
-        <DialogContent>
-          <TextField
-            type="password"
-            sx={{ outline: "none" }}
-            size="small"
-            placeholder="Password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
+
+        <Card>
+          {" "}
+          <CardHeader
+            title={<Typography component={"span"}>Basic Details</Typography>}
           />
-        </DialogContent>
-        <DialogActions>
-          <CustomButton
-            btnText="Cancel"
-            onClick={handleCloseDelete}
-            bg={"bg-primary"}
-          />
-          {verificationLoading ? (
-            <Box width={100}>
-              <CircularProgress />
+          <CardContent>
+            <Box component="form">
+              <Grid container spacing={1}>
+                <Grid item xs={12} sm={6}>
+                  <CustomTextField
+                    id="headline"
+                    name="headline"
+                    label="Headline"
+                    value={formItems.headline}
+                    onChange={handleChange}
+                  />
+                </Grid>
+                <Grid item xs={12} sm={6}>
+                  <CustomTextField
+                    id="summary"
+                    name="summary"
+                    label="Summary"
+                    value={formItems.summary}
+                    onChange={handleChange}
+                    onFocus={() => {
+                      setSummaryAuto({
+                        isAutoHeight: true,
+                        isMultiline: true,
+                      });
+                    }}
+                    onBlur={() => {
+                      setSummaryAuto({
+                        isAutoHeight: false,
+                        isMultiline: false,
+                      });
+                    }}
+                    isAutoHeight={summaryAuto.isAutoHeight}
+                    isMultiline={summaryAuto.isMultiline}
+                  />
+                </Grid>
+                <Grid item xs={12} sm={6}>
+                  <CustomTextField
+                    id="journalist"
+                    name="journalist"
+                    label="Journalist"
+                    value={formItems.journalist}
+                    onChange={handleChange}
+                  />
+                </Grid>
+                <Grid item xs={12} sm={6}>
+                  <CustomTextField
+                    id="tag"
+                    name="tag"
+                    label="Tag"
+                    value={formItems.tag}
+                    onChange={handleChange}
+                  />
+                </Grid>
+              </Grid>
             </Box>
-          ) : (
-            <CustomButton
-              btnText="Delete"
-              onClick={handleDeleteCompany}
-              bg={"bg-red-500"}
-            />
-          )}
-        </DialogActions>
-      </Dialog>
-    </Fragment>
+          </CardContent>
+        </Card>
+        <Grid container spacing={1} mt={1}>
+          <Grid item xs={12} sm={6}>
+            <Card>
+              <CardHeader
+                title={
+                  <Typography component={"span"}>Tagged Companies</Typography>
+                }
+              />
+              <CardContent>
+                <Box
+                  sx={{
+                    display: "flex",
+                    justifyContent: "center",
+                    alignItems: "center",
+                    gap: 1,
+                  }}
+                >
+                  <DebounceSearchCompany
+                    setSelectedCompany={setSelectedCompanies}
+                    isMultiple
+                  />
+                  <span className="pb-1">
+                    <Button
+                      onClick={handleAddCompany}
+                      btnText={addLoading ? "adding" : "Add"}
+                      isLoading={addLoading}
+                    />
+                  </span>
+                </Box>
+                <Box height={500} width={"100%"}>
+                  <DataGrid
+                    rows={rows}
+                    columns={columns}
+                    density="compact"
+                    loading={
+                      socialFeedTagDetailsLoading && <CircularProgress />
+                    }
+                    pageSize={5}
+                    pageSizeOptions={[10, 100, 200, 1000]}
+                    columnBufferPx={1000}
+                    hideFooterSelectedRowCount
+                  />
+                </Box>
+              </CardContent>
+            </Card>
+          </Grid>
+          <Grid item xs={12} sm={6}>
+            <Card>
+              <CardHeader
+                title={
+                  <Typography
+                    variant="h6"
+                    component={"a"}
+                    display="flex"
+                    alignItems="center"
+                    gap={1}
+                    fontSize={"0.9em"}
+                    href={iframeURI}
+                    target="_blank"
+                    rel="noreferrer"
+                    fontFamily="nunito"
+                    className="underline text-primary"
+                  >
+                    Article View
+                    <FaExternalLinkAlt
+                      style={{
+                        fontSize: "1.2em",
+                        fontFamily: "nunito",
+                      }}
+                    />
+                  </Typography>
+                }
+              />
+              <CardContent>
+                <iframe
+                  src={iframeURI}
+                  frameBorder="0"
+                  style={{ width: "100%", height: "540px" }}
+                />
+              </CardContent>
+            </Card>
+          </Grid>
+        </Grid>
+      </Box>
+    </Modal>
   );
 };
 
