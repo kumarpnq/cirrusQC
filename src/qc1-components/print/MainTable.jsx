@@ -105,7 +105,7 @@ const MainTable = ({
     {
       field: "action",
       headerName: "Action",
-      width: 100,
+      width: 120,
       renderCell: (params) => (
         <div style={iconCellStyle}>
           <IconButton onClick={() => handleRowClick(params.row, params.id)}>
