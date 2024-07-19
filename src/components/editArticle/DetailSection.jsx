@@ -110,7 +110,7 @@ const Details = ({ selectedRow }) => {
         toast.warning("No changes to update.");
         return;
       }
-      const data = { data: [request_data], qcflag: 2 };
+      const data = { data: [request_data], QCTYPE: "QC2" };
       const response = await axios.post(`${url}updatesocialfeedheader/`, data, {
         headers,
       });

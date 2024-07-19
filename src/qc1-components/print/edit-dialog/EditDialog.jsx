@@ -153,7 +153,7 @@ const EditDialog = ({ rowData, rowNumber, setRowNumber, open, setOpen }) => {
             TAG: formItems.tag,
           },
         ],
-        qcflag: 1,
+        QCTYPE: "QC1",
       };
       const response = await axios.post(
         `${url}updatesocialfeedheader/`,
@@ -197,7 +197,7 @@ const EditDialog = ({ rowData, rowNumber, setRowNumber, open, setOpen }) => {
       }));
       const requestData = {
         data: dataToSend,
-        qcflag: 1,
+        QCTYPE: "QC1",
       };
       const response = await axios.post(
         `${url}updatesocialfeedtagdetails/`,
@@ -269,7 +269,7 @@ const EditDialog = ({ rowData, rowNumber, setRowNumber, open, setOpen }) => {
             COMPANYNAME: selectedRow.company_name,
           },
         ],
-        qcflag: 1,
+        QCTYPE: "QC1",
       };
       const response = await axios.post(
         `${url}updatesocialfeedtagdetails/`,

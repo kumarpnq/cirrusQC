@@ -5,6 +5,7 @@ import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import AttachFileOutlined from "@mui/icons-material/AttachFileOutlined";
 import ControlCameraOutlined from "@mui/icons-material/ControlCameraOutlined";
 import Button from "../../components/custom/Button";
+import EditDialog from "./EditDialog";
 
 const GroupUnGroupAccordion = ({
   isShowSecondAccordion,
@@ -18,8 +19,14 @@ const GroupUnGroupAccordion = ({
   handleSaveManualEditedCells,
   setStitchModalOpen,
   setUnStitchModalOpen,
+  selectedItems,
+  setSelectedItems,
+  setSelectionModal,
 }) => {
   const [multipleEditOpen, setMultipleEditOpen] = useState(false);
+  const selectedRow = null;
+  const articleNumber = 0;
+
   if (!isShowSecondAccordion) {
     return null;
   }
@@ -82,6 +89,16 @@ const GroupUnGroupAccordion = ({
           )}
         </AccordionDetails>
       </Accordion>
+      <EditDialog
+        open={multipleEditOpen}
+        setOpen={setMultipleEditOpen}
+        row={selectedRow}
+        rowNumber={articleNumber}
+        selectedItems={selectedItems}
+        setSelectedItems={setSelectedItems}
+        setSelectionModal={setSelectionModal}
+        isMultiple
+      />
     </>
   );
 };
@@ -102,6 +119,8 @@ GroupUnGroupAccordion.propTypes = {
   stitchLoading: PropTypes.bool.isRequired,
   setStitchModalOpen: PropTypes.func.isRequired,
   setUnStitchModalOpen: PropTypes.func.isRequired,
+  setSelectedItems: PropTypes.func.isRequired,
+  setSelectionModal: PropTypes.func,
 };
 
 export default GroupUnGroupAccordion;

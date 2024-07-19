@@ -141,7 +141,7 @@ const FirstSection = (props) => {
       }
       const request_data = {
         data: [data],
-        qcflag: 2,
+        QCTYPE: "QC2",
       };
       const response = await axios.post(
         `${url}updatearticleheader/`,

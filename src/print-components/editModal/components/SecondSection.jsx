@@ -200,7 +200,7 @@ const SecondSection = (props) => {
 
     const data_send = {
       data: requestData,
-      qcflag: 2,
+      QCTYPE: "QC2",
     };
 
     try {
@@ -221,7 +221,6 @@ const SecondSection = (props) => {
 
       setSaveLoading(false);
     } catch (error) {
-      console.log(error);
       toast.error(error.message);
       setSaveLoading(false);
     }
@@ -269,7 +268,6 @@ const SecondSection = (props) => {
         }
       } catch (error) {
         toast.error(error.message);
-        console.log(error);
       }
     } else {
       toast.warning("No company Selected");
@@ -334,7 +332,7 @@ const SecondSection = (props) => {
     const isValid = await userVerification();
     const request_data = {
       data: requestData,
-      qcflag: 2,
+      QCTYPE: "QC2",
     };
     isValid && (await makeRequest(request_data));
     if (!isValid) {

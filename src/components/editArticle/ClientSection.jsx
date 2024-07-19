@@ -145,7 +145,7 @@ const ClientSection = ({ selectedArticle }) => {
           },
         ];
 
-        const data = { data: requestData, qcflag: 2 };
+        const data = { data: requestData, QCTYPE: "QC2" };
         const response = await axios.post(
           `${url}updatesocialfeedtagdetails/`,
           data,
@@ -201,7 +201,7 @@ const ClientSection = ({ selectedArticle }) => {
         COMPANYID: selectedRowForDelete.company_id,
       },
     ];
-    const data = { data: requestData, qcflag: 2 };
+    const data = { data: requestData, QCTYPE: "QC2" };
     isValid && (await makeRequest(data));
     if (!isValid) {
       return toast.error("Password not match with records");
@@ -242,7 +242,7 @@ const ClientSection = ({ selectedArticle }) => {
       setSaveLoading(true);
       const requestData = modifiedRows.map((obj) => convertKeys(obj));
       const headers = { Authorization: `Bearer ${userToken}` };
-      const data = { data: requestData, qcflag: 2 };
+      const data = { data: requestData, QCTYPE: "QC2" };
       const response = await axios.post(
         `${url}updatesocialfeedtagdetails/`,
         data,

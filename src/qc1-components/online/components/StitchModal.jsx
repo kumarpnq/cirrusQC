@@ -68,7 +68,6 @@ const StitchModal = ({
   const [fetchLoading, setFetchLoading] = useState(false);
   const [selectedRows, setSelectedRows] = useState([]);
   const [filteredArticles, setFilteredArticles] = useState([]);
-  console.log(pageNumber);
 
   useEffect(() => {
     if (!pageNumber) {

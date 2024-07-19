@@ -28,8 +28,8 @@ import axios from "axios";
 import { url } from "../../constants/baseUrl";
 import { toast } from "react-toastify";
 import Button from "../../components/custom/Button";
-// import PDFViewer from "../components/PDFViewer";
-// import PDFViewer from "../components/PDFViewer";
+import ScrollNavigator from "./components/ScrollNavigator";
+
 const style = {
   position: "absolute",
   top: "50%",
@@ -50,16 +50,29 @@ const titleStyle = {
   justifyContent: "space-between",
 };
 
-const EditDialog = ({ open, setOpen, row }) => {
+const EditDialog = ({
+  open,
+  setOpen,
+  row,
+  selectedItems,
+  setSelectedItems,
+  setSelectionModal,
+  isMultiple,
+}) => {
   // * headers
   const userToken = localStorage.getItem("user");
   const headers = {
     Authorization: `Bearer ${userToken}`,
   };
 
-  const articleId = row?.main_id;
-  const defaultLink = row?.defaultLink;
-  const link = row?.link;
+  // * multiple articles edit
+  const [activeArticle, setActiveArticle] = useState(null);
+
+  const articleId = isMultiple ? activeArticle?.id : row?.main_id;
+  const defaultLink = isMultiple
+    ? activeArticle?.default_link
+    : row?.defaultLink;
+  const link = isMultiple ? activeArticle?.link : row?.link;
   const [articleTagDetails, setArticleTagDetails] = useState([]);
   const [articleTagDetailsLoading, setArticleTagDetailsLoading] =
     useState(false);
@@ -71,6 +84,13 @@ const EditDialog = ({ open, setOpen, row }) => {
     page: "",
     articleSummary: "",
   });
+
+  // * set first articles when user land first time
+  useEffect(() => {
+    if (isMultiple && open) {
+      setActiveArticle(selectedItems[0]);
+    }
+  }, [isMultiple, open, setActiveArticle, selectedItems]);
 
   // * page for filter articles
   const [pageNumber, setPageNumber] = useState(null);
@@ -86,6 +106,8 @@ const EditDialog = ({ open, setOpen, row }) => {
     setOpen(false);
     setPageNumber(null);
     setArticleTagDetails([]);
+    setSelectedItems([]);
+    setActiveArticle(null);
   };
 
   // * fetch data
@@ -158,7 +180,7 @@ const EditDialog = ({ open, setOpen, row }) => {
 
       const request_data = {
         data: [data],
-        qcflag: 1,
+        QCTYPE: "QC1",
       };
 
       const response = await axios.post(
@@ -169,10 +191,31 @@ const EditDialog = ({ open, setOpen, row }) => {
         }
       );
       if (response.data.result?.success?.length) {
-        toast.success("Data updated.");
-        setOpen(false);
-      } else {
-        toast.warning("Something wrong try again.");
+        if (isMultiple) {
+          const filteredItems = selectedItems.filter((i) => i.id !== articleId);
+          setSelectedItems(filteredItems || []);
+          setFormItems({
+            headline: "",
+            summary: "",
+            journalist: "",
+            page: "",
+            articleSummary: "",
+          });
+          toast.success("Data updated.");
+          if (filteredItems.length > 0) {
+            const currentIndex = selectedItems.findIndex(
+              (i) => i.id === articleId
+            );
+            const nextArticle = filteredItems[currentIndex] || filteredItems[0];
+            setActiveArticle(nextArticle);
+          } else {
+            setActiveArticle(null);
+            setSelectionModal([]);
+          }
+        } else {
+          toast.success("Data updated.");
+          setOpen(false);
+        }
       }
     } catch (error) {
       toast.error("Something went wrong.");
@@ -205,7 +248,7 @@ const EditDialog = ({ open, setOpen, row }) => {
       }));
       const request_data = {
         data: dataToSend,
-        qcflag: 1,
+        QCTYPE: "QC1",
       };
       const response = await axios.post(
         `${url}updatearticletagdetails/`,
@@ -236,7 +279,7 @@ const EditDialog = ({ open, setOpen, row }) => {
             COMPANYID: selectedRow?.companyId,
           },
         ],
-        qcflag: 1,
+        QCTYPE: "QC1",
       };
       const response = await axios.post(
         `${url}updatearticletagdetails/`,
@@ -301,6 +344,9 @@ const EditDialog = ({ open, setOpen, row }) => {
     keyword: item.keyword,
   }));
 
+  // * save button text
+  const buttonText = isMultiple ? "Save & Next" : "save";
+
   return (
     <Fragment>
       <Modal
@@ -325,7 +371,7 @@ const EditDialog = ({ open, setOpen, row }) => {
               </IconButton>
             </Typography>
           </Box>
-          <Box>
+          <Box sx={{ display: "flex" }}>
             <Grid container spacing={1}>
               <Grid item xs={12} sm={6}>
                 <CustomTextField
@@ -378,6 +424,15 @@ const EditDialog = ({ open, setOpen, row }) => {
                 </Box>
               </Grid>
             </Grid>
+            <Box>
+              {isMultiple && (
+                <ScrollNavigator
+                  selectedItems={selectedItems || []}
+                  activeArticle={activeArticle}
+                  setActiveArticle={setActiveArticle}
+                />
+              )}
+            </Box>
           </Box>
           <Grid container spacing={1} mt={1}>
             <Grid item xs={12} sm={6}>
@@ -385,7 +440,7 @@ const EditDialog = ({ open, setOpen, row }) => {
                 <CardContent>
                   <Box display={"flex"} gap={1} flexWrap={"wrap"}>
                     <Button
-                      btnText={updateHeaderLoading ? "saving" : "save"}
+                      btnText={updateHeaderLoading ? "saving" : buttonText}
                       onClick={updateHeaderData}
                       isLoading={updateHeaderLoading}
                     />
@@ -464,7 +519,6 @@ const EditDialog = ({ open, setOpen, row }) => {
                   }
                 />
                 <CardContent>
-                  {/* <PDFViewer url={url + defaultLink} /> */}
                   <iframe
                     src={url + defaultLink}
                     frameBorder="0"
@@ -497,5 +551,9 @@ EditDialog.propTypes = {
     defaultLink: PropTypes.string,
     link: PropTypes.string,
   }).isRequired,
+  selectedItems: PropTypes.array,
+  setSelectedItems: PropTypes.func,
+  setSelectionModal: PropTypes.func,
+  isMultiple: PropTypes.bool,
 };
 export default EditDialog;

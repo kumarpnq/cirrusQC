@@ -803,6 +803,9 @@ const Print = () => {
         setStitchModalOpen={setStitchModalOpen}
         setUnStitchModalOpen={setUnStitchModalOpen}
         handleClickGroupItems={handleClickGroupItems}
+        selectedItems={selectedItems}
+        setSelectedItems={setSelectedItems}
+        setSelectionModal={setSelectionModal}
       />
 
       <Divider sx={{ mt: 1 }} />
@@ -830,6 +833,8 @@ const Print = () => {
         setOpen={setOpen}
         row={selectedRow}
         rowNumber={articleNumber}
+        selectedItems={selectedItems}
+        isMultiple={false}
       />
       <GroupModal
         openGroupModal={stitchModalOpen}

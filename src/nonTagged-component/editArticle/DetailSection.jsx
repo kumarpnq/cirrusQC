@@ -65,7 +65,7 @@ const Details = ({ selectedRow, userToken }) => {
             HASVIDEO: yesNoToBinary(vAlignment),
           },
         ],
-        qcflag: 1,
+        QCTYPE: "QC2",
       };
       const response = await axios.post(
         `${url}updatesocialfeedheader/`,
