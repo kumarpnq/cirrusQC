@@ -179,6 +179,10 @@ const EditDialog = ({ rowData, rowNumber, setRowNumber, open, setOpen }) => {
 
   const [addLoading, setAddLoading] = useState(false);
   const handleAddCompany = async () => {
+    if (!selectedCompanies.length) {
+      toast.warning("No company selected.");
+      return;
+    }
     try {
       setAddLoading(true);
       const dataToSend = selectedCompanies.map((i) => ({
@@ -204,7 +208,7 @@ const EditDialog = ({ rowData, rowNumber, setRowNumber, open, setOpen }) => {
         toast.success("Company added.");
       }
     } catch (error) {
-      console.log("Something went wrong");
+      toast.error("Something went wrong");
     } finally {
       setAddLoading(false);
     }

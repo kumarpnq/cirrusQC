@@ -233,6 +233,10 @@ const EditDialog = ({
   const [addCompanyLoading, setAddCompanyLoading] = useState(false);
 
   const handleAddCompany = async () => {
+    if (!selectedCompanies.length) {
+      toast.warning("No company selected.");
+      return;
+    }
     try {
       setAddCompanyLoading(true);
       const dataToSend = selectedCompanies.map((i) => ({
