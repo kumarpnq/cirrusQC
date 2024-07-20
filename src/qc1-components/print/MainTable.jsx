@@ -68,9 +68,15 @@ const MainTable = ({
   const [anchorEls, setAnchorEls] = useState({});
   const [similarLoading, setSimilarLoading] = useState(false);
   const [childArticles, setChildArticles] = useState([]);
+
+  // * article view
+  const [clickedArticle, setClickedArticle] = useState(null);
   const [open, setOpen] = useState(false);
 
-  const handleOpen = () => setOpen(true);
+  const handleOpen = (row) => {
+    setOpen(true);
+    setClickedArticle(row);
+  };
 
   const handleSimilarClick = async (event, params) => {
     const socialFeedId = params.row.socialFeedId;
@@ -111,9 +117,9 @@ const MainTable = ({
           <IconButton onClick={() => handleRowClick(params.row, params.id)}>
             <EditAttributesOutlined className="text-primary" />
           </IconButton>
-          {/* <IconButton onClick={handleOpen}>
+          <IconButton onClick={() => handleOpen(params.row)}>
             <VisibilityIcon className="text-primary" />
-          </IconButton> */}
+          </IconButton>
           {params.row.similar_articles === "Yes" && (
             <>
               <Tooltip title="View similar articles">
@@ -291,7 +297,11 @@ const MainTable = ({
           getRowClassName={getRowClassName}
         />
       </Box>
-      <ArticleView open={open} setOpen={setOpen} />
+      <ArticleView
+        open={open}
+        setOpen={setOpen}
+        clickedArticle={clickedArticle}
+      />
     </>
   );
 };

@@ -13,7 +13,7 @@ import CalendarViewDayIcon from "@mui/icons-material/CalendarViewDay";
 import { Link } from "react-router-dom";
 import TextView from "./components/TextView";
 
-const ArticleView = ({ open, setOpen }) => {
+const ArticleView = ({ open, setOpen, clickedArticle }) => {
   const [scrolled, setScrolled] = useState(false);
   const handleClose = () => setOpen(false);
   const [articleData, setArticleData] = useState(null);
@@ -99,8 +99,7 @@ const ArticleView = ({ open, setOpen }) => {
           </Box>
           <Box className="flex items-center justify-between px-2 bg-primary">
             <Typography fontSize={"0.9em"} color={"white"}>
-              {articleData?.headlines ||
-                "Zombie unicorns: Indian startups go from feast to famine"}
+              {clickedArticle?.headline}
             </Typography>
           </Box>
           <Box
