@@ -116,10 +116,15 @@ const Print = () => {
           headers,
           params,
         });
-        setUserList(response.data.qc_users);
+        if (response.data.qc_users.length) {
+          setUserList(response.data.qc_users);
+        } else {
+          setUserList([]);
+          setQc1By("");
+        }
       } catch (error) {
-        console.log(error.message);
         setUserList([]);
+        setQc1By("");
       }
     };
     fetchUserList();

@@ -16,7 +16,7 @@ const ScrollNavigator = ({
       sx={{
         position: "relative",
         width: "300px",
-        height: "400px",
+        height: "250px",
         overflow: "hidden",
       }}
       component={Paper}
@@ -28,7 +28,7 @@ const ScrollNavigator = ({
             onClick={() => handleItemClick(item)}
             active={activeArticle && activeArticle.id === item.id}
           >
-            <Typography variant="h6" fontSize={"1em"}>
+            <Typography variant="h6" fontSize={"0.9em"}>
               {item.headline}
             </Typography>
             <Typography variant="subtitle2" fontWeight={"bold"}>

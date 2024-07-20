@@ -382,7 +382,7 @@ const EditDialog = ({
               </IconButton>
             </Typography>
           </Box>
-          <Box sx={{ display: "flex" }}>
+          <Box sx={{ display: "flex", gap: 0.5 }}>
             <Grid container spacing={1}>
               <Grid item xs={12} sm={6}>
                 <CustomTextField
@@ -422,20 +422,20 @@ const EditDialog = ({
                 />
               </Grid>
               <Grid item xs={12}>
-                <Box display={"flex"} alignItems={"center"}>
+                <Box sx={{ width: "100%" }}>
                   <CustomTextField
                     id="articleSummary"
                     name="articleSummary"
                     label="Article Summary"
                     value={formItems.articleSummary}
                     onChange={handleChange}
-                    isMultiline
-                    isAutoHeight
+                    multiline
+                    fullWidth
                   />
                 </Box>
               </Grid>
             </Grid>
-            <Box>
+            <Box sx={{ mt: 2, height: 100 }}>
               {isMultiple && (
                 <ScrollNavigator
                   selectedItems={selectedItems || []}
@@ -445,6 +445,7 @@ const EditDialog = ({
               )}
             </Box>
           </Box>
+
           <Grid container spacing={1} mt={1}>
             <Grid item xs={12} sm={6}>
               <Card>
