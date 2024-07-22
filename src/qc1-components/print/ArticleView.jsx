@@ -1,6 +1,5 @@
 import PropTypes from "prop-types";
 import axios from "axios";
-import cheerio from "cheerio";
 import { Link } from "react-router-dom";
 import { CloseOutlined } from "@mui/icons-material";
 import {
@@ -16,6 +15,7 @@ import VisibilityIcon from "@mui/icons-material/Visibility";
 import CalendarViewDayIcon from "@mui/icons-material/CalendarViewDay";
 
 import TextView from "./components/TextView";
+import { url } from "../../constants/baseUrl";
 
 const ArticleView = ({ open, setOpen, clickedArticle }) => {
   const [scrolled, setScrolled] = useState(false);
@@ -31,21 +31,15 @@ const ArticleView = ({ open, setOpen, clickedArticle }) => {
     setError(null);
 
     try {
-      // Fetch HTML content from the URL
-      const { data } = await axios.get(clickedArticle?.url);
-
-      // Load HTML content into cheerio
-      const $ = cheerio.load(data);
-
-      // Extract text content from the main article
-      // Note: Adjust the selector based on the actual HTML structure
-      const articleContent = $(".article-body").text(); // Change this selector based on actual HTML structure
-
-      // Set the extracted content
-      setContent(articleContent);
+      const userToken = localStorage.getItem("user");
+      const response = await axios.get(
+        `${url}getSocialFeedText/?url=${clickedArticle?.url}`,
+        { headers: { Authorization: `Bearer ${userToken}` } }
+      );
+      setContent(response.data.article_text);
     } catch (error) {
       setError("Failed to fetch or parse content");
-      console.error("Error fetching or parsing the content:", error);
+      console.error(error);
     } finally {
       setLoading(false);
     }
@@ -193,7 +187,7 @@ const ArticleView = ({ open, setOpen, clickedArticle }) => {
               Text
             </Button>
           </Box>
-          <Box>
+          <Box sx={{ width: "100%", height: "100%" }}>
             <iframe
               src={clickedArticle?.url}
               frameBorder="0"
@@ -203,7 +197,13 @@ const ArticleView = ({ open, setOpen, clickedArticle }) => {
           </Box>
         </Box>
       </Modal>
-      <TextView open={openTextView} setOpen={setOpenTextView} />
+      <TextView
+        open={openTextView}
+        setOpen={setOpenTextView}
+        content={content}
+        loading={loading}
+        error={error}
+      />
     </div>
   );
 };

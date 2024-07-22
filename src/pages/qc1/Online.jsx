@@ -94,6 +94,7 @@ const Online = () => {
         const params = {
           from_date: fromDate.split(" ")[0],
           to_date: dateNow.split(" ")[0],
+          client_id: selectedClient,
         };
         const response = await axios.get(`${url}qc1userlistonline/`, {
           headers,
@@ -105,7 +106,7 @@ const Online = () => {
       }
     };
     fetchUserList();
-  }, [fromDate, dateNow]);
+  }, [fromDate, dateNow, selectedClient]);
 
   function mapBinaryToYesNoAll(value) {
     switch (value) {
