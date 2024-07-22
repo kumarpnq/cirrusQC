@@ -219,8 +219,8 @@ const Print = () => {
       const params = {
         // comp params
         client_id: selectedClient,
-        from_date: convertDateFormat(fromDate),
-        to_date: convertDateFormat(toDate),
+        // from_date: fromDate,
+        // to_date: toDate,
         // with_category: withCategory,
         // date_type: "ARTICLE",
         // optional params
@@ -248,14 +248,14 @@ const Print = () => {
         params,
         fromDate !== null,
         "from_date",
-        convertDateFormat(fromDate),
+        fromDate,
         params
       );
       addPropertyIfConditionIsTrue(
         params,
         toDate !== null,
         "to_date",
-        convertDateFormat(toDate),
+        toDate,
         params
       );
       addPropertyIfConditionIsTrue(
@@ -320,14 +320,14 @@ const Print = () => {
         params,
         uploadFromDate !== null,
         "upload_from_date",
-        convertDateFormat(uploadFromDate),
+        uploadFromDate,
         params
       );
       addPropertyIfConditionIsTrue(
         params,
         uploadToDate !== null,
         "upload_to_date",
-        convertDateFormat(uploadToDate),
+        uploadToDate,
         params
       );
       addPropertyIfConditionIsTrue(

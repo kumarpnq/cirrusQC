@@ -250,6 +250,7 @@ const MainTable = ({
     articleDate: item.feed_date_time,
     socialFeedId: item.social_feed_id,
     similar_articles: item.similar_articles,
+    language: item.language,
   }));
   return (
     <>

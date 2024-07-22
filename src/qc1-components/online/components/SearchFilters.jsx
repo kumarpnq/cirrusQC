@@ -140,7 +140,7 @@ const SearchFilters = ({
           </label>
           <input
             className="outline-none"
-            type="datetime-local"
+            type="date"
             id="dateTimeInput"
             name="dateTimeInput"
             value={fromDate}
@@ -149,7 +149,7 @@ const SearchFilters = ({
           <span className="px-2">To</span>
           <input
             className="outline-none"
-            type="datetime-local"
+            type="date"
             id="dateTimeInput"
             name="dateTimeInput"
             value={toDate}
@@ -182,7 +182,7 @@ const SearchFilters = ({
           </label>
           <input
             className="outline-none"
-            type="datetime-local"
+            type="date"
             id="dateTimeInput"
             name="dateTimeInput"
             value={uploadFromDate}
@@ -191,7 +191,7 @@ const SearchFilters = ({
           <span className="px-2">To</span>
           <input
             className="outline-none"
-            type="datetime-local"
+            type="date"
             id="dateTimeInput"
             name="dateTimeInput"
             value={uploadToDate}

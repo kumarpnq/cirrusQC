@@ -176,13 +176,7 @@ const ArticleView = ({ open, setOpen, clickedArticle }) => {
           {/* click buttons */}
           <Box component={Paper}>
             <Button>
-              <Link
-                to={
-                  "https://mui.com/material-ui/material-icons/?query=vi&selected=CalendarViewDay"
-                }
-                target="_blank"
-                rel="noreferer"
-              >
+              <Link to={clickedArticle?.url} target="_blank" rel="noreferer">
                 <VisibilityIcon />
                 Article View
               </Link>
@@ -196,6 +190,14 @@ const ArticleView = ({ open, setOpen, clickedArticle }) => {
               <CalendarViewDayIcon />
               Text
             </Button>
+          </Box>
+          <Box>
+            <iframe
+              src={clickedArticle?.url}
+              frameBorder="0"
+              width={"100%"}
+              height={"800px"}
+            />
           </Box>
         </Box>
       </Modal>
@@ -214,6 +216,7 @@ ArticleView.propTypes = {
     publication: PropTypes.string,
     language: PropTypes.string,
     journalist: PropTypes.string,
+    url: PropTypes.string,
   }),
 };
 export default ArticleView;
