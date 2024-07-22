@@ -465,6 +465,14 @@ const Print = () => {
       return;
     }
 
+    const uniqueHeadlines = new Set(
+      selectedItems.map((item) => item.headline.trim())
+    );
+    if (uniqueHeadlines.size > 1) {
+      toast.warning("All selected articles must have the same headline.");
+      return;
+    }
+
     const bulkChildrenIds = selectedItems.map((item) => item.id);
 
     try {
@@ -478,12 +486,14 @@ const Print = () => {
         { headers }
       );
       if (response.data.status?.success?.length) {
-        toast.success("Articles grouped successfully.");
+        const message = response.data.status?.success[0].message;
+        toast.success(message);
         fetchListArticleByQC1Print();
         setSelectionModal([]);
         setSelectedItems([]);
       } else {
-        toast.warning("Something went wrong.");
+        const message = response.data.status?.error[0].message;
+        toast.warning(message);
       }
     } catch (error) {
       toast.error("Error while grouping.");

@@ -1,4 +1,7 @@
 import PropTypes from "prop-types";
+import axios from "axios";
+import cheerio from "cheerio";
+import { Link } from "react-router-dom";
 import { CloseOutlined } from "@mui/icons-material";
 import {
   Box,
@@ -11,7 +14,7 @@ import {
 import { useEffect, useState } from "react";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import CalendarViewDayIcon from "@mui/icons-material/CalendarViewDay";
-import { Link } from "react-router-dom";
+
 import TextView from "./components/TextView";
 
 const ArticleView = ({ open, setOpen, clickedArticle }) => {
@@ -19,31 +22,30 @@ const ArticleView = ({ open, setOpen, clickedArticle }) => {
   const handleClose = () => setOpen(false);
   const [openTextView, setOpenTextView] = useState(false);
 
-  const [textContent, setTextContent] = useState("");
+  const [content, setContent] = useState("");
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
+  const [error, setError] = useState(null);
 
-  const url =
-    "https://marathi.abplive.com/news/pune/pune-bus-driver-and-police-constable-collide-in-bus-video-goes-viral-3-thousand-settled-1299835";
-
-  const fetchTextContent = async () => {
+  const fetchAndParseContent = async () => {
     setLoading(true);
-    setError("");
+    setError(null);
+
     try {
-      const response = await fetch(
-        `https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`
-      );
-      if (!response.ok) {
-        throw new Error("Network response was not ok");
-      }
-      const html = await response.text();
-      const parser = new DOMParser();
-      const doc = parser.parseFromString(html, "text/html");
-      const text = doc.body.textContent;
-      setTextContent(text);
+      // Fetch HTML content from the URL
+      const { data } = await axios.get(clickedArticle?.url);
+
+      // Load HTML content into cheerio
+      const $ = cheerio.load(data);
+
+      // Extract text content from the main article
+      // Note: Adjust the selector based on the actual HTML structure
+      const articleContent = $(".article-body").text(); // Change this selector based on actual HTML structure
+
+      // Set the extracted content
+      setContent(articleContent);
     } catch (error) {
-      console.error("Error fetching the content:", error);
-      setError("Failed to fetch content");
+      setError("Failed to fetch or parse content");
+      console.error("Error fetching or parsing the content:", error);
     } finally {
       setLoading(false);
     }
@@ -184,7 +186,7 @@ const ArticleView = ({ open, setOpen, clickedArticle }) => {
             <Button
               onClick={() => {
                 setOpenTextView(true);
-                fetchTextContent();
+                fetchAndParseContent();
               }}
             >
               <CalendarViewDayIcon />
