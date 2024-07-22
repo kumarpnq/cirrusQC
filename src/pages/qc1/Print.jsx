@@ -486,7 +486,7 @@ const Print = () => {
         toast.warning("Something went wrong.");
       }
     } catch (error) {
-      console.log(error.message);
+      toast.error("Error while grouping.");
     } finally {
       setGroupLoading(false);
     }

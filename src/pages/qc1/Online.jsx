@@ -208,7 +208,7 @@ const Online = () => {
         toast.warning("No data found.");
       }
     } catch (error) {
-      toast.error(error);
+      toast.error("Error while fetching.");
     } finally {
       setTableDataLoading(false);
     }
@@ -282,6 +282,7 @@ const Online = () => {
         fetchTableData();
       }
     } catch (error) {
+      console.log(error);
       toast.error("Something went wrong.");
     } finally {
       setUnGroupLoading(false);
