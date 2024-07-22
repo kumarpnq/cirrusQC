@@ -70,7 +70,7 @@ const StitchModal = ({
   const [filteredArticles, setFilteredArticles] = useState([]);
 
   useEffect(() => {
-    if (!pageNumber) {
+    if (!pageNumber || isUnStitch) {
       setFilteredArticles([...articles]);
     } else {
       const data = articles.filter((i) => i.page_number === pageNumber);
@@ -214,7 +214,8 @@ const StitchModal = ({
         <GridToolbarFilterButton />
 
         <Box sx={{ display: "flex", gap: 1 }}>
-          <PageFilter />
+          {isStitch && <PageFilter />}
+
           <GridToolbarQuickFilter />
         </Box>
       </GridToolbarContainer>

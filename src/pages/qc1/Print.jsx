@@ -30,13 +30,11 @@ import { qc1Array } from "../../constants/dataArray";
 import { arrayToString } from "../../utils/arrayToString";
 import { addPropertyIfConditionIsTrue } from "../../utils/addProprtyIfConditiontrue";
 
-import { convertDateFormat } from "../../utils/convertDateFormat";
 import AddCompaniesModal from "../../qc1-components/components/AddCompanyModal";
 import GroupModal from "../../qc1-components/online/components/GroupModal";
 import MainTable from "../../qc1-components/online/MainTable";
 // import DeleteConfirmationDialog from "../../@core/DeleteDialog";
 import GroupUnGroupAccordion from "../../qc1-components/online/GroupUngroup";
-import { extractDate } from "../../utils/extractDate";
 
 const useStyle = makeStyles(() => ({
   dropDowns: {

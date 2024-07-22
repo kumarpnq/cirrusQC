@@ -25,8 +25,8 @@ const TextView = ({ open, setOpen, content, loading, error }) => {
     >
       <Box
         sx={{
-          width: "70vw",
-          height: "35vh",
+          width: "80vw",
+          height: "55vh",
           bgcolor: "background.paper",
           boxShadow: 24,
           p: 1,
@@ -40,8 +40,18 @@ const TextView = ({ open, setOpen, content, loading, error }) => {
             <CloseOutlined />
           </IconButton>
         </Typography>
-        <Typography color="gray" textAlign="center">
-          {loading ? <CircularProgress /> : content || error}
+        <Typography color="gray" textAlign="left" overflowY="scroll">
+          {loading ? (
+            <Box
+              display={"flex"}
+              alignItems={"center"}
+              justifyContent={"center"}
+            >
+              <CircularProgress />{" "}
+            </Box>
+          ) : (
+            content || error
+          )}
         </Typography>
       </Box>
     </Modal>
