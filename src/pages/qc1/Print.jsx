@@ -71,8 +71,8 @@ const Print = () => {
   const [selectedCompanies, setSelectedCompanies] = useState([]);
   const [withCategory, setWithCategory] = useState("");
   const [category, setCategory] = useState("");
-  const [fromDate, setFromDate] = useState(formattedDate);
-  const [toDate, setToDate] = useState(formattedNextDay);
+  const [fromDate, setFromDate] = useState(formattedDate.split(" ")[0]);
+  const [toDate, setToDate] = useState(formattedNextDay.split(" ")[0]);
   const [uploadFromDate, setUploadFromDate] = useState(null);
   const [uploadToDate, setUploadToDate] = useState(null);
   const [publicationGroup, setPublicationGroup] = useState("");
@@ -109,8 +109,8 @@ const Print = () => {
     const fetchUserList = async () => {
       try {
         const params = {
-          from_date: extractDate(fromDate),
-          to_date: extractDate(toDate),
+          from_date: fromDate,
+          to_date: toDate,
         };
         const response = await axios.get(`${url}qc1userlistprint/`, {
           headers,
