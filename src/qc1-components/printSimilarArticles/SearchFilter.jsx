@@ -1,8 +1,9 @@
 import { Accordion, AccordionDetails, AccordionSummary } from "@mui/material";
+import PropTypes from "prop-types";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import FilterComponents from "./components/FilterComponents";
 
-const SearchFilter = () => {
+const SearchFilter = ({ setTableData, setTableLoading, tableLoading }) => {
   return (
     <Accordion>
       <AccordionSummary
@@ -13,10 +14,19 @@ const SearchFilter = () => {
         Search Filters
       </AccordionSummary>
       <AccordionDetails>
-        <FilterComponents />
+        <FilterComponents
+          setTableData={setTableData}
+          setTableLoading={setTableLoading}
+          tableLoading={tableLoading}
+        />
       </AccordionDetails>
     </Accordion>
   );
 };
 
+SearchFilter.propTypes = {
+  setTableData: PropTypes.func.isRequired,
+  setTableLoading: PropTypes.func.isRequired,
+  tableLoading: PropTypes.bool.isRequired,
+};
 export default SearchFilter;

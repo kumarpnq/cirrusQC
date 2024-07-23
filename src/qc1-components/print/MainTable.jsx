@@ -293,8 +293,8 @@ const MainTable = ({
           columnBufferPx={1000}
           loading={tableDataLoading && <CircularProgress />}
           components={{ Toolbar: CustomToolbar }}
-          hideFooterSelectedRowCount
           getRowHeight={() => "auto"}
+          hideFooterSelectedRowCount
           getRowClassName={getRowClassName}
         />
       </Box>
