@@ -1,16 +1,31 @@
 import PropTypes from "prop-types";
-import { List, ListItem, Typography, Box, Paper } from "@mui/material";
+import {
+  List,
+  ListItem,
+  Typography,
+  Box,
+  Paper,
+  IconButton,
+} from "@mui/material";
 import { styled } from "@mui/system";
+import CloseIcon from "@mui/icons-material/Close";
+import { useState } from "react";
 
 const ScrollNavigator = ({
   selectedItems,
+  setSelectedItems,
   activeArticle,
   setActiveArticle,
 }) => {
+  const [hoveredItemId, setHoveredItemId] = useState(null);
   const handleItemClick = (item) => {
     setActiveArticle(item);
   };
-
+  const handleRemoveItem = (item, event) => {
+    event.stopPropagation();
+    const filteredItems = selectedItems.filter((i) => i.id !== item.id);
+    setSelectedItems(filteredItems);
+  };
   return (
     <Box
       sx={{
@@ -27,7 +42,17 @@ const ScrollNavigator = ({
             key={item.id}
             onClick={() => handleItemClick(item)}
             active={activeArticle && activeArticle.id === item.id}
+            onMouseEnter={() => setHoveredItemId(item.id)}
+            onMouseLeave={() => setHoveredItemId(null)}
           >
+            {hoveredItemId === item.id && (
+              <StyledIconButton
+                onClick={(event) => handleRemoveItem(item, event)}
+              >
+                <CloseIcon />
+              </StyledIconButton>
+            )}
+
             <Typography variant="h6" fontSize={"0.9em"}>
               {item.headline}
             </Typography>
@@ -70,6 +95,12 @@ const StyledList = styled(List)({
   },
 });
 
+const StyledIconButton = styled(IconButton)({
+  position: "absolute",
+  right: 0,
+  top: 0,
+});
+
 ScrollNavigator.propTypes = {
   selectedItems: PropTypes.arrayOf(
     PropTypes.shape({
@@ -78,6 +109,7 @@ ScrollNavigator.propTypes = {
       publication: PropTypes.string.isRequired,
     })
   ).isRequired,
+  setSelectedItems: PropTypes.func,
   activeArticle: PropTypes.object,
   setActiveArticle: PropTypes.func.isRequired,
 };

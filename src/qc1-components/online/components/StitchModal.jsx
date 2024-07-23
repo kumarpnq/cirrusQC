@@ -37,7 +37,7 @@ const style = {
   top: "50%",
   left: "50%",
   transform: "translate(-50%, -50%)",
-  width: "75vw",
+  width: "85vw",
   // height: "75vh",
   bgcolor: "background.paper",
   border: "2px solid #000",
@@ -47,12 +47,12 @@ const style = {
 
 const columns = [
   {
-    field: "article_id",
+    field: "upload_id",
     headerName: "Article ID",
-    width: 150,
+    width: 270,
     renderCell: (params) => (
       <Link
-        href={`https://your-link.com/${params.value}`}
+        to={`/articleview/download-file/${params.row.link}`}
         target="_blank"
         rel="noopener"
         className="underline"
@@ -62,7 +62,7 @@ const columns = [
     ),
   },
   { field: "article_date", headerName: "Article Date", width: 150 },
-  { field: "publication_name", headerName: "Publication Name", width: 200 },
+  { field: "publication_name", headerName: "Publication Name", width: 160 },
   { field: "headlines", headerName: "Headline", width: 300 },
   { field: "page_number", headerName: "Page No", width: 100 },
   { field: "reporting_subject", headerName: "Reporting Subject", width: 200 },
@@ -127,7 +127,7 @@ const StitchModal = ({
 
   const rows = filteredArticles.map((item) => ({
     id: item.article_id,
-    article_id: item.article_id,
+    upload_id: item.upload_id,
 
     article_date: item.article_date,
 
@@ -138,6 +138,7 @@ const StitchModal = ({
     page_number: item.page_number,
 
     reporting_subject: item.reporting_subject,
+    link: item.link,
   }));
 
   const handleClose = () => {
