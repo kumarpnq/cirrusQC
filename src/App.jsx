@@ -25,6 +25,7 @@ import Online from "./pages/qc1/Online";
 import Print from "./pages/qc1/Print";
 import Analytics from "./pages/Analytics/Analytics";
 import BasketCityPub from "./pages/BasketCityPub";
+import PrintSimilarArticles from "./pages/qc1/PrintSimilarArticles";
 
 // Lazy load the components
 const Home = lazy(() => import("./pages/Home"));
@@ -245,6 +246,10 @@ function App() {
           ) : (
             <Route path="login" element={<Login />} />
           )}
+          <Route
+            path="qc1/print-similar-articles"
+            element={<PrintSimilarArticles />}
+          />
           <Route path="*" element={userToken ? <NotFound /> : <Login />} />
           <Route
             path="/articleview/download-file/:id"

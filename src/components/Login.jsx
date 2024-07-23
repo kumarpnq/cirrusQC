@@ -1,4 +1,5 @@
 import { useContext } from "react";
+import CryptoJS from "crypto-js";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import TextField from "@mui/material/TextField";
 import Button from "@mui/material/Button";
@@ -51,6 +52,8 @@ const Login = () => {
     setPermissionLoading,
   } = useContext(ResearchContext);
   const navigate = useNavigate();
+  // Base64 key
+  // const base64Key = import.meta.env.VITE_PASS_ENCRYPT_KEY;
 
   const handleSubmit = async (event) => {
     event.preventDefault();

@@ -547,64 +547,6 @@ const Print = () => {
     }
   };
 
-  // * remove companies from selected items
-  // const [openDelete, setOpenDelete] = useState(false);
-  // const [removeLoading, setRemoveLoading] = useState(false);
-  // const [password, setPassword] = useState("");
-  // const [verificationLoading, setVerificationLoading] = useState(false);
-  // const userVerification = async () => {
-  //   try {
-  //     setVerificationLoading(true);
-  //     const headers = { Authorization: `Bearer ${userToken}` };
-  //     const data = { password };
-  //     const response = await axios.post(`${url}isValidUser/`, data, {
-  //       headers,
-  //     });
-  //     setVerificationLoading(false);
-  //     return response.data.valid_user;
-  //   } catch (error) {
-  //     toast.error(error.message);
-  //     setVerificationLoading(false);
-  //   }
-  // };
-
-  // const handleCloseDelete = () => {
-  //   setOpenDelete(false);
-  // };
-  // const handleClickRemoveCompanies = async () => {
-  //   const isValid = await userVerification();
-  //   if (!isValid) {
-  //     return toast.warning("User not valid.");
-  //   }
-  //   const articleIds = selectedItems.map((i) => i.id);
-
-  //   try {
-  //     setRemoveLoading(true);
-  //     const request_data = {
-  //       client_id: selectedClient,
-  //       article_ids: arrayToString(articleIds),
-  //       company_ids: arrayToString(selectedCompanies),
-  //     };
-  //     if (selectedCompanies.length) {
-  //       request_data.company_ids = arrayToString(selectedCompanies);
-  //     }
-  //     const response = await axios.delete(`${url}removecompanyprint/`, {
-  //       headers,
-  //       params: request_data,
-  //     });
-  //     if (response) {
-  //       toast.success("Companies removed.");
-  //       setSelectionModal([]);
-  //       setSelectedItems([]);
-  //       setOpenDelete(false);
-  //     }
-  //   } catch (error) {
-  //     toast.error("Something went wrong.");
-  //   } finally {
-  //     setRemoveLoading(false);
-  //   }
-  // };
-
   // * saving the edited cells
   const [saveLoading, setSaveLoading] = useState(false);
 
@@ -875,14 +817,6 @@ const Print = () => {
         selectedRows={selectedItems}
         screen="print"
       />
-      {/* <DeleteConfirmationDialog
-        open={openDelete}
-        handleClose={handleCloseDelete}
-        password={password}
-        setPassword={setPassword}
-        verificationLoading={verificationLoading}
-        handleClickRemove={handleClickRemoveCompanies}
-      /> */}
     </Box>
   );
 };

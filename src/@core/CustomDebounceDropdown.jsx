@@ -5,6 +5,7 @@ import { IoMdArrowDropup, IoMdArrowDropdown } from "react-icons/io";
 import PropTypes from "prop-types";
 import SearchIcon from "@mui/icons-material/Search";
 import { IconButton } from "@mui/material";
+import ClearIcon from "@mui/icons-material/Clear";
 
 const CustomDebounceDropdown = ({
   publicationGroup,
@@ -33,41 +34,6 @@ const CustomDebounceDropdown = ({
     }
   };
 
-  const fetchData = async (query) => {
-    try {
-      let response;
-      if (query) {
-        const queryResponse = await axios.get(`${url}publicationgroups/`, {
-          headers,
-          params: { search_term: query },
-        });
-        response = queryResponse;
-      } else {
-        response = await axios.get(`${url}publicationgroups/`, {
-          headers,
-        });
-      }
-    } catch (error) {
-      console.log(error);
-    }
-  };
-  useEffect(() => {
-    if (!value) {
-      const fetchOnLoad = async () => {
-        try {
-          const response = await axios.get(`${url}publicationgroups/`, {
-            headers,
-            params: { search_term: value },
-          });
-          setPublicationGroups(response.data.publication_groups);
-        } catch (error) {
-          console.log(error);
-        }
-      };
-      fetchOnLoad();
-    }
-  }, [value]);
-
   const handleFetchPublications = async () => {
     try {
       const response = await axios.get(`${url}publicationgroups/`, {
@@ -79,10 +45,6 @@ const CustomDebounceDropdown = ({
       console.log(error);
     }
   };
-
-  useEffect(() => {
-    fetchData();
-  }, [value]);
 
   const handleSearchTermChange = (event) => {
     const newValue = event.target.value;
@@ -136,8 +98,22 @@ const CustomDebounceDropdown = ({
               value={value}
               onChange={handleSearchTermChange}
             />
-            <IconButton onClick={handleFetchPublications} className="h-[30px]">
+            <IconButton
+              onClick={handleFetchPublications}
+              className="h-[30px]"
+              size="small"
+            >
               <SearchIcon />
+            </IconButton>
+            <IconButton
+              size="small"
+              className="pr-1"
+              onClick={() => {
+                setValue("");
+                setPublicationGroup(null);
+              }}
+            >
+              <ClearIcon />
             </IconButton>
           </li>
           <li
@@ -173,7 +149,6 @@ CustomDebounceDropdown.propTypes = {
   setPublicationGroup: PropTypes.func.isRequired,
   bg: PropTypes.string.isRequired,
   m: PropTypes.string.isRequired,
-  isMultiple: PropTypes.bool,
 };
 
 export default CustomDebounceDropdown;
