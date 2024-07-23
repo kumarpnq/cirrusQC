@@ -30,6 +30,7 @@ import { url } from "../../../constants/baseUrl";
 import { toast } from "react-toastify";
 import { arrayToString } from "../../../utils/arrayToString";
 import Button from "../../../components/custom/Button";
+import { Link } from "react-router-dom";
 // Styles
 const style = {
   position: "absolute",
@@ -45,7 +46,21 @@ const style = {
 };
 
 const columns = [
-  { field: "article_id", headerName: "Article ID", width: 150 },
+  {
+    field: "article_id",
+    headerName: "Article ID",
+    width: 150,
+    renderCell: (params) => (
+      <Link
+        href={`https://your-link.com/${params.value}`}
+        target="_blank"
+        rel="noopener"
+        className="underline"
+      >
+        {params.value}
+      </Link>
+    ),
+  },
   { field: "article_date", headerName: "Article Date", width: 150 },
   { field: "publication_name", headerName: "Publication Name", width: 200 },
   { field: "headlines", headerName: "Headline", width: 300 },
