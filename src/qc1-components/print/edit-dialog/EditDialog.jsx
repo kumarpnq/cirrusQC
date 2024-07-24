@@ -271,6 +271,10 @@ const EditDialog = ({ rowData, rowNumber, setRowNumber, open, setOpen }) => {
     Keyword: detail.keyword,
   }));
 
+  const handleSkipAndNext = () => {
+    setRowNumber((prev) => prev + 1);
+  };
+
   // * auto height for summary
   const [summaryAuto, setSummaryAuto] = useState({
     isAutoHeight: false,
@@ -299,6 +303,7 @@ const EditDialog = ({ rowData, rowNumber, setRowNumber, open, setOpen }) => {
             component={"div"}
             display={"flex"}
           >
+            <Button btnText="Skip & Next" onClick={handleSkipAndNext} />
             <Button btnText="Save & Next" onClick={handleSubmit} />
             <IconButton onClick={handleClose}>
               <CloseOutlined />
