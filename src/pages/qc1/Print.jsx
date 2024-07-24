@@ -790,6 +790,8 @@ const Print = () => {
         rowNumber={articleNumber}
         selectedItems={selectedItems}
         isMultiple={false}
+        setSelectedItems={selectedItems}
+        setSelectionModal={setSelectionModal}
       />
       <GroupModal
         openGroupModal={stitchModalOpen}

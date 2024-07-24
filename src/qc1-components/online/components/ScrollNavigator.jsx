@@ -16,6 +16,8 @@ const ScrollNavigator = ({
   setSelectedItems,
   activeArticle,
   setActiveArticle,
+  setSelectionModal,
+  setOpen,
 }) => {
   const [hoveredItemId, setHoveredItemId] = useState(null);
   const handleItemClick = (item) => {
@@ -24,7 +26,13 @@ const ScrollNavigator = ({
   const handleRemoveItem = (item, event) => {
     event.stopPropagation();
     const filteredItems = selectedItems.filter((i) => i.id !== item.id);
-    setSelectedItems(filteredItems);
+    if (!filteredItems.length) {
+      setSelectionModal([]);
+      setSelectedItems([]);
+      setOpen(false);
+    } else {
+      setSelectedItems(filteredItems);
+    }
   };
   return (
     <Box
@@ -112,6 +120,8 @@ ScrollNavigator.propTypes = {
   setSelectedItems: PropTypes.func,
   activeArticle: PropTypes.object,
   setActiveArticle: PropTypes.func.isRequired,
+  setSelectionModal: PropTypes.func,
+  setOpen: PropTypes.func,
 };
 
 export default ScrollNavigator;

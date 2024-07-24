@@ -102,6 +102,7 @@ const EditDialog = ({
     setPageNumber(null);
     setArticleTagDetails([]);
     setSelectedItems([]);
+    setSelectionModal([]);
     setActiveArticle(null);
   };
 
@@ -434,10 +435,12 @@ const EditDialog = ({
             <Box sx={{ mt: 2, height: 100 }}>
               {isMultiple && (
                 <ScrollNavigator
-                  selectedItems={selectedItems || []}
+                  selectedItems={selectedItems}
                   activeArticle={activeArticle}
                   setActiveArticle={setActiveArticle}
                   setSelectedItems={setSelectedItems}
+                  setOpen={setOpen}
+                  setSelectionModal={setSelectionModal}
                 />
               )}
             </Box>
