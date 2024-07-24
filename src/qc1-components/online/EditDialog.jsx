@@ -323,7 +323,13 @@ const EditDialog = ({
     const unSkippedArticles = selectedItems.filter(
       (i) => i.id !== activeArticle?.id
     );
-    setSelectedItems(unSkippedArticles);
+    if (!unSkippedArticles.length) {
+      setSelectedItems([]);
+      setSelectionModal([]);
+      setOpen(false);
+    } else {
+      setSelectedItems(unSkippedArticles);
+    }
   };
 
   // * grid rows and columns
