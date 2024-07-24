@@ -9,6 +9,9 @@ const PrintSimilarArticles = () => {
   const [tableData, setTableData] = useState([]);
   const [tableLoading, setTableLoading] = useState(false);
   const [headline, setHeadline] = useState("");
+  const [selectedItems, setSelectedItems] = useState([]);
+  const [selectionModal, setSelectionModal] = useState([]);
+  console.log(selectedItems, selectionModal);
   return (
     <StyledWrapper>
       <SearchFilter
@@ -16,11 +19,19 @@ const PrintSimilarArticles = () => {
         setTableLoading={setTableLoading}
         tableLoading={tableLoading}
       />
-      <GroupAccordion setHeadline={setHeadline} headline={headline} />
+      <GroupAccordion
+        selectedItems={selectedItems}
+        setSelectedItems={setSelectedItems}
+        setSelectionModal={setSelectionModal}
+        fetchTableData={""}
+      />
       <GridTable
         tableData={tableData}
         tableLoading={tableLoading}
         setHeadline={setHeadline}
+        selectionModal={selectionModal}
+        setSelectionModal={setSelectionModal}
+        setSelectedItems={setSelectedItems}
       />
     </StyledWrapper>
   );

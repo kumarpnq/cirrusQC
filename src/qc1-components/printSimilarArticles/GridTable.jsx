@@ -45,7 +45,14 @@ function CustomToolbar() {
   );
 }
 
-const GridTable = ({ tableData, tableLoading, setHeadline }) => {
+const GridTable = ({
+  tableData,
+  tableLoading,
+  setHeadline,
+  selectionModal,
+  setSelectionModal,
+  setSelectedItems,
+}) => {
   // * similar articles popper
   const [anchorEls, setAnchorEls] = useState({});
   const [similarLoading, setSimilarLoading] = useState(false);
@@ -55,6 +62,14 @@ const GridTable = ({ tableData, tableLoading, setHeadline }) => {
   const handleClickAway = () => {};
   const handleCopy = (text) => {
     setHeadline(text);
+  };
+
+  console.log(tableData);
+  const handleSelectionChange = (ids) => {
+    console.log(ids);
+    const selectedItem = ids.map((index) => tableData[index]);
+    setSelectedItems(selectedItem);
+    setSelectionModal(ids);
   };
   const columns = [
     {
@@ -219,6 +234,11 @@ const GridTable = ({ tableData, tableLoading, setHeadline }) => {
           toolbar: {
             showQuickFilter: true,
           },
+        }}
+        rowSelectionModel={selectionModal}
+        onRowSelectionModelChange={(ids) => {
+          setSelectionModal(ids);
+          handleSelectionChange(ids);
         }}
         loading={tableLoading}
         getRowHeight={() => "auto"}

@@ -5,34 +5,47 @@ import {
   Box,
 } from "@mui/material";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
-import CustomTextField from "../../@core/CutsomTextField";
 import { styled } from "@mui/system";
 import Button from "../../components/custom/Button";
+import GroupUnGroupModal from "../print/Group&Ungroup";
+import { useState } from "react";
 
-const GroupAccordion = ({ headline, setHeadline }) => {
+const GroupAccordion = ({
+  selectedItems,
+  setSelectedItems,
+  setSelectionModal,
+  fetchTableData,
+}) => {
+  // * grouping modal
+  const [openGroupModal, setOpenGroupModal] = useState(false);
   return (
-    <Accordion>
-      <AccordionSummary
-        expandIcon={<ExpandMoreIcon />}
-        aria-controls="panel1-content"
-        id="panel1-header"
-      >
-        Group & UnGroup
-      </AccordionSummary>
-      <AccordionDetails>
-        <CustomTextField
-          value={headline}
-          setValue={setHeadline}
-          placeholder={"Headline"}
-          type={"text"}
-        />
-        <StyledBox>
-          <Button btnText="Group" />
-          <Button btnText="Un-Group" />
-          <Button btnText="Clear" />
-        </StyledBox>
-      </AccordionDetails>
-    </Accordion>
+    <>
+      <Accordion>
+        <AccordionSummary
+          expandIcon={<ExpandMoreIcon />}
+          aria-controls="panel1-content"
+          id="panel1-header"
+        >
+          Group & UnGroup
+        </AccordionSummary>
+        <AccordionDetails>
+          <StyledBox>
+            <Button btnText="Group" />
+            <Button btnText="Un-Group" />
+            <Button btnText="Clear" />
+          </StyledBox>
+        </AccordionDetails>
+      </Accordion>
+      {/* <GroupUnGroupModal
+        openGroupModal={openGroupModal}
+        setOpenGroupModal={setOpenGroupModal}
+        selectedItems={selectedItems}
+        setSelectedItems={setSelectedItems}
+        setSelectionModal={setSelectionModal}
+        groupOrUnGroup="group"
+        fetchMainData={fetchTableData}
+      /> */}
+    </>
   );
 };
 

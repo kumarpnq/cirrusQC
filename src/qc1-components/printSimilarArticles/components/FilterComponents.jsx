@@ -126,6 +126,16 @@ const FilterComponents = ({ setTableData, tableLoading, setTableLoading }) => {
     setTableData,
   ]);
 
+  // * clear dd filters
+  const handleClear = () => {
+    setSelectedClient("");
+    setSelectedCompanies([]);
+    setFromDate(formattedDate);
+    setToDate(formattedNextDay);
+    setSelectedFetchedHeadline("");
+    setHeadlineSummary("");
+    setAllGroupedUnGrouped("");
+  };
   //   * mui style classes
   const classes = useStyle();
   return (
@@ -178,7 +188,7 @@ const FilterComponents = ({ setTableData, tableLoading, setTableLoading }) => {
         onClick={fetchTableData}
         isLoading={tableLoading}
       />
-      <Button btnText="clear" />
+      <Button btnText="clear" onClick={handleClear} />
     </StyledBox>
   );
 };
