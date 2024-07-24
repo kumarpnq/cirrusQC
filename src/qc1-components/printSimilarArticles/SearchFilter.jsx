@@ -3,7 +3,13 @@ import PropTypes from "prop-types";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import FilterComponents from "./components/FilterComponents";
 
-const SearchFilter = ({ setTableData, setTableLoading, tableLoading }) => {
+const SearchFilter = ({
+  setTableData,
+  setTableLoading,
+  tableLoading,
+  fetchAfterGroup,
+  setFetchAfterGroup,
+}) => {
   return (
     <Accordion>
       <AccordionSummary
@@ -18,6 +24,8 @@ const SearchFilter = ({ setTableData, setTableLoading, tableLoading }) => {
           setTableData={setTableData}
           setTableLoading={setTableLoading}
           tableLoading={tableLoading}
+          fetchAfterGroup={fetchAfterGroup}
+          setFetchAfterGroup={setFetchAfterGroup}
         />
       </AccordionDetails>
     </Accordion>
@@ -28,5 +36,7 @@ SearchFilter.propTypes = {
   setTableData: PropTypes.func.isRequired,
   setTableLoading: PropTypes.func.isRequired,
   tableLoading: PropTypes.bool.isRequired,
+  fetchAfterGroup: PropTypes.bool,
+  setFetchAfterGroup: PropTypes.func,
 };
 export default SearchFilter;

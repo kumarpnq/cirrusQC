@@ -259,10 +259,7 @@ function App() {
           ) : (
             <Route path="login" element={<Login />} />
           )}
-          <Route
-            path="qc1/print-similar-articles"
-            element={<PrintSimilarArticles />}
-          />
+
           <Route path="*" element={userToken ? <NotFound /> : <Login />} />
           <Route
             path="/articleview/download-file/:id"

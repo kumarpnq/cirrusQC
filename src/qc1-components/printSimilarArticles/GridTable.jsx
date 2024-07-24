@@ -19,12 +19,12 @@ import {
   TableRow,
   Tooltip,
 } from "@mui/material";
-import ContentCopyIcon from "@mui/icons-material/ContentCopy";
 import AttachmentIcon from "@mui/icons-material/Attachment";
 import PropTypes from "prop-types";
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import { CopyToClipboard } from "react-copy-to-clipboard";
+import axios from "axios";
+import { url } from "../../constants/baseUrl";
 
 const iconCellStyle = {
   display: "flex",
@@ -48,7 +48,6 @@ function CustomToolbar() {
 const GridTable = ({
   tableData,
   tableLoading,
-  setHeadline,
   selectionModal,
   setSelectionModal,
   setSelectedItems,
@@ -58,10 +57,38 @@ const GridTable = ({
   const [similarLoading, setSimilarLoading] = useState(false);
   const [childArticles, setChildArticles] = useState([]);
 
-  const handleSimilarClick = () => {};
-  const handleClickAway = () => {};
-  const handleCopy = (text) => {
-    setHeadline(text);
+  const handleSimilarClick = async (event, params) => {
+    const socialFeedId = params.row.id;
+    const index = params.id;
+    setAnchorEls((prev) => ({
+      ...prev,
+      [index]: prev[index] ? null : event.currentTarget,
+    }));
+    setSimilarLoading(false);
+    try {
+      setSimilarLoading(true);
+      const userToken = localStorage.getItem("user");
+      const main_url =
+        params.row.articleType === "print"
+          ? `${url}similararticles/?article_id=${socialFeedId}`
+          : `${url}similarsocialfeeds/?socialfeed_id=${socialFeedId}`;
+      const response = await axios.get(main_url, {
+        headers: { Authorization: `Bearer ${userToken}` },
+      });
+      setChildArticles(response.data.child_articles);
+    } catch (error) {
+      console.log(error.message);
+    } finally {
+      setSimilarLoading(false);
+    }
+  };
+
+  const handleClickAway = (index) => {
+    setAnchorEls((prev) => ({
+      ...prev,
+      [index]: null,
+    }));
+    setSimilarLoading(false);
   };
 
   const handleSelectionChange = (ids) => {
@@ -75,18 +102,10 @@ const GridTable = ({
     {
       field: "action",
       headerName: "Action",
-      width: 125,
+      width: 50,
       renderCell: (params) => (
         <div style={iconCellStyle}>
-          <CopyToClipboard text={JSON.stringify(params.row.headline)}>
-            <IconButton
-              size="small"
-              onClick={() => handleCopy(params.row.headline)}
-            >
-              <ContentCopyIcon className="text-primary" />
-            </IconButton>
-          </CopyToClipboard>
-          {params.row.similar_articles === "Yes" && (
+          {params.row.similarArticles === "Yes" && (
             <>
               <Tooltip title="View similar articles">
                 <IconButton
@@ -270,10 +289,16 @@ GridTable.propTypes = {
       publication: PropTypes.string,
       article_date: PropTypes.string.isRequired,
       upload_date: PropTypes.string.isRequired,
+      similar_articles: PropTypes.string,
+      article_type: PropTypes.string,
     })
   ).isRequired,
   tableLoading: PropTypes.bool.isRequired,
-  setHeadline: PropTypes.func.isRequired,
+  selectionModal: PropTypes.arrayOf(
+    PropTypes.oneOfType([PropTypes.number, PropTypes.string])
+  ).isRequired,
+  setSelectionModal: PropTypes.func.isRequired,
+  setSelectedItems: PropTypes.func.isRequired,
 };
 
 export default GridTable;

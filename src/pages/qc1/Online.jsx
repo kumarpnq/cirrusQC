@@ -283,73 +283,11 @@ const Online = () => {
         fetchTableData();
       }
     } catch (error) {
-      console.log(error);
       toast.error("Something went wrong.");
     } finally {
       setUnGroupLoading(false);
     }
   };
-
-  // // * remove companies from selected items
-  // const [removeLoading, setRemoveLoading] = useState(false);
-  // const [openDelete, setOpenDelete] = useState(false);
-  // const [password, setPassword] = useState("");
-  // const [verificationLoading, setVerificationLoading] = useState(false);
-  // const userVerification = async () => {
-  //   try {
-  //     setVerificationLoading(true);
-  //     const headers = { Authorization: `Bearer ${userToken}` };
-  //     const data = { password };
-  //     const response = await axios.post(`${url}isValidUser/`, data, {
-  //       headers,
-  //     });
-  //     setVerificationLoading(false);
-  //     return response.data.valid_user;
-  //   } catch (error) {
-  //     toast.error(error.message);
-  //     setVerificationLoading(false);
-  //   }
-  // };
-  // const handleClickOpen = () => {
-  //   setOpenDelete(true);
-  // };
-
-  // const handleCloseDelete = () => {
-  //   setOpenDelete(false);
-  // };
-  // const handleClickRemoveCompanies = async () => {
-  //   const isValid = await userVerification();
-  //   if (!isValid) {
-  //     return toast.warning("User not valid.");
-  //   }
-  //   const socialFeedIds = selectedItems.map((i) => i.social_feed_id);
-
-  //   try {
-  //     setRemoveLoading(true);
-  //     const request_data = {
-  //       client_id: selectedClient,
-  //       socialfeed_ids: arrayToString(socialFeedIds),
-  //       company_ids: arrayToString(selectedCompanies),
-  //     };
-  //     if (selectedCompanies.length) {
-  //       request_data.company_ids = arrayToString(selectedCompanies);
-  //     }
-  //     const response = await axios.delete(`${url}removecompanyonline/`, {
-  //       headers,
-  //       params: request_data,
-  //     });
-  //     if (response) {
-  //       toast.success("Companies removed.");
-  //       setSelectionModal([]);
-  //       setSelectedItems([]);
-  //       setOpenDelete(false);
-  //     }
-  //   } catch (error) {
-  //     toast.error("Something went wrong.");
-  //   } finally {
-  //     setRemoveLoading(false);
-  //   }
-  // };
 
   // * saving the edited cells
 
@@ -576,14 +514,6 @@ const Online = () => {
         rowNumber={articleNumber}
         setRowNumber={setArticleNumber}
       />
-      {/* <DeleteConfirmationDialog
-        open={openDelete}
-        handleClose={handleCloseDelete}
-        password={password}
-        setPassword={setPassword}
-        handleClickRemove={handleClickRemoveCompanies}
-        verificationLoading={verificationLoading}
-      /> */}
 
       <GroupUnGroupModal
         openGroupModal={openGroupModal}

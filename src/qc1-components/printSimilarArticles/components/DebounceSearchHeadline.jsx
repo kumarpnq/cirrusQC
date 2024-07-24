@@ -6,24 +6,30 @@ import {
   TextField,
   Paper,
   CircularProgress,
+  InputAdornment,
+  IconButton,
 } from "@mui/material";
 import { Fragment, useState, useEffect, useCallback } from "react";
 import axios from "axios";
 import debounce from "lodash/debounce";
 import { url } from "../../../constants/baseUrl";
 import { arrayToString } from "../../../utils/arrayToString";
+import { GridClearIcon } from "@mui/x-data-grid";
 
 const DebounceSearchHeadline = ({
   fromDate,
   toDate,
   selectedClient,
   selectedCompanies,
+  selectedFetchedHeadline,
+  setSelectedFetchedHeadline,
 }) => {
   const [searchTerm, setSearchTerm] = useState("");
   const [resultData, setResultData] = useState([]);
   const [loading, setLoading] = useState(false);
   const [isFocused, setIsFocused] = useState(false);
   const [textFieldRect, setTextFieldRect] = useState({});
+  const [isListClicked, setIsListClicked] = useState(false);
 
   // Function to fetch data from API
   const fetchData = async (term) => {
@@ -38,14 +44,20 @@ const DebounceSearchHeadline = ({
         headline: term,
         from_date: fromDate,
         to_date: toDate,
-        client_id: selectedClient,
-        company_id: arrayToString(selectedCompanies),
+        // client_id: selectedClient,
+        // company_id: arrayToString(selectedCompanies),
       };
+      if (selectedClient) {
+        params.client_id = selectedClient;
+      }
+      if (selectedCompanies.length) {
+        params.company_id = arrayToString(selectedCompanies);
+      }
       const response = await axios.get(`${url}fetchheadlines/`, {
         headers: { Authorization: `Bearer ${token}` },
         params,
       });
-      setResultData(response.data);
+      setResultData(response.data.headlines);
     } catch (error) {
       console.error(error.message);
     } finally {
@@ -69,7 +81,17 @@ const DebounceSearchHeadline = ({
   };
 
   const handleBlur = () => {
-    setIsFocused(false);
+    if (!isListClicked) {
+      // Check if list item was clicked
+      setIsFocused(false);
+    }
+    setIsListClicked(false); // Reset list click state
+  };
+
+  const handleClear = () => {
+    setSearchTerm("");
+    setSelectedFetchedHeadline("");
+    setResultData([]);
   };
 
   return (
@@ -80,9 +102,23 @@ const DebounceSearchHeadline = ({
             fontSize: "0.8rem",
             height: 25,
           },
+          endAdornment: (
+            <InputAdornment position="end">
+              <IconButton
+                aria-label="clear search"
+                onClick={handleClear}
+                edge="end"
+                size="small"
+              >
+                <GridClearIcon />
+              </IconButton>
+            </InputAdornment>
+          ),
         }}
-        value={searchTerm}
-        onChange={(e) => setSearchTerm(e.target.value)}
+        value={searchTerm || selectedFetchedHeadline}
+        onChange={(e) => {
+          setSearchTerm(e.target.value);
+        }}
         onFocus={handleFocus}
         onBlur={handleBlur}
         placeholder="Search headlines..."
@@ -95,8 +131,7 @@ const DebounceSearchHeadline = ({
             position: "absolute",
             top: textFieldRect.top - 5,
             left: textFieldRect.left,
-            width: textFieldRect.width,
-            maxWidth: "100%",
+            width: textFieldRect.width + 200,
             bgcolor: "background.paper",
             boxShadow: 3,
             zIndex: 10,
@@ -104,7 +139,9 @@ const DebounceSearchHeadline = ({
         >
           <List
             sx={{
-              maxHeight: 300,
+              maxHeight: 200,
+              background: "#ffff",
+              bgcolor: "background.paper",
               overflow: "auto",
               "& ul": { padding: 0, margin: 0 },
             }}
@@ -116,9 +153,20 @@ const DebounceSearchHeadline = ({
               </p>
             )}
             {resultData.length > 0 ? (
-              resultData.map((item) => (
-                <ListItem button key={item.id}>
-                  <ListItemText primary={item.headline} />
+              resultData.map((item, index) => (
+                <ListItem
+                  button
+                  key={index}
+                  onMouseDown={() => setIsListClicked(true)}
+                  onClick={() => {
+                    setSearchTerm("");
+                    setSelectedFetchedHeadline(item);
+                    setIsFocused(false);
+                  }}
+                >
+                  <ListItemText
+                    primary={<span className="text-[0.8em]">{item}</span>}
+                  />
                 </ListItem>
               ))
             ) : (
@@ -142,5 +190,7 @@ DebounceSearchHeadline.propTypes = {
     PropTypes.string,
     PropTypes.arrayOf(PropTypes.number),
   ]).isRequired,
+  selectedFetchedHeadline: PropTypes.string,
+  setSelectedFetchedHeadline: PropTypes.func,
 };
 export default DebounceSearchHeadline;

@@ -1,4 +1,4 @@
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { Box, Typography } from "@mui/material";
 import { makeStyles } from "@mui/styles";
 import { styled } from "@mui/system";
@@ -41,7 +41,13 @@ const useStyle = makeStyles(() => ({
     alignItems: "center",
   },
 }));
-const FilterComponents = ({ setTableData, tableLoading, setTableLoading }) => {
+const FilterComponents = ({
+  setTableData,
+  tableLoading,
+  setTableLoading,
+  fetchAfterGroup,
+  setFetchAfterGroup,
+}) => {
   const [selectedClient, setSelectedClient] = useState("");
   const [selectedCompanies, setSelectedCompanies] = useState([]);
   const [fromDate, setFromDate] = useState(formattedDate);
@@ -59,7 +65,7 @@ const FilterComponents = ({ setTableData, tableLoading, setTableLoading }) => {
   function mapYesNoAllToBinary(value) {
     switch (value) {
       case "Grouped":
-        return "Un-grouped";
+        return "Y";
       case "No":
         return "N";
       case "All":
@@ -90,6 +96,12 @@ const FilterComponents = ({ setTableData, tableLoading, setTableLoading }) => {
       );
       addPropertyIfConditionIsTrue(
         params,
+        selectedFetchedHeadline,
+        " headline",
+        selectedFetchedHeadline
+      );
+      addPropertyIfConditionIsTrue(
+        params,
         headlineSummary,
         "headline_summary",
         headlineSummary
@@ -114,6 +126,7 @@ const FilterComponents = ({ setTableData, tableLoading, setTableLoading }) => {
       toast.error("Something went wrong.");
     } finally {
       setTableLoading(false);
+      setFetchAfterGroup(false);
     }
   }, [
     setTableLoading,
@@ -124,7 +137,14 @@ const FilterComponents = ({ setTableData, tableLoading, setTableLoading }) => {
     selectedClient,
     selectedCompanies,
     setTableData,
+    setFetchAfterGroup,
   ]);
+
+  useEffect(() => {
+    if (fetchAfterGroup) {
+      fetchTableData();
+    }
+  }, [fetchAfterGroup]);
 
   // * clear dd filters
   const handleClear = () => {
@@ -163,6 +183,8 @@ const FilterComponents = ({ setTableData, tableLoading, setTableLoading }) => {
           toDate={toDate}
           selectedClient={selectedClient}
           selectedCompanies={selectedCompanies}
+          selectedFetchedHeadline={selectedFetchedHeadline}
+          setSelectedFetchedHeadline={setSelectedFetchedHeadline}
         />
       </Typography>
       <Typography className="pt-3" component={"div"}>
@@ -204,6 +226,8 @@ FilterComponents.propTypes = {
   setTableData: PropTypes.func.isRequired,
   tableLoading: PropTypes.bool.isRequired,
   setTableLoading: PropTypes.func.isRequired,
+  fetchAfterGroup: PropTypes.bool,
+  setFetchAfterGroup: PropTypes.func,
 };
 
 export default FilterComponents;

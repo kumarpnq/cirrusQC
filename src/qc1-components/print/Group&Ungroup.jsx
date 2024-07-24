@@ -30,7 +30,9 @@ const GroupUnGroupModal = ({
   setSelectedItems,
   setSelectionModal,
   fetchMainData,
+  setFetchAfterGroup,
 }) => {
+  const isArticleId = Boolean(selectedItems[0]?.article_id);
   const handleGroupModalClose = () => {
     setOpenGroupModal(false);
   };
@@ -72,7 +74,7 @@ const GroupUnGroupModal = ({
   ];
 
   const rows = selectedItems.map((item) => ({
-    id: item.social_feed_id,
+    id: item.social_feed_id || item.article_id,
     headline: item.headline,
     publication: item.publication,
   }));
@@ -84,7 +86,8 @@ const GroupUnGroupModal = ({
       return;
     }
     const parentId = selectionModelForGroup[0];
-    const childrenIds = selectedItems.map((item) => item.social_feed_id) || [];
+    const childrenIds =
+      selectedItems.map((item) => item.social_feed_id || item.article_id) || [];
     const filteredChildrenIds = childrenIds.filter((item) => item !== parentId);
 
     try {
@@ -109,7 +112,7 @@ const GroupUnGroupModal = ({
         setSelectionModelForGroup([]);
         setSelectedItems([]);
         setSelectionModal([]);
-        fetchMainData();
+        isArticleId ? setFetchAfterGroup(true) : fetchMainData();
       } else {
         toast.warning("Something went wrong.");
       }
@@ -193,6 +196,7 @@ GroupUnGroupModal.propTypes = {
   selectedItems: PropTypes.array.isRequired,
   groupOrUnGroup: PropTypes.string.isRequired,
   fetchMainData: PropTypes.func.isRequired,
+  setFetchAfterGroup: PropTypes.func.isRequired,
 };
 
 export default GroupUnGroupModal;

@@ -1,33 +1,37 @@
-import SearchFilter from "../../qc1-components/printSimilarArticles/SearchFilter";
+import { useState } from "react";
 import { Box } from "@mui/material";
 import { styled } from "@mui/system";
-import { useState } from "react";
+import SearchFilter from "../../qc1-components/printSimilarArticles/SearchFilter";
 import GridTable from "../../qc1-components/printSimilarArticles/GridTable";
 import GroupAccordion from "../../qc1-components/printSimilarArticles/GroupAccordian";
 
 const PrintSimilarArticles = () => {
   const [tableData, setTableData] = useState([]);
   const [tableLoading, setTableLoading] = useState(false);
-  const [headline, setHeadline] = useState("");
   const [selectedItems, setSelectedItems] = useState([]);
   const [selectionModal, setSelectionModal] = useState([]);
+  const [fetchAfterGroup, setFetchAfterGroup] = useState(false);
   return (
     <StyledWrapper>
       <SearchFilter
         setTableData={setTableData}
         setTableLoading={setTableLoading}
         tableLoading={tableLoading}
+        fetchAfterGroup={fetchAfterGroup}
+        setFetchAfterGroup={setFetchAfterGroup}
       />
-      <GroupAccordion
-        selectedItems={selectedItems}
-        setSelectedItems={setSelectedItems}
-        setSelectionModal={setSelectionModal}
-        fetchTableData={""}
-      />
+      {!!selectedItems.length && (
+        <GroupAccordion
+          selectedItems={selectedItems}
+          setSelectedItems={setSelectedItems}
+          setSelectionModal={setSelectionModal}
+          setFetchAfterGroup={setFetchAfterGroup}
+        />
+      )}
+
       <GridTable
         tableData={tableData}
         tableLoading={tableLoading}
-        setHeadline={setHeadline}
         selectionModal={selectionModal}
         setSelectionModal={setSelectionModal}
         setSelectedItems={setSelectedItems}
