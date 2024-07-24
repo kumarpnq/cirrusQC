@@ -11,7 +11,6 @@ const PrintSimilarArticles = () => {
   const [headline, setHeadline] = useState("");
   const [selectedItems, setSelectedItems] = useState([]);
   const [selectionModal, setSelectionModal] = useState([]);
-  console.log(selectedItems, selectionModal);
   return (
     <StyledWrapper>
       <SearchFilter

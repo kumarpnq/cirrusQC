@@ -64,10 +64,10 @@ const GridTable = ({
     setHeadline(text);
   };
 
-  console.log(tableData);
   const handleSelectionChange = (ids) => {
-    console.log(ids);
-    const selectedItem = ids.map((index) => tableData[index]);
+    const selectedItem = ids.map((id) =>
+      tableData.find((item) => item.article_id === id)
+    );
     setSelectedItems(selectedItem);
     setSelectionModal(ids);
   };
