@@ -51,6 +51,7 @@ function App() {
     onlineQC1: false,
     printQc1: false,
     clientBasketCityPublication: false,
+    PrintSimilarArticles: false,
   });
   const [loading, setLoading] = useState(false);
 
@@ -101,6 +102,7 @@ function App() {
       printQc1: screenPermissions["QC1-Print"],
       clientBasketCityPublication:
         screenPermissions.clientBasketCityPublication,
+      PrintSimilarArticles: screenPermissions["PrintSimilarArticles"],
     });
   }, [screenPermissions]);
 
@@ -157,6 +159,17 @@ function App() {
                 exact
                 element={
                   permissions.printQc1 ? <Print /> : <div>Loading...</div>
+                }
+              />
+              <Route
+                path="qc1/print-similar-articles"
+                exact
+                element={
+                  permissions.PrintSimilarArticles ? (
+                    <PrintSimilarArticles />
+                  ) : (
+                    <div>Loading...</div>
+                  )
                 }
               />
               <Route

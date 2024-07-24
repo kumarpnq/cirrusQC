@@ -97,6 +97,7 @@ export default function MainNav() {
   const isSmallScreen = useMediaQuery("(max-width:600px)");
   const isMenuOpen = Boolean(anchorEl);
   const isMobileMenuOpen = Boolean(mobileMoreAnchorEl);
+
   const navList = [
     ...(screenPermissions["QC1-Online"]
       ? [
@@ -114,6 +115,16 @@ export default function MainNav() {
             id: 2,
             title: "Print-QC1",
             path: "/qc1/print",
+            icon: <FaPrint />,
+          },
+        ]
+      : []),
+    ...(screenPermissions["PrintSimilarArticles"]
+      ? [
+          {
+            id: 2,
+            title: "PrintSimilarArticles",
+            path: "/qc1/print-similar-articles",
             icon: <FaPrint />,
           },
         ]
@@ -276,7 +287,7 @@ export default function MainNav() {
   );
 
   const DrawerList = (
-    <Box sx={{ width: 200 }} role="presentation" onClick={toggleDrawer(false)}>
+    <Box sx={{ width: 250 }} role="presentation" onClick={toggleDrawer(false)}>
       <List>
         {navList.map((item) => (
           <ListItem key={item.id} disablePadding sx={{ width: 180 }}>

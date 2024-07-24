@@ -52,16 +52,29 @@ const Login = () => {
     setPermissionLoading,
   } = useContext(ResearchContext);
   const navigate = useNavigate();
-  // Base64 key
-  // const base64Key = import.meta.env.VITE_PASS_ENCRYPT_KEY;
+  //  key
+  const keyHex = import.meta.env.VITE_PASS_ENCRYPT_KEY;
 
+  // Function to encrypt password using CryptoJS
+  const encryptPassword = (password, key) => {
+    const iv = CryptoJS.lib.WordArray.random(16);
+    const encrypted = CryptoJS.AES.encrypt(
+      password,
+      CryptoJS.enc.Hex.parse(key),
+      { iv }
+    );
+    const ivBase64 = CryptoJS.enc.Base64.stringify(iv);
+    const encryptedBase64 = encrypted.toString();
+    return ivBase64 + ":" + encryptedBase64;
+  };
+  //encryptPassword(password, keyHex)
   const handleSubmit = async (event) => {
     event.preventDefault();
     setPermissionLoading(true);
     try {
       const res = await axios.post(`${url}authenticate/`, {
         loginname: name,
-        password: password,
+        password: encryptPassword(password, keyHex),
       });
       const data = JSON.parse(res.config.data);
       const loginname = data.loginname;
