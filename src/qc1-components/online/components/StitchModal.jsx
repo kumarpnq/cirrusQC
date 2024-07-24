@@ -30,28 +30,21 @@ import { url } from "../../../constants/baseUrl";
 import { toast } from "react-toastify";
 import { arrayToString } from "../../../utils/arrayToString";
 import Button from "../../../components/custom/Button";
+import { Link } from "react-router-dom";
+import ArticleView from "../ArticleView";
 // Styles
 const style = {
   position: "absolute",
   top: "50%",
   left: "50%",
   transform: "translate(-50%, -50%)",
-  width: "75vw",
+  width: "85vw",
   // height: "75vh",
   bgcolor: "background.paper",
   border: "2px solid #000",
   boxShadow: 24,
   p: 4,
 };
-
-const columns = [
-  { field: "article_id", headerName: "Article ID", width: 150 },
-  { field: "article_date", headerName: "Article Date", width: 150 },
-  { field: "publication_name", headerName: "Publication Name", width: 200 },
-  { field: "headlines", headerName: "Headline", width: 300 },
-  { field: "page_number", headerName: "Page No", width: 100 },
-  { field: "reporting_subject", headerName: "Reporting Subject", width: 200 },
-];
 
 const StitchModal = ({
   open,
@@ -68,6 +61,18 @@ const StitchModal = ({
   const [fetchLoading, setFetchLoading] = useState(false);
   const [selectedRows, setSelectedRows] = useState([]);
   const [filteredArticles, setFilteredArticles] = useState([]);
+  const [openArticleView, setOpenArticleView] = useState(false);
+  const [idForView, setIdForView] = useState(null);
+
+  const handleOpenArticleView = (id) => {
+    setIdForView(id);
+    setOpenArticleView(true);
+  };
+
+  const handleCloseArticleView = () => {
+    setIdForView(null);
+    setOpenArticleView(false);
+  };
 
   useEffect(() => {
     if (!pageNumber || isUnStitch) {
@@ -110,21 +115,6 @@ const StitchModal = ({
     }
   }, [articleId, open]);
 
-  const rows = filteredArticles.map((item) => ({
-    id: item.article_id,
-    article_id: item.article_id,
-
-    article_date: item.article_date,
-
-    publication_name: item.publication_name,
-
-    headlines: item.headlines,
-
-    page_number: item.page_number,
-
-    reporting_subject: item.reporting_subject,
-  }));
-
   const handleClose = () => {
     setArticles([]);
     setOpen(false);
@@ -165,6 +155,49 @@ const StitchModal = ({
   // * page dropdown
   const pageNumbers = articles.map((i) => i.page_number);
   const uniqueNumbers = [...new Set(pageNumbers)].sort((a, b) => a - b);
+
+  // * rows and columns for grid
+  const columns = [
+    {
+      field: "upload_id",
+      headerName: "Article ID",
+      width: 270,
+      renderCell: (params) => (
+        <Typography
+          component={"button"}
+          className="underline text-[0.7em]"
+          onClick={() => handleOpenArticleView(params.row.link)}
+          fontSize={"1em"}
+        >
+          {params.value}
+        </Typography>
+      ),
+    },
+    { field: "article_date", headerName: "Article Date", width: 150 },
+    { field: "publication_name", headerName: "Publication Name", width: 160 },
+    { field: "headlines", headerName: "Headline", width: 300 },
+    { field: "page_number", headerName: "Page No", width: 100 },
+    {
+      field: "reporting_subject",
+      headerName: "Reporting Subject",
+      width: 200,
+    },
+  ];
+  const rows = filteredArticles.map((item) => ({
+    id: item.article_id,
+    upload_id: item.upload_id,
+
+    article_date: item.article_date,
+
+    publication_name: item.publication_name,
+
+    headlines: item.headlines,
+
+    page_number: item.page_number,
+
+    reporting_subject: item.reporting_subject,
+    link: item.link,
+  }));
 
   const PageFilter = () => {
     return (
@@ -223,60 +256,68 @@ const StitchModal = ({
   }
 
   return (
-    <Modal
-      open={open}
-      onClose={handleClose}
-      aria-labelledby="stitch-modal-title"
-    >
-      <Box sx={style}>
-        <Card>
-          <CardHeader
-            title={
-              <Typography component={"span"}>
-                {isStitch ? "Stitch Articles" : "UnStitch Articles"}
-              </Typography>
-            }
-            action={
-              <IconButton onClick={handleClose}>
-                <CloseOutlined />
-              </IconButton>
-            }
-          />
-          <CardContent>
-            <Box display="flex" justifyContent={"flex-end"} my={1}>
-              <Typography component={"div"}>
-                <Button onClick={handleSave} btnText="save" />
-              </Typography>
-            </Box>
-            <Box sx={{ height: 400, width: "100%" }}>
-              <DataGrid
-                rows={rows}
-                columns={columns}
-                pageSize={5}
-                rowsPerPageOptions={[5, 10, 20]}
-                checkboxSelection
-                loading={fetchLoading && <CircularProgress />}
-                onRowSelectionModelChange={(ids) => {
-                  handleSelectionChange(ids);
-                }}
-                disableDensitySelector
-                disableColumnSelector
-                disableRowSelectionOnClick
-                // components={{ Toolbar: GridToolbar }}
-                slots={{ toolbar: CustomToolbar }}
-                slotProps={{
-                  toolbar: {
-                    showQuickFilter: true,
-                  },
-                }}
-                density="compact"
-                getRowClassName={getRowClassName}
-              />
-            </Box>
-          </CardContent>
-        </Card>
-      </Box>
-    </Modal>
+    <>
+      <Modal
+        open={open}
+        onClose={handleClose}
+        aria-labelledby="stitch-modal-title"
+      >
+        <Box sx={style}>
+          <Card>
+            <CardHeader
+              title={
+                <Typography component={"span"}>
+                  {isStitch ? "Stitch Articles" : "UnStitch Articles"}
+                </Typography>
+              }
+              action={
+                <IconButton onClick={handleClose}>
+                  <CloseOutlined />
+                </IconButton>
+              }
+            />
+            <CardContent>
+              <Box display="flex" justifyContent={"flex-end"} my={1}>
+                <Typography component={"div"}>
+                  <Button onClick={handleSave} btnText="save" />
+                </Typography>
+              </Box>
+              <Box sx={{ height: 400, width: "100%" }}>
+                <DataGrid
+                  rows={rows}
+                  columns={columns}
+                  pageSize={5}
+                  rowsPerPageOptions={[5, 10, 20]}
+                  checkboxSelection
+                  loading={fetchLoading && <CircularProgress />}
+                  onRowSelectionModelChange={(ids) => {
+                    handleSelectionChange(ids);
+                  }}
+                  disableDensitySelector
+                  disableColumnSelector
+                  disableRowSelectionOnClick
+                  // components={{ Toolbar: GridToolbar }}
+                  slots={{ toolbar: CustomToolbar }}
+                  slotProps={{
+                    toolbar: {
+                      showQuickFilter: true,
+                    },
+                  }}
+                  density="compact"
+                  getRowClassName={getRowClassName}
+                />
+              </Box>
+            </CardContent>
+          </Card>
+        </Box>
+      </Modal>
+      <ArticleView
+        open={openArticleView}
+        setOpen={setOpenArticleView}
+        handleClose={handleCloseArticleView}
+        id={idForView}
+      />
+    </>
   );
 };
 

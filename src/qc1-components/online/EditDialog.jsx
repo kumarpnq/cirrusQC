@@ -317,6 +317,14 @@ const EditDialog = ({
     setModalOpen(true);
   };
 
+  // * skip the article if user don`t want
+  const handleSkip = () => {
+    const unSkippedArticles = selectedItems.filter(
+      (i) => i.id !== activeArticle?.id
+    );
+    setSelectedItems(unSkippedArticles);
+  };
+
   // * grid rows and columns
   const columns = [
     {
@@ -429,6 +437,7 @@ const EditDialog = ({
                   selectedItems={selectedItems || []}
                   activeArticle={activeArticle}
                   setActiveArticle={setActiveArticle}
+                  setSelectedItems={setSelectedItems}
                 />
               )}
             </Box>
@@ -444,7 +453,9 @@ const EditDialog = ({
                       onClick={updateHeaderData}
                       isLoading={updateHeaderLoading}
                     />
-
+                    {isMultiple && (
+                      <Button btnText="Skip & Next" onClick={handleSkip} />
+                    )}
                     <input
                       type="number"
                       value={pageNumber}
