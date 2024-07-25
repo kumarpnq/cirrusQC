@@ -9,7 +9,6 @@ import PropTypes from "prop-types";
 
 // * components
 import Client from "../../../print-components/dropdowns/Client";
-import Company from "../../../print-components/dropdowns/Company";
 import Category from "../../../print-components/dropdowns/Category";
 import CustomDebounceDropdown from "../../../@core/CustomDebounceDropdown";
 import Publication from "../../../print-components/dropdowns/Publication";
@@ -22,6 +21,7 @@ import YesOrNo from "../../../@core/YesOrNo";
 import CustomTextField from "../../../@core/CutsomTextField";
 import Button from "../../../components/custom/Button";
 import SearchableCategory from "../../../components/research-dropdowns/table-dropdowns/SearchableCategory";
+import CustomMultiSelect from "../../../@core/CustomMultiSelect";
 
 const SearchFilters = ({
   classes,
@@ -102,12 +102,24 @@ const SearchFilters = ({
         />
       </Typography>
       <Typography component={"div"} className={classes.componentHeight}>
-        <Company
+        {/* <Company
           companyData={companyData}
           companies={selectedCompanies}
           setCompanies={setSelectedCompanies}
           isMt={true}
-        />
+        /> */}
+        <div className="mt-3">
+          <CustomMultiSelect
+            dropdownToggleWidth={200}
+            dropdownWidth={250}
+            keyId="companyid"
+            keyName="companyname"
+            options={companyData}
+            selectedItems={selectedCompanies}
+            setSelectedItems={setSelectedCompanies}
+            title="companies"
+          />
+        </div>
       </Typography>
       <Typography component={"div"} className={classes.componentHeight}>
         <Category

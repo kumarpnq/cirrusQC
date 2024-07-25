@@ -9,7 +9,6 @@ import { toast } from "react-toastify";
 // * components
 import { formattedDate, formattedNextDay } from "../../../constants/dates";
 import Client from "../../../print-components/dropdowns/Client";
-import Company from "../../../print-components/dropdowns/Company";
 import useFetchData from "../../../hooks/useFetchData";
 import { url } from "../../../constants/baseUrl";
 import FromDate from "../../../components/research-dropdowns/FromDate";
@@ -20,6 +19,7 @@ import Button from "../../../components/custom/Button";
 import DebounceSearchHeadline from "./DebounceSearchHeadline";
 
 import { addPropertyIfConditionIsTrue } from "../../../utils/addProprtyIfConditiontrue";
+import CustomMultiSelect from "../../../@core/CustomMultiSelect";
 
 const useStyle = makeStyles(() => ({
   dropDowns: {
@@ -138,6 +138,7 @@ const FilterComponents = ({
     selectedCompanies,
     setTableData,
     setFetchAfterGroup,
+    selectedFetchedHeadline,
   ]);
 
   useEffect(() => {
@@ -169,12 +170,19 @@ const FilterComponents = ({
           setCompanies={setSelectedCompanies}
         />
       </Typography>
-      <Company
-        companyData={data?.data?.companies || []}
-        companies={selectedCompanies}
-        setCompanies={setSelectedCompanies}
-        isMt={true}
-      />
+
+      <div className="mt-3 w-[200px]">
+        <CustomMultiSelect
+          dropdownToggleWidth={200}
+          dropdownWidth={250}
+          keyId="companyid"
+          keyName="companyname"
+          options={data?.data?.companies || []}
+          selectedItems={selectedCompanies}
+          setSelectedItems={setSelectedCompanies}
+          title="companies"
+        />
+      </div>
       <FromDate fromDate={fromDate} setFromDate={setFromDate} />
       <ToDate dateNow={toDate} setDateNow={setToDate} isMargin={true} />
       <Typography className="pt-3" component={"div"}>

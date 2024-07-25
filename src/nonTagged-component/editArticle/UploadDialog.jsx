@@ -40,34 +40,52 @@ const UploadDialog = ({
   const userToken = localStorage.getItem("user");
   const socialfeedId = selectedRow?.socialfeedid;
   const [fetchedHeader, setFetchedHeader] = useState(null);
-  useEffect(() => {
-    const fetchHeaderData = async () => {
-      try {
-        const headers = {
-          Authorization: `Bearer ${userToken}`,
-        };
-        const response = await axios.get(
-          `${url}socialfeedheader?socialfeed_id=${socialfeedId}`,
-          { headers }
-        );
-        setFetchedHeader(response.data.socialfeed[0]);
-      } catch (error) {
-        console.log(error);
-      }
-    };
-    fetchHeaderData();
-  }, [selectedRow, socialfeedId, userToken]);
-
-  // * for clearing the data after closing the modal
   const [tableDataList, setTableDataList] = useState([]);
   const [editableTagData, setEditableTagData] = useState([]);
   const [modifiedRows, setModifiedRows] = useState([]);
+  const [tableDataLoading, setTableDataLoading] = useState(false);
+
+  const fetchData = async () => {
+    try {
+      setTableDataLoading(true);
+      setTableDataList([]);
+      const headers = {
+        Authorization: `Bearer ${userToken}`,
+      };
+
+      const [headerResponse, detailsResponse] = await Promise.all([
+        axios.get(`${url}socialfeedheader?socialfeed_id=${socialfeedId}`, {
+          headers,
+        }),
+        axios.get(`${url}socialfeedtagdetails/?socialfeed_id=${socialfeedId}`, {
+          headers,
+        }),
+      ]);
+
+      setFetchedHeader(headerResponse.data.socialfeed[0]);
+
+      const data = detailsResponse.data.socialfeed_details;
+      const realData = data && Object.keys(data).length > 0 ? data : [];
+      setTableDataList(realData);
+      setTableDataLoading(false);
+    } catch (error) {
+      setTableDataList([]);
+      setTableDataLoading(false);
+      console.error("Error fetching data:", error.message);
+    }
+  };
+
+  useEffect(() => {
+    if (selectedRow && open) {
+      fetchData();
+    }
+  }, [selectedRow, userToken, open]);
 
   const handleSecondaryClose = () => {
-    handleClose();
     setTableDataList([]);
     setEditableTagData([]);
     setModifiedRows([]);
+    handleClose();
   };
 
   return (
@@ -101,6 +119,8 @@ const UploadDialog = ({
               setEditableTagData={setEditableTagData}
               modifiedRows={modifiedRows}
               setModifiedRows={setModifiedRows}
+              tableDataLoading={tableDataLoading}
+              fetchData={fetchData}
             />
           </Box>
         </DialogContent>

@@ -3,7 +3,6 @@
 import PropTypes from "prop-types";
 import { AccordionDetails, Box } from "@mui/material"; // Assuming you're using MUI for Box
 import SearchableDropdown from "../../../components/dropdowns/SearchableDropdown";
-import CustomAutocomplete from "../../../components/custom/Autocomplet";
 import Datetype from "../../../components/research-dropdowns/Datetype";
 import FromDate from "../../../components/research-dropdowns/FromDate";
 import ToDate from "../../../components/research-dropdowns/ToDate";
@@ -15,6 +14,7 @@ import Countries from "../../../components/research-dropdowns/Countries";
 import CheckboxComp from "../../../components/checkbox/Checkbox";
 import Button from "../../../components/custom/Button";
 import CustomTextField from "../../../@core/CutsomTextField";
+import CustomMultiSelect from "../../../@core/CustomMultiSelect";
 
 const CustomAccordionDetails = ({
   clientData,
@@ -79,11 +79,18 @@ const CustomAccordionDetails = ({
             width={300}
           />
         </div>
-        <CustomAutocomplete
-          companies={selectedCompanies}
-          setCompanies={setSelectedCompanies}
-          company={companyData?.data?.companies || []}
-        />
+        <div className="mt-3">
+          <CustomMultiSelect
+            dropdownToggleWidth={200}
+            dropdownWidth={250}
+            keyId="companyid"
+            keyName="companyname"
+            options={companyData?.data?.companies || []}
+            selectedItems={selectedCompanies}
+            setSelectedItems={setSelectedCompanies}
+            title="companies"
+          />
+        </div>
         <Datetype
           classes={classes}
           dateTypes={dateTypes}

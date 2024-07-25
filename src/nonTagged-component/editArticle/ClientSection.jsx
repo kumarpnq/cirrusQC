@@ -1,4 +1,4 @@
-import { useEffect, useLayoutEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Card,
   Tooltip,
@@ -32,14 +32,14 @@ const ClientSection = ({
   setTableData,
   // * cleared states
   tableDataList,
-  setTableDataList,
   editableTagData,
   setEditableTagData,
   modifiedRows,
   setModifiedRows,
+  fetchData,
+  tableDataLoading,
 }) => {
   const [selectedCompany, setSelectedCompany] = useState("");
-  const [tableDataLoading, setTableDataLoading] = useState(false);
   const [verificationLoading, setVerificationLoading] = useState(false);
   const [password, setPassword] = useState("");
   const { loading, error, data, makeRequest } = useProtectedRequest(
@@ -52,36 +52,6 @@ const ClientSection = ({
     setOpen(false);
   };
 
-  // * fetching main table data
-  const socialFeedId = selectedArticle?.social_feed_id;
-  const fetchData = async () => {
-    try {
-      setTableDataLoading(true);
-      setTableDataList([]);
-      const headers = {
-        Authorization: `Bearer ${userToken}`,
-      };
-
-      const response = await axios.get(
-        `${url}socialfeedtagdetails/?socialfeed_id=${socialFeedId}`,
-        {
-          headers: headers,
-        }
-      );
-      const data = response.data.socialfeed_details;
-      const realData = data && Object.keys(data).length > 0 ? data : [];
-      setTableDataList(realData);
-      setTableDataLoading(false);
-    } catch (error) {
-      setTableDataList([]);
-      setTableDataLoading(false);
-      console.error("Error fetching data:", error.message);
-    }
-  };
-
-  useLayoutEffect(() => {
-    fetchData();
-  }, [socialFeedId]);
   const [subjects, setSubjects] = useState([]);
 
   const { data: subjectLists } = useFetchData(`${url}reportingsubjectlist`);
@@ -152,7 +122,7 @@ const ClientSection = ({
               QC2REMARK: null,
             },
           ],
-          qcflag: 1,
+          QCTYPE: "QC2",
         };
 
         const response = await axios.post(
@@ -512,6 +482,8 @@ ClientSection.propTypes = {
     })
   ).isRequired,
   setModifiedRows: PropTypes.func.isRequired,
+  fetchData: PropTypes.func,
+  tableDataLoading: PropTypes.bool,
 };
 
 export default ClientSection;
