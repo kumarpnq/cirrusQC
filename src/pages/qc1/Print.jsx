@@ -169,6 +169,7 @@ const Print = () => {
   };
 
   const handleClickAway = (index) => {
+    setAnchorEls(null);
     setAnchorEls((prev) => ({
       ...prev,
       [index]: null,

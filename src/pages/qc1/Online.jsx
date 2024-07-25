@@ -64,7 +64,7 @@ const Online = () => {
   const [selectedDateType, setSelectedDateType] = useState("article");
   const [fromDate, setFromDate] = useState(formattedDate);
   const [dateNow, setDateNow] = useState(formattedNextDay);
-  const [isQc1Done, setIsQc1Done] = useState(1);
+  const [isQc1Done, setIsQc1Done] = useState(0);
   const [qc1By, setQc1By] = useState("");
   const [selectedLanguages, setSelectedLanguages] = useState([]);
   const [selectedContinents, setSelectedContinents] = useState([]);
