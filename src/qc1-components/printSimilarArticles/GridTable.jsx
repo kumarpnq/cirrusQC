@@ -68,10 +68,8 @@ const GridTable = ({
     try {
       setSimilarLoading(true);
       const userToken = localStorage.getItem("user");
-      const main_url =
-        params.row.articleType === "print"
-          ? `${url}similararticles/?article_id=${socialFeedId}`
-          : `${url}similarsocialfeeds/?socialfeed_id=${socialFeedId}`;
+      const main_url = `${url}similararticlesandsocialfeeds/?article_id=${socialFeedId}`;
+
       const response = await axios.get(main_url, {
         headers: { Authorization: `Bearer ${userToken}` },
       });
