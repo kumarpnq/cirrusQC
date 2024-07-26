@@ -35,6 +35,7 @@ import Languages from "../components/research-dropdowns/Languages";
 import Continents from "../components/research-dropdowns/Continents";
 import Countries from "../components/research-dropdowns/Countries";
 import CustomAutocomplete from "../components/custom/Autocomplet";
+import CustomMultiSelect from "../@core/CustomMultiSelect";
 
 const useStyle = makeStyles(() => ({
   dropDowns: {
@@ -333,11 +334,19 @@ const ResearchScreen = () => {
               />
             </div>
             {/* comapany */}
-            <CustomAutocomplete
-              companies={companies}
-              setCompanies={setCompanies}
-              company={company}
-            />
+
+            <div className="w-[200px]">
+              <CustomMultiSelect
+                dropdownToggleWidth={200}
+                dropdownWidth={250}
+                keyId="companyid"
+                keyName="companyname"
+                options={company || []}
+                selectedItems={companies}
+                setSelectedItems={setCompanies}
+                title="companies"
+              />
+            </div>
             {/* Datetype */}
             <Datetype
               dateType={dateType}

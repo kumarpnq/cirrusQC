@@ -14,7 +14,6 @@ import { url } from "../constants/baseUrl";
 import Client from "./dropdowns/Client";
 import Category from "./dropdowns/Category";
 import useFetchData from "../hooks/useFetchData";
-import Company from "./dropdowns/Company";
 import Datetype from "./dropdowns/DateType";
 import FromDate from "../components/research-dropdowns/FromDate";
 import ToDate from "../components/research-dropdowns/ToDate";
@@ -39,6 +38,7 @@ import axios from "axios";
 import { toast } from "react-toastify";
 import CustomDebounceDropdown from "../@core/CustomDebounceDropdown";
 import { arrayToString } from "../utils/arrayToString";
+import CustomMultiSelect from "../@core/CustomMultiSelect";
 
 const useStyle = makeStyles(() => ({
   dropDowns: {
@@ -341,12 +341,16 @@ const DDComp = () => {
                 width={150}
               />
             </div>
-            <div className="h-[25px] flex items-center justify-center">
-              <Company
-                companyData={companyData}
-                companies={companies}
-                setCompanies={setCompanies}
-                isMt={true}
+            <div className="h-[25px] pt-1.5 w-[200px]">
+              <CustomMultiSelect
+                dropdownToggleWidth={200}
+                dropdownWidth={250}
+                keyId="companyid"
+                keyName="companyname"
+                options={companyData || []}
+                selectedItems={companies}
+                setSelectedItems={setCompanies}
+                title="companies"
               />
             </div>
             <div className="h-[25px] flex items-center justify-center">

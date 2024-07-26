@@ -22,7 +22,6 @@ import { formattedDate, formattedNextDay } from "../constants/dates";
 
 // ** component
 import SearchableDropdown from "../components/dropdowns/SearchableDropdown";
-import CustomAutocomplete from "../components/custom/Autocomplet";
 import Datetype from "../components/research-dropdowns/Datetype";
 import FromDate from "../components/research-dropdowns/FromDate";
 import ToDate from "../components/research-dropdowns/ToDate";
@@ -36,6 +35,7 @@ import AlertDialogSlide from "../dump-components/alertSlide";
 import Permissions from "../dump-components/Permission";
 import JobDetails from "../dump-components/JobDetails";
 import { ResearchContext } from "../context/ContextProvider";
+import CustomMultiSelect from "../@core/CustomMultiSelect";
 
 const useStyle = makeStyles(() => ({
   dropDowns: {
@@ -200,11 +200,19 @@ const Dump = () => {
               />
             </div>
             {/* company */}
-            <CustomAutocomplete
-              companies={selectedCompanies}
-              setCompanies={setSelectedCompanies}
-              company={companies}
-            />
+
+            <div className="w-[200px] pt-2.5">
+              <CustomMultiSelect
+                dropdownToggleWidth={200}
+                dropdownWidth={250}
+                keyId="companyid"
+                keyName="companyname"
+                options={companies || []}
+                selectedItems={selectedCompanies}
+                setSelectedItems={setSelectedCompanies}
+                title="companies"
+              />
+            </div>
             <Datetype
               dateType={dateType}
               setDateType={setDateType}
