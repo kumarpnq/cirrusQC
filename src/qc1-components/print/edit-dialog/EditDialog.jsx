@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useLayoutEffect, useState } from "react";
 import PropTypes from "prop-types";
 import {
   Modal,
@@ -55,10 +55,25 @@ const EditDialog = ({ rowData, rowNumber, setRowNumber, open, setOpen }) => {
     Authorization: `Bearer ${userToken}`,
   };
 
-  useEffect(() => {
-    const data = rowData[rowNumber] || null;
-    setRow(data);
-  }, [rowData, rowNumber, setRow]);
+  const handleClose = () => {
+    setFormItems({
+      headline: "",
+      summary: "",
+      journalist: "",
+      tag: "",
+    });
+    setRowNumber(0);
+    setRow(null);
+    setSocialFeedTagDetails([]);
+    setOpen(false);
+  };
+
+  useLayoutEffect(() => {
+    if (open) {
+      const data = rowData[rowNumber];
+      setRow(data);
+    }
+  }, [rowData, rowNumber, setRow, open]);
 
   const socialFeedId = row?.social_feed_id;
   const iframeURI = row?.link;
@@ -74,18 +89,6 @@ const EditDialog = ({ rowData, rowNumber, setRowNumber, open, setOpen }) => {
   const [socialFeedTagDetailsLoading, setSocialFeedTagDetailsLoading] =
     useState(false);
 
-  const handleClose = () => {
-    setFormItems({
-      headline: "",
-      summary: "",
-      journalist: "",
-      tag: "",
-    });
-    setRowNumber(0);
-    setRow(null);
-    setSocialFeedTagDetails([]);
-    setOpen(false);
-  };
   // * fetching header & tag details
   const fetchHeaderAndTagDetails = async () => {
     try {
