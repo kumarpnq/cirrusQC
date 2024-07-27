@@ -530,6 +530,7 @@ const Online = () => {
         setOpen={setOpenAddCompanies}
         selectedRows={selectedItems}
         screen={"online"}
+        setSelectionModal={setSelectionModal}
       />
     </Box>
   );

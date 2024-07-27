@@ -11,7 +11,13 @@ import { arrayToString } from "../../utils/arrayToString";
 import DebounceSearchCompany from "../../@core/DebounceSearchCompany";
 import Button from "../../components/custom/Button";
 
-const AddCompaniesModal = ({ open, setOpen, selectedRows, screen }) => {
+const AddCompaniesModal = ({
+  open,
+  setOpen,
+  selectedRows,
+  screen,
+  setSelectionModal,
+}) => {
   const [fetchedCompanies, setFetchedCompanies] = useState([]);
   const [fetchLoading, setFetchLoading] = useState(false);
 
@@ -25,8 +31,9 @@ const AddCompaniesModal = ({ open, setOpen, selectedRows, screen }) => {
   };
 
   // * company selection
-  const [selectedCompany, setSelectedCompany] = useState(null);
+  const [selectedCompanies, setSelectedCompanies] = useState([]);
   const [addCompanyLoading, setAddCompanyLoading] = useState(false);
+  console.log(selectedCompanies);
 
   // * fetch tagged companies
   const fetchTaggedCompanies = async () => {
@@ -62,17 +69,18 @@ const AddCompaniesModal = ({ open, setOpen, selectedRows, screen }) => {
 
   // * handle add company
   const handleAddCompany = async () => {
-    if (!selectedCompany) {
+    if (!selectedCompanies.length) {
       toast.warning("Please select company.");
       return;
     }
     try {
       setAddCompanyLoading(true);
+      const companyIds = selectedCompanies.map((i) => i.value);
       const ids = screen === "online" ? socialFeedIds : articleIds;
       const paramKey = screen === "online" ? "socialfeed_ids" : "article_ids";
       const request_data = {
         [paramKey]: ids,
-        company_id: selectedCompany?.value,
+        company_ids: companyIds,
       };
       const userToken = localStorage.getItem("user");
       const endpoint =
@@ -84,10 +92,12 @@ const AddCompaniesModal = ({ open, setOpen, selectedRows, screen }) => {
       });
       if (response) {
         toast.success("Company added");
+        setSelectionModal([]);
         fetchTaggedCompanies();
       }
     } catch (error) {
       console.log(error);
+      toast.error("Something went wrong.");
     } finally {
       setAddCompanyLoading(false);
     }
@@ -240,7 +250,10 @@ const AddCompaniesModal = ({ open, setOpen, selectedRows, screen }) => {
           >
             {" "}
             <span className="pt-1">
-              <DebounceSearchCompany setSelectedCompany={setSelectedCompany} />
+              <DebounceSearchCompany
+                setSelectedCompany={setSelectedCompanies}
+                isMultiple
+              />
             </span>
             <span className="">
               <Button
@@ -272,6 +285,7 @@ AddCompaniesModal.propTypes = {
   setOpen: PropTypes.func.isRequired,
   selectedRows: PropTypes.arrayOf(PropTypes.number).isRequired,
   screen: PropTypes.string.isRequired,
+  setSelectionModal: PropTypes.array.isRequired,
 };
 
 export default AddCompaniesModal;

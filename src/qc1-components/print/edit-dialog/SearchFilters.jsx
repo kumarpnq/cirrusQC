@@ -79,7 +79,7 @@ const CustomAccordionDetails = ({
             width={300}
           />
         </div>
-        <div className="mt-3">
+        <div className="mt-3 w-[200px]">
           <CustomMultiSelect
             dropdownToggleWidth={200}
             dropdownWidth={250}

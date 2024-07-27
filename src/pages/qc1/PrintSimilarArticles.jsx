@@ -1,6 +1,8 @@
 import { useState } from "react";
 import { Box } from "@mui/material";
 import { styled } from "@mui/system";
+
+// * components
 import SearchFilter from "../../qc1-components/printSimilarArticles/SearchFilter";
 import GridTable from "../../qc1-components/printSimilarArticles/GridTable";
 import GroupAccordion from "../../qc1-components/printSimilarArticles/GroupAccordian";

@@ -65,7 +65,12 @@ const DebounceSearchHeadline = ({
     }
   };
 
-  const debouncedFetchData = useCallback(debounce(fetchData, 500), []);
+  const debouncedFetchData = useCallback(debounce(fetchData, 500), [
+    fromDate,
+    toDate,
+    selectedClient,
+    selectedCompanies,
+  ]);
 
   useEffect(() => {
     if (searchTerm) {

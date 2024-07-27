@@ -819,6 +819,7 @@ const Print = () => {
         setOpen={setOpenAddCompanies}
         selectedRows={selectedItems}
         screen="print"
+        setSelectionModal={setSelectionModal}
       />
     </Box>
   );
