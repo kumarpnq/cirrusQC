@@ -102,13 +102,7 @@ const SearchFilters = ({
         />
       </Typography>
       <Typography component={"div"} className={classes.componentHeight}>
-        {/* <Company
-          companyData={companyData}
-          companies={selectedCompanies}
-          setCompanies={setSelectedCompanies}
-          isMt={true}
-        /> */}
-        <div className="mt-3">
+        <div className="mt-3 w-[200px]">
           <CustomMultiSelect
             dropdownToggleWidth={200}
             dropdownWidth={250}
