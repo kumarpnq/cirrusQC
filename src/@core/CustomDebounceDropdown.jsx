@@ -42,10 +42,13 @@ const CustomDebounceDropdown = ({
       });
       setPublicationGroups(response.data.publication_groups);
     } catch (error) {
-      console.log(error);
+      console.log(error.message);
     }
   };
 
+  useEffect(() => {
+    handleFetchPublications();
+  }, []);
   const handleSearchTermChange = (event) => {
     const newValue = event.target.value;
     setValue(newValue);
@@ -111,6 +114,8 @@ const CustomDebounceDropdown = ({
               onClick={() => {
                 setValue("");
                 setPublicationGroup(null);
+                setPublicationGroups([]);
+                handleFetchPublications();
               }}
             >
               <ClearIcon />
