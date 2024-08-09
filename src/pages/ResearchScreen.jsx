@@ -335,7 +335,7 @@ const ResearchScreen = () => {
             </div>
             {/* comapany */}
 
-            <div className="w-[200px]">
+            <div className="w-[200px] mt-3">
               <CustomMultiSelect
                 dropdownToggleWidth={200}
                 dropdownWidth={250}

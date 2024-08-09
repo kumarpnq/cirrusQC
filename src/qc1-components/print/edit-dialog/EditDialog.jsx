@@ -224,8 +224,8 @@ const EditDialog = ({ rowData, rowNumber, setRowNumber, open, setOpen }) => {
           {
             UPDATETYPE: "D",
             SOCIALFEEDID: socialFeedId,
-            COMPANYID: selectedRow.company_id,
-            COMPANYNAME: selectedRow.company_name,
+            COMPANYID: selectedRow.companyId,
+            COMPANYNAME: selectedRow.CompanyName,
           },
         ],
         QCTYPE: "QC1",
@@ -272,6 +272,7 @@ const EditDialog = ({ rowData, rowNumber, setRowNumber, open, setOpen }) => {
     id: index,
     CompanyName: detail.company_name,
     Keyword: detail.keyword,
+    companyId: detail.company_id,
   }));
 
   const handleSkipAndNext = () => {
@@ -395,6 +396,7 @@ const EditDialog = ({ rowData, rowNumber, setRowNumber, open, setOpen }) => {
                 >
                   <DebounceSearchCompany
                     setSelectedCompany={setSelectedCompanies}
+                    selectedCompany={selectedCompanies}
                     isMultiple
                   />
                   <span className="pb-1">

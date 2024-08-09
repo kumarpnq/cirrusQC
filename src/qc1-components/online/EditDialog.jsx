@@ -159,7 +159,7 @@ const EditDialog = ({
       };
       // Compare each field in formItems with headerData and add to data if modified
       if (formItems.headline !== headerData.headline) {
-        data.HEADLINE = formItems.headline;
+        data.HEADLINES = formItems.headline;
       }
       if (formItems.summary !== headerData.summary) {
         data.HEADSUMMARY = formItems.summary;
@@ -256,6 +256,7 @@ const EditDialog = ({
         { headers }
       );
       if (response.data.result?.success?.length) {
+        setSelectedCompanies([]);
         fetchHeaderAndTagDetails();
         toast.success("Company added.");
       } else {
@@ -485,6 +486,7 @@ const EditDialog = ({
                   >
                     <DebounceSearchCompany
                       setSelectedCompany={setSelectedCompanies}
+                      selectedCompany={selectedCompanies}
                       isMultiple
                     />
                     <span className="pb-1">
