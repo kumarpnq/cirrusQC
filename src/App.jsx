@@ -64,6 +64,7 @@ function App() {
             Authorization: `Bearer ${userToken}`,
           },
         });
+
         const screen_access = response.data.screen_access;
         sessionStorage.setItem("prmsn", JSON.stringify(screen_access));
         const permissionData = sessionStorage.getItem("prmsn");

@@ -5,11 +5,21 @@ import { IoMdArrowDropup, IoMdArrowDropdown } from "react-icons/io";
 import PropTypes from "prop-types";
 import { url } from "../constants/baseUrl";
 
-const DebounceSearchCompany = ({ setSelectedCompany, isMultiple }) => {
+const DebounceSearchCompany = ({
+  setSelectedCompany,
+  selectedCompany,
+  isMultiple,
+}) => {
   const [searchResults, setSearchResults] = useState([]);
   const [selectedOptions, setSelectedOptions] = useState(
     isMultiple ? [] : null
   );
+
+  useEffect(() => {
+    if (!selectedCompany || !selectedCompany.length) {
+      setSelectedOptions([] || null);
+    }
+  }, [selectedCompany]);
   const [showResults, setShowResults] = useState(false);
   const userToken = localStorage.getItem("user");
   const containerRef = useRef(null);
