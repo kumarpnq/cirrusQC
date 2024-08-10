@@ -128,7 +128,21 @@ const EditDialog = ({
         page: headerData.page_number,
         articleSummary: headerData.article_summary,
       });
+    } catch (error) {
+      // toast.error("Error While fetching data.");
+      console.log(error.message);
+    } finally {
+      setArticleTagDetailsLoading(false);
+    }
+  };
 
+  const fetchTagDetails = async () => {
+    try {
+      setArticleTagDetailsLoading(true);
+      const userToken = localStorage.getItem("user");
+      const headers = {
+        Authorization: `Bearer ${userToken}`,
+      };
       const tagDetailsResponse = await axios.get(
         `${url}qc1printtagdetails/?article_id=${articleId}`,
         { headers }
@@ -136,7 +150,6 @@ const EditDialog = ({
 
       setArticleTagDetails(tagDetailsResponse.data.article_details || []);
     } catch (error) {
-      // toast.error("Error While fetching data.");
       console.log(error.message);
     } finally {
       setArticleTagDetailsLoading(false);
@@ -146,6 +159,7 @@ const EditDialog = ({
   useEffect(() => {
     if (open) {
       fetchHeaderAndTagDetails();
+      fetchTagDetails();
     }
   }, [articleId, open]);
 
@@ -257,7 +271,7 @@ const EditDialog = ({
       );
       if (response.data.result?.success?.length) {
         setSelectedCompanies([]);
-        fetchHeaderAndTagDetails();
+        fetchTagDetails();
         toast.success("Company added.");
       } else {
         toast.warning("Something wrong try again.");
@@ -289,7 +303,7 @@ const EditDialog = ({
       );
       if (response.data.result.success.length) {
         toast.success("Company removed");
-        fetchHeaderAndTagDetails();
+        fetchTagDetails();
       } else {
         toast.warning("Something wrong try again.");
       }
@@ -358,6 +372,8 @@ const EditDialog = ({
     CompanyName: item.company_name,
     keyword: item.keyword,
   }));
+
+  console.log(articleTagDetails);
 
   // * save button text
   const buttonText = isMultiple ? "Save & Next" : "save";

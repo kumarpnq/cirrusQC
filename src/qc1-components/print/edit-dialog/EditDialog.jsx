@@ -109,6 +109,20 @@ const EditDialog = ({ rowData, rowNumber, setRowNumber, open, setOpen }) => {
         journalist: headerData.author_name,
         tag: headerData.tags,
       });
+    } catch (error) {
+      console.log(error.message);
+    } finally {
+      setSocialFeedTagDetailsLoading(false);
+    }
+  };
+
+  const fetchTagDetails = async () => {
+    try {
+      setSocialFeedTagDetailsLoading(true);
+      const userToken = localStorage.getItem("user");
+      const headers = {
+        Authorization: `Bearer ${userToken}`,
+      };
       const tagDetailsResponse = await axios.get(
         `${url}qc1onlinetagdetails/?socialfeed_id=${socialFeedId}`,
         { headers }
@@ -124,6 +138,7 @@ const EditDialog = ({ rowData, rowNumber, setRowNumber, open, setOpen }) => {
   useEffect(() => {
     if (open) {
       fetchHeaderAndTagDetails();
+      fetchTagDetails();
     }
   }, [socialFeedId, open]);
 
@@ -207,7 +222,7 @@ const EditDialog = ({ rowData, rowNumber, setRowNumber, open, setOpen }) => {
       );
       if (response.status === 200) {
         setSelectedCompanies([]);
-        fetchHeaderAndTagDetails();
+        fetchTagDetails();
         toast.success("Company added.");
       }
     } catch (error) {
@@ -239,7 +254,7 @@ const EditDialog = ({ rowData, rowNumber, setRowNumber, open, setOpen }) => {
       );
 
       if (response.data?.result?.success?.length) {
-        fetchHeaderAndTagDetails();
+        fetchTagDetails();
         toast.success("Company removed");
       } else {
         const errorMSG = response.data?.result?.error[0] || {};
