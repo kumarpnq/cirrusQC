@@ -211,7 +211,9 @@ const EditDialog = ({
             page: "",
             articleSummary: "",
           });
-          toast.success("Data updated.");
+          toast.success("Data updated.", {
+            position: "bottom-right",
+          });
           if (filteredItems.length > 0) {
             const currentIndex = selectedItems.findIndex(
               (i) => i.id === articleId
@@ -223,12 +225,16 @@ const EditDialog = ({
             setSelectionModal([]);
           }
         } else {
-          toast.success("Data updated.");
+          toast.success("Data updated.", {
+            position: "bottom-right",
+          });
           setOpen(false);
         }
       }
     } catch (error) {
-      toast.error("Something went wrong.");
+      toast.error("Something went wrong.", {
+        position: "bottom-right",
+      });
     } finally {
       setUpdateHeaderLoading(false);
     }
@@ -249,7 +255,9 @@ const EditDialog = ({
 
   const handleAddCompany = async () => {
     if (!selectedCompanies.length) {
-      toast.warning("No company selected.");
+      toast.warning("No company selected.", {
+        position: "bottom-right",
+      });
       return;
     }
     try {
@@ -272,12 +280,18 @@ const EditDialog = ({
       if (response.data.result?.success?.length) {
         setSelectedCompanies([]);
         fetchTagDetails();
-        toast.success("Company added.");
+        toast.success("Company added.", {
+          position: "bottom-right",
+        });
       } else {
-        toast.warning("Something wrong try again.");
+        toast.warning("Something wrong try again.", {
+          position: "bottom-right",
+        });
       }
     } catch (error) {
-      toast.error("Something went wrong.");
+      toast.error("Something went wrong.", {
+        position: "bottom-right",
+      });
     } finally {
       setAddCompanyLoading(false);
     }
@@ -302,13 +316,19 @@ const EditDialog = ({
         { headers }
       );
       if (response.data.result.success.length) {
-        toast.success("Company removed");
+        toast.success("Company removed", {
+          position: "bottom-right",
+        });
         fetchTagDetails();
       } else {
-        toast.warning("Something wrong try again.");
+        toast.warning("Something wrong try again.", {
+          position: "bottom-right",
+        });
       }
     } catch (error) {
-      toast.error("Something went wrong.");
+      toast.error("Something went wrong.", {
+        position: "bottom-right",
+      });
     }
   };
 
@@ -372,8 +392,6 @@ const EditDialog = ({
     CompanyName: item.company_name,
     keyword: item.keyword,
   }));
-
-  console.log(articleTagDetails);
 
   // * save button text
   const buttonText = isMultiple ? "Save & Next" : "save";

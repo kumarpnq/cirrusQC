@@ -150,7 +150,7 @@ const EditDialog = ({ rowData, rowNumber, setRowNumber, open, setOpen }) => {
     });
   };
 
-  const handleSubmit = async () => {
+  const handleSubmit = async (isSkip) => {
     try {
       const requestData = {
         data: [
@@ -173,6 +173,7 @@ const EditDialog = ({ rowData, rowNumber, setRowNumber, open, setOpen }) => {
         }
       );
       if (response.data?.result?.success?.length) {
+        isSkip === "true" && handleClose();
         if (rowNumber < rowData.length - 1) {
           setFormItems({
             headline: "",
@@ -183,7 +184,9 @@ const EditDialog = ({ rowData, rowNumber, setRowNumber, open, setOpen }) => {
           setSelectedCompanies([]);
           setRowNumber((prev) => prev + 1);
         } else {
-          toast.success("This is the last article.");
+          toast.success("This is the last article.", {
+            position: "bottom-right",
+          });
           handleClose();
         }
       } else {
@@ -198,7 +201,9 @@ const EditDialog = ({ rowData, rowNumber, setRowNumber, open, setOpen }) => {
   const [addLoading, setAddLoading] = useState(false);
   const handleAddCompany = async () => {
     if (!selectedCompanies.length) {
-      toast.warning("No company selected.");
+      toast.warning("No company selected.", {
+        position: "bottom-right",
+      });
       return;
     }
     try {
@@ -223,10 +228,14 @@ const EditDialog = ({ rowData, rowNumber, setRowNumber, open, setOpen }) => {
       if (response.status === 200) {
         setSelectedCompanies([]);
         fetchTagDetails();
-        toast.success("Company added.");
+        toast.success("Company added.", {
+          position: "bottom-right",
+        });
       }
     } catch (error) {
-      toast.error("Something went wrong");
+      toast.error("Something went wrong", {
+        position: "bottom-right",
+      });
     } finally {
       setAddLoading(false);
     }
@@ -255,13 +264,17 @@ const EditDialog = ({ rowData, rowNumber, setRowNumber, open, setOpen }) => {
 
       if (response.data?.result?.success?.length) {
         fetchTagDetails();
-        toast.success("Company removed");
+        toast.success("Company removed", {
+          position: "bottom-right",
+        });
       } else {
         const errorMSG = response.data?.result?.error[0] || {};
         toast.warning(errorMSG.error);
       }
     } catch (error) {
-      toast.error("Getting error.");
+      toast.error("Getting error.", {
+        position: "bottom-right",
+      });
     }
   };
 
@@ -323,7 +336,14 @@ const EditDialog = ({ rowData, rowNumber, setRowNumber, open, setOpen }) => {
             display={"flex"}
           >
             <Button btnText="Skip & Next" onClick={handleSkipAndNext} />
-            <Button btnText="Save & Next" onClick={handleSubmit} />
+            <Button
+              btnText="Save & Next"
+              onClick={() => handleSubmit("false")}
+            />
+            <Button
+              btnText="Save & Close"
+              onClick={() => handleSubmit("true")}
+            />
             <IconButton onClick={handleClose}>
               <CloseOutlined />
             </IconButton>
