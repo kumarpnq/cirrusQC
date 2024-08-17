@@ -173,6 +173,9 @@ const EditDialog = ({ rowData, rowNumber, setRowNumber, open, setOpen }) => {
         }
       );
       if (response.data?.result?.success?.length) {
+        toast.success("Data saved.", {
+          position: "bottom-right",
+        });
         isSkip === "true" && handleClose();
         if (rowNumber < rowData.length - 1) {
           setFormItems({
@@ -194,7 +197,9 @@ const EditDialog = ({ rowData, rowNumber, setRowNumber, open, setOpen }) => {
         toast.warning(errorMSG.warning);
       }
     } catch (error) {
-      console.log(error.message);
+      toast.error("Something went wrong.", {
+        position: "bottom-right",
+      });
     }
   };
 

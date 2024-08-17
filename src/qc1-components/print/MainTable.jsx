@@ -26,7 +26,7 @@ import {
 import axios from "axios";
 import { useState } from "react";
 import { url } from "../../constants/baseUrl";
-import ArticleView from "./ArticleView";
+import ArticleView from "./edit-dialog/ArticleView";
 
 const iconCellStyle = {
   display: "flex",
