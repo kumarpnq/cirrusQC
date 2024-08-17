@@ -9,6 +9,7 @@ import AccordionSummary from "@mui/material/AccordionSummary";
 import AccordionDetails from "@mui/material/AccordionDetails";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import {
+  GridPagination,
   GridToolbarContainer,
   GridToolbarFilterButton,
   GridToolbarQuickFilter,
@@ -557,7 +558,10 @@ const Print = () => {
       <GridToolbarContainer
         sx={{ display: "flex", justifyContent: "space-between" }}
       >
-        <GridToolbarFilterButton />
+        <Box sx={{ display: "flex" }}>
+          <GridToolbarFilterButton />
+          <GridPagination />
+        </Box>
         <GridToolbarQuickFilter />
       </GridToolbarContainer>
     );

@@ -19,6 +19,7 @@ import {
 } from "@mui/material";
 import {
   DataGrid,
+  GridPagination,
   GridToolbarContainer,
   GridToolbarFilterButton,
   GridToolbarQuickFilter,
@@ -42,7 +43,10 @@ function CustomToolbar() {
       sx={{ display: "flex", justifyContent: "space-between" }}
     >
       {/* <GridToolbarColumnsButton /> */}
-      <GridToolbarFilterButton />
+      <Box sx={{ display: "flex" }}>
+        <GridToolbarFilterButton />
+        <GridPagination />
+      </Box>
       {/* <GridToolbarDensitySelector /> */}
       <GridToolbarQuickFilter />
       {/* Export button is not included */}
@@ -296,6 +300,7 @@ const MainTable = ({
           components={{ Toolbar: CustomToolbar }}
           getRowHeight={() => "auto"}
           hideFooterSelectedRowCount
+          hideFooterPagination
           getRowClassName={getRowClassName}
         />
       </Box>

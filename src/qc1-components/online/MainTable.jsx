@@ -356,6 +356,7 @@ const MainTable = ({
             showQuickFilter: true,
           },
         }}
+        hideFooterPagination
         getRowClassName={getRowClassName}
       />
     </Box>
