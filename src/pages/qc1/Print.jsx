@@ -8,13 +8,7 @@ import Accordion from "@mui/material/Accordion";
 import AccordionSummary from "@mui/material/AccordionSummary";
 import AccordionDetails from "@mui/material/AccordionDetails";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
-import {
-  GridPagination,
-  GridToolbarContainer,
-  GridToolbarFilterButton,
-  GridToolbarQuickFilter,
-  useGridApiRef,
-} from "@mui/x-data-grid";
+import { useGridApiRef } from "@mui/x-data-grid";
 import { makeStyles } from "@mui/styles";
 
 // * icons
@@ -552,21 +546,6 @@ const Print = () => {
   // * saving the edited cells
   const [saveLoading, setSaveLoading] = useState(false);
 
-  // * custom toolbar
-  function CustomToolbar() {
-    return (
-      <GridToolbarContainer
-        sx={{ display: "flex", justifyContent: "space-between" }}
-      >
-        <Box sx={{ display: "flex" }}>
-          <GridToolbarFilterButton />
-          <GridPagination />
-        </Box>
-        <GridToolbarQuickFilter />
-      </GridToolbarContainer>
-    );
-  }
-
   //* inline editing
   const apiRef = useGridApiRef();
 
@@ -784,7 +763,6 @@ const Print = () => {
         childArticles={childArticles}
         processRowUpdate={processRowUpdate}
         gridDataLoading={gridDataLoading}
-        CustomToolbar={CustomToolbar}
         getRowClassName={getRowClassName}
       />
 

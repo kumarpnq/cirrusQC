@@ -14,7 +14,13 @@ import {
   TableRow,
   Tooltip,
 } from "@mui/material";
-import { DataGrid } from "@mui/x-data-grid";
+import {
+  DataGrid,
+  GridPagination,
+  GridToolbarContainer,
+  GridToolbarFilterButton,
+  GridToolbarQuickFilter,
+} from "@mui/x-data-grid";
 import { Link } from "react-router-dom";
 import { EditAttributesOutlined } from "@mui/icons-material";
 import AttachmentIcon from "@mui/icons-material/Attachment";
@@ -43,9 +49,23 @@ const MainTable = ({
   childArticles,
   processRowUpdate,
   gridDataLoading,
-  CustomToolbar,
   getRowClassName,
 }) => {
+  // * custom toolbar
+  function CustomToolbar() {
+    return (
+      <GridToolbarContainer
+        sx={{ display: "flex", justifyContent: "space-between" }}
+      >
+        <Box sx={{ display: "flex" }}>
+          <GridToolbarFilterButton />
+          <GridPagination />
+        </Box>
+        <GridToolbarQuickFilter />
+      </GridToolbarContainer>
+    );
+  }
+
   const columns = [
     {
       field: "Action",
