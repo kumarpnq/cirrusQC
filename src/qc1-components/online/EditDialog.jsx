@@ -90,6 +90,8 @@ const EditDialog = ({
   // * page for filter articles
   const [pageNumber, setPageNumber] = useState(null);
 
+  console.log(formItems);
+
   const handleClose = () => {
     setFormItems({
       headline: "",
@@ -122,11 +124,11 @@ const EditDialog = ({
       const headerData = headerResponse.data.article[0] || {};
       setHeaderData(headerData);
       setFormItems({
-        headline: headerData.headline,
-        summary: headerData.summary,
-        journalist: headerData.journalist,
-        page: headerData.page_number,
-        articleSummary: headerData.article_summary,
+        headline: headerData.headline || "",
+        summary: headerData.summary || "",
+        journalist: headerData.journalist || "",
+        page: headerData.page_number || "",
+        articleSummary: headerData.article_summary || "",
       });
     } catch (error) {
       // toast.error("Error While fetching data.");
