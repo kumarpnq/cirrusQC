@@ -8,12 +8,7 @@ import Accordion from "@mui/material/Accordion";
 import AccordionSummary from "@mui/material/AccordionSummary";
 import AccordionDetails from "@mui/material/AccordionDetails";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
-import {
-  GridToolbarContainer,
-  GridToolbarFilterButton,
-  GridToolbarQuickFilter,
-  useGridApiRef,
-} from "@mui/x-data-grid";
+import { useGridApiRef } from "@mui/x-data-grid";
 import { makeStyles } from "@mui/styles";
 
 // * icons
@@ -84,6 +79,7 @@ const Print = () => {
   const [graph, setGraph] = useState("");
   const [stitched, setStitched] = useState("");
   const [tv, setTv] = useState("");
+  const [isContinued, setIsContinued] = useState("");
   const [articleId, setArticleId] = useState("");
   const [systemArticleId, setSystemArticleId] = useState("");
   const [pageNumber, setPageNumber] = useState("");
@@ -189,6 +185,7 @@ const Print = () => {
         return value;
     }
   }
+
   function mapBinaryToYesNoAll(value) {
     switch (value) {
       case 1:
@@ -197,6 +194,10 @@ const Print = () => {
         return "N";
       case 2:
         return "ALL";
+      case 3:
+        return "PY";
+      case 4:
+        return "PN";
       default:
         return value;
     }
@@ -350,6 +351,13 @@ const Print = () => {
         mapYesNoAllToBinary(tv),
         params
       );
+      addPropertyIfConditionIsTrue(
+        params,
+        isContinued,
+        "is_continued",
+        mapYesNoAllToBinary(isContinued),
+        params
+      );
 
       addPropertyIfConditionIsTrue(
         params,
@@ -439,6 +447,7 @@ const Print = () => {
     selectedLanguages,
     stitched,
     tv,
+    isContinued,
     isNoCompany,
     searchKeyword,
   ]);
@@ -550,18 +559,6 @@ const Print = () => {
 
   // * saving the edited cells
   const [saveLoading, setSaveLoading] = useState(false);
-
-  // * custom toolbar
-  function CustomToolbar() {
-    return (
-      <GridToolbarContainer
-        sx={{ display: "flex", justifyContent: "space-between" }}
-      >
-        <GridToolbarFilterButton />
-        <GridToolbarQuickFilter />
-      </GridToolbarContainer>
-    );
-  }
 
   //* inline editing
   const apiRef = useGridApiRef();
@@ -678,6 +675,12 @@ const Print = () => {
     selectedItems.length > 0 ||
     Object.keys(unsavedChangesRef.current.unsavedRows).length > 0;
 
+  // * data for edit dialog
+  const [sortedFilteredRows, setSortedFilteredRows] = useState(gridData);
+  const dataForEditDialog = sortedFilteredRows.length
+    ? sortedFilteredRows
+    : gridData;
+
   return (
     <Box sx={{ px: 1.5 }}>
       <Accordion>
@@ -732,6 +735,8 @@ const Print = () => {
             setStitched={setStitched}
             tv={tv}
             setTv={setTv}
+            isContinued={isContinued}
+            setIsContinued={setIsContinued}
             isNoCompany={isNoCompany}
             setIsNoCompany={setIsNoCompany}
             articleId={articleId}
@@ -780,8 +785,8 @@ const Print = () => {
         childArticles={childArticles}
         processRowUpdate={processRowUpdate}
         gridDataLoading={gridDataLoading}
-        CustomToolbar={CustomToolbar}
         getRowClassName={getRowClassName}
+        setSortedFilteredRows={setSortedFilteredRows}
       />
 
       <EditDialog

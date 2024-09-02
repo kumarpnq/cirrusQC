@@ -19,6 +19,7 @@ import {
 } from "@mui/material";
 import {
   DataGrid,
+  GridPagination,
   GridToolbarContainer,
   GridToolbarFilterButton,
   GridToolbarQuickFilter,
@@ -26,7 +27,7 @@ import {
 import axios from "axios";
 import { useState } from "react";
 import { url } from "../../constants/baseUrl";
-import ArticleView from "./ArticleView";
+import ArticleView from "./edit-dialog/ArticleView";
 
 const iconCellStyle = {
   display: "flex",
@@ -42,7 +43,10 @@ function CustomToolbar() {
       sx={{ display: "flex", justifyContent: "space-between" }}
     >
       {/* <GridToolbarColumnsButton /> */}
-      <GridToolbarFilterButton />
+      <Box sx={{ display: "flex" }}>
+        <GridToolbarFilterButton />
+        <GridPagination />
+      </Box>
       {/* <GridToolbarDensitySelector /> */}
       <GridToolbarQuickFilter />
       {/* Export button is not included */}
@@ -58,6 +62,8 @@ const MainTable = ({
   handleRowClick,
   getRowClassName,
   processRowUpdate,
+  sortedFilteredRows,
+  setSortedFilteredRows,
 }) => {
   const userToken = localStorage.getItem("user");
   const headers = {
@@ -253,6 +259,133 @@ const MainTable = ({
     similar_articles: item.similar_articles,
     language: item.language,
   }));
+
+  const applyFilteringToRows = (rows, filterModel) => {
+    if (
+      filterModel.items.length === 0 &&
+      (!filterModel.quickFilterValues ||
+        filterModel.quickFilterValues.length === 0)
+    ) {
+      return rows;
+    }
+
+    return rows.filter((row) => {
+      const matchesItems = filterModel.items.every((filterItem) => {
+        const { field, operator, value } = filterItem;
+        const cellValue = row[field];
+
+        if (cellValue === undefined || cellValue === null) return false;
+
+        switch (operator) {
+          case "contains":
+            return cellValue
+              .toString()
+              .toLowerCase()
+              .includes(value.toString().toLowerCase());
+          case "equals":
+            return (
+              cellValue.toString().toLowerCase() ===
+              value.toString().toLowerCase()
+            );
+          case "startsWith":
+            return cellValue
+              .toString()
+              .toLowerCase()
+              .startsWith(value.toString().toLowerCase());
+          case "endsWith":
+            return cellValue
+              .toString()
+              .toLowerCase()
+              .endsWith(value.toString().toLowerCase());
+          case "greaterThan":
+            return cellValue > value;
+          case "lessThan":
+            return cellValue < value;
+          case "greaterThanOrEqual":
+            return cellValue >= value;
+          case "lessThanOrEqual":
+            return cellValue <= value;
+          default:
+            return true;
+        }
+      });
+
+      const matchesQuickFilter =
+        filterModel.quickFilterValues.length > 0
+          ? filterModel.quickFilterValues.every((quickValue) => {
+              return Object.values(row).some((cellValue) =>
+                cellValue
+                  ?.toString()
+                  .toLowerCase()
+                  .includes(quickValue.toLowerCase())
+              );
+            })
+          : true;
+
+      // Combine logic for both items and quick filters
+      if (filterModel.quickFilterLogicOperator === "and") {
+        return matchesItems && matchesQuickFilter;
+      } else if (filterModel.quickFilterLogicOperator === "or") {
+        return matchesItems || matchesQuickFilter;
+      }
+
+      return matchesItems;
+    });
+  };
+
+  const applySortingToRows = (rows, sortModel) => {
+    if (sortModel.length === 0) {
+      return rows; // No sorting applied, return original rows
+    }
+
+    const sortedRows = [...rows];
+    sortedRows.sort((a, b) => {
+      for (const sortItem of sortModel) {
+        const { field, sort } = sortItem;
+        const valueA = a[field];
+        const valueB = b[field];
+
+        if (valueA < valueB) {
+          return sort === "asc" ? -1 : 1;
+        }
+        if (valueA > valueB) {
+          return sort === "asc" ? 1 : -1;
+        }
+      }
+      return 0;
+    });
+
+    return sortedRows;
+  };
+
+  const handleSearchModelChange = (searchModel) => {
+    // Assuming the searchModel has a 'value' key that contains the search query
+    const searchQuery = searchModel.value?.toLowerCase();
+
+    if (searchQuery) {
+      const filteredRows = rows.filter((row) =>
+        Object.values(row).some((field) =>
+          field.toString().toLowerCase().includes(searchQuery)
+        )
+      );
+      setSortedFilteredRows(filteredRows);
+    } else {
+      setSortedFilteredRows(rows); // Reset to the original rows if the search query is empty
+    }
+  };
+
+  const handleSortModelChange = (sortModel) => {
+    const sortedRows = applySortingToRows(rows, sortModel);
+
+    setSortedFilteredRows(sortedRows);
+  };
+
+  const handleFilterModelChange = (filterModel) => {
+    const filteredRows = applyFilteringToRows(rows, filterModel);
+
+    setSortedFilteredRows(filteredRows);
+  };
+
   return (
     <>
       <Box sx={{ height: 600, width: "100%", mt: 1 }}>
@@ -287,6 +420,9 @@ const MainTable = ({
             setSelectionModal(ids);
             handleSelectionChange(ids);
           }}
+          onSortModelChange={handleSortModelChange}
+          onSearchModelChange={handleSearchModelChange}
+          onFilterModelChange={handleFilterModelChange}
           processRowUpdate={processRowUpdate}
           disableDensitySelector
           disableColumnSelector
@@ -296,6 +432,7 @@ const MainTable = ({
           components={{ Toolbar: CustomToolbar }}
           getRowHeight={() => "auto"}
           hideFooterSelectedRowCount
+          hideFooterPagination
           getRowClassName={getRowClassName}
         />
       </Box>

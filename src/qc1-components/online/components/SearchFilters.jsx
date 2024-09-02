@@ -15,20 +15,25 @@ import Publication from "../../../print-components/dropdowns/Publication";
 import PubType from "../../../print-components/dropdowns/PubType";
 import Qc1All from "../../../components/research-dropdowns/Qc1All";
 import Qc1By from "../../../components/research-dropdowns/Qc1By";
-import Cities from "../../../print-components/dropdowns/Cities";
 import Languages from "../../../components/research-dropdowns/Languages";
 import YesOrNo from "../../../@core/YesOrNo";
 import CustomTextField from "../../../@core/CutsomTextField";
 import Button from "../../../components/custom/Button";
 import SearchableCategory from "../../../components/research-dropdowns/table-dropdowns/SearchableCategory";
 import CustomMultiSelect from "../../../@core/CustomMultiSelect";
+import { formattedDate, formattedNextDay } from "../../../constants/dates";
+import useFetchData from "../../../hooks/useFetchData";
+import { url } from "../../../constants/baseUrl";
+import { useEffect, useState } from "react";
+import axios from "axios";
+import { qc1ArrayWithPartially } from "../../../constants/dataArray";
 
 const SearchFilters = ({
   classes,
   selectedClient,
   setSelectedClient,
   setSelectedCompanies,
-  companyData,
+  // companyData,
   selectedCompanies,
   withCategory,
   setWithCategory,
@@ -50,7 +55,7 @@ const SearchFilters = ({
   setPubType,
   qc1Done,
   setQc1Done,
-  qc1Array,
+  // qc1Array,
   qcUserData,
   qc1By,
   setQc1By,
@@ -66,6 +71,8 @@ const SearchFilters = ({
   setStitched,
   tv,
   setTv,
+  isContinued,
+  setIsContinued,
   isNoCompany,
   setIsNoCompany,
   articleId,
@@ -79,6 +86,65 @@ const SearchFilters = ({
   gridDataLoading,
   fetchListArticleByQC1Print,
 }) => {
+  const handleClear = () => {
+    setSelectedClient("");
+    setSelectedCompanies([]);
+    setCategory("");
+    setWithCategory("");
+    setFromDate(formattedDate.split(" ")[0]);
+    setToDate(formattedNextDay.split(" ")[0]);
+    setSelectedCity([]);
+    setSelectedLanguages([]);
+    setUploadFromDate(null);
+    setUploadToDate(null);
+    setPublicationGroup("");
+    setPublication("");
+    setPubType("");
+    setQc1Done("0");
+    setQc1By("");
+    setPhoto("");
+    setGraph("");
+    setStitched("");
+    setTv("");
+    setIsNoCompany(false);
+    setArticleId("");
+    setSystemArticleId("");
+    setPageNumber("");
+    setSearchKeyword("");
+  };
+
+  const [companyData, setCompanyData] = useState([]);
+
+  // * city data fetch
+  const { data } = useFetchData(`${url}citieslist`);
+  const cityData = data?.data?.cities || [];
+
+  useEffect(() => {
+    const fetchCompanies = async () => {
+      try {
+        const userToken = localStorage.getItem("user");
+
+        // Retrieve the token from localStorage
+
+        const endpoint = selectedClient
+          ? `${url}companylist/${selectedClient}`
+          : `${url}companylist/`;
+
+        const response = await axios.get(endpoint, {
+          headers: {
+            Authorization: `Bearer ${userToken}`, // Include the token in the headers
+          },
+        });
+
+        setCompanyData(response.data.companies);
+      } catch (error) {
+        console.error("Error fetching companies:", error.message);
+      }
+    };
+
+    fetchCompanies();
+  }, [selectedClient, url]);
+
   return (
     <Box
       sx={{
@@ -108,7 +174,7 @@ const SearchFilters = ({
             dropdownWidth={250}
             keyId="companyid"
             keyName="companyname"
-            options={companyData}
+            options={companyData || []}
             selectedItems={selectedCompanies}
             setSelectedItems={setSelectedCompanies}
             title="companies"
@@ -165,11 +231,18 @@ const SearchFilters = ({
       </Typography>
 
       <Typography component={"div"} className={classes.componentHeight}>
-        <Cities
-          classes={classes}
-          city={selectedCity}
-          setCity={setSelectedCity}
-        />
+        <div className="mt-3 w-[200px]">
+          <CustomMultiSelect
+            dropdownToggleWidth={200}
+            dropdownWidth={250}
+            keyId="cityid"
+            keyName="cityname"
+            options={cityData}
+            selectedItems={selectedCity}
+            setSelectedItems={setSelectedCity}
+            title="Cities"
+          />
+        </div>
       </Typography>
       <Typography component={"div"} className={classes.componentHeight}>
         <Languages
@@ -235,7 +308,7 @@ const SearchFilters = ({
           qc1done={qc1Done}
           setQc1done={setQc1Done}
           classes={classes}
-          qc1Array={qc1Array}
+          qc1Array={qc1ArrayWithPartially}
         />
       </Typography>
       <Typography component={"div"} className={classes.componentHeight}>
@@ -286,6 +359,16 @@ const SearchFilters = ({
           placeholder="TV"
           value={tv}
           setValue={setTv}
+          width={100}
+        />
+      </Typography>
+      <Typography component={"div"} className={classes.componentHeight}>
+        <YesOrNo
+          classes={classes}
+          mapValue={["Yes", "No", "All"]}
+          placeholder="Continue"
+          value={isContinued}
+          setValue={setIsContinued}
           width={100}
         />
       </Typography>
@@ -347,12 +430,17 @@ const SearchFilters = ({
         />
       </Typography>
 
-      <Typography component={"div"} className={classes.componentHeight}>
+      <Typography
+        component={"div"}
+        className={classes.componentHeight}
+        sx={{ display: "flex", gap: 1 }}
+      >
         <Button
           btnText={gridDataLoading ? "Searching" : "Search"}
           onClick={fetchListArticleByQC1Print}
           isLoading={gridDataLoading}
         />
+        <Button btnText="Clear" onClick={handleClear} />
       </Typography>
     </Box>
   );
@@ -401,6 +489,8 @@ SearchFilters.propTypes = {
   setStitched: PropTypes.func.isRequired,
   tv: PropTypes.string.isRequired,
   setTv: PropTypes.func.isRequired,
+  isContinued: PropTypes.string.isRequired,
+  setIsContinued: PropTypes.func.isRequired,
   isNoCompany: PropTypes.bool.isRequired,
   setIsNoCompany: PropTypes.func.isRequired,
   articleId: PropTypes.number.isRequired,

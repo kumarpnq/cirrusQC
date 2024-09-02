@@ -24,6 +24,7 @@ import { url } from "../../constants/baseUrl";
 import { toast } from "react-toastify";
 import Button from "../../components/custom/Button";
 import ScrollNavigator from "./components/ScrollNavigator";
+import { arrayToString } from "../../utils/arrayToString";
 
 const style = {
   position: "absolute",
@@ -122,13 +123,27 @@ const EditDialog = ({
       const headerData = headerResponse.data.article[0] || {};
       setHeaderData(headerData);
       setFormItems({
-        headline: headerData.headline,
-        summary: headerData.summary,
-        journalist: headerData.journalist,
-        page: headerData.page_number,
-        articleSummary: headerData.article_summary,
+        headline: headerData.headline || "",
+        summary: headerData.summary || "",
+        journalist: headerData.journalist || "",
+        page: headerData.page_number || "",
+        articleSummary: headerData.article_summary || "",
       });
+    } catch (error) {
+      // toast.error("Error While fetching data.");
+      console.log(error.message);
+    } finally {
+      setArticleTagDetailsLoading(false);
+    }
+  };
 
+  const fetchTagDetails = async () => {
+    try {
+      setArticleTagDetailsLoading(true);
+      const userToken = localStorage.getItem("user");
+      const headers = {
+        Authorization: `Bearer ${userToken}`,
+      };
       const tagDetailsResponse = await axios.get(
         `${url}qc1printtagdetails/?article_id=${articleId}`,
         { headers }
@@ -136,7 +151,6 @@ const EditDialog = ({
 
       setArticleTagDetails(tagDetailsResponse.data.article_details || []);
     } catch (error) {
-      // toast.error("Error While fetching data.");
       console.log(error.message);
     } finally {
       setArticleTagDetailsLoading(false);
@@ -146,6 +160,7 @@ const EditDialog = ({
   useEffect(() => {
     if (open) {
       fetchHeaderAndTagDetails();
+      fetchTagDetails();
     }
   }, [articleId, open]);
 
@@ -197,7 +212,9 @@ const EditDialog = ({
             page: "",
             articleSummary: "",
           });
-          toast.success("Data updated.");
+          toast.success("Data updated.", {
+            position: "bottom-right",
+          });
           if (filteredItems.length > 0) {
             const currentIndex = selectedItems.findIndex(
               (i) => i.id === articleId
@@ -209,12 +226,16 @@ const EditDialog = ({
             setSelectionModal([]);
           }
         } else {
-          toast.success("Data updated.");
+          toast.success("Data updated.", {
+            position: "bottom-right",
+          });
           setOpen(false);
         }
       }
     } catch (error) {
-      toast.error("Something went wrong.");
+      toast.error("Something went wrong.", {
+        position: "bottom-right",
+      });
     } finally {
       setUpdateHeaderLoading(false);
     }
@@ -235,7 +256,21 @@ const EditDialog = ({
 
   const handleAddCompany = async () => {
     if (!selectedCompanies.length) {
-      toast.warning("No company selected.");
+      toast.warning("No company selected.", {
+        position: "bottom-right",
+      });
+      return;
+    }
+    const existingCompany = selectedCompanies.find((selectedCompany) =>
+      articleTagDetails.some(
+        (tagDetail) => tagDetail.company_id === selectedCompany.value
+      )
+    );
+
+    if (existingCompany) {
+      toast.warning(`Company "${existingCompany.label}" is already present.`, {
+        position: "bottom-right",
+      });
       return;
     }
     try {
@@ -257,13 +292,19 @@ const EditDialog = ({
       );
       if (response.data.result?.success?.length) {
         setSelectedCompanies([]);
-        fetchHeaderAndTagDetails();
-        toast.success("Company added.");
+        fetchTagDetails();
+        toast.success("Company added.", {
+          position: "bottom-right",
+        });
       } else {
-        toast.warning("Something wrong try again.");
+        toast.warning("Something wrong try again.", {
+          position: "bottom-right",
+        });
       }
     } catch (error) {
-      toast.error("Something went wrong.");
+      toast.error("Something went wrong.", {
+        position: "bottom-right",
+      });
     } finally {
       setAddCompanyLoading(false);
     }
@@ -288,13 +329,19 @@ const EditDialog = ({
         { headers }
       );
       if (response.data.result.success.length) {
-        toast.success("Company removed");
-        fetchHeaderAndTagDetails();
+        toast.success("Company removed", {
+          position: "bottom-right",
+        });
+        fetchTagDetails();
       } else {
-        toast.warning("Something wrong try again.");
+        toast.warning("Something wrong try again.", {
+          position: "bottom-right",
+        });
       }
     } catch (error) {
-      toast.error("Something went wrong.");
+      toast.error("Something went wrong.", {
+        position: "bottom-right",
+      });
     }
   };
 
@@ -352,13 +399,50 @@ const EditDialog = ({
     { field: "keyword", headerName: "Keyword", width: 300 },
   ];
 
-  const rows = articleTagDetails.map((item, index) => ({
-    id: index,
+  const rows = articleTagDetails.map((item) => ({
+    id: item.company_id,
     companyId: item.company_id,
     CompanyName: item.company_name,
     keyword: item.keyword,
   }));
 
+  const [selectionModel, setSelectionModel] = useState([]);
+  const [removeMultipleLoading, setRemoveMultipleLoading] = useState(false);
+
+  // Handle row selection change
+  const handleRowSelection = (newSelectionModel) => {
+    setSelectionModel(newSelectionModel);
+  };
+
+  // handle delete multiple companies
+  const removeSelectedCompanies = async () => {
+    const userToken = localStorage.getItem("user");
+    const url3 = `${url}removecompanyprint`;
+
+    try {
+      setRemoveMultipleLoading(true);
+      const params = {
+        article_ids: articleId,
+        company_ids: arrayToString(selectionModel),
+        QCTYPE: "QC1",
+      };
+      const response = await axios.delete(url3, {
+        headers: {
+          Authorization: `Bearer ${userToken}`,
+        },
+        params,
+      });
+      if (response.data.result.status) {
+        toast.success("Companies removed successfully.");
+        setSelectionModal([]);
+        fetchTagDetails();
+      }
+    } catch (error) {
+      toast.error("Error removing companies:", error.message);
+    } finally {
+      setRemoveMultipleLoading(false);
+    }
+  };
   // * save button text
   const buttonText = isMultiple ? "Save & Next" : "save";
 
@@ -489,24 +573,37 @@ const EditDialog = ({
                       selectedCompany={selectedCompanies}
                       isMultiple
                     />
-                    <span className="pb-1">
+                    <div className="flex gap-1 pb-1">
                       <Button
                         onClick={handleAddCompany}
                         isLoading={addCompanyLoading}
                         btnText={addCompanyLoading ? "adding" : "Add"}
                       />
-                    </span>
+                      {!!selectionModel.length && (
+                        <Button
+                          btnText={
+                            removeMultipleLoading ? "Removing" : "Remove"
+                          }
+                          onClick={removeSelectedCompanies}
+                          isLoading={removeMultipleLoading}
+                          isDanger
+                        />
+                      )}
+                    </div>
                   </Box>
                   <Box height={500} width={"100%"}>
                     <DataGrid
                       rows={rows}
                       columns={columns}
                       density="compact"
+                      checkboxSelection
+                      onRowSelectionModelChange={handleRowSelection}
                       loading={articleTagDetailsLoading && <CircularProgress />}
                       pageSize={5}
                       pageSizeOptions={[10, 100, 200, 1000]}
                       columnBufferPx={1000}
                       hideFooterSelectedRowCount
+                      disableRowSelectionOnClick
                     />
                   </Box>
                 </CardContent>

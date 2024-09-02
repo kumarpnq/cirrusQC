@@ -35,10 +35,10 @@ import {
   ControlCameraOutlined,
 } from "@mui/icons-material";
 import CustomAccordionDetails from "../../qc1-components/print/edit-dialog/SearchFilters";
-// import DeleteConfirmationDialog from "../../@core/DeleteDialog";
 import GroupUnGroupModal from "../../qc1-components/print/Group&Ungroup";
 import MainTable from "../../qc1-components/print/MainTable";
 import AddCompaniesModal from "../../qc1-components/components/AddCompanyModal";
+import { differenceInHours } from "date-fns";
 
 const useStyle = makeStyles(() => ({
   dropDowns: {
@@ -125,10 +125,21 @@ const Online = () => {
   const [selectedItems, setSelectedItems] = useState([]);
   const [tableDataLoading, setTableDataLoading] = useState(false);
   const fetchTableData = useCallback(async () => {
-    if (!selectedClient || !selectedDateType) {
+    if (!selectedDateType) {
       toast.warning("Please select a client or date type.");
       return;
     }
+    const dateDifferenceInHours = differenceInHours(
+      new Date(dateNow),
+      new Date(fromDate)
+    );
+    if (!selectedClient && dateDifferenceInHours > 24) {
+      toast.warning(
+        "Date range should not exceed 24 hours if no client is selected."
+      );
+      return;
+    }
+
     try {
       setTableDataLoading(true);
 
@@ -396,6 +407,14 @@ const Online = () => {
   // * add companies
   const [openAddCompanies, setOpenAddCompanies] = useState(false);
 
+  // * data for edit dialog
+  const [sortedFilteredRows, setSortedFilteredRows] = useState([]);
+  const dataForEditDialog = sortedFilteredRows.length
+    ? sortedFilteredRows
+    : tableData;
+
+  const isFiltered = sortedFilteredRows.length && true;
+
   return (
     <Box mx={2}>
       <Accordion>
@@ -506,13 +525,16 @@ const Online = () => {
         handleRowClick={handleRowClick}
         getRowClassName={getRowClassName}
         processRowUpdate={processRowUpdate}
+        sortedFilteredRows={sortedFilteredRows}
+        setSortedFilteredRows={setSortedFilteredRows}
       />
       <EditDialog
         open={open}
         setOpen={setOpen}
-        rowData={tableData}
+        rowData={dataForEditDialog}
         rowNumber={articleNumber}
         setRowNumber={setArticleNumber}
+        isFiltered={isFiltered}
       />
 
       <GroupUnGroupModal

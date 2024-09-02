@@ -25,6 +25,7 @@ import axios from "axios";
 import { url } from "../../../constants/baseUrl";
 import { toast } from "react-toastify";
 import Button from "../../../components/custom/Button";
+import { arrayToString } from "../../../utils/arrayToString";
 
 const style = {
   position: "absolute",
@@ -46,8 +47,16 @@ const titleStyle = {
   justifyContent: "space-between",
 };
 
-const EditDialog = ({ rowData, rowNumber, setRowNumber, open, setOpen }) => {
+const EditDialog = ({
+  rowData,
+  rowNumber,
+  setRowNumber,
+  open,
+  setOpen,
+  isFiltered,
+}) => {
   const [row, setRow] = useState(null);
+  const articleIds = rowData.map((i) => i.id);
 
   // * api material
   const userToken = localStorage.getItem("user");
@@ -70,13 +79,18 @@ const EditDialog = ({ rowData, rowNumber, setRowNumber, open, setOpen }) => {
 
   useLayoutEffect(() => {
     if (open) {
-      const data = rowData[rowNumber];
+      let data;
+      if (isFiltered) {
+        data = rowData.find((item) => item.id === rowNumber);
+      } else {
+        data = rowData[rowNumber];
+      }
       setRow(data);
     }
   }, [rowData, rowNumber, setRow, open]);
 
-  const socialFeedId = row?.social_feed_id;
-  const iframeURI = row?.link;
+  const socialFeedId = isFiltered ? row?.socialFeedId : row?.social_feed_id;
+  const iframeURI = isFiltered ? row?.url : row?.link;
   const [formItems, setFormItems] = useState({
     headline: "",
     summary: "",
@@ -109,21 +123,38 @@ const EditDialog = ({ rowData, rowNumber, setRowNumber, open, setOpen }) => {
         journalist: headerData.author_name,
         tag: headerData.tags,
       });
-      const tagDetailsResponse = await axios.get(
-        `${url}qc1onlinetagdetails/?socialfeed_id=${socialFeedId}`,
-        { headers }
-      );
-
-      setSocialFeedTagDetails(tagDetailsResponse.data.socialfeed_details || []);
     } catch (error) {
       console.log(error.message);
     } finally {
       setSocialFeedTagDetailsLoading(false);
     }
   };
+
+  const fetchTagDetails = async () => {
+    try {
+      setSocialFeedTagDetailsLoading(true);
+      const userToken = localStorage.getItem("user");
+      const headers = {
+        Authorization: `Bearer ${userToken}`,
+      };
+      const tagDetailsResponse = await axios.get(
+        `${url}qc1onlinetagdetails/?socialfeed_id=${socialFeedId}`,
+        { headers }
+      );
+      const tagDetails = tagDetailsResponse.data.socialfeed_details || [];
+
+      setSocialFeedTagDetails(Array.isArray(tagDetails) ? tagDetails : []);
+    } catch (error) {
+      console.log(error.message);
+    } finally {
+      setSocialFeedTagDetailsLoading(false);
+    }
+  };
+
   useEffect(() => {
     if (open) {
       fetchHeaderAndTagDetails();
+      fetchTagDetails();
     }
   }, [socialFeedId, open]);
 
@@ -135,7 +166,7 @@ const EditDialog = ({ rowData, rowNumber, setRowNumber, open, setOpen }) => {
     });
   };
 
-  const handleSubmit = async () => {
+  const handleSubmit = async (isSkip) => {
     try {
       const requestData = {
         data: [
@@ -158,6 +189,10 @@ const EditDialog = ({ rowData, rowNumber, setRowNumber, open, setOpen }) => {
         }
       );
       if (response.data?.result?.success?.length) {
+        toast.success("Data saved.", {
+          position: "bottom-right",
+        });
+        isSkip === "true" && handleClose();
         if (rowNumber < rowData.length - 1) {
           setFormItems({
             headline: "",
@@ -168,7 +203,9 @@ const EditDialog = ({ rowData, rowNumber, setRowNumber, open, setOpen }) => {
           setSelectedCompanies([]);
           setRowNumber((prev) => prev + 1);
         } else {
-          toast.success("This is the last article.");
+          toast.success("This is the last article.", {
+            position: "bottom-right",
+          });
           handleClose();
         }
       } else {
@@ -176,14 +213,18 @@ const EditDialog = ({ rowData, rowNumber, setRowNumber, open, setOpen }) => {
         toast.warning(errorMSG.warning);
       }
     } catch (error) {
-      console.log(error.message);
+      toast.error("Something went wrong.", {
+        position: "bottom-right",
+      });
     }
   };
 
   const [addLoading, setAddLoading] = useState(false);
   const handleAddCompany = async () => {
     if (!selectedCompanies.length) {
-      toast.warning("No company selected.");
+      toast.warning("No company selected.", {
+        position: "bottom-right",
+      });
       return;
     }
     try {
@@ -207,11 +248,15 @@ const EditDialog = ({ rowData, rowNumber, setRowNumber, open, setOpen }) => {
       );
       if (response.status === 200) {
         setSelectedCompanies([]);
-        fetchHeaderAndTagDetails();
-        toast.success("Company added.");
+        fetchTagDetails();
+        toast.success("Company added.", {
+          position: "bottom-right",
+        });
       }
     } catch (error) {
-      toast.error("Something went wrong");
+      toast.error("Something went wrong", {
+        position: "bottom-right",
+      });
     } finally {
       setAddLoading(false);
     }
@@ -239,14 +284,18 @@ const EditDialog = ({ rowData, rowNumber, setRowNumber, open, setOpen }) => {
       );
 
       if (response.data?.result?.success?.length) {
-        fetchHeaderAndTagDetails();
-        toast.success("Company removed");
+        await fetchTagDetails();
+        toast.success("Company removed", {
+          position: "bottom-right",
+        });
       } else {
         const errorMSG = response.data?.result?.error[0] || {};
         toast.warning(errorMSG.error);
       }
     } catch (error) {
-      toast.error("Getting error.");
+      toast.error("Getting error.", {
+        position: "bottom-right",
+      });
     }
   };
 
@@ -268,15 +317,65 @@ const EditDialog = ({ rowData, rowNumber, setRowNumber, open, setOpen }) => {
     { field: "Keyword", headerName: "Keyword", width: 300 },
   ];
 
-  const rows = socialFeedTagDetails.map((detail, index) => ({
-    id: index,
+  const rows = (socialFeedTagDetails || []).map((detail) => ({
+    id: detail.company_id,
     CompanyName: detail.company_name,
     Keyword: detail.keyword,
     companyId: detail.company_id,
   }));
 
+  const [selectionModel, setSelectionModel] = useState([]);
+  const [removeMultipleLoading, setRemoveMultipleLoading] = useState(false);
+
+  // Handle row selection change
+  const handleRowSelection = (newSelectionModel) => {
+    setSelectionModel(newSelectionModel);
+  };
+
+  // handle delete multiple companies
+  const removeSelectedCompanies = async () => {
+    const userToken = localStorage.getItem("user");
+    const url3 = `${url}removecompanyonline`;
+
+    try {
+      setRemoveMultipleLoading(true);
+      const params = {
+        socialfeed_ids: arrayToString(row.social_feed_id),
+        company_ids: arrayToString(selectionModel),
+        QCTYPE: "QC1",
+      };
+      const response = await axios.delete(url3, {
+        headers: {
+          Authorization: `Bearer ${userToken}`,
+        },
+        params,
+      });
+      console.log("Companies removed successfully:", response.data);
+    } catch (error) {
+      toast.error("Error removing companies:", error.message);
+    } finally {
+      setRemoveMultipleLoading(false);
+    }
+  };
+
   const handleSkipAndNext = () => {
-    setRowNumber((prev) => prev + 1);
+    if (!isFiltered) {
+      setRowNumber((prev) => prev + 1);
+    } else {
+      setRowNumber((prevRowNumber) => {
+        const currentArticleId = articleIds[prevRowNumber];
+        const currentIndex = articleIds.indexOf(currentArticleId);
+        const nextIndex = currentIndex + 1;
+
+        if (nextIndex < articleIds.length) {
+          const nextArticleId = articleIds[nextIndex];
+          setRowNumber(nextIndex);
+          return nextIndex;
+        } else {
+          return prevRowNumber;
+        }
+      });
+    }
   };
 
   // * auto height for summary
@@ -308,7 +407,14 @@ const EditDialog = ({ rowData, rowNumber, setRowNumber, open, setOpen }) => {
             display={"flex"}
           >
             <Button btnText="Skip & Next" onClick={handleSkipAndNext} />
-            <Button btnText="Save & Next" onClick={handleSubmit} />
+            <Button
+              btnText="Save & Next"
+              onClick={() => handleSubmit("false")}
+            />
+            <Button
+              btnText="Save & Close"
+              onClick={() => handleSubmit("true")}
+            />
             <IconButton onClick={handleClose}>
               <CloseOutlined />
             </IconButton>
@@ -399,19 +505,29 @@ const EditDialog = ({ rowData, rowNumber, setRowNumber, open, setOpen }) => {
                     selectedCompany={selectedCompanies}
                     isMultiple
                   />
-                  <span className="pb-1">
+                  <div className="flex gap-1 pb-1">
                     <Button
                       onClick={handleAddCompany}
                       btnText={addLoading ? "adding" : "Add"}
                       isLoading={addLoading}
                     />
-                  </span>
+                    {!!selectionModel.length && (
+                      <Button
+                        btnText={removeMultipleLoading ? "Removing" : "Remove"}
+                        onClick={removeSelectedCompanies}
+                        isLoading={removeMultipleLoading}
+                        isDanger
+                      />
+                    )}
+                  </div>
                 </Box>
                 <Box height={500} width={"100%"}>
                   <DataGrid
                     rows={rows}
                     columns={columns}
                     density="compact"
+                    checkboxSelection
+                    onRowSelectionModelChange={handleRowSelection}
                     loading={
                       socialFeedTagDetailsLoading && <CircularProgress />
                     }
@@ -419,6 +535,7 @@ const EditDialog = ({ rowData, rowNumber, setRowNumber, open, setOpen }) => {
                     pageSizeOptions={[10, 100, 200, 1000]}
                     columnBufferPx={1000}
                     hideFooterSelectedRowCount
+                    disableRowSelectionOnClick
                   />
                 </Box>
               </CardContent>
@@ -472,6 +589,7 @@ EditDialog.propTypes = {
   setRowNumber: PropTypes.func.isRequired,
   open: PropTypes.bool.isRequired,
   setOpen: PropTypes.func.isRequired,
+  isFiltered: PropTypes.bool,
 };
 
 export default EditDialog;

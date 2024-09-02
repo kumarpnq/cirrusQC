@@ -14,7 +14,13 @@ import {
   TableRow,
   Tooltip,
 } from "@mui/material";
-import { DataGrid } from "@mui/x-data-grid";
+import {
+  DataGrid,
+  GridPagination,
+  GridToolbarContainer,
+  GridToolbarFilterButton,
+  GridToolbarQuickFilter,
+} from "@mui/x-data-grid";
 import { Link } from "react-router-dom";
 import { EditAttributesOutlined } from "@mui/icons-material";
 import AttachmentIcon from "@mui/icons-material/Attachment";
@@ -43,9 +49,24 @@ const MainTable = ({
   childArticles,
   processRowUpdate,
   gridDataLoading,
-  CustomToolbar,
   getRowClassName,
+  setSortedFilteredRows,
 }) => {
+  // * custom toolbar
+  function CustomToolbar() {
+    return (
+      <GridToolbarContainer
+        sx={{ display: "flex", justifyContent: "space-between" }}
+      >
+        <Box sx={{ display: "flex" }}>
+          <GridToolbarFilterButton />
+          <GridPagination />
+        </Box>
+        <GridToolbarQuickFilter />
+      </GridToolbarContainer>
+    );
+  }
+
   const columns = [
     {
       field: "Action",
@@ -266,6 +287,7 @@ const MainTable = ({
       headerName: "Summary",
       width: 450,
       editable: true,
+
       renderCell: (params) => (
         <div style={{ whiteSpace: "pre-wrap", wordWrap: "break-word" }}>
           {params.value}
@@ -296,6 +318,12 @@ const MainTable = ({
       width: 150,
       renderCell: (params) => <a href="#">{params.value}</a>,
     },
+    {
+      field: "tagTime",
+      headerName: "",
+      width: 0,
+      renderCell: (params) => <p>{null}</p>,
+    },
   ];
 
   const rows = gridData?.map((item, index) => ({
@@ -313,7 +341,134 @@ const MainTable = ({
     main_id: item.id,
     similar_articles: item.similar_articles,
     link: item.link,
+    text: item.text,
   }));
+
+  const applyFilteringToRows = (rows, filterModel) => {
+    if (
+      filterModel.items.length === 0 &&
+      (!filterModel.quickFilterValues ||
+        filterModel.quickFilterValues.length === 0)
+    ) {
+      return rows;
+    }
+
+    return rows.filter((row) => {
+      const matchesItems = filterModel.items.every((filterItem) => {
+        const { field, operator, value } = filterItem;
+        const cellValue = row[field];
+
+        if (cellValue === undefined || cellValue === null) return false;
+
+        switch (operator) {
+          case "contains":
+            return cellValue
+              .toString()
+              .toLowerCase()
+              .includes(value.toString().toLowerCase());
+          case "equals":
+            return (
+              cellValue.toString().toLowerCase() ===
+              value.toString().toLowerCase()
+            );
+          case "startsWith":
+            return cellValue
+              .toString()
+              .toLowerCase()
+              .startsWith(value.toString().toLowerCase());
+          case "endsWith":
+            return cellValue
+              .toString()
+              .toLowerCase()
+              .endsWith(value.toString().toLowerCase());
+          case "greaterThan":
+            return cellValue > value;
+          case "lessThan":
+            return cellValue < value;
+          case "greaterThanOrEqual":
+            return cellValue >= value;
+          case "lessThanOrEqual":
+            return cellValue <= value;
+          default:
+            return true;
+        }
+      });
+
+      const matchesQuickFilter =
+        filterModel.quickFilterValues.length > 0
+          ? filterModel.quickFilterValues.every((quickValue) => {
+              return Object.values(row).some((cellValue) =>
+                cellValue
+                  ?.toString()
+                  .toLowerCase()
+                  .includes(quickValue.toLowerCase())
+              );
+            })
+          : true;
+
+      // Combine logic for both items and quick filters
+      if (filterModel.quickFilterLogicOperator === "and") {
+        return matchesItems && matchesQuickFilter;
+      } else if (filterModel.quickFilterLogicOperator === "or") {
+        return matchesItems || matchesQuickFilter;
+      }
+
+      return matchesItems;
+    });
+  };
+
+  const applySortingToRows = (rows, sortModel) => {
+    if (sortModel.length === 0) {
+      return rows; // No sorting applied, return original rows
+    }
+
+    const sortedRows = [...rows];
+    sortedRows.sort((a, b) => {
+      for (const sortItem of sortModel) {
+        const { field, sort } = sortItem;
+        const valueA = a[field];
+        const valueB = b[field];
+
+        if (valueA < valueB) {
+          return sort === "asc" ? -1 : 1;
+        }
+        if (valueA > valueB) {
+          return sort === "asc" ? 1 : -1;
+        }
+      }
+      return 0;
+    });
+
+    return sortedRows;
+  };
+
+  const handleSearchModelChange = (searchModel) => {
+    const searchQuery = searchModel.value?.toLowerCase();
+
+    if (searchQuery) {
+      const filteredRows = rows.filter((row) =>
+        Object.values(row).some((field) =>
+          field.toString().toLowerCase().includes(searchQuery)
+        )
+      );
+      setSortedFilteredRows(filteredRows);
+    } else {
+      setSortedFilteredRows(rows);
+    }
+  };
+
+  const handleSortModelChange = (sortModel) => {
+    const sortedRows = applySortingToRows(rows, sortModel);
+
+    setSortedFilteredRows(sortedRows);
+  };
+
+  const handleFilterModelChange = (filterModel) => {
+    const filteredRows = applyFilteringToRows(rows, filterModel);
+
+    setSortedFilteredRows(filteredRows);
+  };
+
   return (
     <Box sx={{ height: 600, width: "100%", mt: 1 }}>
       <DataGrid
@@ -325,6 +480,9 @@ const MainTable = ({
         getRowHeight={() => "auto"}
         checkboxSelection
         apiRef={apiRef}
+        onSortModelChange={handleSortModelChange}
+        onSearchModelChange={handleSearchModelChange}
+        onFilterModelChange={handleFilterModelChange}
         ignoreValueFormatterDuringExport
         rowSelectionModel={selectionModal}
         onRowSelectionModelChange={(ids) => {
@@ -356,6 +514,7 @@ const MainTable = ({
             showQuickFilter: true,
           },
         }}
+        hideFooterPagination
         getRowClassName={getRowClassName}
       />
     </Box>
@@ -378,5 +537,6 @@ MainTable.propTypes = {
   gridDataLoading: PropTypes.bool.isRequired,
   CustomToolbar: PropTypes.elementType.isRequired,
   getRowClassName: PropTypes.func.isRequired,
+  setSortedFilteredRows: PropTypes.func.isRequired,
 };
 export default MainTable;

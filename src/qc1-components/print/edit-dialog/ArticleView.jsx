@@ -14,8 +14,8 @@ import { useEffect, useState } from "react";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import CalendarViewDayIcon from "@mui/icons-material/CalendarViewDay";
 
-import TextView from "./components/TextView";
-import { url } from "../../constants/baseUrl";
+import TextView from "../components/TextView";
+import { url } from "../../../constants/baseUrl";
 
 const ArticleView = ({ open, setOpen, clickedArticle }) => {
   const [scrolled, setScrolled] = useState(false);
