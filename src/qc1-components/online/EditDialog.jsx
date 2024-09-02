@@ -410,7 +410,7 @@ const EditDialog = ({
     try {
       setRemoveMultipleLoading(true);
       const params = {
-        socialfeed_ids: articleId,
+        article_ids: articleId,
         company_ids: arrayToString(selectionModel),
         QCTYPE: "QC1",
       };

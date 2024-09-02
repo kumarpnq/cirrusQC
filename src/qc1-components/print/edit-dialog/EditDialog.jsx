@@ -339,7 +339,7 @@ const EditDialog = ({ rowData, rowNumber, setRowNumber, open, setOpen }) => {
       });
       console.log("Companies removed successfully:", response.data);
     } catch (error) {
-      console.error("Error removing companies:", error);
+      toast.error("Error removing companies:", error.message);
     } finally {
       setRemoveMultipleLoading(false);
     }

@@ -287,6 +287,7 @@ const MainTable = ({
       headerName: "Summary",
       width: 450,
       editable: true,
+
       renderCell: (params) => (
         <div style={{ whiteSpace: "pre-wrap", wordWrap: "break-word" }}>
           {params.value}

@@ -197,38 +197,38 @@ const AddCompaniesModal = ({
         return null;
       },
     },
-    {
-      field: "select",
-      headerName: (
-        <Checkbox
-          size="small"
-          checked={
-            selectedRowsForDelete.length === rows.length && rows.length > 0
-          }
-          // indeterminate={
-          //   selectedRowsForDelete.length > 0 &&
-          //   selectedRowsForDelete.length < rows.length
-          // }
-          onChange={handleMasterCheckboxChange}
-          color="primary"
-        />
-      ),
-      width: 100,
-      renderCell: (params) => {
-        if (params.row.showAction) {
-          return (
-            <Checkbox
-              size="small"
-              checked={selectedRowsForDelete.some(
-                (row) => row.id === params.row.id
-              )}
-              onChange={(e) => handleCheckboxChange(e, params.row)}
-              color="primary"
-            />
-          );
-        }
-      },
-    },
+    // {
+    //   field: "select",
+    //   headerName: (
+    //     <Checkbox
+    //       size="small"
+    //       checked={
+    //         selectedRowsForDelete.length === rows.length && rows.length > 0
+    //       }
+    //       indeterminate={
+    //         selectedRowsForDelete.length > 0 &&
+    //         selectedRowsForDelete.length < rows.length
+    //       }
+    //       onChange={handleMasterCheckboxChange}
+    //       color="primary"
+    //     />
+    //   ),
+    //   width: 100,
+    //   renderCell: (params) => {
+    //     if (params.row.showAction) {
+    //       return (
+    //         <Checkbox
+    //           size="small"
+    //           checked={selectedRowsForDelete.some(
+    //             (row) => row.id === params.row.id
+    //           )}
+    //           onChange={(e) => handleCheckboxChange(e, params.row)}
+    //           color="primary"
+    //         />
+    //       );
+    //     }
+    //   },
+    // },
 
     { field: "company", headerName: "Company", width: 150 },
     {
@@ -365,7 +365,7 @@ const AddCompaniesModal = ({
                 isLoading={addCompanyLoading}
                 btnText={addCompanyLoading ? "adding" : "Add"}
               />
-              {!!selectionModel.length && (
+              {!!selectedRowsForDelete.length && (
                 <Button
                   btnText={removeMultipleLoading ? "Removing" : "Remove"}
                   onClick={removeSelectedCompanies}
