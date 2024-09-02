@@ -318,6 +318,12 @@ const MainTable = ({
       width: 150,
       renderCell: (params) => <a href="#">{params.value}</a>,
     },
+    {
+      field: "tagTime",
+      headerName: "",
+      width: 0,
+      renderCell: (params) => <p>{null}</p>,
+    },
   ];
 
   const rows = gridData?.map((item, index) => ({
@@ -335,6 +341,7 @@ const MainTable = ({
     main_id: item.id,
     similar_articles: item.similar_articles,
     link: item.link,
+    text: item.text,
   }));
 
   const applyFilteringToRows = (rows, filterModel) => {

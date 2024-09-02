@@ -47,7 +47,14 @@ const titleStyle = {
   justifyContent: "space-between",
 };
 
-const EditDialog = ({ rowData, rowNumber, setRowNumber, open, setOpen }) => {
+const EditDialog = ({
+  rowData,
+  rowNumber,
+  setRowNumber,
+  open,
+  setOpen,
+  isFiltered,
+}) => {
   const [row, setRow] = useState(null);
 
   // * api material
@@ -71,14 +78,18 @@ const EditDialog = ({ rowData, rowNumber, setRowNumber, open, setOpen }) => {
 
   useLayoutEffect(() => {
     if (open) {
-      const data = rowData.find((i) => i.id === rowNumber);
-
+      let data;
+      if (isFiltered) {
+        data = rowData.find((item) => item.id === rowNumber);
+      } else {
+        data = rowData[rowNumber];
+      }
       setRow(data);
     }
   }, [rowData, rowNumber, setRow, open]);
 
-  const socialFeedId = row?.socialFeedId;
-  const iframeURI = row?.url;
+  const socialFeedId = isFiltered ? row?.socialFeedId : row?.social_feed_id;
+  const iframeURI = isFinite ? row?.url : row?.link;
   const [formItems, setFormItems] = useState({
     headline: "",
     summary: "",
@@ -560,6 +571,7 @@ EditDialog.propTypes = {
   setRowNumber: PropTypes.func.isRequired,
   open: PropTypes.bool.isRequired,
   setOpen: PropTypes.func.isRequired,
+  isFiltered: PropTypes.bool,
 };
 
 export default EditDialog;

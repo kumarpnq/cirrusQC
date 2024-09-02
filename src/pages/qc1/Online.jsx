@@ -408,10 +408,12 @@ const Online = () => {
   const [openAddCompanies, setOpenAddCompanies] = useState(false);
 
   // * data for edit dialog
-  const [sortedFilteredRows, setSortedFilteredRows] = useState(tableData);
+  const [sortedFilteredRows, setSortedFilteredRows] = useState([]);
   const dataForEditDialog = sortedFilteredRows.length
     ? sortedFilteredRows
     : tableData;
+
+  const isFiltered = sortedFilteredRows.length && true;
 
   return (
     <Box mx={2}>
@@ -532,6 +534,7 @@ const Online = () => {
         rowData={dataForEditDialog}
         rowNumber={articleNumber}
         setRowNumber={setArticleNumber}
+        isFiltered={isFiltered}
       />
 
       <GroupUnGroupModal
