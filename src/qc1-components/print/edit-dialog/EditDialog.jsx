@@ -57,11 +57,6 @@ const EditDialog = ({
 }) => {
   const [row, setRow] = useState(null);
   const articleIds = rowData.map((i) => i.id);
-  console.log(articleIds);
-
-  console.log(isFiltered);
-  console.log(rowData);
-  console.log(rowNumber);
 
   // * api material
   const userToken = localStorage.getItem("user");
