@@ -205,10 +205,10 @@ const AddCompaniesModal = ({
           checked={
             selectedRowsForDelete.length === rows.length && rows.length > 0
           }
-          indeterminate={
-            selectedRowsForDelete.length > 0 &&
-            selectedRowsForDelete.length < rows.length
-          }
+          // indeterminate={
+          //   selectedRowsForDelete.length > 0 &&
+          //   selectedRowsForDelete.length < rows.length
+          // }
           onChange={handleMasterCheckboxChange}
           color="primary"
         />
