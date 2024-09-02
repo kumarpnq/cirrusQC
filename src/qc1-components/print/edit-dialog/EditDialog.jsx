@@ -56,6 +56,12 @@ const EditDialog = ({
   isFiltered,
 }) => {
   const [row, setRow] = useState(null);
+  const articleIds = rowData.map((i) => i.id);
+  console.log(articleIds);
+
+  console.log(isFiltered);
+  console.log(rowData);
+  console.log(rowNumber);
 
   // * api material
   const userToken = localStorage.getItem("user");
@@ -89,7 +95,7 @@ const EditDialog = ({
   }, [rowData, rowNumber, setRow, open]);
 
   const socialFeedId = isFiltered ? row?.socialFeedId : row?.social_feed_id;
-  const iframeURI = isFinite ? row?.url : row?.link;
+  const iframeURI = isFiltered ? row?.url : row?.link;
   const [formItems, setFormItems] = useState({
     headline: "",
     summary: "",
@@ -149,6 +155,7 @@ const EditDialog = ({
       setSocialFeedTagDetailsLoading(false);
     }
   };
+
   useEffect(() => {
     if (open) {
       fetchHeaderAndTagDetails();
@@ -357,7 +364,23 @@ const EditDialog = ({
   };
 
   const handleSkipAndNext = () => {
-    setRowNumber((prev) => prev + 1);
+    if (!isFiltered) {
+      setRowNumber((prev) => prev + 1);
+    } else {
+      setRowNumber((prevRowNumber) => {
+        const currentArticleId = articleIds[prevRowNumber];
+        const currentIndex = articleIds.indexOf(currentArticleId);
+        const nextIndex = currentIndex + 1;
+
+        if (nextIndex < articleIds.length) {
+          const nextArticleId = articleIds[nextIndex];
+          setRowNumber(nextIndex);
+          return nextIndex;
+        } else {
+          return prevRowNumber;
+        }
+      });
+    }
   };
 
   // * auto height for summary
