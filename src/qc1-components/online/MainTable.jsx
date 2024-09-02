@@ -319,10 +319,10 @@ const MainTable = ({
       renderCell: (params) => <a href="#">{params.value}</a>,
     },
     {
-      field: "tagTime",
-      headerName: "",
-      width: 0,
-      renderCell: (params) => <p>{null}</p>,
+      field: "text",
+      headerName: "Text",
+      width: 100,
+      renderCell: (params) => <p>{params.value}</p>,
     },
   ];
 
