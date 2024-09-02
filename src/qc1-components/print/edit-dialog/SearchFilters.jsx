@@ -15,6 +15,10 @@ import CheckboxComp from "../../../components/checkbox/Checkbox";
 import Button from "../../../components/custom/Button";
 import CustomTextField from "../../../@core/CutsomTextField";
 import CustomMultiSelect from "../../../@core/CustomMultiSelect";
+import { formattedDate, formattedNextDay } from "../../../constants/dates";
+import { useEffect, useState } from "react";
+import { url } from "../../../constants/baseUrl";
+import axios from "axios";
 
 const CustomAccordionDetails = ({
   clientData,
@@ -22,7 +26,7 @@ const CustomAccordionDetails = ({
   setSelectedClient,
   selectedCompanies,
   setSelectedCompanies,
-  companyData,
+  // companyData,
   classes,
   dateTypes,
   selectedDateType,
@@ -60,6 +64,48 @@ const CustomAccordionDetails = ({
   tableDataLoading,
   fetchTableData,
 }) => {
+  const [companyData, setCompanyData] = useState([]);
+  useEffect(() => {
+    const fetchCompanies = async () => {
+      try {
+        const userToken = localStorage.getItem("user");
+
+        const endpoint = selectedClient
+          ? `${url}companylist/${selectedClient}`
+          : `${url}companylist/`;
+
+        const response = await axios.get(endpoint, {
+          headers: {
+            Authorization: `Bearer ${userToken}`,
+          },
+        });
+
+        setCompanyData(response.data.companies);
+      } catch (error) {
+        console.error("Error fetching companies:", error.message);
+      }
+    };
+
+    fetchCompanies();
+  }, [selectedClient, url]);
+
+  const handleClear = () => {
+    setSelectedClient("");
+    setSelectedCompanies([]);
+    setSelectedDateType("article");
+    setFromDate(formattedDate);
+    setDateNow(formattedNextDay);
+    setIsQc1Done(0);
+    setQc1By("");
+    setSelectedLanguages([]);
+    setSelectedContinents([]);
+    setSelectedCountries([]);
+    setIsImage(0);
+    setIsVideo(0);
+    setHeadOrSummary("");
+    setLink("");
+    setSocialFeedId("");
+  };
   return (
     <AccordionDetails>
       <Box
@@ -85,7 +131,7 @@ const CustomAccordionDetails = ({
             dropdownWidth={250}
             keyId="companyid"
             keyName="companyname"
-            options={companyData?.data?.companies || []}
+            options={companyData || []}
             selectedItems={selectedCompanies}
             setSelectedItems={setSelectedCompanies}
             title="companies"
@@ -166,6 +212,7 @@ const CustomAccordionDetails = ({
           isLoading={tableDataLoading}
           onClick={fetchTableData}
         />
+        <Button btnText="Clear" onClick={handleClear} />
       </Box>
     </AccordionDetails>
   );

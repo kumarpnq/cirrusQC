@@ -74,6 +74,7 @@ const DDComp = () => {
     client ? `${url}companylist/${client}` : "",
     client
   );
+
   const companyData = data?.data?.companies;
   const [dateType, setDateType] = useState("upload");
   const [fromDate, setFromDate] = useState(formattedDate);

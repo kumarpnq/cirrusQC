@@ -20,6 +20,7 @@ import { makeStyles } from "@mui/styles";
 import SearchIcon from "@mui/icons-material/Search";
 import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
 import ArrowDropUpIcon from "@mui/icons-material/ArrowDropUp";
+import { FixedSizeList as ListWindow } from "react-window";
 
 const useStyles = makeStyles((theme) => ({
   formControl: {
@@ -113,6 +114,22 @@ const CustomMultiSelect = ({
     option[keyName].toLowerCase().includes(searchTerm.toLowerCase())
   );
 
+  const Row = ({ index, style }) => {
+    const option = filteredOptions[index];
+    return (
+      <MenuItem
+        key={option[keyId]}
+        value={option[keyId]}
+        onClick={() => handleSelectChange(option)}
+        selected={selectedItems.includes(option[keyId])}
+        dense
+        style={style}
+      >
+        <ListItemText primary={option[keyName]} />
+      </MenuItem>
+    );
+  };
+
   return (
     <Box>
       <FormControl className={classes.formControl}>
@@ -164,17 +181,14 @@ const CustomMultiSelect = ({
                   </Button>
                 </ListItem>
                 <Divider />
-                {filteredOptions.map((option) => (
-                  <MenuItem
-                    key={option[keyId]}
-                    value={option[keyId]}
-                    onClick={() => handleSelectChange(option)}
-                    selected={selectedItems.includes(option[keyId])}
-                    dense
-                  >
-                    <ListItemText primary={option[keyName]} />
-                  </MenuItem>
-                ))}
+                <ListWindow
+                  height={250}
+                  itemCount={filteredOptions.length}
+                  itemSize={40}
+                  width={dropdownWidth}
+                >
+                  {Row}
+                </ListWindow>
               </List>
             </Paper>
           </ClickAwayListener>

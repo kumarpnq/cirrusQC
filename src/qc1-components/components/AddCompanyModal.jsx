@@ -1,5 +1,12 @@
-import { useEffect, useState } from "react";
-import { Modal, Grid, Typography, IconButton, Box } from "@mui/material";
+import { useCallback, useEffect, useState } from "react";
+import {
+  Modal,
+  Grid,
+  Typography,
+  IconButton,
+  Box,
+  Checkbox,
+} from "@mui/material";
 import { DataGrid, GridCloseIcon } from "@mui/x-data-grid";
 import axios from "axios";
 import PropTypes from "prop-types";
@@ -24,8 +31,14 @@ const AddCompaniesModal = ({
   const articleIds = selectedRows.map((i) => i.id);
   const socialFeedIds = selectedRows.map((i) => i.social_feed_id);
 
+  // * removing multiple companies
+  const [selectedRowsForDelete, setSelectedRowsForDelete] = useState([]);
+  const [selectionModel, setSelectionModel] = useState([]);
+  const [removeMultipleLoading, setRemoveMultipleLoading] = useState(false);
+
   // * handle close  modal
   const handleClose = () => {
+    setSelectedRowsForDelete([]);
     setFetchedCompanies([]);
     setOpen(false);
   };
@@ -33,7 +46,6 @@ const AddCompaniesModal = ({
   // * company selection
   const [selectedCompanies, setSelectedCompanies] = useState([]);
   const [addCompanyLoading, setAddCompanyLoading] = useState(false);
-  console.log(selectedCompanies);
 
   // * fetch tagged companies
   const fetchTaggedCompanies = async () => {
@@ -111,6 +123,7 @@ const AddCompaniesModal = ({
       const request_data = {
         [paramKey]: arrayToString(ids),
         company_id,
+        QCTYPE: "QC1",
       };
       const endpoint =
         screen === "online"
@@ -133,8 +146,37 @@ const AddCompaniesModal = ({
     }
   };
 
+  const rows = [];
+
+  const handleCheckboxChange = (event, row) => {
+    const selectedRowIds = [...selectedRowsForDelete.map((r) => r.id)];
+
+    if (event.target.checked) {
+      // Add the selected row's ID
+      selectedRowIds.push(row.id);
+    } else {
+      // Remove the deselected row's ID
+      const index = selectedRowIds.indexOf(row.id);
+      if (index > -1) {
+        selectedRowIds.splice(index, 1);
+      }
+    }
+
+    // Filter rows based on the updated list of selected IDs
+    const newSelectedRows = rows.filter((r) => selectedRowIds.includes(r.id));
+
+    setSelectedRowsForDelete(newSelectedRows);
+  };
+
+  const handleMasterCheckboxChange = (event) => {
+    if (event.target.checked) {
+      setSelectedRowsForDelete(rows);
+    } else {
+      setSelectedRowsForDelete([]);
+    }
+  };
+
   const columns = [
-    // { field: "id", headerName: "ID", width: 90 },
     {
       field: "action",
       headerName: "Action",
@@ -153,6 +195,41 @@ const AddCompaniesModal = ({
         return null;
       },
     },
+    {
+      field: "select",
+      headerName: (
+        <Checkbox
+          size="small"
+          checked={
+            rows.length > 0 &&
+            selectedRowsForDelete.length > 0 &&
+            selectedRowsForDelete.length === rows.length
+          }
+          indeterminate={
+            selectedRowsForDelete.length > 0 &&
+            selectedRowsForDelete.length < rows.length
+          }
+          onChange={handleMasterCheckboxChange}
+          color="primary"
+        />
+      ),
+      width: 100,
+      renderCell: (params) => {
+        if (params.row.showAction) {
+          return (
+            <Checkbox
+              size="small"
+              checked={selectedRowsForDelete.some(
+                (row) => row.id === params.row.id
+              )}
+              onChange={(e) => handleCheckboxChange(e, params.row)}
+              color="primary"
+            />
+          );
+        }
+      },
+    },
+
     { field: "company", headerName: "Company", width: 150 },
     {
       field: "article_id",
@@ -161,8 +238,6 @@ const AddCompaniesModal = ({
     },
     { field: "keyword", headerName: "Keyword", width: 250 },
   ];
-
-  const rows = [];
 
   fetchedCompanies.forEach((company) => {
     let firstPair = true;
@@ -202,6 +277,35 @@ const AddCompaniesModal = ({
       });
     }
   });
+
+  // handle delete multiple companies
+  const removeSelectedCompanies = async () => {
+    const userToken = localStorage.getItem("user");
+    const endpoint =
+      screen === "online" ? "removecompanyonline" : "removecompanyprint";
+    const url = url + endpoint;
+
+    try {
+      setRemoveMultipleLoading(true);
+      const params = {
+        socialfeed_ids: "row.social_feed_id",
+        company_ids: arrayToString(selectionModel),
+        QCTYPE: "QC1",
+      };
+      const response = await axios.delete(url, {
+        headers: {
+          Authorization: `Bearer ${userToken}`,
+          "Content-Type": "application/json",
+        },
+        params,
+      });
+      console.log("Companies removed successfully:", response.data);
+    } catch (error) {
+      console.error("Error removing companies:", error);
+    } finally {
+      setRemoveMultipleLoading(false);
+    }
+  };
 
   return (
     <div>
@@ -255,19 +359,29 @@ const AddCompaniesModal = ({
                 isMultiple
               />
             </span>
-            <span className="">
+            <div className="flex gap-1">
               <Button
                 onClick={handleAddCompany}
                 isLoading={addCompanyLoading}
                 btnText={addCompanyLoading ? "adding" : "Add"}
               />
-            </span>
+              {!!selectionModel.length && (
+                <Button
+                  btnText={removeMultipleLoading ? "Removing" : "Remove"}
+                  onClick={removeSelectedCompanies}
+                  isLoading={removeMultipleLoading}
+                  isDanger
+                />
+              )}
+            </div>
           </Box>
           <div style={{ height: 400, width: "100%" }}>
             <DataGrid
               rows={rows}
               columns={columns}
               pageSize={5}
+              // checkboxSelection
+              // onRowSelectionModelChange={handleRowSelection}
               rowsPerPageOptions={[5, 10, 20]}
               disableRowSelectionOnClick
               hideFooterSelectedRowCount

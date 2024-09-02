@@ -25,6 +25,7 @@ import axios from "axios";
 import { url } from "../../../constants/baseUrl";
 import { toast } from "react-toastify";
 import Button from "../../../components/custom/Button";
+import { arrayToString } from "../../../utils/arrayToString";
 
 const style = {
   position: "absolute",
@@ -48,6 +49,9 @@ const titleStyle = {
 
 const EditDialog = ({ rowData, rowNumber, setRowNumber, open, setOpen }) => {
   const [row, setRow] = useState(null);
+  console.log(row);
+  console.log(rowData);
+  console.log(rowNumber);
 
   // * api material
   const userToken = localStorage.getItem("user");
@@ -75,8 +79,8 @@ const EditDialog = ({ rowData, rowNumber, setRowNumber, open, setOpen }) => {
     }
   }, [rowData, rowNumber, setRow, open]);
 
-  const socialFeedId = row?.social_feed_id;
-  const iframeURI = row?.link;
+  const socialFeedId = row?.socialFeedId;
+  const iframeURI = row?.url;
   const [formItems, setFormItems] = useState({
     headline: "",
     summary: "",
@@ -127,8 +131,9 @@ const EditDialog = ({ rowData, rowNumber, setRowNumber, open, setOpen }) => {
         `${url}qc1onlinetagdetails/?socialfeed_id=${socialFeedId}`,
         { headers }
       );
+      const tagDetails = tagDetailsResponse.data.socialfeed_details || [];
 
-      setSocialFeedTagDetails(tagDetailsResponse.data.socialfeed_details || []);
+      setSocialFeedTagDetails(Array.isArray(tagDetails) ? tagDetails : []);
     } catch (error) {
       console.log(error.message);
     } finally {
@@ -268,7 +273,7 @@ const EditDialog = ({ rowData, rowNumber, setRowNumber, open, setOpen }) => {
       );
 
       if (response.data?.result?.success?.length) {
-        fetchTagDetails();
+        await fetchTagDetails();
         toast.success("Company removed", {
           position: "bottom-right",
         });
@@ -301,12 +306,46 @@ const EditDialog = ({ rowData, rowNumber, setRowNumber, open, setOpen }) => {
     { field: "Keyword", headerName: "Keyword", width: 300 },
   ];
 
-  const rows = socialFeedTagDetails.map((detail, index) => ({
-    id: index,
+  const rows = (socialFeedTagDetails || []).map((detail) => ({
+    id: detail.company_id,
     CompanyName: detail.company_name,
     Keyword: detail.keyword,
     companyId: detail.company_id,
   }));
+
+  const [selectionModel, setSelectionModel] = useState([]);
+  const [removeMultipleLoading, setRemoveMultipleLoading] = useState(false);
+
+  // Handle row selection change
+  const handleRowSelection = (newSelectionModel) => {
+    setSelectionModel(newSelectionModel);
+  };
+
+  // handle delete multiple companies
+  const removeSelectedCompanies = async () => {
+    const userToken = localStorage.getItem("user");
+    const url3 = `${url}removecompanyonline`;
+
+    try {
+      setRemoveMultipleLoading(true);
+      const params = {
+        socialfeed_ids: row.social_feed_id,
+        company_ids: arrayToString(selectionModel),
+        QCTYPE: "QC1",
+      };
+      const response = await axios.delete(url3, {
+        headers: {
+          Authorization: `Bearer ${userToken}`,
+        },
+        params,
+      });
+      console.log("Companies removed successfully:", response.data);
+    } catch (error) {
+      console.error("Error removing companies:", error);
+    } finally {
+      setRemoveMultipleLoading(false);
+    }
+  };
 
   const handleSkipAndNext = () => {
     setRowNumber((prev) => prev + 1);
@@ -439,19 +478,29 @@ const EditDialog = ({ rowData, rowNumber, setRowNumber, open, setOpen }) => {
                     selectedCompany={selectedCompanies}
                     isMultiple
                   />
-                  <span className="pb-1">
+                  <div className="flex gap-1 pb-1">
                     <Button
                       onClick={handleAddCompany}
                       btnText={addLoading ? "adding" : "Add"}
                       isLoading={addLoading}
                     />
-                  </span>
+                    {!!selectionModel.length && (
+                      <Button
+                        btnText={removeMultipleLoading ? "Removing" : "Remove"}
+                        onClick={removeSelectedCompanies}
+                        isLoading={removeMultipleLoading}
+                        isDanger
+                      />
+                    )}
+                  </div>
                 </Box>
                 <Box height={500} width={"100%"}>
                   <DataGrid
                     rows={rows}
                     columns={columns}
                     density="compact"
+                    checkboxSelection
+                    onRowSelectionModelChange={handleRowSelection}
                     loading={
                       socialFeedTagDetailsLoading && <CircularProgress />
                     }
@@ -459,6 +508,7 @@ const EditDialog = ({ rowData, rowNumber, setRowNumber, open, setOpen }) => {
                     pageSizeOptions={[10, 100, 200, 1000]}
                     columnBufferPx={1000}
                     hideFooterSelectedRowCount
+                    disableRowSelectionOnClick
                   />
                 </Box>
               </CardContent>

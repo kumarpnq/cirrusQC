@@ -24,6 +24,7 @@ import { url } from "../../constants/baseUrl";
 import { toast } from "react-toastify";
 import Button from "../../components/custom/Button";
 import ScrollNavigator from "./components/ScrollNavigator";
+import { arrayToString } from "../../utils/arrayToString";
 
 const style = {
   position: "absolute",
@@ -89,8 +90,6 @@ const EditDialog = ({
 
   // * page for filter articles
   const [pageNumber, setPageNumber] = useState(null);
-
-  console.log(formItems);
 
   const handleClose = () => {
     setFormItems({
@@ -388,13 +387,46 @@ const EditDialog = ({
     { field: "keyword", headerName: "Keyword", width: 300 },
   ];
 
-  const rows = articleTagDetails.map((item, index) => ({
-    id: index,
+  const rows = articleTagDetails.map((item) => ({
+    id: item.company_id,
     companyId: item.company_id,
     CompanyName: item.company_name,
     keyword: item.keyword,
   }));
 
+  const [selectionModel, setSelectionModel] = useState([]);
+  const [removeMultipleLoading, setRemoveMultipleLoading] = useState(false);
+
+  // Handle row selection change
+  const handleRowSelection = (newSelectionModel) => {
+    setSelectionModel(newSelectionModel);
+  };
+
+  // handle delete multiple companies
+  const removeSelectedCompanies = async () => {
+    const userToken = localStorage.getItem("user");
+    const url3 = `${url}removecompanyprint`;
+
+    try {
+      setRemoveMultipleLoading(true);
+      const params = {
+        socialfeed_ids: articleId,
+        company_ids: arrayToString(selectionModel),
+        QCTYPE: "QC1",
+      };
+      const response = await axios.delete(url3, {
+        headers: {
+          Authorization: `Bearer ${userToken}`,
+        },
+        params,
+      });
+      console.log("Companies removed successfully:", response.data);
+    } catch (error) {
+      console.error("Error removing companies:", error);
+    } finally {
+      setRemoveMultipleLoading(false);
+    }
+  };
   // * save button text
   const buttonText = isMultiple ? "Save & Next" : "save";
 
@@ -525,24 +557,37 @@ const EditDialog = ({
                       selectedCompany={selectedCompanies}
                       isMultiple
                     />
-                    <span className="pb-1">
+                    <div className="flex gap-1 pb-1">
                       <Button
                         onClick={handleAddCompany}
                         isLoading={addCompanyLoading}
                         btnText={addCompanyLoading ? "adding" : "Add"}
                       />
-                    </span>
+                      {!!selectionModel.length && (
+                        <Button
+                          btnText={
+                            removeMultipleLoading ? "Removing" : "Remove"
+                          }
+                          onClick={removeSelectedCompanies}
+                          isLoading={removeMultipleLoading}
+                          isDanger
+                        />
+                      )}
+                    </div>
                   </Box>
                   <Box height={500} width={"100%"}>
                     <DataGrid
                       rows={rows}
                       columns={columns}
                       density="compact"
+                      checkboxSelection
+                      onRowSelectionModelChange={handleRowSelection}
                       loading={articleTagDetailsLoading && <CircularProgress />}
                       pageSize={5}
                       pageSizeOptions={[10, 100, 200, 1000]}
                       columnBufferPx={1000}
                       hideFooterSelectedRowCount
+                      disableRowSelectionOnClick
                     />
                   </Box>
                 </CardContent>
