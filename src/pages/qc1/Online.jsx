@@ -125,20 +125,20 @@ const Online = () => {
   const [selectedItems, setSelectedItems] = useState([]);
   const [tableDataLoading, setTableDataLoading] = useState(false);
   const fetchTableData = useCallback(async () => {
-    if (!selectedDateType) {
+    if (!selectedDateType || !selectedClient) {
       toast.warning("Please select a client or date type.");
       return;
     }
-    const dateDifferenceInHours = differenceInHours(
-      new Date(dateNow),
-      new Date(fromDate)
-    );
-    if (!selectedClient && dateDifferenceInHours > 24) {
-      toast.warning(
-        "Date range should not exceed 24 hours if no client is selected."
-      );
-      return;
-    }
+    // const dateDifferenceInHours = differenceInHours(
+    //   new Date(dateNow),
+    //   new Date(fromDate)
+    // );
+    // if (!selectedClient && dateDifferenceInHours > 24) {
+    //   toast.warning(
+    //     "Date range should not exceed 24 hours if no client is selected."
+    //   );
+    //   return;
+    // }
 
     try {
       setTableDataLoading(true);
