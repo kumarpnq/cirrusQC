@@ -261,6 +261,18 @@ const EditDialog = ({
       });
       return;
     }
+    const existingCompany = selectedCompanies.find((selectedCompany) =>
+      articleTagDetails.some(
+        (tagDetail) => tagDetail.company_id === selectedCompany.value
+      )
+    );
+
+    if (existingCompany) {
+      toast.warning(`Company "${existingCompany.label}" is already present.`, {
+        position: "bottom-right",
+      });
+      return;
+    }
     try {
       setAddCompanyLoading(true);
       const dataToSend = selectedCompanies.map((i) => ({
@@ -420,9 +432,13 @@ const EditDialog = ({
         },
         params,
       });
-      console.log("Companies removed successfully:", response.data);
+      if (response.data.result.status) {
+        toast.success("Companies removed successfully.");
+        setSelectionModal([]);
+        fetchTagDetails();
+      }
     } catch (error) {
-      console.error("Error removing companies:", error);
+      toast.error("Error removing companies:", error.message);
     } finally {
       setRemoveMultipleLoading(false);
     }
