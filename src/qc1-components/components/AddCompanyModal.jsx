@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Modal,
   Grid,
@@ -169,7 +169,9 @@ const AddCompaniesModal = ({
   };
 
   const handleMasterCheckboxChange = (event) => {
-    if (event.target.checked) {
+    event.stopPropagation();
+    const isChecked = event.target.checked;
+    if (isChecked) {
       setSelectedRowsForDelete(rows);
     } else {
       setSelectedRowsForDelete([]);
@@ -201,9 +203,7 @@ const AddCompaniesModal = ({
         <Checkbox
           size="small"
           checked={
-            rows.length > 0 &&
-            selectedRowsForDelete.length > 0 &&
-            selectedRowsForDelete.length === rows.length
+            selectedRowsForDelete.length === rows.length && rows.length > 0
           }
           indeterminate={
             selectedRowsForDelete.length > 0 &&

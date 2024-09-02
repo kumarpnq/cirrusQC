@@ -359,8 +359,6 @@ const MainTable = ({
   };
 
   const handleSearchModelChange = (searchModel) => {
-    console.log(searchModel);
-
     // Assuming the searchModel has a 'value' key that contains the search query
     const searchQuery = searchModel.value?.toLowerCase();
 
@@ -377,8 +375,6 @@ const MainTable = ({
   };
 
   const handleSortModelChange = (sortModel) => {
-    console.log(sortModel);
-
     const sortedRows = applySortingToRows(rows, sortModel);
 
     setSortedFilteredRows(sortedRows);

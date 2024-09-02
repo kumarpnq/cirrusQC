@@ -675,6 +675,12 @@ const Print = () => {
     selectedItems.length > 0 ||
     Object.keys(unsavedChangesRef.current.unsavedRows).length > 0;
 
+  // * data for edit dialog
+  const [sortedFilteredRows, setSortedFilteredRows] = useState(gridData);
+  const dataForEditDialog = sortedFilteredRows.length
+    ? sortedFilteredRows
+    : gridData;
+
   return (
     <Box sx={{ px: 1.5 }}>
       <Accordion>
@@ -780,6 +786,7 @@ const Print = () => {
         processRowUpdate={processRowUpdate}
         gridDataLoading={gridDataLoading}
         getRowClassName={getRowClassName}
+        setSortedFilteredRows={setSortedFilteredRows}
       />
 
       <EditDialog

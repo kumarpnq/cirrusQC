@@ -49,9 +49,6 @@ const titleStyle = {
 
 const EditDialog = ({ rowData, rowNumber, setRowNumber, open, setOpen }) => {
   const [row, setRow] = useState(null);
-  console.log(row);
-  console.log(rowData);
-  console.log(rowNumber);
 
   // * api material
   const userToken = localStorage.getItem("user");
@@ -74,7 +71,8 @@ const EditDialog = ({ rowData, rowNumber, setRowNumber, open, setOpen }) => {
 
   useLayoutEffect(() => {
     if (open) {
-      const data = rowData[rowNumber];
+      const data = rowData.find((i) => i.id === rowNumber);
+
       setRow(data);
     }
   }, [rowData, rowNumber, setRow, open]);
