@@ -251,6 +251,9 @@ const Online = () => {
 
   const handleRowClick = (row, rowNumber) => {
     setOpen((prev) => !prev);
+    if (row.id) {
+      setArticleNumber(row.id);
+    }
     setArticleNumber(rowNumber);
   };
 

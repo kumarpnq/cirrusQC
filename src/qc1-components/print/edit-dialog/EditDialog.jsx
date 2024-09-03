@@ -360,23 +360,33 @@ const EditDialog = ({
       setRemoveMultipleLoading(false);
     }
   };
-
   const handleSkipAndNext = () => {
     if (!isFiltered) {
       setRowNumber((prev) => prev + 1);
     } else {
       setRowNumber((prevRowNumber) => {
+        // Get the current article ID based on the current row number
         const currentArticleId = articleIds[prevRowNumber];
-        const currentIndex = articleIds.indexOf(currentArticleId);
-        const nextIndex = currentIndex + 1;
 
-        if (nextIndex < articleIds.length) {
+        // Find the index of this ID in articleIds
+        const currentIndex = articleIds.indexOf(currentArticleId);
+
+        // Set the next index to currentIndex + 1
+        let nextIndex = currentIndex + 1;
+
+        // Ensure we find the next valid article ID within the rowData
+        while (nextIndex < articleIds.length) {
           const nextArticleId = articleIds[nextIndex];
-          setRowNumber(nextIndex);
-          return nextIndex;
-        } else {
-          return prevRowNumber;
+          if (rowData.some((row) => row.id === nextArticleId)) {
+            // Find the row number that corresponds to this article ID
+            const nextRowNumber = articleIds.indexOf(nextArticleId);
+            return nextRowNumber;
+          }
+          nextIndex++;
         }
+
+        // If no valid next article ID is found, return the current row number
+        return prevRowNumber;
       });
     }
   };
