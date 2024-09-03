@@ -170,28 +170,28 @@ const EditDialog = ({
     try {
       setUpdateHeaderLoading(true);
       const data = {
-        ARTICLEID: articleId,
+        articleId,
       };
       // Compare each field in formItems with headerData and add to data if modified
       if (formItems.headline !== headerData.headline) {
-        data.HEADLINES = formItems.headline;
+        data.headlines = formItems.headline;
       }
       if (formItems.summary !== headerData.summary) {
-        data.HEADSUMMARY = formItems.summary;
+        data.headSummary = formItems.summary;
       }
       if (formItems.journalist !== headerData.journalist) {
-        data.JOURNALIST = formItems.journalist;
+        data.journalist = formItems.journalist;
       }
       if (formItems.page !== headerData.page_number) {
-        data.PAGENUMBER = Number(formItems.page);
+        data.pageNumber = Number(formItems.page);
       }
       if (formItems.articleSummary !== headerData.article_summary) {
-        data.ARTICLE_SUMMARY = formItems.articleSummary;
+        data.articleSummary = formItems.articleSummary;
       }
 
       const request_data = {
         data: [data],
-        QCTYPE: "QC1",
+        qcType: "QC1",
       };
 
       const response = await axios.post(
