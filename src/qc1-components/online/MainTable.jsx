@@ -27,7 +27,6 @@ import AttachmentIcon from "@mui/icons-material/Attachment";
 
 // * icons
 import PictureAsPdfIcon from "@mui/icons-material/PictureAsPdf";
-import { url } from "../../constants/baseUrl";
 
 const iconCellStyle = {
   display: "flex",
