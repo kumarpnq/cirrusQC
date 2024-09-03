@@ -27,6 +27,7 @@ import AttachmentIcon from "@mui/icons-material/Attachment";
 
 // * icons
 import PictureAsPdfIcon from "@mui/icons-material/PictureAsPdf";
+import { url } from "../../constants/baseUrl";
 
 const iconCellStyle = {
   display: "flex",
@@ -244,33 +245,33 @@ const MainTable = ({
       ),
     },
 
-    // {
-    //   field: "Thumbnail",
-    //   headerName: "Thumbnail",
-    //   width: 70,
-    //   renderCell: (params) => (
-    //     <div style={iconCellStyle}>
-    //       <Tooltip
-    //         title={
-    //           <img
-    //             src={
-    //               "https://cirrus.co.in/cirrus/JPGViewID.action?ai=03GURGAON-20240705-TIMES_OF_INDIA-0010-0002.pdf&loginreq=N"
-    //             }
-    //           />
-    //         }
-    //         placement="right"
-    //         arrow
-    //       >
-    //         <img
-    //           src={`https://cirrus.co.in/cirrus/JPGViewID.action?ai=03GURGAON-20240705-TIMES_OF_INDIA-0010-0002.pdf&loginreq=N`}
-    //           style={{ width: "70", height: "80" }}
-    //           title="PDF"
-    //           className="p-1 border rounded-lg"
-    //         />
-    //       </Tooltip>
-    //     </div>
-    //   ),
-    // },
+    {
+      field: "thumbnail",
+      headerName: "Thumbnail",
+      width: 70,
+      height: 70,
+      renderCell: (params) => (
+        <div style={iconCellStyle}>
+          <Tooltip
+            title={
+              <Box sx={{ objectFit: "contain" }}>
+                <img src={params.row.thumbnail} height={150} width={150} />
+              </Box>
+            }
+            placement="right"
+            arrow
+          >
+            <img
+              src={params.row.thumbnail}
+              alt="thumbnail"
+              style={{ width: "80", height: "100" }}
+              title="PDF"
+              className="p-1 border rounded-lg shadow-md"
+            />
+          </Tooltip>
+        </div>
+      ),
+    },
     {
       field: "headline",
       headerName: "Headlines",
@@ -322,7 +323,14 @@ const MainTable = ({
       field: "text",
       headerName: "Text",
       width: 100,
-      renderCell: (params) => <p>{params.value}</p>,
+      renderCell: (params) => (
+        <p>
+          {" "}
+          {params.value.length > 30
+            ? `${params.value.substring(0, 30)}...`
+            : params.value}
+        </p>
+      ),
     },
   ];
 
@@ -342,6 +350,7 @@ const MainTable = ({
     similar_articles: item.similar_articles,
     link: item.link,
     text: item.text,
+    thumbnail: item.thumbnail,
   }));
 
   const applyFilteringToRows = (rows, filterModel) => {

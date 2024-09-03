@@ -340,7 +340,7 @@ const EditDialog = ({
     try {
       setRemoveMultipleLoading(true);
       const params = {
-        socialfeed_ids: arrayToString(row.social_feed_id),
+        socialfeed_ids: arrayToString([socialFeedId]),
         company_ids: arrayToString(selectionModel),
         QCTYPE: "QC1",
       };
@@ -350,7 +350,10 @@ const EditDialog = ({
         },
         params,
       });
-      console.log("Companies removed successfully:", response.data);
+      if (response.data.result.status) {
+        toast.error("Companies removed successfully");
+        fetchTagDetails();
+      }
     } catch (error) {
       toast.error("Error removing companies:", error.message);
     } finally {
