@@ -24,6 +24,7 @@ import {
 import { Link } from "react-router-dom";
 import { EditAttributesOutlined } from "@mui/icons-material";
 import AttachmentIcon from "@mui/icons-material/Attachment";
+import { debounce } from "lodash";
 
 // * icons
 import PictureAsPdfIcon from "@mui/icons-material/PictureAsPdf";
@@ -450,31 +451,17 @@ const MainTable = ({
     return sortedRows;
   };
 
-  const handleSearchModelChange = (searchModel) => {
-    const searchQuery = searchModel.value?.toLowerCase();
-
-    if (searchQuery) {
-      const filteredRows = rows.filter((row) =>
-        Object.values(row).some((field) =>
-          field.toString().toLowerCase().includes(searchQuery)
-        )
-      );
-      setSortedFilteredRows(filteredRows);
-    } else {
-      setSortedFilteredRows(rows);
-    }
-  };
-
   const handleSortModelChange = (sortModel) => {
     const sortedRows = applySortingToRows(rows, sortModel);
 
     setSortedFilteredRows(sortedRows);
   };
-
-  const handleFilterModelChange = (filterModel) => {
+  const debouncedHandleFilterModelChange = debounce((filterModel) => {
     const filteredRows = applyFilteringToRows(rows, filterModel);
-
     setSortedFilteredRows(filteredRows);
+  }, 1000);
+  const handleFilterModelChange = (filterModel) => {
+    debouncedHandleFilterModelChange(filterModel);
   };
 
   return (
@@ -489,7 +476,6 @@ const MainTable = ({
         checkboxSelection
         apiRef={apiRef}
         onSortModelChange={handleSortModelChange}
-        onSearchModelChange={handleSearchModelChange}
         onFilterModelChange={handleFilterModelChange}
         ignoreValueFormatterDuringExport
         rowSelectionModel={selectionModal}
@@ -520,6 +506,9 @@ const MainTable = ({
         slotProps={{
           toolbar: {
             showQuickFilter: true,
+            quickFilterProps: {
+              autoFocus: true,
+            },
           },
         }}
         hideFooterPagination
