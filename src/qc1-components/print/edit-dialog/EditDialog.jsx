@@ -351,7 +351,9 @@ const EditDialog = ({
         params,
       });
       if (response.data.result.status) {
-        toast.error("Companies removed successfully");
+        toast.success("Companies removed successfully", {
+          position: "bottom-right",
+        });
         fetchTagDetails();
       }
     } catch (error) {
