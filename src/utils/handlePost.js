@@ -76,37 +76,34 @@ const handlePostData = async (
 
         // Compare each field with the selected row
         if (updatedRow.prominence !== selectedItem.prominence) {
-          modifiedFieldsForRow.PROMINENCE = updatedRow.prominence;
+          modifiedFieldsForRow.prominence = updatedRow.prominence;
         }
         if (updatedRow.reporting_subject !== selectedItem.reporting_subject) {
-          modifiedFieldsForRow.REPORTINGSUBJECT = updatedRow.reporting_subject;
+          modifiedFieldsForRow.reportingSubject = updatedRow.reporting_subject;
         }
         if (updatedRow.reporting_tone !== selectedItem.reporting_tone) {
-          modifiedFieldsForRow.REPORTINGTONE = updatedRow.reporting_tone;
+          modifiedFieldsForRow.reportingTone = updatedRow.reporting_tone;
         }
         if (updatedRow.subcategory !== selectedItem.subcategory) {
-          modifiedFieldsForRow.SUBCATEGORY = updatedRow.subcategory;
+          modifiedFieldsForRow.subcategory = updatedRow.subcategory;
         }
         if (updatedRow.headline !== selectedItem.headline) {
-          modifiedFieldsForRow.HEADLINE = updatedRow.headline;
+          modifiedFieldsForRow.headline = updatedRow.headline;
         }
         if (updatedRow.remarks !== selectedItem.remarks) {
-          modifiedFieldsForRow.REMARKS = updatedRow.remarks;
+          modifiedFieldsForRow.remarks = updatedRow.remarks;
         }
         if (updatedRow.keyword !== selectedItem.keyword) {
-          modifiedFieldsForRow.KEYWORD = updatedRow.keyword;
+          modifiedFieldsForRow.keyword = updatedRow.keyword;
         }
         if (updatedRow.headsummary !== selectedItem.headsummary) {
-          modifiedFieldsForRow.HEADSUMMARY = updatedRow.headsummary;
+          modifiedFieldsForRow.headSummary = updatedRow.headsummary;
         }
         if (updatedRow.detail_summary !== selectedItem.detail_summary) {
-          modifiedFieldsForRow.SUMMARY = updatedRow.detail_summary;
+          modifiedFieldsForRow.summary = updatedRow.detail_summary;
         }
         if (updatedRow.author_name !== selectedItem.author_name) {
-          modifiedFieldsForRow.AUTHOR = updatedRow.author_name;
-        }
-        if (updatedRow.remarks !== selectedItem.remarks) {
-          modifiedFieldsForRow.REMARKS = updatedRow.remarks;
+          modifiedFieldsForRow.author = updatedRow.author_name;
         }
 
         // Merge modified fields for this row with overall modified fields
@@ -115,10 +112,10 @@ const handlePostData = async (
 
       if (Object.keys(modifiedFields).length > 0) {
         return {
-          SOCIALFEEDID: selectedItem.social_feed_id,
-          COMPANYID: selectedItem.company_id,
-          MODIFIEDBY: name,
-          MODIFIEDON: currentDateWithTime,
+          socialFeedId: selectedItem.social_feed_id,
+          companyId: selectedItem.company_id,
+          modifiedBy: name,
+          modifiedOn: currentDateWithTime,
           ...modifiedFields,
         };
       }

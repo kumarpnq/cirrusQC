@@ -102,6 +102,7 @@ const EditDialog = ({
   const [socialFeedTagDetails, setSocialFeedTagDetails] = useState([]);
   const [socialFeedTagDetailsLoading, setSocialFeedTagDetailsLoading] =
     useState(false);
+  const [headerData, setHeaderData] = useState(null);
 
   // * fetching header & tag details
   const fetchHeaderAndTagDetails = async () => {
@@ -117,6 +118,7 @@ const EditDialog = ({
         { headers }
       );
       const headerData = headerResponse.data.socialfeed[0] || {};
+      setHeaderData(headerData);
       setFormItems({
         headline: headerData.headline,
         summary: headerData.headsummary,
@@ -168,18 +170,25 @@ const EditDialog = ({
 
   const handleSubmit = async (isSkip) => {
     try {
+      const data = { updateType: "U", socialFeedId };
+
+      if (formItems.headline !== headerData?.headline) {
+        data.headline = formItems.headline;
+      }
+      if (formItems.summary !== headerData?.headsummary) {
+        data.summary = formItems.summary;
+      }
+      if (formItems.journalist !== headerData?.author_name) {
+        data.author = formItems.journalist;
+      }
+
+      if (formItems.tag !== headerData?.tag && !null) {
+        data.tag = formItems.tag;
+      }
+
       const requestData = {
-        data: [
-          {
-            UPDATETYPE: "U",
-            SOCIALFEEDID: socialFeedId,
-            HEADLINE: formItems.headline,
-            SUMMARY: formItems.summary,
-            AUTHOR: formItems.journalist,
-            TAG: formItems.tag,
-          },
-        ],
-        QCTYPE: "QC1",
+        data: [data],
+        qcType: "QC1",
       };
       const response = await axios.post(
         `${url}updatesocialfeedheader/`,
@@ -230,14 +239,14 @@ const EditDialog = ({
     try {
       setAddLoading(true);
       const dataToSend = selectedCompanies.map((i) => ({
-        UPDATETYPE: "I",
-        SOCIALFEEDID: socialFeedId,
-        COMPANYID: i.value,
-        COMPANYNAME: i.label,
+        updateType: "I",
+        socialFeedId,
+        companyId: i.value,
+        companyName: i.label,
       }));
       const requestData = {
         data: dataToSend,
-        QCTYPE: "QC1",
+        qcType: "QC1",
       };
       const response = await axios.post(
         `${url}updatesocialfeedtagdetails/`,
@@ -267,13 +276,13 @@ const EditDialog = ({
       const requestData = {
         data: [
           {
-            UPDATETYPE: "D",
-            SOCIALFEEDID: socialFeedId,
-            COMPANYID: selectedRow.companyId,
-            COMPANYNAME: selectedRow.CompanyName,
+            updateType: "D",
+            socialFeedId,
+            companyId: selectedRow.companyId,
+            companyName: selectedRow.CompanyName,
           },
         ],
-        QCTYPE: "QC1",
+        qcType: "QC1",
       };
       const response = await axios.post(
         `${url}updatesocialfeedtagdetails/`,
@@ -360,33 +369,23 @@ const EditDialog = ({
       setRemoveMultipleLoading(false);
     }
   };
+
   const handleSkipAndNext = () => {
     if (!isFiltered) {
       setRowNumber((prev) => prev + 1);
     } else {
       setRowNumber((prevRowNumber) => {
-        // Get the current article ID based on the current row number
         const currentArticleId = articleIds[prevRowNumber];
-
-        // Find the index of this ID in articleIds
         const currentIndex = articleIds.indexOf(currentArticleId);
+        const nextIndex = currentIndex + 1;
 
-        // Set the next index to currentIndex + 1
-        let nextIndex = currentIndex + 1;
-
-        // Ensure we find the next valid article ID within the rowData
-        while (nextIndex < articleIds.length) {
+        if (nextIndex < articleIds.length) {
           const nextArticleId = articleIds[nextIndex];
-          if (rowData.some((row) => row.id === nextArticleId)) {
-            // Find the row number that corresponds to this article ID
-            const nextRowNumber = articleIds.indexOf(nextArticleId);
-            return nextRowNumber;
-          }
-          nextIndex++;
+          setRowNumber(nextIndex);
+          return nextIndex;
+        } else {
+          return prevRowNumber;
         }
-
-        // If no valid next article ID is found, return the current row number
-        return prevRowNumber;
       });
     }
   };

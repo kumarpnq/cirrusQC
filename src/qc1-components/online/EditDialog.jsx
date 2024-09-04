@@ -276,14 +276,14 @@ const EditDialog = ({
     try {
       setAddCompanyLoading(true);
       const dataToSend = selectedCompanies.map((i) => ({
-        UPDATETYPE: "I",
-        ARTICLEID: articleId,
-        COMPANYID: i.value,
-        COMPANYNAME: i.label,
+        updateType: "I",
+        articleId,
+        companyId: i.value,
+        companyName: i.label,
       }));
       const request_data = {
         data: dataToSend,
-        QCTYPE: "QC1",
+        qcType: "QC1",
       };
       const response = await axios.post(
         `${url}updatearticletagdetails/`,
@@ -316,12 +316,12 @@ const EditDialog = ({
       const request_data = {
         data: [
           {
-            UPDATETYPE: "D",
-            ARTICLEID: articleId,
-            COMPANYID: selectedRow?.companyId,
+            updateType: "D",
+            articleId,
+            companyId: selectedRow?.companyId,
           },
         ],
-        QCTYPE: "QC1",
+        qcType: "QC1",
       };
       const response = await axios.post(
         `${url}updatearticletagdetails/`,
