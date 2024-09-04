@@ -82,12 +82,13 @@ const CustomAccordionDetails = ({
 
         setCompanyData(response.data.companies);
       } catch (error) {
+        setCompanyData([]);
         console.error("Error fetching companies:", error.message);
       }
     };
 
     fetchCompanies();
-  }, [selectedClient, url]);
+  }, [selectedClient]);
 
   const handleClear = () => {
     setSelectedClient("");
