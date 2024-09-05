@@ -31,6 +31,7 @@ import { url } from "../../constants/baseUrl";
 import ArticleView from "./edit-dialog/ArticleView";
 
 import EditDialog from "./edit-dialog/EditDialog";
+import { toast } from "react-toastify";
 
 const iconCellStyle = {
   display: "flex",
@@ -120,7 +121,25 @@ const MainTable = ({
   };
 
   const [selectedSimilarArticle, setSelectedSimilarArticle] = useState([]);
-  const handleDeleteSimilarArticle = async (id) => {};
+  const handleDeleteSimilarArticle = async (id, row) => {
+    console.log(id);
+    console.log(row);
+
+    try {
+      const userToken = localStorage.getItem("userToken");
+      const params = {
+        parent_id: row?.main_id,
+        child_token: id,
+      };
+      const response = await axios.delete(`${url}`, {
+        headers: { Authorization: `Bearer ${userToken}` },
+        params,
+      });
+      console.log(response.data);
+    } catch (error) {
+      toast.error("Error : ");
+    }
+  };
   const handleOpenEditSimilarArticle = (row) => {
     const data = {
       id: 0,
@@ -228,7 +247,8 @@ const MainTable = ({
                                         sx={{ color: "red" }}
                                         onClick={() =>
                                           handleDeleteSimilarArticle(
-                                            row.article
+                                            row.article,
+                                            params.row
                                           )
                                         }
                                       >

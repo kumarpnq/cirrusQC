@@ -639,7 +639,7 @@ const EditDialog = ({
                 />
                 <CardContent>
                   <iframe
-                    src={url + defaultLink}
+                    src={url + (defaultLink || row?.default_link)}
                     frameBorder="0"
                     style={{ width: "100%", height: "540px" }}
                   />

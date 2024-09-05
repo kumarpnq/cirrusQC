@@ -31,6 +31,9 @@ import { debounce } from "lodash";
 import PictureAsPdfIcon from "@mui/icons-material/PictureAsPdf";
 import { useState } from "react";
 import EditDialog from "./EditDialog";
+import { toast } from "react-toastify";
+import axios from "axios";
+import { url } from "../../constants/baseUrl";
 
 const iconCellStyle = {
   display: "flex",
@@ -51,6 +54,7 @@ const MainTable = ({
   anchorEls,
   similarLoading,
   childArticles,
+  setChildArticles,
   processRowUpdate,
   gridDataLoading,
   getRowClassName,
@@ -73,12 +77,37 @@ const MainTable = ({
 
   const [openEditSimilarArticle, setOpenEditSimilarArticle] = useState(false);
   const [selectedSimilarArticle, setSelectedSimilarArticle] = useState({});
-  const handleDeleteSimilarArticle = async (id) => {};
+
+  const handleDeleteSimilarArticle = async (id, row) => {
+    try {
+      const userToken = localStorage.getItem("user");
+
+      const params = {
+        parent_id: row?.main_id,
+        child_id: id,
+      };
+      const response = await axios.delete(`${url}ungroupsinglearticle`, {
+        headers: { Authorization: `Bearer ${userToken}` },
+        params,
+      });
+
+      const successMSG = response.data?.status?.update_status;
+      toast.success(successMSG || "");
+      const updatedChildArticles = childArticles.filter(
+        (article) => article.article !== id
+      );
+      setChildArticles(updatedChildArticles);
+    } catch (error) {
+      toast.error("Something went wrong");
+    }
+  };
   const handleOpenEditSimilarArticle = (row) => {
     const data = {
       id: 0,
       headline: row.headline,
       main_id: row.article,
+      default_link: row.default_link,
+      link: row.link,
     };
     setSelectedSimilarArticle(data);
     setOpenEditSimilarArticle((pre) => !pre);
@@ -256,7 +285,8 @@ const MainTable = ({
                                         sx={{ color: "red" }}
                                         onClick={() =>
                                           handleDeleteSimilarArticle(
-                                            row.article
+                                            row.article,
+                                            params.row
                                           )
                                         }
                                       >
@@ -272,8 +302,8 @@ const MainTable = ({
                                         {row.headline.substring(0, 30) + "..."}
                                       </Tooltip>
                                     </TableCell>
-                                    <TableCell>10</TableCell>
-                                    <TableCell>Mumbai</TableCell>
+                                    <TableCell>{row.page_number}</TableCell>
+                                    <TableCell>{row.city}</TableCell>
                                   </TableRow>
                                 ))
                               ) : (
@@ -597,5 +627,6 @@ MainTable.propTypes = {
   CustomToolbar: PropTypes.elementType.isRequired,
   getRowClassName: PropTypes.func.isRequired,
   setSortedFilteredRows: PropTypes.func.isRequired,
+  setChildArticles: PropTypes.func.isRequired,
 };
 export default MainTable;

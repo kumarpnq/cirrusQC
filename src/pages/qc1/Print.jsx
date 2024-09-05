@@ -784,6 +784,7 @@ const Print = () => {
         anchorEls={anchorEls}
         similarLoading={similarLoading}
         childArticles={childArticles}
+        setChildArticles={setChildArticles}
         processRowUpdate={processRowUpdate}
         gridDataLoading={gridDataLoading}
         getRowClassName={getRowClassName}
