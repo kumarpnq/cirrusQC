@@ -123,18 +123,23 @@ const MainTable = ({
   const [selectedSimilarArticle, setSelectedSimilarArticle] = useState([]);
   const handleDeleteSimilarArticle = async (id, row) => {
     try {
-      const userToken = localStorage.getItem("userToken");
+      const userToken = localStorage.getItem("user");
       const params = {
-        parent_id: row?.main_id,
-        child_token: id,
+        parent_id: row?.socialFeedId,
+        child_id: id,
       };
-      const response = await axios.delete(`${url}`, {
+      const response = await axios.delete(`${url}ungroupsinglesocialfeed`, {
         headers: { Authorization: `Bearer ${userToken}` },
         params,
       });
-      console.log(response.data);
+      const successMSG = response.data?.status?.update_status;
+      toast.success(successMSG || "");
+      const updatedChildArticles = childArticles.filter(
+        (article) => article.article !== id
+      );
+      setChildArticles(updatedChildArticles);
     } catch (error) {
-      toast.error("Error : ");
+      toast.error("Something went wrong.");
     }
   };
   const handleOpenEditSimilarArticle = (row) => {
@@ -526,6 +531,8 @@ MainTable.propTypes = {
   handleRowClick: PropTypes.func.isRequired,
   getRowClassName: PropTypes.func.isRequired,
   processRowUpdate: PropTypes.func.isRequired,
+  childArticles: PropTypes.array.isRequired,
+  setChildArticles: PropTypes.func.isRequired,
 };
 
 export default MainTable;

@@ -528,6 +528,7 @@ const Online = () => {
         processRowUpdate={processRowUpdate}
         sortedFilteredRows={sortedFilteredRows}
         setSortedFilteredRows={setSortedFilteredRows}
+        // childArticles={child}
       />
       <EditDialog
         open={open}
