@@ -236,6 +236,18 @@ const EditDialog = ({
       });
       return;
     }
+    const existingCompany = selectedCompanies.find((selectedCompany) =>
+      socialFeedTagDetails.some(
+        (tagDetail) => tagDetail.company_id === selectedCompany.value
+      )
+    );
+
+    if (existingCompany) {
+      toast.warning(`Company "${existingCompany.label}" is already present.`, {
+        position: "bottom-right",
+      });
+      return;
+    }
     try {
       setAddLoading(true);
       const dataToSend = selectedCompanies.map((i) => ({
@@ -360,7 +372,9 @@ const EditDialog = ({
         params,
       });
       if (response.data.result.status) {
-        toast.error("Companies removed successfully");
+        toast.success("Companies removed successfully", {
+          position: "bottom-right",
+        });
         fetchTagDetails();
       }
     } catch (error) {

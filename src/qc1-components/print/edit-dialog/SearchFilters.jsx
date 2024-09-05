@@ -63,6 +63,7 @@ const CustomAccordionDetails = ({
   setSocialFeedId,
   tableDataLoading,
   fetchTableData,
+  setTableData,
 }) => {
   const [companyData, setCompanyData] = useState([]);
   useEffect(() => {
@@ -82,12 +83,13 @@ const CustomAccordionDetails = ({
 
         setCompanyData(response.data.companies);
       } catch (error) {
+        setCompanyData([]);
         console.error("Error fetching companies:", error.message);
       }
     };
 
     fetchCompanies();
-  }, [selectedClient, url]);
+  }, [selectedClient]);
 
   const handleClear = () => {
     setSelectedClient("");
@@ -105,6 +107,7 @@ const CustomAccordionDetails = ({
     setHeadOrSummary("");
     setLink("");
     setSocialFeedId("");
+    setTableData([]);
   };
   return (
     <AccordionDetails>
@@ -262,6 +265,7 @@ CustomAccordionDetails.propTypes = {
   setSocialFeedId: PropTypes.func.isRequired,
   tableDataLoading: PropTypes.bool.isRequired,
   fetchTableData: PropTypes.func.isRequired,
+  setTableData: PropTypes.func.isRequired,
 };
 
 export default CustomAccordionDetails;

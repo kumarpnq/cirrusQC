@@ -85,6 +85,7 @@ const SearchFilters = ({
   setSearchKeyword,
   gridDataLoading,
   fetchListArticleByQC1Print,
+  setGridData,
 }) => {
   const handleClear = () => {
     setSelectedClient("");
@@ -111,6 +112,7 @@ const SearchFilters = ({
     setSystemArticleId("");
     setPageNumber("");
     setSearchKeyword("");
+    setGridData([]);
   };
 
   const [companyData, setCompanyData] = useState([]);
@@ -124,26 +126,25 @@ const SearchFilters = ({
       try {
         const userToken = localStorage.getItem("user");
 
-        // Retrieve the token from localStorage
-
         const endpoint = selectedClient
           ? `${url}companylist/${selectedClient}`
           : `${url}companylist/`;
 
         const response = await axios.get(endpoint, {
           headers: {
-            Authorization: `Bearer ${userToken}`, // Include the token in the headers
+            Authorization: `Bearer ${userToken}`,
           },
         });
 
         setCompanyData(response.data.companies);
       } catch (error) {
+        setCompanyData([]);
         console.error("Error fetching companies:", error.message);
       }
     };
 
     fetchCompanies();
-  }, [selectedClient, url]);
+  }, [selectedClient]);
 
   return (
     <Box
@@ -503,6 +504,7 @@ SearchFilters.propTypes = {
   setSearchKeyword: PropTypes.func.isRequired,
   gridDataLoading: PropTypes.bool.isRequired,
   fetchListArticleByQC1Print: PropTypes.func.isRequired,
+  setGridData: PropTypes.func.isRequired,
 };
 
 export default SearchFilters;

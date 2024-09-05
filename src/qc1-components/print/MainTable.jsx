@@ -167,6 +167,7 @@ const MainTable = ({
                       >
                         <TableHead>
                           <TableRow>
+                            <TableCell sx={{ color: "#ffff" }}>ID</TableCell>
                             <TableCell sx={{ color: "#ffff" }}>
                               Publication
                             </TableCell>
@@ -191,6 +192,9 @@ const MainTable = ({
                               {childArticles.length ? (
                                 childArticles.map((row, index) => (
                                   <TableRow key={index}>
+                                    <TableCell sx={{ color: "#ffff" }}>
+                                      {row.article}
+                                    </TableCell>
                                     <TableCell sx={{ color: "#ffff" }}>
                                       {row.publication_name}
                                     </TableCell>
