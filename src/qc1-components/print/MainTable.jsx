@@ -122,9 +122,6 @@ const MainTable = ({
 
   const [selectedSimilarArticle, setSelectedSimilarArticle] = useState([]);
   const handleDeleteSimilarArticle = async (id, row) => {
-    console.log(id);
-    console.log(row);
-
     try {
       const userToken = localStorage.getItem("userToken");
       const params = {
@@ -145,6 +142,7 @@ const MainTable = ({
       id: 0,
       headline: row.headline,
       socialFeedId: row.article,
+      link: row.link,
     };
     setSelectedSimilarArticle([data]);
     setOpenEditSimilarArticle((pre) => !pre);
@@ -212,7 +210,7 @@ const MainTable = ({
                             <TableCell sx={{ color: "#ffff" }}>
                               Headline
                             </TableCell>
-                            <TableCell sx={{ color: "#ffff" }}>Page</TableCell>
+                            {/* <TableCell sx={{ color: "#ffff" }}>Page</TableCell> */}
                             <TableCell sx={{ color: "#ffff" }}>City</TableCell>
                           </TableRow>
                         </TableHead>
@@ -260,8 +258,8 @@ const MainTable = ({
                                       {row.publication_name}
                                     </TableCell>
                                     <TableCell>{row.headline}</TableCell>
-                                    <TableCell>10</TableCell>
-                                    <TableCell>Mumbai</TableCell>
+                                    {/* <TableCell>10</TableCell> */}
+                                    <TableCell>{row.city}</TableCell>
                                   </TableRow>
                                 ))
                               ) : (
