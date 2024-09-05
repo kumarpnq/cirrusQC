@@ -575,7 +575,7 @@ const EditDialog = ({
                     alignItems="center"
                     gap={1}
                     fontSize={"0.9em"}
-                    href={iframeURI}
+                    href={iframeURI || row?.link}
                     target="_blank"
                     rel="noreferrer"
                     fontFamily="nunito"
@@ -593,7 +593,7 @@ const EditDialog = ({
               />
               <CardContent>
                 <iframe
-                  src={iframeURI}
+                  src={iframeURI || row?.link}
                   frameBorder="0"
                   style={{ width: "100%", height: "540px" }}
                 />

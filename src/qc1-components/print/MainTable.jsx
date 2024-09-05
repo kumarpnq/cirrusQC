@@ -257,7 +257,9 @@ const MainTable = ({
                                     <TableCell>
                                       {row.publication_name}
                                     </TableCell>
-                                    <TableCell>{row.headline}</TableCell>
+                                    <TableCell>
+                                      {row.headline.substring(0, 30) + "..."}
+                                    </TableCell>
                                     {/* <TableCell>10</TableCell> */}
                                     <TableCell>{row.city}</TableCell>
                                   </TableRow>
