@@ -198,9 +198,25 @@ const SecondSection = (props) => {
 
     const requestData = modifiedRows.map((obj) => convertKeys(obj));
 
+    const camelCaseData = requestData.map((i) => ({
+      articleId: i.ARTICLEID,
+      companyId: i.COMPANYID,
+      companyName: i.COMPANYNAME,
+      manualProminence: i.MANUALPROMINENCE,
+      headerSpace: i.HEADERSPACE,
+      space: i.SPACE,
+      reportingTone: i.REPORTINGTONE,
+      reportingSubject: i.REPORTINGSUBJECT,
+      subcategory: i.subcategory,
+      keyword: i.KEYWORD,
+      qc2Remark: i.QC2REMARK,
+      detailSummary: i.DETAILSUMMARY,
+      updateType: i.UPDATETYPE,
+    }));
+
     const data_send = {
-      data: requestData,
-      QCTYPE: "QC2",
+      data: camelCaseData,
+      qcType: "QC2",
     };
 
     try {
@@ -237,7 +253,7 @@ const SecondSection = (props) => {
           {
             articleId: rowData.article_id,
             companyId: selectedCompany.value,
-            companyName: selectedCompany.title,
+            companyName: selectedCompany.label,
             manualProminence: rowData.manual_prominence,
             headerSpace: rowData.header_space,
             space: rowData.space,
@@ -308,9 +324,9 @@ const SecondSection = (props) => {
   };
 
   const requestData = checkedRows.map((item) => ({
-    UPDATETYPE: "D",
-    ARTICLEID: item.article_id,
-    COMPANYID: item.company_id,
+    updateType: "D",
+    articleId: item.article_id,
+    companyId: item.company_id,
   }));
   const userVerification = async () => {
     try {
@@ -332,7 +348,7 @@ const SecondSection = (props) => {
     const isValid = await userVerification();
     const request_data = {
       data: requestData,
-      QCTYPE: "QC2",
+      qcType: "QC2",
     };
     isValid && (await makeRequest(request_data));
     if (!isValid) {

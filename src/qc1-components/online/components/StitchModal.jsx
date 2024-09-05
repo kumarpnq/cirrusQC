@@ -30,7 +30,6 @@ import { url } from "../../../constants/baseUrl";
 import { toast } from "react-toastify";
 import { arrayToString } from "../../../utils/arrayToString";
 import Button from "../../../components/custom/Button";
-import { Link } from "react-router-dom";
 import ArticleView from "../ArticleView";
 // Styles
 const style = {
