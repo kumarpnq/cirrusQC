@@ -54,6 +54,7 @@ const EditDialog = ({
   open,
   setOpen,
   isFiltered,
+  isSimilar,
 }) => {
   const [row, setRow] = useState(null);
   const articleIds = rowData.map((i) => i.id);
@@ -423,11 +424,16 @@ const EditDialog = ({
             component={"div"}
             display={"flex"}
           >
-            <Button btnText="Skip & Next" onClick={handleSkipAndNext} />
-            <Button
-              btnText="Save & Next"
-              onClick={() => handleSubmit("false")}
-            />
+            {!isSimilar && (
+              <>
+                <Button btnText="Skip & Next" onClick={handleSkipAndNext} />
+                <Button
+                  btnText="Save & Next"
+                  onClick={() => handleSubmit("false")}
+                />
+              </>
+            )}
+
             <Button
               btnText="Save & Close"
               onClick={() => handleSubmit("true")}
@@ -607,6 +613,7 @@ EditDialog.propTypes = {
   open: PropTypes.bool.isRequired,
   setOpen: PropTypes.func.isRequired,
   isFiltered: PropTypes.bool,
+  isSimilar: PropTypes.bool,
 };
 
 export default EditDialog;

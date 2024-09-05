@@ -16,6 +16,7 @@ import {
 } from "@mui/material";
 import {
   DataGrid,
+  GridCloseIcon,
   GridPagination,
   GridToolbarContainer,
   GridToolbarFilterButton,
@@ -28,6 +29,8 @@ import { debounce } from "lodash";
 
 // * icons
 import PictureAsPdfIcon from "@mui/icons-material/PictureAsPdf";
+import { useState } from "react";
+import EditDialog from "./EditDialog";
 
 const iconCellStyle = {
   display: "flex",
@@ -67,6 +70,19 @@ const MainTable = ({
       </GridToolbarContainer>
     );
   }
+
+  const [openEditSimilarArticle, setOpenEditSimilarArticle] = useState(false);
+  const [selectedSimilarArticle, setSelectedSimilarArticle] = useState({});
+  const handleDeleteSimilarArticle = async (id) => {};
+  const handleOpenEditSimilarArticle = (row) => {
+    const data = {
+      id: 0,
+      headline: row.headline,
+      main_id: row.article,
+    };
+    setSelectedSimilarArticle(data);
+    setOpenEditSimilarArticle((pre) => !pre);
+  };
 
   const columns = [
     {
@@ -189,11 +205,15 @@ const MainTable = ({
                         sx={{
                           color: "white",
                         }}
-                        className="bg-[#5AACCA]"
+                        className="border"
                         aria-label="simple table"
                       >
-                        <TableHead>
+                        <TableHead className="bg-primary">
                           <TableRow>
+                            <TableCell sx={{ color: "#ffff" }}>Edit</TableCell>
+                            <TableCell sx={{ color: "#ffff" }}>
+                              Action
+                            </TableCell>
                             <TableCell sx={{ color: "#ffff" }}>ID</TableCell>
                             <TableCell sx={{ color: "#ffff" }}>
                               Publication
@@ -201,6 +221,8 @@ const MainTable = ({
                             <TableCell sx={{ color: "#ffff" }}>
                               Headline
                             </TableCell>
+                            <TableCell sx={{ color: "#ffff" }}>Page</TableCell>
+                            <TableCell sx={{ color: "#ffff" }}>City</TableCell>
                           </TableRow>
                         </TableHead>
                         <TableBody>
@@ -219,15 +241,39 @@ const MainTable = ({
                               {childArticles.length ? (
                                 childArticles.map((row, index) => (
                                   <TableRow key={index}>
-                                    <TableCell sx={{ color: "#ffff" }}>
-                                      {row.article}
+                                    <TableCell>
+                                      <IconButton
+                                        onClick={() =>
+                                          handleOpenEditSimilarArticle(row)
+                                        }
+                                      >
+                                        <EditAttributesOutlined className="text-primary" />
+                                      </IconButton>
                                     </TableCell>
-                                    <TableCell sx={{ color: "#ffff" }}>
+                                    <TableCell>
+                                      {" "}
+                                      <IconButton
+                                        sx={{ color: "red" }}
+                                        onClick={() =>
+                                          handleDeleteSimilarArticle(
+                                            row.article
+                                          )
+                                        }
+                                      >
+                                        <GridCloseIcon />
+                                      </IconButton>
+                                    </TableCell>
+                                    <TableCell>{row.article}</TableCell>
+                                    <TableCell>
                                       {row.publication_name}
                                     </TableCell>
-                                    <TableCell sx={{ color: "#ffff" }}>
-                                      {row.headline}
+                                    <TableCell>
+                                      <Tooltip title={row.headline}>
+                                        {row.headline.substring(0, 30) + "..."}
+                                      </Tooltip>
                                     </TableCell>
+                                    <TableCell>10</TableCell>
+                                    <TableCell>Mumbai</TableCell>
                                   </TableRow>
                                 ))
                               ) : (
@@ -469,56 +515,68 @@ const MainTable = ({
   };
 
   return (
-    <Box sx={{ height: 600, width: "100%", mt: 1 }}>
-      <DataGrid
-        rows={rows}
-        columns={columns}
-        pageSize={5}
-        rowsPerPageOptions={[5]}
-        density="compact"
-        getRowHeight={() => "auto"}
-        checkboxSelection
-        apiRef={apiRef}
-        onSortModelChange={handleSortModelChange}
-        onFilterModelChange={handleFilterModelChange}
-        ignoreValueFormatterDuringExport
-        rowSelectionModel={selectionModal}
-        onRowSelectionModelChange={(ids) => {
-          setSelectionModal(ids);
-          handleSelectionChange(ids);
-        }}
-        sx={{
-          "& .MuiDataGrid-columnHeaders": {
-            fontSize: "0.875rem",
-          },
-          "& .MuiDataGrid-cell": {
-            fontSize: "0.9em",
-          },
-          root: {
+    <>
+      <Box sx={{ height: 600, width: "100%", mt: 1 }}>
+        <DataGrid
+          rows={rows}
+          columns={columns}
+          pageSize={5}
+          rowsPerPageOptions={[5]}
+          density="compact"
+          getRowHeight={() => "auto"}
+          checkboxSelection
+          apiRef={apiRef}
+          onSortModelChange={handleSortModelChange}
+          onFilterModelChange={handleFilterModelChange}
+          ignoreValueFormatterDuringExport
+          rowSelectionModel={selectionModal}
+          onRowSelectionModelChange={(ids) => {
+            setSelectionModal(ids);
+            handleSelectionChange(ids);
+          }}
+          sx={{
+            "& .MuiDataGrid-columnHeaders": {
+              fontSize: "0.875rem",
+            },
             "& .MuiDataGrid-cell": {
-              whiteSpace: "normal",
-              wordWrap: "break-word",
+              fontSize: "0.9em",
             },
-          },
-        }}
-        processRowUpdate={processRowUpdate}
-        loading={gridDataLoading && <CircularProgress />}
-        disableDensitySelector
-        disableColumnSelector
-        disableRowSelectionOnClick
-        slots={{ toolbar: CustomToolbar }}
-        slotProps={{
-          toolbar: {
-            showQuickFilter: true,
-            quickFilterProps: {
-              autoFocus: true,
+            root: {
+              "& .MuiDataGrid-cell": {
+                whiteSpace: "normal",
+                wordWrap: "break-word",
+              },
             },
-          },
-        }}
-        hideFooterPagination
-        getRowClassName={getRowClassName}
+          }}
+          processRowUpdate={processRowUpdate}
+          loading={gridDataLoading && <CircularProgress />}
+          disableDensitySelector
+          disableColumnSelector
+          disableRowSelectionOnClick
+          slots={{ toolbar: CustomToolbar }}
+          slotProps={{
+            toolbar: {
+              showQuickFilter: true,
+              quickFilterProps: {
+                autoFocus: true,
+              },
+            },
+          }}
+          hideFooterPagination
+          getRowClassName={getRowClassName}
+        />
+      </Box>
+      <EditDialog
+        open={openEditSimilarArticle}
+        setOpen={setOpenEditSimilarArticle}
+        row={selectedSimilarArticle}
+        rowNumber={0}
+        selectedItems={[]}
+        isMultiple={false}
+        setSelectedItems={() => {}}
+        setSelectionModal={setSelectionModal}
       />
-    </Box>
+    </>
   );
 };
 
