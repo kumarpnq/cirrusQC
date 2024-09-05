@@ -1,4 +1,4 @@
-import { useEffect, useLayoutEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import PropTypes from "prop-types";
 import {
   Modal,
@@ -78,7 +78,7 @@ const EditDialog = ({
     setOpen(false);
   };
 
-  useLayoutEffect(() => {
+  useEffect(() => {
     if (open) {
       let data;
       if (isFiltered) {
@@ -153,7 +153,7 @@ const EditDialog = ({
   };
 
   useEffect(() => {
-    if (open) {
+    if (open && socialFeedId !== undefined) {
       fetchHeaderAndTagDetails();
       fetchTagDetails();
     }

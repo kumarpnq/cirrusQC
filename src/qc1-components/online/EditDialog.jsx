@@ -158,7 +158,7 @@ const EditDialog = ({
   };
 
   useEffect(() => {
-    if (open) {
+    if (open && articleId !== undefined) {
       fetchHeaderAndTagDetails();
       fetchTagDetails();
     }
