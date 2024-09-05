@@ -468,6 +468,7 @@ const Online = () => {
           setSocialFeedId={setSocialFeedId}
           tableDataLoading={tableDataLoading}
           fetchTableData={fetchTableData}
+          setTableData={setTableData}
         />
       </Accordion>
       {isShowSecondAccordion && (

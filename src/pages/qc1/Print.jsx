@@ -749,6 +749,7 @@ const Print = () => {
             setSearchKeyword={setSearchKeyword}
             gridDataLoading={gridDataLoading}
             fetchListArticleByQC1Print={fetchListArticleByQC1Print}
+            setGridData={setGridData}
           />
         </AccordionDetails>
       </Accordion>
