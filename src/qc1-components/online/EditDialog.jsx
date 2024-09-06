@@ -158,7 +158,7 @@ const EditDialog = ({
   };
 
   useEffect(() => {
-    if (open) {
+    if (open && articleId !== undefined) {
       fetchHeaderAndTagDetails();
       fetchTagDetails();
     }
@@ -166,7 +166,7 @@ const EditDialog = ({
 
   // * updating header data
   const [updateHeaderLoading, setUpdateHeaderLoading] = useState(false);
-  const updateHeaderData = async () => {
+  const updateHeaderData = async (isPartial) => {
     try {
       setUpdateHeaderLoading(true);
       const data = {
@@ -193,6 +193,10 @@ const EditDialog = ({
         data: [data],
         qcType: "QC1",
       };
+
+      if (!isPartial) {
+        request_data.QCTYPE = "QC1";
+      }
 
       const response = await axios.post(
         `${url}updatearticleheader/`,
@@ -543,8 +547,13 @@ const EditDialog = ({
                 <CardContent>
                   <Box display={"flex"} gap={1} flexWrap={"wrap"}>
                     <Button
+                      btnText={updateHeaderLoading ? "saving" : "Save partial"}
+                      onClick={() => updateHeaderData(true)}
+                      isLoading={updateHeaderLoading}
+                    />
+                    <Button
                       btnText={updateHeaderLoading ? "saving" : buttonText}
-                      onClick={updateHeaderData}
+                      onClick={() => updateHeaderData(false)}
                       isLoading={updateHeaderLoading}
                     />
                     {isMultiple && (
@@ -639,7 +648,7 @@ const EditDialog = ({
                 />
                 <CardContent>
                   <iframe
-                    src={url + defaultLink}
+                    src={url + (defaultLink || row?.default_link)}
                     frameBorder="0"
                     style={{ width: "100%", height: "540px" }}
                   />

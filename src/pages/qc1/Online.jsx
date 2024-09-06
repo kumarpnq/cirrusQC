@@ -336,6 +336,7 @@ const Online = () => {
       toast.warning("No changes found.");
       return;
     }
+    // const changedRowIds = Object.keys(changedRows);
     try {
       setSaveLoading(true);
 
@@ -368,7 +369,11 @@ const Online = () => {
         toast.success("Data updated.");
         unsavedChangesRef.current.unsavedRows = {};
         unsavedChangesRef.current.rowsBeforeChange = {};
+        // const filteredArray = tableData.filter(
+        //   (item) => !changedRowIds.includes(item.social_feed_id)
+        // );
         fetchTableData();
+        // setTableData(filteredArray);
       } else {
         toast.warning("Something wrong try again.");
       }
@@ -531,6 +536,7 @@ const Online = () => {
         processRowUpdate={processRowUpdate}
         sortedFilteredRows={sortedFilteredRows}
         setSortedFilteredRows={setSortedFilteredRows}
+        // childArticles={child}
       />
       <EditDialog
         open={open}

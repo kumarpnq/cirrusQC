@@ -124,67 +124,65 @@ const GroupUnGroupModal = ({
   };
 
   return (
-    <>
-      <Modal
-        open={openGroupModal}
-        onClose={handleGroupModalClose}
-        aria-labelledby="child-modal-title"
-        aria-describedby="child-modal-description"
-      >
-        <Box sx={groupModalStyle}>
-          <Typography component={Paper} px={1} py={1}>
-            Parent Article&apos;s Association
-          </Typography>
-          <Typography
-            component={"div"}
-            display={"flex"}
-            justifyContent={"space-between"}
-            px={1}
-            py={1}
-          >
-            <span>Basic Details</span>
-            <span className="flex gap-1">
-              <Button btnText="Cancel" onClick={handleGroupModalClose} />
-              <Button
-                btnText={groupLoading ? "saving" : "save"}
-                onClick={handleGroup}
-                isLoading={groupLoading}
-              />
-            </span>
-          </Typography>
-          <CustomTextField
-            value={headlineForGroup}
-            setValue={setHeadlineForGroup}
-            type={"text"}
-            placeholder={"Headline"}
-          />
-
-          <Box sx={{ height: 400, width: "100%", mt: 1 }}>
-            <DataGrid
-              rows={rows}
-              columns={columns}
-              pageSize={5}
-              rowsPerPageOptions={[5]}
-              checkboxSelection
-              rowSelectionModel={selectionModelForGroup}
-              disableRowSelectionOnClick
-              onRowSelectionModelChange={(ids) => {
-                // setSelectionModel(ids);
-                handleSelectionChange(ids);
-              }}
-              sx={{
-                "& .MuiDataGrid-columnHeaders": {
-                  fontSize: "0.875rem",
-                },
-                "& .MuiDataGrid-cell": {
-                  fontSize: "0.9em",
-                },
-              }}
+    <Modal
+      open={openGroupModal}
+      onClose={handleGroupModalClose}
+      aria-labelledby="child-modal-title"
+      aria-describedby="child-modal-description"
+    >
+      <Box sx={groupModalStyle}>
+        <Typography component={Paper} px={1} py={1}>
+          Parent Article&apos;s Association
+        </Typography>
+        <Typography
+          component={"div"}
+          display={"flex"}
+          justifyContent={"space-between"}
+          px={1}
+          py={1}
+        >
+          <span>Basic Details</span>
+          <span className="flex gap-1">
+            <Button btnText="Cancel" onClick={handleGroupModalClose} />
+            <Button
+              btnText={groupLoading ? "saving" : "save"}
+              onClick={handleGroup}
+              isLoading={groupLoading}
             />
-          </Box>
+          </span>
+        </Typography>
+        <CustomTextField
+          value={headlineForGroup}
+          setValue={setHeadlineForGroup}
+          type={"text"}
+          placeholder={"Headline"}
+        />
+
+        <Box sx={{ height: 400, width: "100%", mt: 1 }}>
+          <DataGrid
+            rows={rows}
+            columns={columns}
+            pageSize={5}
+            rowsPerPageOptions={[5]}
+            checkboxSelection
+            rowSelectionModel={selectionModelForGroup}
+            disableRowSelectionOnClick
+            onRowSelectionModelChange={(ids) => {
+              // setSelectionModel(ids);
+              handleSelectionChange(ids);
+            }}
+            sx={{
+              "& .MuiDataGrid-columnHeaders": {
+                fontSize: "0.875rem",
+              },
+              "& .MuiDataGrid-cell": {
+                fontSize: "0.9em",
+              },
+            }}
+          />
         </Box>
-      </Modal>
-    </>
+      </Box>
+    </Modal>
   );
 };
 

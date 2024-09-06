@@ -1,4 +1,4 @@
-import { useEffect, useLayoutEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import PropTypes from "prop-types";
 import {
   Modal,
@@ -54,6 +54,7 @@ const EditDialog = ({
   open,
   setOpen,
   isFiltered,
+  isSimilar,
 }) => {
   const [row, setRow] = useState(null);
   const articleIds = rowData.map((i) => i.id);
@@ -77,7 +78,7 @@ const EditDialog = ({
     setOpen(false);
   };
 
-  useLayoutEffect(() => {
+  useEffect(() => {
     if (open) {
       let data;
       if (isFiltered) {
@@ -154,7 +155,7 @@ const EditDialog = ({
   };
 
   useEffect(() => {
-    if (open) {
+    if (open && socialFeedId !== undefined) {
       fetchHeaderAndTagDetails();
       fetchTagDetails();
     }
@@ -432,11 +433,16 @@ const EditDialog = ({
             component={"div"}
             display={"flex"}
           >
-            <Button btnText="Skip & Next" onClick={handleSkipAndNext} />
-            <Button
-              btnText="Save & Next"
-              onClick={() => handleSubmit("false")}
-            />
+            {!isSimilar && (
+              <>
+                <Button btnText="Skip & Next" onClick={handleSkipAndNext} />
+                <Button
+                  btnText="Save & Next"
+                  onClick={() => handleSubmit("false")}
+                />
+              </>
+            )}
+
             <Button
               btnText="Save & Close"
               onClick={() => handleSubmit("true")}
@@ -578,7 +584,7 @@ const EditDialog = ({
                     alignItems="center"
                     gap={1}
                     fontSize={"0.9em"}
-                    href={iframeURI}
+                    href={iframeURI || row?.link}
                     target="_blank"
                     rel="noreferrer"
                     fontFamily="nunito"
@@ -596,7 +602,7 @@ const EditDialog = ({
               />
               <CardContent>
                 <iframe
-                  src={iframeURI}
+                  src={iframeURI || row?.link}
                   frameBorder="0"
                   style={{ width: "100%", height: "540px" }}
                 />
@@ -616,6 +622,7 @@ EditDialog.propTypes = {
   open: PropTypes.bool.isRequired,
   setOpen: PropTypes.func.isRequired,
   isFiltered: PropTypes.bool,
+  isSimilar: PropTypes.bool,
 };
 
 export default EditDialog;

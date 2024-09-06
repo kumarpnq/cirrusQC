@@ -512,20 +512,6 @@ const Print = () => {
 
   // * un-group selected items
   const [unGroupLoading, setUnGroupLoading] = useState(false);
-
-  // * fetch similar articles
-  const fetchSimilarArticles = async (articleId) => {
-    const urlFetchSimilarArticles = `${url}similararticles/?article_id=${articleId}`;
-
-    try {
-      const response = await axios.get(urlFetchSimilarArticles, { headers });
-      return response.data.child_articles;
-    } catch (error) {
-      console.error("Error fetching similar articles:", error);
-      return [];
-    }
-  };
-
   const handleClickUnGroupItems = async () => {
     if (selectedItems.length !== 1)
       return toast.warning("Please select only one item.");
@@ -554,6 +540,19 @@ const Print = () => {
       console.log(error.message);
     } finally {
       setUnGroupLoading(false);
+    }
+  };
+
+  // * fetch similar articles
+  const fetchSimilarArticles = async (articleId) => {
+    const urlFetchSimilarArticles = `${url}similararticles/?article_id=${articleId}`;
+
+    try {
+      const response = await axios.get(urlFetchSimilarArticles, { headers });
+      return response.data.child_articles;
+    } catch (error) {
+      console.error("Error fetching similar articles:", error);
+      return [];
     }
   };
 
@@ -594,6 +593,8 @@ const Print = () => {
       return;
     }
 
+    const changedRowIds = Object.keys(changedRows);
+
     try {
       setSaveLoading(true);
 
@@ -630,7 +631,11 @@ const Print = () => {
         unsavedChangesRef.current.unsavedRows = {};
         unsavedChangesRef.current.rowsBeforeChange = {};
         setHasUnsavedRows(false);
-        fetchListArticleByQC1Print();
+        const filteredArray = gridData.filter(
+          (item) => !changedRowIds.includes(item.id)
+        );
+        // fetchListArticleByQC1Print();
+        setGridData(filteredArray);
       } else {
         toast.warning("Something went wrong, please try again.");
       }
@@ -784,6 +789,7 @@ const Print = () => {
         anchorEls={anchorEls}
         similarLoading={similarLoading}
         childArticles={childArticles}
+        setChildArticles={setChildArticles}
         processRowUpdate={processRowUpdate}
         gridDataLoading={gridDataLoading}
         getRowClassName={getRowClassName}

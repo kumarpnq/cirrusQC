@@ -19,6 +19,7 @@ import {
 } from "@mui/material";
 import {
   DataGrid,
+  GridCloseIcon,
   GridPagination,
   GridToolbarContainer,
   GridToolbarFilterButton,
@@ -28,6 +29,9 @@ import axios from "axios";
 import { useState } from "react";
 import { url } from "../../constants/baseUrl";
 import ArticleView from "./edit-dialog/ArticleView";
+
+import EditDialog from "./edit-dialog/EditDialog";
+import { toast } from "react-toastify";
 
 const iconCellStyle = {
   display: "flex",
@@ -74,6 +78,7 @@ const MainTable = ({
   const [anchorEls, setAnchorEls] = useState({});
   const [similarLoading, setSimilarLoading] = useState(false);
   const [childArticles, setChildArticles] = useState([]);
+  const [openEditSimilarArticle, setOpenEditSimilarArticle] = useState(false);
 
   // * article view
   const [clickedArticle, setClickedArticle] = useState(null);
@@ -114,6 +119,39 @@ const MainTable = ({
     }));
     setSimilarLoading(false);
   };
+
+  const [selectedSimilarArticle, setSelectedSimilarArticle] = useState([]);
+  const handleDeleteSimilarArticle = async (id, row) => {
+    try {
+      const userToken = localStorage.getItem("user");
+      const params = {
+        parent_id: row?.socialFeedId,
+        child_id: id,
+      };
+      const response = await axios.delete(`${url}ungroupsinglesocialfeed`, {
+        headers: { Authorization: `Bearer ${userToken}` },
+        params,
+      });
+      const successMSG = response.data?.status?.update_status;
+      toast.success(successMSG || "");
+      const updatedChildArticles = childArticles.filter(
+        (article) => article.article !== id
+      );
+      setChildArticles(updatedChildArticles);
+    } catch (error) {
+      toast.error("Something went wrong.");
+    }
+  };
+  const handleOpenEditSimilarArticle = (row) => {
+    const data = {
+      id: 0,
+      headline: row.headline,
+      socialFeedId: row.article,
+      link: row.link,
+    };
+    setSelectedSimilarArticle([data]);
+    setOpenEditSimilarArticle((pre) => !pre);
+  };
   const columns = [
     {
       field: "action",
@@ -151,7 +189,6 @@ const MainTable = ({
                     sx={{
                       p: 1,
                       bgcolor: "background.paper",
-                      // height: 400,
                       maxWidth: 700,
                       maxHeight: 400,
                       overflow: "scroll",
@@ -162,11 +199,15 @@ const MainTable = ({
                         sx={{
                           color: "white",
                         }}
-                        className="bg-[#5AACCA]"
+                        className="border"
                         aria-label="simple table"
                       >
-                        <TableHead>
+                        <TableHead className="bg-primary">
                           <TableRow>
+                            <TableCell sx={{ color: "#ffff" }}>Edit</TableCell>
+                            <TableCell sx={{ color: "#ffff" }}>
+                              Action
+                            </TableCell>
                             <TableCell sx={{ color: "#ffff" }}>ID</TableCell>
                             <TableCell sx={{ color: "#ffff" }}>
                               Publication
@@ -174,6 +215,8 @@ const MainTable = ({
                             <TableCell sx={{ color: "#ffff" }}>
                               Headline
                             </TableCell>
+                            {/* <TableCell sx={{ color: "#ffff" }}>Page</TableCell> */}
+                            <TableCell sx={{ color: "#ffff" }}>City</TableCell>
                           </TableRow>
                         </TableHead>
                         <TableBody>
@@ -192,21 +235,42 @@ const MainTable = ({
                               {childArticles.length ? (
                                 childArticles.map((row, index) => (
                                   <TableRow key={index}>
-                                    <TableCell sx={{ color: "#ffff" }}>
-                                      {row.article}
+                                    <TableCell>
+                                      <IconButton
+                                        onClick={() =>
+                                          handleOpenEditSimilarArticle(row)
+                                        }
+                                      >
+                                        <EditAttributesOutlined className="text-primary" />
+                                      </IconButton>
                                     </TableCell>
-                                    <TableCell sx={{ color: "#ffff" }}>
+                                    <TableCell>
+                                      {" "}
+                                      <IconButton
+                                        sx={{ color: "red" }}
+                                        onClick={() =>
+                                          handleDeleteSimilarArticle(
+                                            row.article,
+                                            params.row
+                                          )
+                                        }
+                                      >
+                                        <GridCloseIcon />
+                                      </IconButton>
+                                    </TableCell>
+                                    <TableCell>{row.article}</TableCell>
+                                    <TableCell>
                                       {row.publication_name}
                                     </TableCell>
-                                    <TableCell sx={{ color: "#ffff" }}>
-                                      {row.headline}
+                                    <TableCell>
+                                      {row.headline.substring(0, 30) + "..."}
                                     </TableCell>
+                                    {/* <TableCell>10</TableCell> */}
+                                    <TableCell>{row.city}</TableCell>
                                   </TableRow>
                                 ))
                               ) : (
-                                <TableCell sx={{ color: "#ffff" }}>
-                                  No Data found
-                                </TableCell>
+                                <TableCell>No Data found</TableCell>
                               )}
                             </>
                           )}
@@ -445,6 +509,15 @@ const MainTable = ({
         setOpen={setOpen}
         clickedArticle={clickedArticle}
       />
+      <EditDialog
+        open={openEditSimilarArticle}
+        setOpen={setOpenEditSimilarArticle}
+        rowData={selectedSimilarArticle}
+        rowNumber={0}
+        setRowNumber={() => {}}
+        isSimilar
+        isFiltered
+      />
     </>
   );
 };
@@ -458,6 +531,8 @@ MainTable.propTypes = {
   handleRowClick: PropTypes.func.isRequired,
   getRowClassName: PropTypes.func.isRequired,
   processRowUpdate: PropTypes.func.isRequired,
+  childArticles: PropTypes.array.isRequired,
+  setChildArticles: PropTypes.func.isRequired,
 };
 
 export default MainTable;
