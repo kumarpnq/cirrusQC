@@ -181,7 +181,7 @@ const CustomMultiSelect = ({
                 </ListItem>
                 <Divider />
                 <ListWindow
-                  height={250}
+                  height={150}
                   itemCount={filteredOptions.length}
                   itemSize={40}
                   width={dropdownWidth}
