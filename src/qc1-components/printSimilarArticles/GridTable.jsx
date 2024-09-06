@@ -1,5 +1,6 @@
 import {
   DataGrid,
+  GridPagination,
   GridToolbarContainer,
   GridToolbarFilterButton,
   GridToolbarQuickFilter,
@@ -25,6 +26,9 @@ import { useState } from "react";
 import { Link } from "react-router-dom";
 import axios from "axios";
 import { url } from "../../constants/baseUrl";
+import { saveTableSettings } from "../../constants/saveTableSetting";
+import useUserSettings from "../../hooks/useUserSettings";
+import { toast } from "react-toastify";
 
 const iconCellStyle = {
   display: "flex",
@@ -34,13 +38,20 @@ const iconCellStyle = {
 };
 
 // * custom toolbar
+
 function CustomToolbar() {
   return (
     <GridToolbarContainer
       sx={{ display: "flex", justifyContent: "space-between" }}
     >
-      <GridToolbarFilterButton />
+      {/* <GridToolbarColumnsButton /> */}
+      <Box sx={{ display: "flex" }}>
+        <GridToolbarFilterButton />
+        <GridPagination />
+      </Box>
+      {/* <GridToolbarDensitySelector /> */}
       <GridToolbarQuickFilter />
+      {/* Export button is not included */}
     </GridToolbarContainer>
   );
 }
@@ -52,6 +63,8 @@ const GridTable = ({
   setSelectionModal,
   setSelectedItems,
 }) => {
+  const userColumnSettings = useUserSettings("printSimilarArticles", "Main");
+
   // * similar articles popper
   const [anchorEls, setAnchorEls] = useState({});
   const [similarLoading, setSimilarLoading] = useState(false);
@@ -75,7 +88,7 @@ const GridTable = ({
       });
       setChildArticles(response.data.child_articles);
     } catch (error) {
-      console.log(error.message);
+      toast.error("Something went wrong.");
     } finally {
       setSimilarLoading(false);
     }
@@ -101,7 +114,7 @@ const GridTable = ({
     {
       field: "action",
       headerName: "Action",
-      width: 50,
+      width: userColumnSettings?.action || 50,
       renderCell: (params) => (
         <div style={iconCellStyle}>
           {params.row.similarArticles === "Yes" && (
@@ -136,15 +149,9 @@ const GridTable = ({
                     }}
                   >
                     <TableContainer component={Paper}>
-                      <Table
-                        sx={{
-                          color: "white",
-                        }}
-                        className="bg-[#5AACCA]"
-                        aria-label="simple table"
-                      >
+                      <Table aria-label="simple table">
                         <TableHead>
-                          <TableRow>
+                          <TableRow className="bg-primary">
                             <TableCell sx={{ color: "#ffff" }}>
                               Publication
                             </TableCell>
@@ -169,18 +176,14 @@ const GridTable = ({
                               {childArticles.length ? (
                                 childArticles.map((row, index) => (
                                   <TableRow key={index}>
-                                    <TableCell sx={{ color: "#ffff" }}>
+                                    <TableCell>
                                       {row.publication_name}
                                     </TableCell>
-                                    <TableCell sx={{ color: "#ffff" }}>
-                                      {row.headline}
-                                    </TableCell>
+                                    <TableCell>{row.headline}</TableCell>
                                   </TableRow>
                                 ))
                               ) : (
-                                <TableCell sx={{ color: "#ffff" }}>
-                                  No Data found
-                                </TableCell>
+                                <TableCell>No Data found</TableCell>
                               )}
                             </>
                           )}
@@ -195,9 +198,21 @@ const GridTable = ({
         </div>
       ),
     },
-    { field: "headline", headerName: "Headline", width: 300 },
-    { field: "summary", headerName: "Summary", width: 400 },
-    { field: "journalist", headerName: "Journalist", width: 150 },
+    {
+      field: "headline",
+      headerName: "Headline",
+      width: userColumnSettings?.headline || 300,
+    },
+    {
+      field: "summary",
+      headerName: "Summary",
+      width: userColumnSettings?.summary || 400,
+    },
+    {
+      field: "journalist",
+      headerName: "Journalist",
+      width: userColumnSettings?.journalist || 150,
+    },
     {
       field: "url",
       headerName: "URL",
@@ -241,6 +256,12 @@ const GridTable = ({
     articleType: item.article_type,
   }));
 
+  const handleColumnResize = (params) => {
+    let field = params.colDef.field;
+    let width = params.width;
+    saveTableSettings("printSimilarArticles", "Main", field, width);
+  };
+
   return (
     <Box sx={{ height: 600, width: "100%", mt: 1 }}>
       <DataGrid
@@ -258,11 +279,15 @@ const GridTable = ({
           setSelectionModal(ids);
           handleSelectionChange(ids);
         }}
+        onColumnResize={handleColumnResize}
         loading={tableLoading}
         getRowHeight={() => "auto"}
         rowsPerPageOptions={[5, 10, 20]}
+        components={{ Toolbar: CustomToolbar }}
         checkboxSelection
         disableRowSelectionOnClick
+        hideFooterSelectedRowCount
+        hideFooterPagination
         sx={{
           "& .MuiDataGrid-columnHeaders": {
             fontSize: "0.875rem",

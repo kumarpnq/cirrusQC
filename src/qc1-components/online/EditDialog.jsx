@@ -25,6 +25,8 @@ import { toast } from "react-toastify";
 import Button from "../../components/custom/Button";
 import ScrollNavigator from "./components/ScrollNavigator";
 import { arrayToString } from "../../utils/arrayToString";
+import { saveTableSettings } from "../../constants/saveTableSetting";
+import useUserSettings from "../../hooks/useUserSettings";
 
 const style = {
   position: "absolute",
@@ -55,6 +57,9 @@ const EditDialog = ({
   setSelectionModal,
   isMultiple,
 }) => {
+  // * user settings
+  const userColumnSettings = useUserSettings("print", "EditMain");
+
   // * headers
   const userToken = localStorage.getItem("user");
   const headers = {
@@ -389,7 +394,7 @@ const EditDialog = ({
     {
       field: "Action",
       headerName: "Action",
-      width: 70,
+      width: userColumnSettings?.Action || 70,
       renderCell: (params) => (
         <IconButton
           sx={{ color: "red" }}
@@ -399,8 +404,16 @@ const EditDialog = ({
         </IconButton>
       ),
     },
-    { field: "CompanyName", headerName: "Company", width: 300 },
-    { field: "keyword", headerName: "Keyword", width: 300 },
+    {
+      field: "CompanyName",
+      headerName: "Company",
+      width: userColumnSettings?.CompanyName || 300,
+    },
+    {
+      field: "keyword",
+      headerName: "Keyword",
+      width: userColumnSettings?.Keyword || 300,
+    },
   ];
 
   const rows = articleTagDetails.map((item) => ({
@@ -449,6 +462,13 @@ const EditDialog = ({
   };
   // * save button text
   const buttonText = isMultiple ? "Save & Next" : "save";
+
+  // * resize columns
+  const handleColumnResize = (params) => {
+    let field = params.colDef.field;
+    let width = params.width;
+    saveTableSettings("print", "EditMain", field, width);
+  };
 
   return (
     <Fragment>
@@ -606,6 +626,7 @@ const EditDialog = ({
                       columns={columns}
                       density="compact"
                       checkboxSelection
+                      onColumnResize={handleColumnResize}
                       onRowSelectionModelChange={handleRowSelection}
                       loading={articleTagDetailsLoading && <CircularProgress />}
                       pageSize={5}

@@ -26,6 +26,8 @@ import { url } from "../../../constants/baseUrl";
 import { toast } from "react-toastify";
 import Button from "../../../components/custom/Button";
 import { arrayToString } from "../../../utils/arrayToString";
+import { saveTableSettings } from "../../../constants/saveTableSetting";
+import useUserSettings from "../../../hooks/useUserSettings";
 
 const style = {
   position: "absolute",
@@ -56,6 +58,13 @@ const EditDialog = ({
   isFiltered,
   isSimilar,
 }) => {
+  // * user setting
+
+  const userColumnSettings = useUserSettings(
+    "printSimilarArticles",
+    "EditMain"
+  );
+
   const [row, setRow] = useState(null);
   const articleIds = rowData.map((i) => i.id);
 
@@ -325,7 +334,7 @@ const EditDialog = ({
     {
       field: "Action",
       headerName: "Action",
-      width: 70,
+      width: userColumnSettings?.action || 70,
       renderCell: (params) => (
         <IconButton
           sx={{ color: "red" }}
@@ -335,8 +344,16 @@ const EditDialog = ({
         </IconButton>
       ),
     },
-    { field: "CompanyName", headerName: "Company", width: 300 },
-    { field: "Keyword", headerName: "Keyword", width: 300 },
+    {
+      field: "CompanyName",
+      headerName: "Company",
+      width: userColumnSettings?.CompanyName || 300,
+    },
+    {
+      field: "Keyword",
+      headerName: "Keyword",
+      width: userColumnSettings?.KeyWord || 300,
+    },
   ];
 
   const rows = (socialFeedTagDetails || []).map((detail) => ({
@@ -345,6 +362,12 @@ const EditDialog = ({
     Keyword: detail.keyword,
     companyId: detail.company_id,
   }));
+
+  const handleColumnResize = (params) => {
+    let field = params.colDef.field;
+    let width = params.width;
+    saveTableSettings("printSimilarArticles", "EditMain", field, width);
+  };
 
   const [selectionModel, setSelectionModel] = useState([]);
   const [removeMultipleLoading, setRemoveMultipleLoading] = useState(false);
@@ -559,6 +582,7 @@ const EditDialog = ({
                     columns={columns}
                     density="compact"
                     checkboxSelection
+                    onColumnResize={handleColumnResize}
                     onRowSelectionModelChange={handleRowSelection}
                     loading={
                       socialFeedTagDetailsLoading && <CircularProgress />
