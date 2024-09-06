@@ -29,9 +29,8 @@ const useStyles = makeStyles((theme) => ({
   },
   paperBox: {
     height: 250,
-    overflowY: "scroll",
-    overflowX: "hidden",
     background: "#fff",
+    overflow: "hidden",
   },
   select: {
     minHeight: 40,

@@ -138,6 +138,7 @@ const ResearchScreen = () => {
       setShowTableData(false);
     } else {
       console.log(companyError);
+      setCompany([]);
     }
   }, [
     clientId,
