@@ -128,12 +128,12 @@ const DebounceSearchCompany = ({
       </div>
 
       {showResults && (
-        <ul className="absolute left-0 right-0 px-2 py-2 text-gray-600 bg-white border border-gray-400 rounded-sm shadow-md top-6 h-[250] overflow-y-scroll z-50">
+        <ul className="absolute left-0 right-0 px-2 py-2 text-gray-600 bg-white border border-gray-400 rounded-sm shadow-md top-6 h-[250px] overflow-y-scroll z-50">
           <li>
             <input
               className="border border-gray-500 w-full rounded-sm outline-none text-[0.8em]  py-1 pl-1"
               type="text"
-              placeholder="Search companies..."
+              placeholder="Search companiees..."
               onChange={(e) => handleSearchTermChange(e.target.value)}
               // onFocus={() => setShowResults(true)} // Show results when input is focused
             />
