@@ -166,7 +166,7 @@ const EditDialog = ({
 
   // * updating header data
   const [updateHeaderLoading, setUpdateHeaderLoading] = useState(false);
-  const updateHeaderData = async () => {
+  const updateHeaderData = async (isPartial) => {
     try {
       setUpdateHeaderLoading(true);
       const data = {
@@ -191,8 +191,12 @@ const EditDialog = ({
 
       const request_data = {
         data: [data],
-        QCTYPE: "QC1",
+        // QCTYPE: "QC1",
       };
+
+      if (!isPartial) {
+        request_data.QCTYPE = "QC1";
+      }
 
       const response = await axios.post(
         `${url}updatearticleheader/`,
@@ -543,8 +547,13 @@ const EditDialog = ({
                 <CardContent>
                   <Box display={"flex"} gap={1} flexWrap={"wrap"}>
                     <Button
+                      btnText={updateHeaderLoading ? "saving" : "Save partial"}
+                      onClick={() => updateHeaderData(true)}
+                      isLoading={updateHeaderLoading}
+                    />
+                    <Button
                       btnText={updateHeaderLoading ? "saving" : buttonText}
-                      onClick={updateHeaderData}
+                      onClick={() => updateHeaderData(false)}
                       isLoading={updateHeaderLoading}
                     />
                     {isMultiple && (
