@@ -27,6 +27,7 @@ import { url } from "../../../constants/baseUrl";
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { qc1ArrayWithPartially } from "../../../constants/dataArray";
+import useFetchCompanies from "../../../hooks/useFetchCompanies";
 
 const SearchFilters = ({
   classes,
@@ -115,36 +116,11 @@ const SearchFilters = ({
     setGridData([]);
   };
 
-  const [companyData, setCompanyData] = useState([]);
-
   // * city data fetch
   const { data } = useFetchData(`${url}citieslist`);
   const cityData = data?.data?.cities || [];
 
-  useEffect(() => {
-    const fetchCompanies = async () => {
-      try {
-        const userToken = localStorage.getItem("user");
-
-        const endpoint = selectedClient
-          ? `${url}companylist/${selectedClient}`
-          : `${url}companylist/`;
-
-        const response = await axios.get(endpoint, {
-          headers: {
-            Authorization: `Bearer ${userToken}`,
-          },
-        });
-
-        setCompanyData(response.data.companies);
-      } catch (error) {
-        setCompanyData([]);
-        console.error("Error fetching companies:", error.message);
-      }
-    };
-
-    fetchCompanies();
-  }, [selectedClient]);
+  const companyData = useFetchCompanies(selectedClient);
 
   return (
     <Box

@@ -353,9 +353,9 @@ const EditDialog = ({
     try {
       setRemoveMultipleLoading(true);
       const params = {
-        socialfeed_ids: arrayToString([socialFeedId]),
-        company_ids: arrayToString(selectionModel),
-        QCTYPE: "QC1",
+        socialfeedIds: arrayToString([socialFeedId]),
+        companyIds: arrayToString(selectionModel),
+        // QCTYPE: "QC1",
       };
       const response = await axios.delete(url3, {
         headers: {

@@ -38,7 +38,6 @@ import CustomAccordionDetails from "../../qc1-components/print/edit-dialog/Searc
 import GroupUnGroupModal from "../../qc1-components/print/Group&Ungroup";
 import MainTable from "../../qc1-components/print/MainTable";
 import AddCompaniesModal from "../../qc1-components/components/AddCompanyModal";
-import { differenceInHours } from "date-fns";
 
 const useStyle = makeStyles(() => ({
   dropDowns: {

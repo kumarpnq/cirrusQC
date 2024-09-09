@@ -16,9 +16,8 @@ import Button from "../../../components/custom/Button";
 import CustomTextField from "../../../@core/CutsomTextField";
 import CustomMultiSelect from "../../../@core/CustomMultiSelect";
 import { formattedDate, formattedNextDay } from "../../../constants/dates";
-import { useEffect, useState } from "react";
-import { url } from "../../../constants/baseUrl";
-import axios from "axios";
+
+import useFetchCompanies from "../../../hooks/useFetchCompanies";
 
 const CustomAccordionDetails = ({
   clientData,
@@ -65,31 +64,7 @@ const CustomAccordionDetails = ({
   fetchTableData,
   setTableData,
 }) => {
-  const [companyData, setCompanyData] = useState([]);
-  useEffect(() => {
-    const fetchCompanies = async () => {
-      try {
-        const userToken = localStorage.getItem("user");
-
-        const endpoint = selectedClient
-          ? `${url}companylist/${selectedClient}`
-          : `${url}companylist/`;
-
-        const response = await axios.get(endpoint, {
-          headers: {
-            Authorization: `Bearer ${userToken}`,
-          },
-        });
-
-        setCompanyData(response.data.companies);
-      } catch (error) {
-        setCompanyData([]);
-        console.error("Error fetching companies:", error.message);
-      }
-    };
-
-    fetchCompanies();
-  }, [selectedClient]);
+  const companyData = useFetchCompanies(selectedClient);
 
   const handleClear = () => {
     setSelectedClient("");
