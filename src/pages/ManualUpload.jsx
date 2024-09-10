@@ -403,8 +403,8 @@ const ManualUpload = () => {
     <div className="mx-4">
       <BasicTabs value={tabPanelValue} setValue={setTabPanelValue} />
       {tabPanelValue ? (
-        // <BulkUpload />
-        <div>Work in progress...</div>
+        // <div>Work in progress...</div>
+        <BulkUpload />
       ) : (
         <>
           {" "}
