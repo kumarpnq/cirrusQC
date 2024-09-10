@@ -36,6 +36,7 @@ import Continents from "../components/research-dropdowns/Continents";
 import Countries from "../components/research-dropdowns/Countries";
 import CustomAutocomplete from "../components/custom/Autocomplet";
 import CustomMultiSelect from "../@core/CustomMultiSelect";
+import CompanyList from "../qc1-components/components/CompanyList";
 
 const useStyle = makeStyles(() => ({
   dropDowns: {
@@ -337,7 +338,7 @@ const ResearchScreen = () => {
             {/* comapany */}
 
             <div className="w-[200px] mt-3">
-              <CustomMultiSelect
+              {/* <CustomMultiSelect
                 dropdownToggleWidth={200}
                 dropdownWidth={250}
                 keyId="companyid"
@@ -346,6 +347,11 @@ const ResearchScreen = () => {
                 selectedItems={companies}
                 setSelectedItems={setCompanies}
                 title="companies"
+              /> */}
+              <CompanyList
+                selectedCompanies={companies}
+                setSelectedCompanies={setCompanies}
+                selectedClient={clientId}
               />
             </div>
             {/* Datetype */}

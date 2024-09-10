@@ -92,9 +92,20 @@ const UploadControl = ({
         });
       });
       const responses = await Promise.all(requests);
-      const responseData = responses.map((i) => i.data);
+      const processResponseData = responses.map((i) => i.data);
+      const processedLinks = processResponseData
+        .filter((item) => item.message.update_status)
+        .map((item) => item.message.link);
 
-      console.log(responseData);
+      const updatedGridData = gridData.filter(
+        (row) => !processedLinks.includes(row.Link)
+      );
+      setGridData(updatedGridData);
+      if (processedLinks.length) {
+        toast.success("Data inserted.");
+        setSelectedRows([]);
+        setSelectionModal([]);
+      }
     } catch (error) {
       console.log(error);
     } finally {

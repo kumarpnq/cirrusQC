@@ -9,6 +9,8 @@ const DebounceSearchCompany = ({
   setSelectedCompany,
   selectedCompany,
   isMultiple,
+  width,
+  height,
 }) => {
   const [searchResults, setSearchResults] = useState([]);
   const [selectedOptions, setSelectedOptions] = useState(
@@ -104,12 +106,14 @@ const DebounceSearchCompany = ({
 
   return (
     <div
-      style={{ width: "300px" }}
+      style={{ width: width ? width : "300px" }}
       className="relative z-50 mt-2"
       ref={containerRef}
     >
       <div
-        className="flex items-center h-6 pr-8 border border-gray-400 rounded-sm"
+        className={`flex items-center pr-8 border border-gray-400 rounded-sm ${
+          height ? height : "h-6"
+        }`}
         onClick={() => setShowResults(!showResults)}
       >
         <h2

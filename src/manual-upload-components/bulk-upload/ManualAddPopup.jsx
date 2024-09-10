@@ -17,17 +17,22 @@ import {
 } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
 import PropTypes from "prop-types";
-import SearchDropdown from "../../@core/DebounceMUICompany";
 import DebounceSearchCompany from "../../@core/DebounceSearchCompany";
+import { format, parse } from "date-fns";
 
 const ManualAddPopup = ({ open, onClose, setData }) => {
-  //   const [socialFeedId, setSocialFeedId] = useState("");
-  const [date, setDate] = useState("");
-  const [companyName, setCompanyName] = useState("");
+  const [date, setDate] = useState(() => format(new Date(), "dd-MMM-yy"));
   const [link, setLink] = useState("");
   const [records, setRecords] = useState([]);
   const [linkError, setLinkError] = useState(false);
-  const [selectedCompany, setSelectedCompany] = useState(null);
+  const [selectedCompany, setSelectedCompany] = useState([]);
+
+  const formatSelectedCompanies = () => {
+    return selectedCompany.map((company) => company.value).join(",");
+  };
+  const formatSelectedCompaniesLabel = () => {
+    return selectedCompany.map((company) => company.label).join(",");
+  };
 
   const validateLink = (url) => {
     const regex =
@@ -50,12 +55,17 @@ const ManualAddPopup = ({ open, onClose, setData }) => {
   const handleAddRecord = () => {
     setRecords([
       ...records,
-      { Date: date, CompanyName: companyName, Link: link },
+      {
+        Date: date,
+        CompanyID: formatSelectedCompanies(),
+        CompanyName: formatSelectedCompaniesLabel,
+        Link: link,
+      },
     ]);
-    // setSocialFeedId("");
+    // Clear the fields after adding
     // setDate("");
-    // setCompanyName("");
     // setLink("");
+    // setSelectedCompany([]);
   };
 
   const handleAddRecords = () => {
@@ -66,18 +76,28 @@ const ManualAddPopup = ({ open, onClose, setData }) => {
     setRecords(records.filter((_, i) => i !== index));
   };
 
+  const handleDateChange = (e) => {
+    const newDate = e.target.value;
+    try {
+      // Parse and format the date to match 'dd-MMM-yy'
+      const parsedDate = parse(newDate, "yyyy-MM-dd", new Date());
+      setDate(format(parsedDate, "dd-MMM-yy"));
+    } catch (error) {
+      console.error("Error parsing date:", error);
+    }
+  };
+
   return (
     <Dialog open={open} onClose={onClose} fullWidth maxWidth="sm">
       <DialogTitle>Manual Add</DialogTitle>
       <DialogContent>
         <Grid container spacing={1}>
-          <Grid item xs={12} sm={6}>
+          {/* <Grid item xs={12} sm={6}>
             <DebounceSearchCompany
               selectedCompany={selectedCompany}
               setSelectedCompany={setSelectedCompany}
             />
-            <SearchDropdown />
-          </Grid>
+          </Grid> */}
           <Grid item xs={12} sm={6}>
             <TextField
               label="Date"
@@ -86,18 +106,17 @@ const ManualAddPopup = ({ open, onClose, setData }) => {
               type="date"
               size="small"
               InputLabelProps={{ shrink: true }}
-              value={date}
-              onChange={(e) => setDate(e.target.value)}
+              value={format(parse(date, "dd-MMM-yy", new Date()), "yyyy-MM-dd")}
+              onChange={handleDateChange}
             />
           </Grid>
           <Grid item xs={12} sm={6}>
-            <TextField
-              label="Company Name"
-              fullWidth
-              margin="dense"
-              size="small"
-              value={companyName}
-              onChange={(e) => setCompanyName(e.target.value)}
+            <DebounceSearchCompany
+              selectedCompany={selectedCompany}
+              setSelectedCompany={setSelectedCompany}
+              isMultiple
+              width={"100%"}
+              height={"h-10"}
             />
           </Grid>
           <Grid item xs={12} sm={12}>
