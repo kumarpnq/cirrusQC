@@ -6,13 +6,20 @@ import { toast } from "react-toastify";
 import ManualAddPopup from "./bulk-upload/ManualAddPopup";
 
 function BulkUpload() {
-  const [data, setData] = useState(null);
+  const [data, setData] = useState([]);
   const [dataForGrid, setDataForGrid] = useState([]);
   const [isPopupOpen, setIsPopupOpen] = useState(false);
+  const [selectedRows, setSelectedRows] = useState([]);
+  const [selectionModal, setSelectionModal] = useState([]);
 
   const handleParse = () => {
     if (data) {
-      setDataForGrid(data);
+      const parsedData = data.map((item) => ({
+        ...item,
+        status: "pending",
+      }));
+
+      setDataForGrid(parsedData);
     } else {
       toast.warning("No data found.");
       setDataForGrid([]);
@@ -34,11 +41,24 @@ function BulkUpload() {
 
         <UploadSection setData={setData} />
 
-        <UploadControl onParse={handleParse} onAdd={handleAdd} />
+        <UploadControl
+          onParse={handleParse}
+          onAdd={handleAdd}
+          selectedRows={selectedRows}
+          setSelectedRows={setSelectedRows}
+          setSelectionModal={setSelectionModal}
+          gridData={dataForGrid}
+          setGridData={setDataForGrid}
+        />
       </div>
 
       {/* data table */}
-      <BulkTable data={dataForGrid} />
+      <BulkTable
+        data={dataForGrid}
+        setSelectedRows={setSelectedRows}
+        selectionModal={selectionModal}
+        setSelectionModal={setSelectionModal}
+      />
       <ManualAddPopup
         open={isPopupOpen}
         onClose={handlePopupClose}

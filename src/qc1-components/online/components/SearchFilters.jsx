@@ -28,6 +28,7 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import { qc1ArrayWithPartially } from "../../../constants/dataArray";
 import useFetchCompanies from "../../../hooks/useFetchCompanies";
+import CompanyList from "../../components/CompanyList";
 
 const SearchFilters = ({
   classes,
@@ -120,8 +121,6 @@ const SearchFilters = ({
   const { data } = useFetchData(`${url}citieslist`);
   const cityData = data?.data?.cities || [];
 
-  const companyData = useFetchCompanies(selectedClient);
-
   return (
     <Box
       sx={{
@@ -146,15 +145,10 @@ const SearchFilters = ({
       </Typography>
       <Typography component={"div"} className={classes.componentHeight}>
         <div className="mt-3 w-[200px]">
-          <CustomMultiSelect
-            dropdownToggleWidth={200}
-            dropdownWidth={250}
-            keyId="companyid"
-            keyName="companyname"
-            options={companyData || []}
-            selectedItems={selectedCompanies}
-            setSelectedItems={setSelectedCompanies}
-            title="companies"
+          <CompanyList
+            selectedCompanies={selectedCompanies}
+            setSelectedCompanies={setSelectedCompanies}
+            selectedClient={selectedClient}
           />
         </div>
       </Typography>

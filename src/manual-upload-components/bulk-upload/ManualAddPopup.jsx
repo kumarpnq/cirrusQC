@@ -17,6 +17,8 @@ import {
 } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
 import PropTypes from "prop-types";
+import SearchDropdown from "../../@core/DebounceMUICompany";
+import DebounceSearchCompany from "../../@core/DebounceSearchCompany";
 
 const ManualAddPopup = ({ open, onClose, setData }) => {
   //   const [socialFeedId, setSocialFeedId] = useState("");
@@ -25,6 +27,7 @@ const ManualAddPopup = ({ open, onClose, setData }) => {
   const [link, setLink] = useState("");
   const [records, setRecords] = useState([]);
   const [linkError, setLinkError] = useState(false);
+  const [selectedCompany, setSelectedCompany] = useState(null);
 
   const validateLink = (url) => {
     const regex =
@@ -68,16 +71,13 @@ const ManualAddPopup = ({ open, onClose, setData }) => {
       <DialogTitle>Manual Add</DialogTitle>
       <DialogContent>
         <Grid container spacing={1}>
-          {/* <Grid item xs={12} sm={6}>
-            <TextField
-              label="Social Feed ID"
-              fullWidth
-              margin="dense"
-              size="small"
-              value={socialFeedId}
-              onChange={(e) => setSocialFeedId(e.target.value)}
+          <Grid item xs={12} sm={6}>
+            <DebounceSearchCompany
+              selectedCompany={selectedCompany}
+              setSelectedCompany={setSelectedCompany}
             />
-          </Grid> */}
+            <SearchDropdown />
+          </Grid>
           <Grid item xs={12} sm={6}>
             <TextField
               label="Date"

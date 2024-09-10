@@ -18,6 +18,7 @@ import CustomMultiSelect from "../../../@core/CustomMultiSelect";
 import { formattedDate, formattedNextDay } from "../../../constants/dates";
 
 import useFetchCompanies from "../../../hooks/useFetchCompanies";
+import CompanyList from "../../components/CompanyList";
 
 const CustomAccordionDetails = ({
   clientData,
@@ -64,8 +65,6 @@ const CustomAccordionDetails = ({
   fetchTableData,
   setTableData,
 }) => {
-  const companyData = useFetchCompanies(selectedClient);
-
   const handleClear = () => {
     setSelectedClient("");
     setSelectedCompanies([]);
@@ -104,15 +103,10 @@ const CustomAccordionDetails = ({
           />
         </div>
         <div className="mt-3 w-[200px]">
-          <CustomMultiSelect
-            dropdownToggleWidth={200}
-            dropdownWidth={250}
-            keyId="companyid"
-            keyName="companyname"
-            options={companyData || []}
-            selectedItems={selectedCompanies}
-            setSelectedItems={setSelectedCompanies}
-            title="companies"
+          <CompanyList
+            selectedCompanies={selectedCompanies}
+            setSelectedCompanies={setSelectedCompanies}
+            selectedClient={selectedClient}
           />
         </div>
         <Datetype
