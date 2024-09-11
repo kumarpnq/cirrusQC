@@ -5,6 +5,7 @@ import { useState } from "react";
 import { url } from "../../constants/baseUrl";
 import { parse, format } from "date-fns";
 import { toast } from "react-toastify";
+import { arrayToString } from "../../utils/arrayToString";
 
 const UploadControl = ({
   onParse,
@@ -85,7 +86,7 @@ const UploadControl = ({
         const request_data = {
           url: Link,
           date: formattedDate,
-          company_ids: CompanyID,
+          company_ids: arrayToString([CompanyID]),
         };
         return axios.post(`${url}processBulkUpload/`, request_data, {
           headers: { Authorization: `Bearer ${userToken}` },
