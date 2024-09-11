@@ -197,14 +197,15 @@ const EditDialog = ({
       if (!isPartial) {
         request_data.QCTYPE = "QC1";
       }
+      const dataToSend = isPartial ? [data] : request_data;
 
-      const response = await axios.post(
-        `${url}updatearticleheader/`,
-        request_data,
-        {
-          headers,
-        }
-      );
+      const endpoint = isPartial
+        ? "updateqc1printheader/"
+        : "updatearticleheader/";
+
+      const response = await axios.post(`${url + endpoint}`, dataToSend, {
+        headers,
+      });
       if (response.data.result?.success?.length) {
         if (isMultiple) {
           const filteredItems = selectedItems.filter((i) => i.id !== articleId);
