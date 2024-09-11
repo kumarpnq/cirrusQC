@@ -16,10 +16,17 @@ const UploadControl = ({
   gridData,
   setGridData,
 }) => {
-  console.log(gridData);
-
   const [checkLoading, setCheckLoading] = useState(false);
   const [processLoading, setProcessLoading] = useState(false);
+
+  const handleSampleBookDownload = () => {
+    const link = document.createElement("a");
+    link.href = "/samplebook.xlsx";
+    link.download = "samplebook.xlsx";
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
 
   const handleCheckRecord = async () => {
     if (selectedRows.length === 0) {
@@ -116,6 +123,9 @@ const UploadControl = ({
 
   return (
     <Box sx={{ display: "flex", gap: 0.8 }}>
+      <Button variant="outlined" onClick={handleSampleBookDownload}>
+        Sample Book
+      </Button>
       <Button
         variant="outlined"
         onClick={(e) => {
