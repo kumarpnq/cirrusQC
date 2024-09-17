@@ -1,12 +1,5 @@
 import { useEffect, useState } from "react";
-import {
-  Modal,
-  Grid,
-  Typography,
-  IconButton,
-  Box,
-  Checkbox,
-} from "@mui/material";
+import { Modal, Grid, Typography, IconButton, Box } from "@mui/material";
 import { DataGrid, GridCloseIcon } from "@mui/x-data-grid";
 import axios from "axios";
 import PropTypes from "prop-types";
@@ -105,6 +98,7 @@ const AddCompaniesModal = ({
       if (response) {
         toast.success("Company added");
         setSelectionModal([]);
+        setSelectedCompanies([]);
         fetchTaggedCompanies();
       }
     } catch (error) {

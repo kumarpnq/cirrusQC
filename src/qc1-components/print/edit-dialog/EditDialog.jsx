@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useLayoutEffect, useState } from "react";
 import PropTypes from "prop-types";
 import {
   Modal,
@@ -58,6 +58,12 @@ const EditDialog = ({
 }) => {
   const [row, setRow] = useState(null);
   const articleIds = rowData.map((i) => i.id);
+
+  useLayoutEffect(() => {
+    if (isFiltered) {
+      setRowNumber(articleIds[0]);
+    }
+  }, [isFiltered, open]);
 
   // * api material
   const userToken = localStorage.getItem("user");
@@ -194,20 +200,31 @@ const EditDialog = ({
           position: "bottom-right",
         });
         isSkip === "true" && handleClose();
-        if (rowNumber < rowData.length - 1) {
-          setFormItems({
-            headline: "",
-            summary: "",
-            journalist: "",
-            tag: "",
+        if (isFiltered) {
+          setRowNumber((prevRowNumber) => {
+            const currentIndex = articleIds.indexOf(prevRowNumber);
+
+            // Ensure we get the next valid index, wrapping around when needed
+            const nextIndex = (currentIndex + 1) % articleIds.length;
+            const nextArticleId = articleIds[nextIndex];
+
+            return nextArticleId;
           });
-          setSelectedCompanies([]);
-          setRowNumber((prev) => prev + 1);
         } else {
-          toast.success("This is the last article.", {
-            position: "bottom-right",
-          });
-          handleClose();
+          if (rowNumber < rowData.length - 1) {
+            setFormItems({
+              headline: "",
+              summary: "",
+              journalist: "",
+              tag: "",
+            });
+            setSelectedCompanies([]);
+          } else {
+            toast.success("This is the last article.", {
+              position: "bottom-right",
+            });
+            handleClose();
+          }
         }
       } else {
         const errorMSG = response.data?.result?.errors[0] || {};
@@ -381,17 +398,13 @@ const EditDialog = ({
       setRowNumber((prev) => prev + 1);
     } else {
       setRowNumber((prevRowNumber) => {
-        const currentArticleId = articleIds[prevRowNumber];
-        const currentIndex = articleIds.indexOf(currentArticleId);
-        const nextIndex = currentIndex + 1;
+        const currentIndex = articleIds.indexOf(prevRowNumber);
 
-        if (nextIndex < articleIds.length) {
-          const nextArticleId = articleIds[nextIndex];
-          setRowNumber(nextIndex);
-          return nextIndex;
-        } else {
-          return prevRowNumber;
-        }
+        // Ensure we get the next valid index, wrapping around when needed
+        const nextIndex = (currentIndex + 1) % articleIds.length;
+        const nextArticleId = articleIds[nextIndex];
+
+        return nextArticleId;
       });
     }
   };
