@@ -173,7 +173,7 @@ const EditDialog = ({
     });
   };
 
-  const handleSubmit = async (isSkip) => {
+  const handleSubmit = async (isSkip, isPartial) => {
     try {
       const requestData = {
         data: [
@@ -186,7 +186,7 @@ const EditDialog = ({
             TAG: formItems.tag,
           },
         ],
-        QCTYPE: "QC1",
+        QCTYPE: isPartial ? "QCP" : "QC1",
       };
       const response = await axios.post(
         `${url}updatesocialfeedheader/`,
@@ -199,6 +199,9 @@ const EditDialog = ({
         toast.success("Data saved.", {
           position: "bottom-right",
         });
+        if (isPartial) {
+          handleClose();
+        }
         isSkip === "true" && handleClose();
         if (isFiltered) {
           setRowNumber((prevRowNumber) => {
@@ -372,7 +375,7 @@ const EditDialog = ({
       const params = {
         socialfeedIds: arrayToString([socialFeedId]),
         companyIds: arrayToString(selectionModel),
-        // QCTYPE: "QC1",
+        QCTYPE: "QC1",
       };
       const response = await axios.delete(url3, {
         headers: {
@@ -437,6 +440,12 @@ const EditDialog = ({
             component={"div"}
             display={"flex"}
           >
+            <Button
+              btnText="Save Partial & close"
+              onClick={() => {
+                handleSubmit(false, true);
+              }}
+            />
             {!isSimilar && (
               <>
                 <Button btnText="Skip & Next" onClick={handleSkipAndNext} />

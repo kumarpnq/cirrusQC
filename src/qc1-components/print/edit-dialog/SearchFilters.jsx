@@ -14,11 +14,9 @@ import Countries from "../../../components/research-dropdowns/Countries";
 import CheckboxComp from "../../../components/checkbox/Checkbox";
 import Button from "../../../components/custom/Button";
 import CustomTextField from "../../../@core/CutsomTextField";
-import CustomMultiSelect from "../../../@core/CustomMultiSelect";
 import { formattedDate, formattedNextDay } from "../../../constants/dates";
-
-import useFetchCompanies from "../../../hooks/useFetchCompanies";
 import CompanyList from "../../components/CompanyList";
+import { qc1ArrayWithPartially } from "../../../constants/dataArray";
 
 const CustomAccordionDetails = ({
   clientData,
@@ -121,7 +119,8 @@ const CustomAccordionDetails = ({
           qc1done={isQc1Done}
           setQc1done={setIsQc1Done}
           classes={classes}
-          qc1Array={qc1Array}
+          // qc1Array={qc1Array}
+          qc1Array={qc1ArrayWithPartially}
         />
         <Qc1By
           qcUsersData={userList || []}

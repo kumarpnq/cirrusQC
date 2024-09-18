@@ -24,11 +24,8 @@ import CustomMultiSelect from "../../../@core/CustomMultiSelect";
 import { formattedDate, formattedNextDay } from "../../../constants/dates";
 import useFetchData from "../../../hooks/useFetchData";
 import { url } from "../../../constants/baseUrl";
-import { useEffect, useState } from "react";
-import axios from "axios";
-import { qc1ArrayWithPartially } from "../../../constants/dataArray";
-import useFetchCompanies from "../../../hooks/useFetchCompanies";
 import CompanyList from "../../components/CompanyList";
+import { qc1ArrayWithPartially } from "../../../constants/dataArray";
 
 const SearchFilters = ({
   classes,

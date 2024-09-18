@@ -403,7 +403,7 @@ const MainTable = ({
 
   const applySortingToRows = (rows, sortModel) => {
     if (sortModel.length === 0) {
-      return rows; // No sorting applied, return original rows
+      return rows;
     }
 
     const sortedRows = [...rows];
@@ -427,7 +427,6 @@ const MainTable = ({
   };
 
   const handleSearchModelChange = (searchModel) => {
-    // Assuming the searchModel has a 'value' key that contains the search query
     const searchQuery = searchModel.value?.toLowerCase();
 
     if (searchQuery) {
@@ -438,7 +437,7 @@ const MainTable = ({
       );
       setSortedFilteredRows(filteredRows);
     } else {
-      setSortedFilteredRows(rows); // Reset to the original rows if the search query is empty
+      setSortedFilteredRows(rows);
     }
   };
 
