@@ -126,6 +126,7 @@ const Online = () => {
   // * table data
   const [tableData, setTableData] = useState([]);
   const [selectedItems, setSelectedItems] = useState([]);
+  const [sortedFilteredRows, setSortedFilteredRows] = useState([]);
   const [tableDataLoading, setTableDataLoading] = useState(false);
   const fetchTableData = useCallback(async () => {
     if (!selectedDateType || !selectedClient) {
@@ -145,6 +146,7 @@ const Online = () => {
 
     try {
       setTableDataLoading(true);
+      setSortedFilteredRows([]);
 
       const params = {
         client_id: selectedClient,
@@ -254,7 +256,7 @@ const Online = () => {
 
   const handleRowClick = (row, rowNumber) => {
     setOpen((prev) => !prev);
-    setArticleNumber(rowNumber);
+    setArticleNumber(rowNumber || 0);
   };
 
   // * row selection modal
@@ -360,7 +362,7 @@ const Online = () => {
       });
       const data = {
         data: requestData,
-        qcflag: 1,
+        qcflag: "QCP",
       };
       const response = await axios.post(`${url}updatesocialfeedheader/`, data, {
         headers,
@@ -416,7 +418,7 @@ const Online = () => {
   const [openAddCompanies, setOpenAddCompanies] = useState(false);
 
   // * data for edit dialog
-  const [sortedFilteredRows, setSortedFilteredRows] = useState([]);
+  const [multipleEditOpen, setMultipleEditOpen] = useState(false);
   const dataForEditDialog = sortedFilteredRows.length
     ? sortedFilteredRows
     : tableData;
@@ -490,6 +492,10 @@ const Online = () => {
           </AccordionSummary>
           <AccordionDetails>
             <Box sx={{ display: "flex", gap: 1, flexWrap: "wrap" }}>
+              <Button
+                btnText="Edit"
+                onClick={() => setMultipleEditOpen(true)}
+              />
               {buttonsPermission?.group === "Yes" && (
                 <Button
                   btnText={"group"}
@@ -541,10 +547,23 @@ const Online = () => {
       <EditDialog
         open={open}
         setOpen={setOpen}
-        rowData={dataForEditDialog}
+        rowData={open ? dataForEditDialog : []}
         rowNumber={articleNumber}
         setRowNumber={setArticleNumber}
         isFiltered={isFiltered}
+      />
+
+      {/* edit multiple  temporary solot*/}
+      <EditDialog
+        open={multipleEditOpen}
+        setOpen={setMultipleEditOpen}
+        rowData={multipleEditOpen ? selectedItems : []}
+        setSelectedItems={multipleEditOpen ? setSelectedItems : () => {}}
+        setSelectionModal={multipleEditOpen ? setSelectionModal : () => {}}
+        rowNumber={articleNumber}
+        setRowNumber={setArticleNumber}
+        isFiltered={false}
+        isMultipleArticles={true}
       />
 
       <GroupUnGroupModal

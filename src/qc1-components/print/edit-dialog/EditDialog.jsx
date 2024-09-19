@@ -49,12 +49,15 @@ const titleStyle = {
 
 const EditDialog = ({
   rowData,
+  setSelectedItems,
+  setSelectionModal,
   rowNumber,
   setRowNumber,
   open,
   setOpen,
   isFiltered,
   isSimilar,
+  isMultipleArticles,
 }) => {
   const [row, setRow] = useState(null);
   const articleIds = rowData.map((i) => i.id);
@@ -81,6 +84,10 @@ const EditDialog = ({
     setRowNumber(0);
     setRow(null);
     setSocialFeedTagDetails([]);
+    if (isMultipleArticles) {
+      setSelectedItems([]);
+      setSelectionModal([]);
+    }
     setOpen(false);
   };
 
@@ -90,7 +97,7 @@ const EditDialog = ({
       if (isFiltered) {
         data = rowData.find((item) => item.id === rowNumber);
       } else {
-        data = rowData[rowNumber];
+        data = rowData[rowNumber || 0];
       }
       setRow(data);
     }
@@ -199,10 +206,21 @@ const EditDialog = ({
         toast.success("Data saved.", {
           position: "bottom-right",
         });
+        if (isMultipleArticles) {
+          if ((rowNumber || 0) === rowData.length - 1) {
+            setOpen(false);
+            setSelectedItems([]);
+            setSelectionModal([]);
+          }
+
+          setRowNumber((prev) => prev + 1);
+          return;
+        }
         if (isPartial) {
           handleClose();
         }
         isSkip === "true" && handleClose();
+
         if (isFiltered) {
           setRowNumber((prevRowNumber) => {
             const currentIndex = articleIds.indexOf(prevRowNumber);
@@ -213,6 +231,13 @@ const EditDialog = ({
 
             return nextArticleId;
           });
+        } else if (isMultipleArticles) {
+          if ((rowNumber || 0) === rowData.length - 1) {
+            setOpen(false);
+          }
+
+          setRowNumber((prev) => prev + 1);
+          return;
         } else {
           if (rowNumber < rowData.length - 1) {
             setFormItems({
@@ -397,13 +422,22 @@ const EditDialog = ({
   };
 
   const handleSkipAndNext = () => {
+    if (isMultipleArticles) {
+      if ((rowNumber || 0) === rowData.length - 1) {
+        setOpen(false);
+        setSelectionModal([]);
+        setSelectedItems([]);
+      }
+
+      setRowNumber((prev) => prev + 1);
+      return;
+    }
     if (!isFiltered) {
       setRowNumber((prev) => prev + 1);
     } else {
       setRowNumber((prevRowNumber) => {
         const currentIndex = articleIds.indexOf(prevRowNumber);
 
-        // Ensure we get the next valid index, wrapping around when needed
         const nextIndex = (currentIndex + 1) % articleIds.length;
         const nextArticleId = articleIds[nextIndex];
 
@@ -451,7 +485,7 @@ const EditDialog = ({
                 <Button btnText="Skip & Next" onClick={handleSkipAndNext} />
                 <Button
                   btnText="Save & Next"
-                  onClick={() => handleSubmit("false")}
+                  onClick={() => handleSubmit("false", "false")}
                 />
               </>
             )}
@@ -636,6 +670,9 @@ EditDialog.propTypes = {
   setOpen: PropTypes.func.isRequired,
   isFiltered: PropTypes.bool,
   isSimilar: PropTypes.bool,
+  isMultipleArticles: PropTypes.bool,
+  setSelectedItems: PropTypes.func,
+  setSelectionModal: PropTypes.func,
 };
 
 export default EditDialog;

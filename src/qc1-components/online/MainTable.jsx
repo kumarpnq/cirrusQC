@@ -392,7 +392,10 @@ const MainTable = ({
     { field: "pdfSize", headerName: "PDF Size", width: 100 },
 
     { field: "uploadTime", headerName: "Upload Time", width: 150 },
-    { field: "main_id", headerName: "System Id", width: 150 },
+    { field: "qc1on", headerName: "QC1 On", width: 150 },
+    { field: "qc1by", headerName: "QC1 By", width: 150 },
+    { field: "qcpartial_on", headerName: "QCPartial On", width: 150 },
+    { field: "qcpartial_by", headerName: "QCPartial By", width: 150 },
     {
       field: "tagTime",
       headerName: "Tag Time",
@@ -431,6 +434,10 @@ const MainTable = ({
     link: item.link,
     text: item.text,
     thumbnail: item.thumbnail,
+    qc1on: item.qc1on || "",
+    qc1by: item.qc1by || "",
+    qcpartial_on: item.qcpartial_on || "",
+    qcpartial_by: item.qcpartial_by || "",
   }));
 
   const applyFilteringToRows = (rows, filterModel) => {
