@@ -35,7 +35,6 @@ const CustomAccordionDetails = ({
   setDateNow,
   isQc1Done,
   setIsQc1Done,
-  qc1Array,
   userList,
   qc1By,
   setQc1By,
@@ -62,6 +61,7 @@ const CustomAccordionDetails = ({
   tableDataLoading,
   fetchTableData,
   setTableData,
+  setSelectionModal,
 }) => {
   const handleClear = () => {
     setSelectedClient("");
@@ -80,6 +80,7 @@ const CustomAccordionDetails = ({
     setLink("");
     setSocialFeedId("");
     setTableData([]);
+    setSelectionModal([]);
   };
   return (
     <AccordionDetails>
@@ -206,7 +207,6 @@ CustomAccordionDetails.propTypes = {
   setDateNow: PropTypes.func.isRequired,
   isQc1Done: PropTypes.bool.isRequired,
   setIsQc1Done: PropTypes.func.isRequired,
-  qc1Array: PropTypes.array.isRequired,
   userList: PropTypes.array.isRequired,
   qc1By: PropTypes.any.isRequired,
   setQc1By: PropTypes.func.isRequired,
@@ -234,6 +234,7 @@ CustomAccordionDetails.propTypes = {
   tableDataLoading: PropTypes.bool.isRequired,
   fetchTableData: PropTypes.func.isRequired,
   setTableData: PropTypes.func.isRequired,
+  setSelectionModal: PropTypes.func.isRequired,
 };
 
 export default CustomAccordionDetails;

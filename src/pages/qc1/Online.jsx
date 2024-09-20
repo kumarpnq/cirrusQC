@@ -479,6 +479,7 @@ const Online = () => {
           tableDataLoading={tableDataLoading}
           fetchTableData={fetchTableData}
           setTableData={setTableData}
+          setSelectionModal={setSelectionModal}
         />
       </Accordion>
       {isShowSecondAccordion && (
