@@ -475,7 +475,9 @@ const EditDialog = ({
             display={"flex"}
           >
             <Button
-              btnText="Save Partial & close"
+              btnText={`Save Partial & ${
+                isMultipleArticles ? "Next" : "Close"
+              }`}
               onClick={() => {
                 handleSubmit(false, true);
               }}
