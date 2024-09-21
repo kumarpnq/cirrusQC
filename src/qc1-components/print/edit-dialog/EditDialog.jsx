@@ -61,6 +61,8 @@ const EditDialog = ({
 }) => {
   const [row, setRow] = useState(null);
   const articleIds = rowData.map((i) => i.id);
+  console.log(rowData);
+  console.log(rowNumber);
 
   useLayoutEffect(() => {
     if (isFiltered) {
@@ -218,6 +220,11 @@ const EditDialog = ({
           setRowNumber((prev) => prev + 1);
           return;
         }
+        if (!isFiltered) {
+          setRowNumber((prev) => prev + 1);
+          return;
+        }
+
         if (isPartial) {
           handleClose();
         }
@@ -248,6 +255,7 @@ const EditDialog = ({
               journalist: "",
               tag: "",
             });
+
             setSelectedCompanies([]);
           } else {
             toast.success("This is the last article.", {
