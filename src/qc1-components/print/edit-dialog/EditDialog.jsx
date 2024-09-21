@@ -211,6 +211,8 @@ const EditDialog = ({
             setOpen(false);
             setSelectedItems([]);
             setSelectionModal([]);
+            setRowNumber(0);
+            setRow(null);
           }
 
           setRowNumber((prev) => prev + 1);
@@ -232,7 +234,7 @@ const EditDialog = ({
             return nextArticleId;
           });
         } else if (isMultipleArticles) {
-          if ((rowNumber || 0) === rowData.length - 1) {
+          if ((Number(rowNumber) || 0) === rowData.length - 1) {
             setOpen(false);
           }
 
@@ -423,10 +425,12 @@ const EditDialog = ({
 
   const handleSkipAndNext = () => {
     if (isMultipleArticles) {
-      if ((rowNumber || 0) === rowData.length - 1) {
+      if ((Number(rowNumber) || 0) === rowData.length - 1) {
         setOpen(false);
         setSelectionModal([]);
         setSelectedItems([]);
+        setRowNumber(0);
+        setRow(null);
       }
 
       setRowNumber((prev) => prev + 1);

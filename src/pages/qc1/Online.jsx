@@ -561,7 +561,7 @@ const Online = () => {
         rowData={multipleEditOpen ? selectedItems : []}
         setSelectedItems={multipleEditOpen ? setSelectedItems : () => {}}
         setSelectionModal={multipleEditOpen ? setSelectionModal : () => {}}
-        rowNumber={articleNumber}
+        rowNumber={articleNumber || 0}
         setRowNumber={setArticleNumber}
         isFiltered={false}
         isMultipleArticles={true}
