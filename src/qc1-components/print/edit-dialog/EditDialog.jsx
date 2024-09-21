@@ -489,8 +489,6 @@ const EditDialog = ({
           position: "bottom-right",
         });
         setOpen(false);
-        setSelectedItems([]);
-        setSelectionModal([]);
         setRowNumber(0);
         setRow(null);
       } else {
