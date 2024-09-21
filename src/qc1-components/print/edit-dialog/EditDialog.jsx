@@ -61,8 +61,6 @@ const EditDialog = ({
 }) => {
   const [row, setRow] = useState(null);
   const articleIds = rowData.map((i) => i.id);
-  console.log(rowData);
-  console.log(rowNumber);
 
   useLayoutEffect(() => {
     if (isFiltered) {
