@@ -226,7 +226,7 @@ const EditDialog = ({
         if (isPartial) {
           handleClose();
         }
-        isSkip === "true" && handleClose();
+        isSkip && handleClose();
 
         if (isFiltered) {
           setRowNumber((prevRowNumber) => {
@@ -462,6 +462,46 @@ const EditDialog = ({
     isMultiline: false,
   });
 
+  const handleSaveAndClose = async (isPartial) => {
+    try {
+      const requestData = {
+        data: [
+          {
+            UPDATETYPE: "U",
+            SOCIALFEEDID: socialFeedId,
+            HEADLINE: formItems.headline,
+            SUMMARY: formItems.summary,
+            AUTHOR: formItems.journalist,
+            TAG: formItems.tag,
+          },
+        ],
+        QCTYPE: isPartial ? "QCP" : "QC1",
+      };
+      const response = await axios.post(
+        `${url}updatesocialfeedheader/`,
+        requestData,
+        {
+          headers: header,
+        }
+      );
+      if (response.data?.result?.success?.length) {
+        toast.success("Data saved.", {
+          position: "bottom-right",
+        });
+        setOpen(false);
+        setSelectedItems([]);
+        setSelectionModal([]);
+        setRowNumber(0);
+        setRow(null);
+      } else {
+        const errorMSG = response.data?.result?.errors[0] || {};
+        toast.warning(errorMSG.warning);
+      }
+    } catch (error) {
+      console.log(error.message);
+    }
+  };
+
   return (
     <Modal
       open={open}
@@ -497,14 +537,14 @@ const EditDialog = ({
                 <Button btnText="Skip & Next" onClick={handleSkipAndNext} />
                 <Button
                   btnText="Save & Next"
-                  onClick={() => handleSubmit("false", "false")}
+                  onClick={() => handleSubmit(false, false)}
                 />
               </>
             )}
 
             <Button
               btnText="Save & Close"
-              onClick={() => handleSubmit("true")}
+              onClick={() => handleSaveAndClose(false)}
             />
             <IconButton onClick={handleClose}>
               <CloseOutlined />
