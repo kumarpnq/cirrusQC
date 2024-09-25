@@ -484,13 +484,7 @@ const MainTable = ({
           }}
           apiRef={apiRef}
           pageSize={5}
-          pageSizeOptions={[
-            10,
-            100,
-            200,
-            1000,
-            { value: 1000, label: "1,000" },
-          ]}
+          pageSizeOptions={[25, 50, 100]}
           sx={{
             "& .MuiDataGrid-columnHeaders": {
               fontSize: "0.875rem",
