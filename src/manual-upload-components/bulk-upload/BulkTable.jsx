@@ -1,4 +1,4 @@
-import { DataGrid } from "@mui/x-data-grid";
+import { DataGrid, GridToolbar } from "@mui/x-data-grid";
 import { Box } from "@mui/material";
 import PropTypes from "prop-types";
 
@@ -80,6 +80,11 @@ const BulkTable = ({
         rowSelectionModel={selectionModal}
         onRowSelectionModelChange={handleRowSelection}
         rowsPerPageOptions={[5, 10, 20]}
+        slots={{ toolbar: GridToolbar }}
+        slotProps={{ toolbar: { showQuickFilter: true } }}
+        disableDensitySelector
+        disableColumnFilter
+        disableColumnSelector
         disableRowSelectionOnClick
         disableSelectionOnClick
       />

@@ -18,10 +18,14 @@ const DebounceSearchCompany = ({
   );
 
   useEffect(() => {
-    if (!selectedCompany || !selectedCompany.length) {
-      setSelectedOptions([] || null);
+    if (
+      !selectedCompany ||
+      (Array.isArray(selectedCompany) && selectedCompany?.length === 0)
+    ) {
+      setSelectedOptions(isMultiple ? [] : null);
     }
-  }, [selectedCompany]);
+  }, [selectedCompany, isMultiple]);
+
   const [showResults, setShowResults] = useState(false);
   const userToken = localStorage.getItem("user");
   const containerRef = useRef(null);

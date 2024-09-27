@@ -44,7 +44,7 @@ const Details = ({
   const [articleURL, setArticleURL] = useState("");
   const [publication, setPublication] = useState(selectedRow?.publicationname);
   const [selectedLanguages, setSelectedLanguages] = useState("en");
-  const [selectedCompanies, setSelectedCompanies] = useState("");
+  const [selectedCompanies, setSelectedCompanies] = useState(null);
   const [dateNow, setDateNow] = useState(selectedRow?.feeddate);
   const [saveLoading, setSaveLoading] = useState(false);
   const [languages, setLanguages] = useState([]);
@@ -117,11 +117,12 @@ const Details = ({
         toast.warning(erMessage);
       }
       setSaveLoading(false);
+      setDateNow(null);
       setTitle("");
       setContent("");
       setSummary("");
       setImage("");
-      setSelectedCompanies("");
+      setSelectedCompanies(null);
       setSelectedLanguages("");
     } catch (error) {
       console.log(error);
@@ -148,6 +149,7 @@ const Details = ({
         setSearchURL("");
         setArticleURL("");
         setPublication("");
+        setSelectedCompanies(null);
         setDateNow(formattedDate);
       }
     }
@@ -251,6 +253,7 @@ const Details = ({
               <div className="ml-4">
                 <DebounceSearchCompany
                   setSelectedCompany={setSelectedCompanies}
+                  selectedCompany={selectedCompanies}
                 />
               </div>
             </Box>
