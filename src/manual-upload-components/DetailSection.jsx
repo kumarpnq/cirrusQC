@@ -3,6 +3,8 @@ import { Box, Typography, FormControl, TextField } from "@mui/material";
 import Button from "../components/custom/Button";
 import { useEffect, useState } from "react";
 import ToDate from "../components/research-dropdowns/ToDate";
+import CloseIcon from "@mui/icons-material/Close";
+import CheckIcon from "@mui/icons-material/Check";
 
 // ** third party imports
 import PropTypes from "prop-types";
@@ -43,7 +45,7 @@ const Details = ({
   const [searchURl, setSearchURL] = useState(selectedRow?.searchlink);
   const [articleURL, setArticleURL] = useState("");
   const [publication, setPublication] = useState(selectedRow?.publicationname);
-  const [selectedLanguages, setSelectedLanguages] = useState("en");
+  const [selectedLanguages, setSelectedLanguages] = useState("");
   const [selectedCompanies, setSelectedCompanies] = useState(null);
   const [dateNow, setDateNow] = useState(selectedRow?.feeddate);
   const [saveLoading, setSaveLoading] = useState(false);
@@ -104,6 +106,7 @@ const Details = ({
         request_data,
         { headers }
       );
+
       const isSuccess = response.data?.result?.success?.length;
       const isFail = response.data?.result?.errors?.length;
       const erMessage = response.data?.result?.errors?.map((i) => i.errors);
@@ -114,7 +117,7 @@ const Details = ({
         setSelectedRow(errorList[articleNumber]);
         setIsArticleSaved(true);
       } else if (isFail) {
-        toast.warning(erMessage);
+        toast.warning("Already URL is present in Database");
       }
       setSaveLoading(false);
       setDateNow(null);
@@ -122,8 +125,10 @@ const Details = ({
       setContent("");
       setSummary("");
       setImage("");
+      setArticleURL("");
       setSelectedCompanies(null);
       setSelectedLanguages("");
+      setPublication("");
     } catch (error) {
       console.log(error);
     }
@@ -135,7 +140,7 @@ const Details = ({
         setContent("");
         setSummary("");
         setImage("");
-        setSelectedLanguages("en");
+        setSelectedLanguages("");
         setSearchURL(selectedRow.searchlink);
         setArticleURL(selectedRow.articlelink);
         setPublication(selectedRow.publicationname);
@@ -267,6 +272,7 @@ const Details = ({
                   value={selectedLanguages}
                   onChange={(e) => setSelectedLanguages(e.target.value)}
                 >
+                  <option value="">Language</option>
                   {Object.entries(languages).map(
                     ([languagename, languagecode]) => (
                       <option key={languagecode} value={languagecode}>
@@ -302,6 +308,11 @@ const Details = ({
             </Box>
             <Box display="flex" alignItems="center">
               <Typography sx={{ fontSize: "0.9em" }}>Date:</Typography>
+              {dateNow ? (
+                <CheckIcon sx={{ color: "green", fontSize: "1em" }} />
+              ) : (
+                <CloseIcon sx={{ color: "red", fontSize: "1em" }} />
+              )}
               <div className="">
                 <ToDate
                   dateNow={dateNow}

@@ -1,6 +1,6 @@
 import { DataGrid } from "@mui/x-data-grid";
 
-const ArticlesTable = () => {
+const ArticlesTable = ({ loading, gridData }) => {
   const columns = [
     { field: "articleId", headerName: "ID", width: 70 },
     { field: "date", headerName: "Date", width: 150 },
@@ -48,6 +48,7 @@ const ArticlesTable = () => {
         pageSize={5}
         checkboxSelection
         rowsPerPageOptions={[5, 10, 20]}
+        loading={loading}
       />
     </div>
   );

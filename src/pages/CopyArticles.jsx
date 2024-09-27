@@ -3,22 +3,32 @@ import { Box, Divider, Grid } from "@mui/material";
 import Filters from "../copyArticle-components/Filters";
 import SelectedPublications from "../copyArticle-components/SelectedPublications";
 import ArticlesTable from "../copyArticle-components/ArticlesTable";
+import { useState } from "react";
 
 const StyledWrapper = styled(Box)({
   padding: "0 5px",
 });
 
 function CopyArticles() {
+  const [gridLoading, setGridLoading] = useState(false);
+  const [gridData, setGridData] = useState([]);
+  const [gridError, setGridError] = useState(null);
+
   return (
     <StyledWrapper>
-      <Filters />
+      <Filters
+        gridLoading={gridLoading}
+        setGridLoading={setGridLoading}
+        setGridData={setGridData}
+        setGridError={setGridError}
+      />
       <Divider sx={{ my: 1 }} />
       <Grid container spacing={1} sx={{ marginTop: 1 }}>
         <Grid item xs={12} md={4}>
           <SelectedPublications />
         </Grid>
         <Grid item xs={12} md={8}>
-          <ArticlesTable />
+          <ArticlesTable loading={gridLoading} gridData={gridData} />
         </Grid>
       </Grid>
     </StyledWrapper>
