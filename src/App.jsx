@@ -26,6 +26,7 @@ import Print from "./pages/qc1/Print";
 import Analytics from "./pages/Analytics/Analytics";
 import BasketCityPub from "./pages/BasketCityPub";
 import PrintSimilarArticles from "./pages/qc1/PrintSimilarArticles";
+import CopyArticles from "./pages/CopyArticles";
 
 // Lazy load the components
 const Home = lazy(() => import("./pages/Home"));
@@ -130,10 +131,7 @@ function App() {
 
   return (
     <div className="bg-secondary" style={{ fontFamily: "Nunito" }}>
-      <Toaster
-        position="top-right" // Set the position to top-right
-        reverseOrder={false}
-      />
+      <Toaster position="top-right" reverseOrder={false} />
       <ToastContainer />
       {!isArticleView && (
         <div className="sticky top-0 z-50">
@@ -260,7 +258,7 @@ function App() {
           ) : (
             <Route path="login" element={<Login />} />
           )}
-
+          <Route path="copy-articles" element={<CopyArticles />} />
           <Route path="*" element={userToken ? <NotFound /> : <Login />} />
           <Route
             path="/articleview/download-file/:id"

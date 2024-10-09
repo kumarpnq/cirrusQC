@@ -38,7 +38,6 @@ import CustomAccordionDetails from "../../qc1-components/print/edit-dialog/Searc
 import GroupUnGroupModal from "../../qc1-components/print/Group&Ungroup";
 import MainTable from "../../qc1-components/print/MainTable";
 import AddCompaniesModal from "../../qc1-components/components/AddCompanyModal";
-import { differenceInHours } from "date-fns";
 
 const useStyle = makeStyles(() => ({
   dropDowns: {
@@ -64,7 +63,7 @@ const Online = () => {
   const [selectedDateType, setSelectedDateType] = useState("article");
   const [fromDate, setFromDate] = useState(formattedDate);
   const [dateNow, setDateNow] = useState(formattedNextDay);
-  const [isQc1Done, setIsQc1Done] = useState(0);
+  const [isQc1Done, setIsQc1Done] = useState("0");
   const [qc1By, setQc1By] = useState("");
   const [selectedLanguages, setSelectedLanguages] = useState([]);
   const [selectedContinents, setSelectedContinents] = useState([]);
@@ -116,6 +115,10 @@ const Online = () => {
         return "N";
       case 2:
         return "ALL";
+      case 3:
+        return "PY";
+      case 4:
+        return "PN";
       default:
         return value;
     }
@@ -123,6 +126,7 @@ const Online = () => {
   // * table data
   const [tableData, setTableData] = useState([]);
   const [selectedItems, setSelectedItems] = useState([]);
+  const [sortedFilteredRows, setSortedFilteredRows] = useState([]);
   const [tableDataLoading, setTableDataLoading] = useState(false);
   const fetchTableData = useCallback(async () => {
     if (!selectedDateType || !selectedClient) {
@@ -142,6 +146,7 @@ const Online = () => {
 
     try {
       setTableDataLoading(true);
+      setSortedFilteredRows([]);
 
       const params = {
         client_id: selectedClient,
@@ -251,10 +256,7 @@ const Online = () => {
 
   const handleRowClick = (row, rowNumber) => {
     setOpen((prev) => !prev);
-    if (row.id) {
-      setArticleNumber(row.id);
-    }
-    setArticleNumber(rowNumber);
+    setArticleNumber(rowNumber || 0);
   };
 
   // * row selection modal
@@ -360,7 +362,7 @@ const Online = () => {
       });
       const data = {
         data: requestData,
-        qcflag: 1,
+        qcflag: "QCP",
       };
       const response = await axios.post(`${url}updatesocialfeedheader/`, data, {
         headers,
@@ -416,7 +418,7 @@ const Online = () => {
   const [openAddCompanies, setOpenAddCompanies] = useState(false);
 
   // * data for edit dialog
-  const [sortedFilteredRows, setSortedFilteredRows] = useState([]);
+  const [multipleEditOpen, setMultipleEditOpen] = useState(false);
   const dataForEditDialog = sortedFilteredRows.length
     ? sortedFilteredRows
     : tableData;
@@ -477,6 +479,7 @@ const Online = () => {
           tableDataLoading={tableDataLoading}
           fetchTableData={fetchTableData}
           setTableData={setTableData}
+          setSelectionModal={setSelectionModal}
         />
       </Accordion>
       {isShowSecondAccordion && (
@@ -490,6 +493,10 @@ const Online = () => {
           </AccordionSummary>
           <AccordionDetails>
             <Box sx={{ display: "flex", gap: 1, flexWrap: "wrap" }}>
+              <Button
+                btnText="Edit"
+                onClick={() => setMultipleEditOpen(true)}
+              />
               {buttonsPermission?.group === "Yes" && (
                 <Button
                   btnText={"group"}
@@ -541,10 +548,23 @@ const Online = () => {
       <EditDialog
         open={open}
         setOpen={setOpen}
-        rowData={dataForEditDialog}
+        rowData={open ? dataForEditDialog : []}
         rowNumber={articleNumber}
         setRowNumber={setArticleNumber}
         isFiltered={isFiltered}
+      />
+
+      {/* edit multiple  temporary solot*/}
+      <EditDialog
+        open={multipleEditOpen}
+        setOpen={setMultipleEditOpen}
+        rowData={multipleEditOpen ? selectedItems : []}
+        setSelectedItems={multipleEditOpen ? setSelectedItems : () => {}}
+        setSelectionModal={multipleEditOpen ? setSelectionModal : () => {}}
+        rowNumber={articleNumber || 0}
+        setRowNumber={setArticleNumber}
+        isFiltered={false}
+        isMultipleArticles={true}
       />
 
       <GroupUnGroupModal

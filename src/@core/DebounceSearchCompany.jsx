@@ -9,6 +9,8 @@ const DebounceSearchCompany = ({
   setSelectedCompany,
   selectedCompany,
   isMultiple,
+  width,
+  height,
 }) => {
   const [searchResults, setSearchResults] = useState([]);
   const [selectedOptions, setSelectedOptions] = useState(
@@ -16,10 +18,14 @@ const DebounceSearchCompany = ({
   );
 
   useEffect(() => {
-    if (!selectedCompany || !selectedCompany.length) {
-      setSelectedOptions([] || null);
+    if (
+      !selectedCompany ||
+      (Array.isArray(selectedCompany) && selectedCompany?.length === 0)
+    ) {
+      setSelectedOptions(isMultiple ? [] : null);
     }
-  }, [selectedCompany]);
+  }, [selectedCompany, isMultiple]);
+
   const [showResults, setShowResults] = useState(false);
   const userToken = localStorage.getItem("user");
   const containerRef = useRef(null);
@@ -104,12 +110,14 @@ const DebounceSearchCompany = ({
 
   return (
     <div
-      style={{ width: "300px" }}
+      style={{ width: width ? width : "300px" }}
       className="relative z-50 mt-2"
       ref={containerRef}
     >
       <div
-        className="flex items-center h-6 pr-8 border border-gray-400 rounded-sm"
+        className={`flex items-center pr-8 border border-gray-400 rounded-sm ${
+          height ? height : "h-6"
+        }`}
         onClick={() => setShowResults(!showResults)}
       >
         <h2
@@ -128,12 +136,12 @@ const DebounceSearchCompany = ({
       </div>
 
       {showResults && (
-        <ul className="absolute left-0 right-0 px-2 py-2 text-gray-600 bg-white border border-gray-400 rounded-sm shadow-md top-6 h-[250] overflow-y-scroll z-50">
+        <ul className="absolute left-0 right-0 px-2 py-2 text-gray-600 bg-white border border-gray-400 rounded-sm shadow-md top-6 h-[250px] overflow-y-scroll z-50">
           <li>
             <input
               className="border border-gray-500 w-full rounded-sm outline-none text-[0.8em]  py-1 pl-1"
               type="text"
-              placeholder="Search companies..."
+              placeholder="Search companiees..."
               onChange={(e) => handleSearchTermChange(e.target.value)}
               // onFocus={() => setShowResults(true)} // Show results when input is focused
             />

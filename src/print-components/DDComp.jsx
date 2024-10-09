@@ -38,7 +38,8 @@ import axios from "axios";
 import { toast } from "react-toastify";
 import CustomDebounceDropdown from "../@core/CustomDebounceDropdown";
 import { arrayToString } from "../utils/arrayToString";
-import CustomMultiSelect from "../@core/CustomMultiSelect";
+// import CustomMultiSelect from "../@core/CustomMultiSelect";
+import CompanyList from "../qc1-components/components/CompanyList";
 
 const useStyle = makeStyles(() => ({
   dropDowns: {
@@ -70,12 +71,12 @@ const DDComp = () => {
   const [client, setClient] = useState([]);
   const [withCategory, setWithCategory] = useState("");
   const [companies, setCompanies] = useState([]);
-  const { data } = useFetchData(
-    client ? `${url}companylist/${client}` : "",
-    client
-  );
+  // const { data } = useFetchData(
+  //   client ? `${url}companylist/${client}` : "",
+  //   client
+  // );
 
-  const companyData = data?.data?.companies;
+  // const companyData = data?.data?.companies;
   const [dateType, setDateType] = useState("upload");
   const [fromDate, setFromDate] = useState(formattedDate);
   const [dateNow, setDateNow] = useState(formattedNextDay);
@@ -343,7 +344,12 @@ const DDComp = () => {
               />
             </div>
             <div className="h-[25px] pt-1.5 w-[200px]">
-              <CustomMultiSelect
+              <CompanyList
+                selectedCompanies={companies}
+                setSelectedCompanies={setCompanies}
+                selectedClient={client}
+              />
+              {/* <CustomMultiSelect
                 dropdownToggleWidth={200}
                 dropdownWidth={250}
                 keyId="companyid"
@@ -352,7 +358,7 @@ const DDComp = () => {
                 selectedItems={companies}
                 setSelectedItems={setCompanies}
                 title="companies"
-              />
+              /> */}
             </div>
             <div className="h-[25px] flex items-center justify-center">
               <Datetype

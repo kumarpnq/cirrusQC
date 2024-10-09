@@ -29,9 +29,8 @@ const useStyles = makeStyles((theme) => ({
   },
   paperBox: {
     height: 250,
-    overflowY: "scroll",
-    overflowX: "hidden",
     background: "#fff",
+    overflow: "hidden",
   },
   select: {
     minHeight: 40,
@@ -182,7 +181,7 @@ const CustomMultiSelect = ({
                 </ListItem>
                 <Divider />
                 <ListWindow
-                  height={250}
+                  height={150}
                   itemCount={filteredOptions.length}
                   itemSize={40}
                   width={dropdownWidth}

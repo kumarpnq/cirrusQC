@@ -66,7 +66,7 @@ const FilterComponents = ({
     switch (value) {
       case "Grouped":
         return "Y";
-      case "No":
+      case "Un-grouped":
         return "N";
       case "All":
         return "ALL";

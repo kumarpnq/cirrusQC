@@ -18,6 +18,7 @@ import {
   Tooltip,
 } from "@mui/material";
 import {
+  useGridApiRef,
   DataGrid,
   GridCloseIcon,
   GridPagination,
@@ -25,8 +26,9 @@ import {
   GridToolbarFilterButton,
   GridToolbarQuickFilter,
 } from "@mui/x-data-grid";
+
 import axios from "axios";
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import { url } from "../../constants/baseUrl";
 import ArticleView from "./edit-dialog/ArticleView";
 
@@ -84,6 +86,7 @@ const MainTable = ({
   const [similarLoading, setSimilarLoading] = useState(false);
   const [childArticles, setChildArticles] = useState([]);
   const [openEditSimilarArticle, setOpenEditSimilarArticle] = useState(false);
+  const apiRef = useGridApiRef();
 
   // * article view
   const [clickedArticle, setClickedArticle] = useState(null);
@@ -324,11 +327,7 @@ const MainTable = ({
         </a>
       ),
     },
-    {
-      field: "qcDone",
-      headerName: "QC Done",
-      width: userColumnSettings?.qcDone || 100,
-    },
+
     {
       field: "articleDate",
       headerName: "Article Date",
@@ -339,6 +338,14 @@ const MainTable = ({
       headerName: "socialFeedId",
       width: userColumnSettings?.socialFeedId || 150,
     },
+
+    { field: "qcDone", headerName: "QC Done", width: 100 },
+    { field: "qc1on", headerName: "QC1 On", width: 100 },
+    { field: "qc1by", headerName: "QC1 By", width: 100 },
+    { field: "qcpartial_on", headerName: "QCPartial On", width: 100 },
+    { field: "qcpartial_by", headerName: "QCPartial By", width: 100 },
+    { field: "articleDate", headerName: "Article Date", width: 150 },
+    { field: "socialFeedId", headerName: "socialFeedId", width: 150 },
   ];
   const rows = tableData?.map((item, index) => ({
     id: index,
@@ -353,6 +360,10 @@ const MainTable = ({
     socialFeedId: item.social_feed_id,
     similar_articles: item.similar_articles,
     language: item.language,
+    qc1on: item.qc1on,
+    qc1by: item.qc1by,
+    qcpartial_on: item.qcpartial_on,
+    qcpartial_by: item.qcpartial_by,
   }));
 
   const applyFilteringToRows = (rows, filterModel) => {
@@ -428,17 +439,24 @@ const MainTable = ({
     });
   };
 
-  const applySortingToRows = (rows, sortModel) => {
-    if (sortModel.length === 0) {
-      return rows; // No sorting applied, return original rows
+  const applySortingToRows = useCallback((rows, sortModel) => {
+    // If no sort is applied, return the original rows
+    if (!sortModel || sortModel.length === 0) {
+      return rows;
     }
 
     const sortedRows = [...rows];
     sortedRows.sort((a, b) => {
       for (const sortItem of sortModel) {
         const { field, sort } = sortItem;
-        const valueA = a[field];
-        const valueB = b[field];
+
+        // If 'sort' is not 'asc' or 'desc', skip this field
+        if (!sort || (sort !== "asc" && sort !== "desc")) {
+          return 0;
+        }
+
+        const valueA = a[field] ?? "";
+        const valueB = b[field] ?? "";
 
         if (valueA < valueB) {
           return sort === "asc" ? -1 : 1;
@@ -451,10 +469,9 @@ const MainTable = ({
     });
 
     return sortedRows;
-  };
+  }, []);
 
   const handleSearchModelChange = (searchModel) => {
-    // Assuming the searchModel has a 'value' key that contains the search query
     const searchQuery = searchModel.value?.toLowerCase();
 
     if (searchQuery) {
@@ -465,13 +482,12 @@ const MainTable = ({
       );
       setSortedFilteredRows(filteredRows);
     } else {
-      setSortedFilteredRows(rows); // Reset to the original rows if the search query is empty
+      setSortedFilteredRows(rows);
     }
   };
 
   const handleSortModelChange = (sortModel) => {
     const sortedRows = applySortingToRows(rows, sortModel);
-
     setSortedFilteredRows(sortedRows);
   };
 
@@ -500,14 +516,9 @@ const MainTable = ({
               showQuickFilter: true,
             },
           }}
+          apiRef={apiRef}
           pageSize={5}
-          pageSizeOptions={[
-            10,
-            100,
-            200,
-            1000,
-            { value: 1000, label: "1,000" },
-          ]}
+          pageSizeOptions={[25, 50, 100]}
           sx={{
             "& .MuiDataGrid-columnHeaders": {
               fontSize: "0.875rem",
@@ -566,8 +577,8 @@ MainTable.propTypes = {
   handleRowClick: PropTypes.func.isRequired,
   getRowClassName: PropTypes.func.isRequired,
   processRowUpdate: PropTypes.func.isRequired,
-  childArticles: PropTypes.array.isRequired,
-  setChildArticles: PropTypes.func.isRequired,
+  sortedFilteredRows: PropTypes.array,
+  setSortedFilteredRows: PropTypes.func,
 };
 
 export default MainTable;

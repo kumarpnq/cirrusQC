@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useLayoutEffect, useState } from "react";
 import PropTypes from "prop-types";
 import {
   Modal,
@@ -51,12 +51,15 @@ const titleStyle = {
 
 const EditDialog = ({
   rowData,
+  setSelectedItems,
+  setSelectionModal,
   rowNumber,
   setRowNumber,
   open,
   setOpen,
   isFiltered,
   isSimilar,
+  isMultipleArticles,
 }) => {
   // * user setting
 
@@ -67,6 +70,12 @@ const EditDialog = ({
 
   const [row, setRow] = useState(null);
   const articleIds = rowData.map((i) => i.id);
+
+  useLayoutEffect(() => {
+    if (isFiltered) {
+      setRowNumber(articleIds[0]);
+    }
+  }, [isFiltered, open]);
 
   // * api material
   const userToken = localStorage.getItem("user");
@@ -84,6 +93,10 @@ const EditDialog = ({
     setRowNumber(0);
     setRow(null);
     setSocialFeedTagDetails([]);
+    if (isMultipleArticles) {
+      setSelectedItems([]);
+      setSelectionModal([]);
+    }
     setOpen(false);
   };
 
@@ -93,7 +106,7 @@ const EditDialog = ({
       if (isFiltered) {
         data = rowData.find((item) => item.id === rowNumber);
       } else {
-        data = rowData[rowNumber];
+        data = rowData[rowNumber || 0];
       }
       setRow(data);
     }
@@ -178,7 +191,7 @@ const EditDialog = ({
     });
   };
 
-  const handleSubmit = async (isSkip) => {
+  const handleSubmit = async (isSkip, isPartial) => {
     try {
       const data = { updateType: "U", socialFeedId };
 
@@ -197,8 +210,17 @@ const EditDialog = ({
       }
 
       const requestData = {
-        data: [data],
-        qcType: "QC1",
+        data: [
+          {
+            UPDATETYPE: "U",
+            SOCIALFEEDID: socialFeedId,
+            HEADLINE: formItems.headline,
+            SUMMARY: formItems.summary,
+            AUTHOR: formItems.journalist,
+            TAG: formItems.tag,
+          },
+        ],
+        QCTYPE: isPartial ? "QCP" : "QC1",
       };
       const response = await axios.post(
         `${url}updatesocialfeedheader/`,
@@ -211,21 +233,61 @@ const EditDialog = ({
         toast.success("Data saved.", {
           position: "bottom-right",
         });
-        isSkip === "true" && handleClose();
-        if (rowNumber < rowData.length - 1) {
-          setFormItems({
-            headline: "",
-            summary: "",
-            journalist: "",
-            tag: "",
-          });
-          setSelectedCompanies([]);
+        if (isMultipleArticles) {
+          if ((rowNumber || 0) === rowData.length - 1) {
+            setOpen(false);
+            setSelectedItems([]);
+            setSelectionModal([]);
+            setRowNumber(0);
+            setRow(null);
+          }
+
           setRowNumber((prev) => prev + 1);
-        } else {
-          toast.success("This is the last article.", {
-            position: "bottom-right",
-          });
+          return;
+        }
+        if (!isFiltered) {
+          setRowNumber((prev) => prev + 1);
+          return;
+        }
+
+        if (isPartial) {
           handleClose();
+        }
+        isSkip && handleClose();
+
+        if (isFiltered) {
+          setRowNumber((prevRowNumber) => {
+            const currentIndex = articleIds.indexOf(prevRowNumber);
+
+            // Ensure we get the next valid index, wrapping around when needed
+            const nextIndex = (currentIndex + 1) % articleIds.length;
+            const nextArticleId = articleIds[nextIndex];
+
+            return nextArticleId;
+          });
+        } else if (isMultipleArticles) {
+          if ((Number(rowNumber) || 0) === rowData.length - 1) {
+            setOpen(false);
+          }
+
+          setRowNumber((prev) => prev + 1);
+          return;
+        } else {
+          if (rowNumber < rowData.length - 1) {
+            setFormItems({
+              headline: "",
+              summary: "",
+              journalist: "",
+              tag: "",
+            });
+
+            setSelectedCompanies([]);
+          } else {
+            toast.success("This is the last article.", {
+              position: "bottom-right",
+            });
+            handleClose();
+          }
         }
       } else {
         const errorMSG = response.data?.result?.errors[0] || {};
@@ -385,8 +447,8 @@ const EditDialog = ({
     try {
       setRemoveMultipleLoading(true);
       const params = {
-        socialfeed_ids: arrayToString([socialFeedId]),
-        company_ids: arrayToString(selectionModel),
+        socialfeedIds: arrayToString([socialFeedId]),
+        companyIds: arrayToString(selectionModel),
         QCTYPE: "QC1",
       };
       const response = await axios.delete(url3, {
@@ -409,21 +471,28 @@ const EditDialog = ({
   };
 
   const handleSkipAndNext = () => {
+    if (isMultipleArticles) {
+      if ((Number(rowNumber) || 0) === rowData.length - 1) {
+        setOpen(false);
+        setSelectionModal([]);
+        setSelectedItems([]);
+        setRowNumber(0);
+        setRow(null);
+      }
+
+      setRowNumber((prev) => prev + 1);
+      return;
+    }
     if (!isFiltered) {
       setRowNumber((prev) => prev + 1);
     } else {
       setRowNumber((prevRowNumber) => {
-        const currentArticleId = articleIds[prevRowNumber];
-        const currentIndex = articleIds.indexOf(currentArticleId);
-        const nextIndex = currentIndex + 1;
+        const currentIndex = articleIds.indexOf(prevRowNumber);
 
-        if (nextIndex < articleIds.length) {
-          const nextArticleId = articleIds[nextIndex];
-          setRowNumber(nextIndex);
-          return nextIndex;
-        } else {
-          return prevRowNumber;
-        }
+        const nextIndex = (currentIndex + 1) % articleIds.length;
+        const nextArticleId = articleIds[nextIndex];
+
+        return nextArticleId;
       });
     }
   };
@@ -433,6 +502,44 @@ const EditDialog = ({
     isAutoHeight: false,
     isMultiline: false,
   });
+
+  const handleSaveAndClose = async (isPartial) => {
+    try {
+      const requestData = {
+        data: [
+          {
+            UPDATETYPE: "U",
+            SOCIALFEEDID: socialFeedId,
+            HEADLINE: formItems.headline,
+            SUMMARY: formItems.summary,
+            AUTHOR: formItems.journalist,
+            TAG: formItems.tag,
+          },
+        ],
+        QCTYPE: isPartial ? "QCP" : "QC1",
+      };
+      const response = await axios.post(
+        `${url}updatesocialfeedheader/`,
+        requestData,
+        {
+          headers: header,
+        }
+      );
+      if (response.data?.result?.success?.length) {
+        toast.success("Data saved.", {
+          position: "bottom-right",
+        });
+        setOpen(false);
+        setRowNumber(0);
+        setRow(null);
+      } else {
+        const errorMSG = response.data?.result?.errors[0] || {};
+        toast.warning(errorMSG.warning);
+      }
+    } catch (error) {
+      console.log(error.message);
+    }
+  };
 
   return (
     <Modal
@@ -456,19 +563,27 @@ const EditDialog = ({
             component={"div"}
             display={"flex"}
           >
+            <Button
+              btnText={`Save Partial & ${
+                isMultipleArticles ? "Next" : "Close"
+              }`}
+              onClick={() => {
+                handleSubmit(false, true);
+              }}
+            />
             {!isSimilar && (
               <>
                 <Button btnText="Skip & Next" onClick={handleSkipAndNext} />
                 <Button
                   btnText="Save & Next"
-                  onClick={() => handleSubmit("false")}
+                  onClick={() => handleSubmit(false, false)}
                 />
               </>
             )}
 
             <Button
               btnText="Save & Close"
-              onClick={() => handleSubmit("true")}
+              onClick={() => handleSaveAndClose(false)}
             />
             <IconButton onClick={handleClose}>
               <CloseOutlined />
@@ -647,6 +762,9 @@ EditDialog.propTypes = {
   setOpen: PropTypes.func.isRequired,
   isFiltered: PropTypes.bool,
   isSimilar: PropTypes.bool,
+  isMultipleArticles: PropTypes.bool,
+  setSelectedItems: PropTypes.func,
+  setSelectionModal: PropTypes.func,
 };
 
 export default EditDialog;

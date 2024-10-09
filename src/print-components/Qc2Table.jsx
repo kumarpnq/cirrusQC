@@ -262,13 +262,13 @@ const Qc2Table = ({
                           (item === "header_space" && "pl-[135px]") ||
                           (item === "space" && "pl-16") ||
                           (item === "reporting_tone" && "pl-16") ||
-                          (item === "reporting_subject" && "pl-16") ||
+                          (item === "reporting_subject" && "pl-3") ||
                           (item === "remark" && "pl-16") ||
-                          (item === "keyword" && "pl-36") ||
-                          (item === "detail_summary" && "pl-44") ||
-                          (item === "category" && "pl-28") ||
+                          (item === "keyword" && "pl-24") ||
+                          (item === "detail_summary" && "pl-32") ||
+                          (item === "category" && "pl-36") ||
                           (item === "subcategory" && "pl-36") ||
-                          (item === "city_name" && "pl-[120px]") ||
+                          (item === "city_name" && "pl-[134px]") ||
                           (item === "head_summary" && "pl-10") ||
                           (item === "article_id" && "pl-36") ||
                           (item === "company_id" && "pl-8") ||
@@ -357,7 +357,7 @@ const Qc2Table = ({
                     </Tooltip>
                     <td className="px-3 py-2 whitespace-nowrap">
                       <div
-                        className="w-48 text-left truncate"
+                        className="text-left truncate w-44"
                         style={{ minWidth: 200 }}
                       >
                         {items.publication}
@@ -382,7 +382,7 @@ const Qc2Table = ({
                     <td className="py-2" style={{ width: "100px" }}>
                       <div
                         style={{ width: "100px" }}
-                        className="pr-12 text-right"
+                        className="pr-12 text-left"
                       >
                         {items.header_space}
                       </div>
@@ -413,7 +413,7 @@ const Qc2Table = ({
                           items.reporting_tone === "Unknown" &&
                           "bg-[#FF7F7F] text-white"
                         }`}
-                        style={{ width: "160px" }}
+                        style={{ width: "130px" }}
                       >
                         {items.reporting_tone}
                       </div>
@@ -425,7 +425,7 @@ const Qc2Table = ({
                           items.reporting_subject === "Unknown" &&
                           "bg-[#FF7F7F] text-white"
                         }`}
-                        style={{ width: "200px" }}
+                        style={{ width: "130px" }}
                       >
                         {items.reporting_subject}
                       </div>
@@ -473,7 +473,7 @@ const Qc2Table = ({
                     <td className="px-6 py-2 whitespace-nowrap">
                       <div style={{ width: "200px" }}>{items.subcategory}</div>
                     </td>
-                    <td className="px-3 py-2 pl-6 whitespace-nowrap">
+                    <td className="px-3 py-2 text-left whitespace-nowrap">
                       <div style={{ width: "100px" }}>{items.city_name}</div>
                     </td>
                     <Tooltip

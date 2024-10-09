@@ -14,11 +14,9 @@ import Countries from "../../../components/research-dropdowns/Countries";
 import CheckboxComp from "../../../components/checkbox/Checkbox";
 import Button from "../../../components/custom/Button";
 import CustomTextField from "../../../@core/CutsomTextField";
-import CustomMultiSelect from "../../../@core/CustomMultiSelect";
 import { formattedDate, formattedNextDay } from "../../../constants/dates";
-import { useEffect, useState } from "react";
-import { url } from "../../../constants/baseUrl";
-import axios from "axios";
+import CompanyList from "../../components/CompanyList";
+import { qc1ArrayWithPartially } from "../../../constants/dataArray";
 
 const CustomAccordionDetails = ({
   clientData,
@@ -37,7 +35,6 @@ const CustomAccordionDetails = ({
   setDateNow,
   isQc1Done,
   setIsQc1Done,
-  qc1Array,
   userList,
   qc1By,
   setQc1By,
@@ -64,33 +61,8 @@ const CustomAccordionDetails = ({
   tableDataLoading,
   fetchTableData,
   setTableData,
+  setSelectionModal,
 }) => {
-  const [companyData, setCompanyData] = useState([]);
-  useEffect(() => {
-    const fetchCompanies = async () => {
-      try {
-        const userToken = localStorage.getItem("user");
-
-        const endpoint = selectedClient
-          ? `${url}companylist/${selectedClient}`
-          : `${url}companylist/`;
-
-        const response = await axios.get(endpoint, {
-          headers: {
-            Authorization: `Bearer ${userToken}`,
-          },
-        });
-
-        setCompanyData(response.data.companies);
-      } catch (error) {
-        setCompanyData([]);
-        console.error("Error fetching companies:", error.message);
-      }
-    };
-
-    fetchCompanies();
-  }, [selectedClient]);
-
   const handleClear = () => {
     setSelectedClient("");
     setSelectedCompanies([]);
@@ -108,6 +80,7 @@ const CustomAccordionDetails = ({
     setLink("");
     setSocialFeedId("");
     setTableData([]);
+    setSelectionModal([]);
   };
   return (
     <AccordionDetails>
@@ -129,15 +102,10 @@ const CustomAccordionDetails = ({
           />
         </div>
         <div className="mt-3 w-[200px]">
-          <CustomMultiSelect
-            dropdownToggleWidth={200}
-            dropdownWidth={250}
-            keyId="companyid"
-            keyName="companyname"
-            options={companyData || []}
-            selectedItems={selectedCompanies}
-            setSelectedItems={setSelectedCompanies}
-            title="companies"
+          <CompanyList
+            selectedCompanies={selectedCompanies}
+            setSelectedCompanies={setSelectedCompanies}
+            selectedClient={selectedClient}
           />
         </div>
         <Datetype
@@ -152,7 +120,8 @@ const CustomAccordionDetails = ({
           qc1done={isQc1Done}
           setQc1done={setIsQc1Done}
           classes={classes}
-          qc1Array={qc1Array}
+          // qc1Array={qc1Array}
+          qc1Array={qc1ArrayWithPartially}
         />
         <Qc1By
           qcUsersData={userList || []}
@@ -238,7 +207,6 @@ CustomAccordionDetails.propTypes = {
   setDateNow: PropTypes.func.isRequired,
   isQc1Done: PropTypes.bool.isRequired,
   setIsQc1Done: PropTypes.func.isRequired,
-  qc1Array: PropTypes.array.isRequired,
   userList: PropTypes.array.isRequired,
   qc1By: PropTypes.any.isRequired,
   setQc1By: PropTypes.func.isRequired,
@@ -266,6 +234,7 @@ CustomAccordionDetails.propTypes = {
   tableDataLoading: PropTypes.bool.isRequired,
   fetchTableData: PropTypes.func.isRequired,
   setTableData: PropTypes.func.isRequired,
+  setSelectionModal: PropTypes.func.isRequired,
 };
 
 export default CustomAccordionDetails;

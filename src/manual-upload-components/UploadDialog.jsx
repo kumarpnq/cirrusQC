@@ -77,6 +77,7 @@ const UploadDialog = ({
                       errorList={errorList}
                       articleNumber={articleNumber}
                       setArticleNumber={setArticleNumber}
+                      setLink={setLink}
                     />
                   </Box>
                 </Grid>

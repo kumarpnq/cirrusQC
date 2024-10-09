@@ -211,9 +211,9 @@ const MainTable = ({
                     }
                     className={`text-white cursor-pointer font-thin text-xs tracking-widest px-4 ${
                       (header === "COMPANY NAME" && "pl-10") ||
-                      (header === "HEADLINE" && "pl-6") ||
-                      (header === "PUBLICATION" && "pl-44") ||
-                      (header === "LINK" && "pl-10") ||
+                      (header === "HEADLINE" && "pl-4") ||
+                      (header === "PUBLICATION" && "pl-48 ml-4") ||
+                      (header === "LINK" && "pl-7") ||
                       (header === "REPORTING SUBJECT" && "pl-12") ||
                       (header === "AUTHOR NAME" && "pl-[430px]") ||
                       (header === "HEADSUMMARY" && "pl-8") ||
