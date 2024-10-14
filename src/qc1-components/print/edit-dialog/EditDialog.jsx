@@ -516,7 +516,7 @@ const EditDialog = ({
             TAG: formItems.tag,
           },
         ],
-        QCTYPE: isPartial ? "QCP" : "QC1",
+        qcType: isPartial ? "QCP" : "QC1",
       };
       const response = await axios.post(
         `${url}updatesocialfeedheader/`,
@@ -532,6 +532,7 @@ const EditDialog = ({
         setOpen(false);
         setRowNumber(0);
         setRow(null);
+        handleClose();
       } else {
         const errorMSG = response.data?.result?.errors[0] || {};
         toast.warning(errorMSG.warning);

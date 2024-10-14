@@ -16,6 +16,7 @@ import { url } from "../constants/baseUrl";
 import useFetchData from "../hooks/useFetchData";
 import { formattedDate } from "../constants/dates";
 import DebounceSearchCompany from "../@core/DebounceSearchCompany";
+import { isDomainIncluded } from "../utils/isDomainIncluded";
 
 const Details = ({
   type,
@@ -50,6 +51,7 @@ const Details = ({
   const [dateNow, setDateNow] = useState(selectedRow?.feeddate);
   const [saveLoading, setSaveLoading] = useState(false);
   const [languages, setLanguages] = useState([]);
+
   const {
     data: langs,
     error: langsError,
@@ -63,11 +65,6 @@ const Details = ({
     }
   }, [langs, langsError]);
 
-  function isDomainIncluded(url, domain) {
-    const escapedDomain = domain.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-    const regex = new RegExp(`(?:https?:\/\/)?(?:www\.)?${escapedDomain}`, "i");
-    return regex.test(url);
-  }
   const handleSave = async () => {
     const isBothUrlSame = isDomainIncluded(articleURL, publication);
 
@@ -164,7 +161,7 @@ const Details = ({
     <Box className="w-full h-[80vh] border shadow-md">
       <Box sx={{ px: 2 }}>
         <FormControl>
-          <Box mb={1} display="flex" alignItems="center" width={580}>
+          <Box mb={1} display="flex" alignItems="center" width={"100%"}>
             <Typography sx={{ fontSize: "0.9em" }}>Title:</Typography>
             <TextField
               size="small"
