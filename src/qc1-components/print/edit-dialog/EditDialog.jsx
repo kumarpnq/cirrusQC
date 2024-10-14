@@ -212,15 +212,15 @@ const EditDialog = ({
       const requestData = {
         data: [
           {
-            UPDATETYPE: "U",
-            SOCIALFEEDID: socialFeedId,
-            HEADLINE: formItems.headline,
-            SUMMARY: formItems.summary,
-            AUTHOR: formItems.journalist,
-            TAG: formItems.tag,
+            updateType: "U",
+            socialFeedId,
+            headline: formItems.headline,
+            summary: formItems.summary,
+            author: formItems.journalist,
+            tag: formItems.tag,
           },
         ],
-        QCTYPE: isPartial ? "QCP" : "QC1",
+        qcType: isPartial ? "QCP" : "QC1",
       };
       const response = await axios.post(
         `${url}updatesocialfeedheader/`,
@@ -236,6 +236,12 @@ const EditDialog = ({
         if (isMultipleArticles) {
           if ((rowNumber || 0) === rowData.length - 1) {
             setOpen(false);
+            setFormItems({
+              headline: "",
+              summary: "",
+              journalist: "",
+              tag: "",
+            });
             setSelectedItems([]);
             setSelectionModal([]);
             setRowNumber(0);
@@ -447,9 +453,9 @@ const EditDialog = ({
     try {
       setRemoveMultipleLoading(true);
       const params = {
-        socialfeedIds: arrayToString([socialFeedId]),
-        companyIds: arrayToString(selectionModel),
-        QCTYPE: "QC1",
+        socialfeed_ids: arrayToString([socialFeedId]),
+        company_ids: arrayToString(selectionModel),
+        qcType: "QC1",
       };
       const response = await axios.delete(url3, {
         headers: {
@@ -508,12 +514,12 @@ const EditDialog = ({
       const requestData = {
         data: [
           {
-            UPDATETYPE: "U",
-            SOCIALFEEDID: socialFeedId,
-            HEADLINE: formItems.headline,
-            SUMMARY: formItems.summary,
-            AUTHOR: formItems.journalist,
-            TAG: formItems.tag,
+            updateType: "U",
+            socialFeedId,
+            headline: formItems.headline,
+            summary: formItems.summary,
+            author: formItems.journalist,
+            tag: formItems.tag,
           },
         ],
         qcType: isPartial ? "QCP" : "QC1",

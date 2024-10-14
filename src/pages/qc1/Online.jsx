@@ -346,17 +346,17 @@ const Online = () => {
         const newRow = changedRows[rowId];
         const oldRow = rowsBeforeChange[rowId];
         const request_data = {
-          SOCIALFEEDID: newRow.socialFeedId,
+          socialFeedId: newRow.socialFeedId,
         };
 
         if (oldRow.headline !== newRow.headline) {
-          request_data.HEADLINE = newRow.headline;
+          request_data.headline = newRow.headline;
         }
         if (oldRow.summary !== newRow.summary) {
-          request_data.SUMMARY = newRow.summary;
+          request_data.summary = newRow.summary;
         }
         if (oldRow.journalist !== newRow.journalist) {
-          request_data.AUTHOR = newRow.journalist;
+          request_data.author = newRow.journalist;
         }
         return request_data;
       });

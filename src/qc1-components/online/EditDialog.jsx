@@ -442,7 +442,7 @@ const EditDialog = ({
       const params = {
         article_ids: articleId,
         company_ids: arrayToString(selectionModel),
-        QCTYPE: "QC1",
+        qcType: "QC1",
       };
       const response = await axios.delete(url3, {
         headers: {
