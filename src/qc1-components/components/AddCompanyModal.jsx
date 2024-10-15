@@ -117,7 +117,7 @@ const AddCompaniesModal = ({
       const request_data = {
         [paramKey]: arrayToString(ids),
         company_id,
-        QCTYPE: "QC1",
+        qcType: "QC1",
       };
       const endpoint =
         screen === "online"
@@ -141,36 +141,6 @@ const AddCompaniesModal = ({
   };
 
   const rows = [];
-
-  const handleCheckboxChange = (event, row) => {
-    const selectedRowIds = [...selectedRowsForDelete.map((r) => r.id)];
-
-    if (event.target.checked) {
-      // Add the selected row's ID
-      selectedRowIds.push(row.id);
-    } else {
-      // Remove the deselected row's ID
-      const index = selectedRowIds.indexOf(row.id);
-      if (index > -1) {
-        selectedRowIds.splice(index, 1);
-      }
-    }
-
-    // Filter rows based on the updated list of selected IDs
-    const newSelectedRows = rows.filter((r) => selectedRowIds.includes(r.id));
-
-    setSelectedRowsForDelete(newSelectedRows);
-  };
-
-  const handleMasterCheckboxChange = (event) => {
-    event.stopPropagation();
-    const isChecked = event.target.checked;
-    if (isChecked) {
-      setSelectedRowsForDelete(rows);
-    } else {
-      setSelectedRowsForDelete([]);
-    }
-  };
 
   const columns = [
     {
@@ -284,7 +254,7 @@ const AddCompaniesModal = ({
       const params = {
         socialfeed_ids: "row.social_feed_id",
         company_ids: arrayToString(selectionModel),
-        QCTYPE: "QC1",
+        qcType: "QC1",
       };
       const response = await axios.delete(url, {
         headers: {

@@ -25,6 +25,8 @@ import { toast } from "react-toastify";
 import Button from "../../components/custom/Button";
 import ScrollNavigator from "./components/ScrollNavigator";
 import { arrayToString } from "../../utils/arrayToString";
+import { saveTableSettings } from "../../constants/saveTableSetting";
+import useUserSettings from "../../hooks/useUserSettings";
 
 const style = {
   position: "absolute",
@@ -55,6 +57,9 @@ const EditDialog = ({
   setSelectionModal,
   isMultiple,
 }) => {
+  // * user settings
+  const userColumnSettings = useUserSettings("print", "EditMain");
+
   // * headers
   const userToken = localStorage.getItem("user");
   const headers = {
@@ -170,28 +175,28 @@ const EditDialog = ({
     try {
       setUpdateHeaderLoading(true);
       const data = {
-        ARTICLEID: articleId,
+        articleId,
       };
       // Compare each field in formItems with headerData and add to data if modified
       if (formItems.headline !== headerData.headline) {
-        data.HEADLINES = formItems.headline;
+        data.headlines = formItems.headline;
       }
       if (formItems.summary !== headerData.summary) {
-        data.HEADSUMMARY = formItems.summary;
+        data.headSummary = formItems.summary;
       }
       if (formItems.journalist !== headerData.journalist) {
-        data.JOURNALIST = formItems.journalist;
+        data.journalist = formItems.journalist;
       }
       if (formItems.page !== headerData.page_number) {
-        data.PAGENUMBER = Number(formItems.page);
+        data.pageNumber = Number(formItems.page);
       }
       if (formItems.articleSummary !== headerData.article_summary) {
-        data.ARTICLE_SUMMARY = formItems.articleSummary;
+        data.articleSummary = formItems.articleSummary;
       }
 
       const request_data = {
         data: [data],
-        // QCTYPE: "QC1",
+        qcType: "QC1",
       };
 
       if (!isPartial) {
@@ -281,14 +286,14 @@ const EditDialog = ({
     try {
       setAddCompanyLoading(true);
       const dataToSend = selectedCompanies.map((i) => ({
-        UPDATETYPE: "I",
-        ARTICLEID: articleId,
-        COMPANYID: i.value,
-        COMPANYNAME: i.label,
+        updateType: "I",
+        articleId,
+        companyId: i.value,
+        companyName: i.label,
       }));
       const request_data = {
         data: dataToSend,
-        QCTYPE: "QC1",
+        qcType: "QC1",
       };
       const response = await axios.post(
         `${url}updatearticletagdetails/`,
@@ -321,12 +326,12 @@ const EditDialog = ({
       const request_data = {
         data: [
           {
-            UPDATETYPE: "D",
-            ARTICLEID: articleId,
-            COMPANYID: selectedRow?.companyId,
+            updateType: "D",
+            articleId,
+            companyId: selectedRow?.companyId,
           },
         ],
-        QCTYPE: "QC1",
+        qcType: "QC1",
       };
       const response = await axios.post(
         `${url}updatearticletagdetails/`,
@@ -390,7 +395,7 @@ const EditDialog = ({
     {
       field: "Action",
       headerName: "Action",
-      width: 70,
+      width: userColumnSettings?.Action || 70,
       renderCell: (params) => (
         <IconButton
           sx={{ color: "red" }}
@@ -400,8 +405,16 @@ const EditDialog = ({
         </IconButton>
       ),
     },
-    { field: "CompanyName", headerName: "Company", width: 300 },
-    { field: "keyword", headerName: "Keyword", width: 300 },
+    {
+      field: "CompanyName",
+      headerName: "Company",
+      width: userColumnSettings?.CompanyName || 300,
+    },
+    {
+      field: "keyword",
+      headerName: "Keyword",
+      width: userColumnSettings?.Keyword || 300,
+    },
   ];
 
   const rows = articleTagDetails.map((item) => ({
@@ -429,7 +442,7 @@ const EditDialog = ({
       const params = {
         article_ids: articleId,
         company_ids: arrayToString(selectionModel),
-        QCTYPE: "QC1",
+        qcType: "QC1",
       };
       const response = await axios.delete(url3, {
         headers: {
@@ -450,6 +463,13 @@ const EditDialog = ({
   };
   // * save button text
   const buttonText = isMultiple ? "Save & Next" : "save";
+
+  // * resize columns
+  const handleColumnResize = (params) => {
+    let field = params.colDef.field;
+    let width = params.width;
+    saveTableSettings("print", "EditMain", field, width);
+  };
 
   return (
     <Fragment>
@@ -607,6 +627,7 @@ const EditDialog = ({
                       columns={columns}
                       density="compact"
                       checkboxSelection
+                      onColumnResize={handleColumnResize}
                       onRowSelectionModelChange={handleRowSelection}
                       loading={articleTagDetailsLoading && <CircularProgress />}
                       pageSize={5}

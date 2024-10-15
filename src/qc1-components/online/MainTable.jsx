@@ -34,6 +34,8 @@ import EditDialog from "./EditDialog";
 import { toast } from "react-toastify";
 import axios from "axios";
 import { url } from "../../constants/baseUrl";
+import useUserSettings from "../../hooks/useUserSettings";
+import { saveTableSettings } from "../../constants/saveTableSetting";
 
 const iconCellStyle = {
   display: "flex",
@@ -41,6 +43,21 @@ const iconCellStyle = {
   alignItems: "center",
   height: "100%",
 };
+
+// * custom toolbar
+function CustomToolbar() {
+  return (
+    <GridToolbarContainer
+      sx={{ display: "flex", justifyContent: "space-between" }}
+    >
+      <Box sx={{ display: "flex" }}>
+        <GridToolbarFilterButton />
+        <GridPagination />
+      </Box>
+      <GridToolbarQuickFilter />
+    </GridToolbarContainer>
+  );
+}
 
 const MainTable = ({
   gridData,
@@ -60,20 +77,8 @@ const MainTable = ({
   getRowClassName,
   setSortedFilteredRows,
 }) => {
-  // * custom toolbar
-  function CustomToolbar() {
-    return (
-      <GridToolbarContainer
-        sx={{ display: "flex", justifyContent: "space-between" }}
-      >
-        <Box sx={{ display: "flex" }}>
-          <GridToolbarFilterButton />
-          <GridPagination />
-        </Box>
-        <GridToolbarQuickFilter />
-      </GridToolbarContainer>
-    );
-  }
+  // * user settings
+  const userColumnSettings = useUserSettings("print", "Main");
 
   const [openEditSimilarArticle, setOpenEditSimilarArticle] = useState(false);
   const [selectedSimilarArticle, setSelectedSimilarArticle] = useState({});
@@ -117,7 +122,7 @@ const MainTable = ({
     {
       field: "Action",
       headerName: "Action",
-      width: 160,
+      width: userColumnSettings?.Action || 160,
       renderCell: (params) => (
         <div style={iconCellStyle}>
           <Box
@@ -328,7 +333,7 @@ const MainTable = ({
     {
       field: "thumbnail",
       headerName: "Thumbnail",
-      width: 70,
+      width: userColumnSettings?.thumbnail || 70,
       height: 70,
       renderCell: (params) => (
         <div style={iconCellStyle}>
@@ -355,7 +360,7 @@ const MainTable = ({
     {
       field: "headline",
       headerName: "Headlines",
-      width: 300,
+      width: userColumnSettings?.headline || 300,
       editable: true,
       renderCell: (params) => (
         <div style={{ whiteSpace: "pre-wrap", wordWrap: "break-word" }}>
@@ -366,7 +371,7 @@ const MainTable = ({
     {
       field: "head_summary",
       headerName: "Summary",
-      width: 450,
+      width: userColumnSettings?.head_summary || 450,
       editable: true,
 
       renderCell: (params) => (
@@ -378,34 +383,57 @@ const MainTable = ({
     {
       field: "journalist",
       headerName: "Journalist",
-      width: 150,
+      width: userColumnSettings?.journalist || 150,
       editable: true,
     },
-    { field: "article_id", headerName: "Article ID", width: 160 },
-    { field: "article_date", headerName: "Article Date", width: 150 },
+    {
+      field: "article_id",
+      headerName: "Article ID",
+      width: userColumnSettings?.article_id || 160,
+    },
+    {
+      field: "article_date",
+      headerName: "Article Date",
+      width: userColumnSettings?.article_date || 150,
+    },
     {
       field: "publication_name",
       headerName: "Publication Name",
-      width: 200,
+      width: userColumnSettings?.publication_name || 200,
     },
-    { field: "page_number", headerName: "Pages", width: 80 },
-    { field: "pdfSize", headerName: "PDF Size", width: 100 },
+    {
+      field: "page_number",
+      headerName: "Pages",
+      width: userColumnSettings?.page_number || 80,
+    },
+    {
+      field: "pdfSize",
+      headerName: "PDF Size",
+      width: userColumnSettings?.pdfSize || 100,
+    },
+
+    {
+      field: "main_id",
+      headerName: "System Id",
+      width: userColumnSettings?.main_id || 150,
+    },
 
     { field: "uploadTime", headerName: "Upload Time", width: 150 },
     { field: "qc1on", headerName: "QC1 On", width: 150 },
     { field: "qc1by", headerName: "QC1 By", width: 150 },
     { field: "qcpartial_on", headerName: "QCPartial On", width: 150 },
     { field: "qcpartial_by", headerName: "QCPartial By", width: 150 },
+
     {
       field: "tagTime",
       headerName: "Tag Time",
-      width: 150,
+      width: userColumnSettings?.tagTime || 150,
       renderCell: (params) => <a href="#">{params.value}</a>,
     },
     {
       field: "text",
       headerName: "Text",
-      width: 100,
+      width: userColumnSettings?.text || 100,
       renderCell: (params) => (
         <p>
           {" "}
@@ -556,6 +584,13 @@ const MainTable = ({
     debouncedHandleFilterModelChange(filterModel);
   };
 
+  // * resize column
+  const handleColumnResize = (params) => {
+    let field = params.colDef.field;
+    let width = params.width;
+    saveTableSettings("print", "Main", field, width);
+  };
+
   return (
     <>
       <Box sx={{ height: 600, width: "100%", mt: 1 }}>
@@ -568,6 +603,7 @@ const MainTable = ({
           getRowHeight={() => "auto"}
           checkboxSelection
           apiRef={apiRef}
+          onColumnResize={handleColumnResize}
           onSortModelChange={handleSortModelChange}
           onFilterModelChange={handleFilterModelChange}
           ignoreValueFormatterDuringExport

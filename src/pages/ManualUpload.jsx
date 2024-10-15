@@ -569,8 +569,8 @@ const ManualUpload = () => {
                         fontSize: "0.8rem",
                         fontFamily: "nunito",
                         width: 200,
-                        whiteSpace: "nowrap", // Prevent text wrapping
-                        overflow: "hidden", // Hide overflow text
+                        whiteSpace: "nowrap",
+                        overflow: "hidden",
                         textOverflow: "ellipsis",
                       }}
                     >
@@ -582,8 +582,8 @@ const ManualUpload = () => {
                         fontSize: "0.8rem",
                         fontFamily: "nunito",
                         maxWidth: 1000,
-                        whiteSpace: "nowrap", // Prevent text wrapping
-                        overflow: "hidden", // Hide overflow text
+                        whiteSpace: "nowrap",
+                        overflow: "hidden",
                         textOverflow: "ellipsis",
                       }}
                     >

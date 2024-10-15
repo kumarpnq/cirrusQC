@@ -28,7 +28,6 @@ import { addPropertyIfConditionIsTrue } from "../../utils/addProprtyIfConditiont
 import AddCompaniesModal from "../../qc1-components/components/AddCompanyModal";
 import GroupModal from "../../qc1-components/online/components/GroupModal";
 import MainTable from "../../qc1-components/online/MainTable";
-// import DeleteConfirmationDialog from "../../@core/DeleteDialog";
 import GroupUnGroupAccordion from "../../qc1-components/online/GroupUngroup";
 
 const useStyle = makeStyles(() => ({
@@ -602,17 +601,17 @@ const Print = () => {
         const newRow = changedRows[rowId];
         const oldRow = rowsBeforeChange[rowId];
         const request_data = {
-          ARTICLEID: newRow.main_id,
+          articleId: newRow.main_id,
         };
 
         if (oldRow.headline !== newRow.headline) {
-          request_data.HEADLINES = newRow.headline;
+          request_data.headlines = newRow.headline;
         }
         if (oldRow.head_summary !== newRow.head_summary) {
-          request_data.HEADSUMMARY = newRow.head_summary;
+          request_data.headSummary = newRow.head_summary;
         }
         if (oldRow.journalist !== newRow.journalist) {
-          request_data.JOURNALIST = newRow.journalist;
+          request_data.journalist = newRow.journalist;
         }
 
         return request_data;

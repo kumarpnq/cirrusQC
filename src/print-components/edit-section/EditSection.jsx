@@ -243,63 +243,60 @@ const EditSection = ({
         updatedRows.forEach((updatedRow) => {
           const modifiedFieldsForRow = {};
 
-          // Compare each field with the selected row and add to modifiedFieldsForRow if different
           if (updatedRow.headline !== selectedItem.headline) {
-            modifiedFieldsForRow.HEADLINE = updatedRow.headline;
+            modifiedFieldsForRow.headline = updatedRow.headline;
           }
           if (updatedRow.head_summary !== selectedItem.head_summary) {
-            modifiedFieldsForRow.HEADSUMMARY = updatedRow.head_summary;
+            modifiedFieldsForRow.headSummary = updatedRow.head_summary;
           }
           if (updatedRow.author !== selectedItem.author) {
-            modifiedFieldsForRow.AUTHOR = updatedRow.author;
+            modifiedFieldsForRow.author = updatedRow.author;
           }
           if (updatedRow.detail_summary !== selectedItem.detail_summary) {
-            modifiedFieldsForRow.DETAILSUMMARY = updatedRow.detail_summary;
+            modifiedFieldsForRow.detailsSummary = updatedRow.detail_summary;
           }
           if (updatedRow.keyword !== selectedItem.keyword) {
-            modifiedFieldsForRow.KEYWORD = updatedRow.keyword;
+            modifiedFieldsForRow.keyword = updatedRow.keyword;
           }
           if (updatedRow.m_prom !== selectedItem.m_prom) {
-            modifiedFieldsForRow.PROMINENCE = updatedRow.m_prom;
+            modifiedFieldsForRow.prominence = updatedRow.m_prom;
           }
           if (updatedRow.reporting_subject !== selectedItem.reporting_subject) {
-            modifiedFieldsForRow.REPORTINGSUBJECT =
+            modifiedFieldsForRow.reportingSubject =
               updatedRow.reporting_subject;
           }
           if (updatedRow.reporting_tone !== selectedItem.reporting_tone) {
-            modifiedFieldsForRow.REPORTINGTONE = updatedRow.reporting_tone;
+            modifiedFieldsForRow.reportingTone = updatedRow.reporting_tone;
           }
           if (updatedRow.social_feed_id !== selectedItem.social_feed_id) {
-            modifiedFieldsForRow.SOCIALFEEDID = updatedRow.social_feed_id;
+            modifiedFieldsForRow.socialFeedId = updatedRow.social_feed_id;
           }
           if (updatedRow.subcategory !== selectedItem.subcategory) {
-            modifiedFieldsForRow.SUBCATEGORY = updatedRow.subcategory;
+            modifiedFieldsForRow.subcategory = updatedRow.subcategory;
           }
           if (updatedRow.remark !== selectedItem.remark) {
-            modifiedFieldsForRow.REMARKS = updatedRow.remark;
+            modifiedFieldsForRow.remarks = updatedRow.remark;
           }
           if (updatedRow.space !== selectedItem.space) {
-            modifiedFieldsForRow.SPACE = updatedRow.space;
+            modifiedFieldsForRow.space = updatedRow.space;
           }
 
-          // Merge modified fields for this row with overall modified fields
           modifiedFields = { ...modifiedFields, ...modifiedFieldsForRow };
         });
 
-        // Only return the entry if there are modifications
         if (Object.keys(modifiedFields).length > 0) {
           return {
-            ARTICLEID: selectedItem.article_id,
-            COMPANYID: selectedItem.company_id,
-            MODIFIEDBY: userName,
-            MODIFIEDON: formattedDate,
+            articleId: selectedItem.article_id,
+            companyId: selectedItem.company_id,
+            modifiedBy: userName,
+            modifiedOn: formattedDate,
             ...modifiedFields,
           };
         }
 
-        return null; // No modifications, return null
+        return null;
       })
-      .filter((entry) => entry !== null); // Remove null entries
+      .filter((entry) => entry !== null);
 
     try {
       const userToken = localStorage.getItem("user");

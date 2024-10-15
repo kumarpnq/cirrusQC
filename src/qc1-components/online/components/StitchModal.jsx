@@ -30,8 +30,9 @@ import { url } from "../../../constants/baseUrl";
 import { toast } from "react-toastify";
 import { arrayToString } from "../../../utils/arrayToString";
 import Button from "../../../components/custom/Button";
-import { Link } from "react-router-dom";
 import ArticleView from "../ArticleView";
+import { saveTableSettings } from "../../../constants/saveTableSetting";
+import useUserSettings from "../../../hooks/useUserSettings";
 // Styles
 const style = {
   position: "absolute",
@@ -55,6 +56,8 @@ const StitchModal = ({
   pageNumber,
   setPageNumber,
 }) => {
+  // * user settings
+  const userColumnSettings = useUserSettings("print", "StitchMain");
   //* fetch stitched articles
   const [articles, setArticles] = useState([]);
   const [stitchedArticles, setStitchedArticles] = useState([]);
@@ -161,7 +164,7 @@ const StitchModal = ({
     {
       field: "upload_id",
       headerName: "Article ID",
-      width: 270,
+      width: userColumnSettings?.upload_id || 270,
       renderCell: (params) => (
         <Typography
           component={"button"}
@@ -173,14 +176,30 @@ const StitchModal = ({
         </Typography>
       ),
     },
-    { field: "article_date", headerName: "Article Date", width: 150 },
-    { field: "publication_name", headerName: "Publication Name", width: 160 },
-    { field: "headlines", headerName: "Headline", width: 300 },
-    { field: "page_number", headerName: "Page No", width: 100 },
+    {
+      field: "article_date",
+      headerName: "Article Date",
+      width: userColumnSettings?.article_date || 150,
+    },
+    {
+      field: "publication_name",
+      headerName: "Publication Name",
+      width: userColumnSettings?.publication_name || 160,
+    },
+    {
+      field: "headlines",
+      headerName: "Headline",
+      width: userColumnSettings?.headlines || 300,
+    },
+    {
+      field: "page_number",
+      headerName: "Page No",
+      width: userColumnSettings?.page_number || 100,
+    },
     {
       field: "reporting_subject",
       headerName: "Reporting Subject",
-      width: 200,
+      width: userColumnSettings?.reporting_subject || 200,
     },
   ];
   const rows = filteredArticles.map((item) => ({
@@ -198,6 +217,13 @@ const StitchModal = ({
     reporting_subject: item.reporting_subject,
     link: item.link,
   }));
+
+  // * column resize
+  const handleColumnResize = (params) => {
+    let field = params.colDef.field;
+    let width = params.width;
+    saveTableSettings("print", "StitchMain", field, width);
+  };
 
   const PageFilter = () => {
     return (
@@ -289,6 +315,7 @@ const StitchModal = ({
                   pageSize={5}
                   rowsPerPageOptions={[5, 10, 20]}
                   checkboxSelection
+                  onColumnResize={handleColumnResize}
                   loading={fetchLoading && <CircularProgress />}
                   onRowSelectionModelChange={(ids) => {
                     handleSelectionChange(ids);

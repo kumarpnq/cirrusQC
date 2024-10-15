@@ -37,8 +37,6 @@ const UploadDialog = ({
   articleNumber,
   setArticleNumber,
 }) => {
-  const isResponsive = useMediaQuery("(max-width: 1269px)");
-
   const [link, setLink] = useState("");
 
   return (
@@ -53,59 +51,27 @@ const UploadDialog = ({
           <Button onClick={handleClose}>Close</Button>
         </DialogTitle>
         <DialogContent>
-          <Grid
-            container
-            spacing={1}
-            alignItems="center"
-            direction={isResponsive ? "column" : "row"}
-          >
-            {isResponsive ? (
-              <>
-                <Grid item xs={12}>
-                  <Box>
-                    <ArticleView link={link} isResponsive />
-                  </Box>
-                </Grid>
-                <Grid item xs={12}>
-                  <Box>
-                    <Details
-                      selectedRow={selectedRow}
-                      type={type}
-                      articleURL={link}
-                      setArticleURL={setLink}
-                      setIsArticleSaved={setIsArticleSaved}
-                      errorList={errorList}
-                      articleNumber={articleNumber}
-                      setArticleNumber={setArticleNumber}
-                      setLink={setLink}
-                    />
-                  </Box>
-                </Grid>
-              </>
-            ) : (
-              <>
-                <Grid item xs={12} md={6}>
-                  <Box>
-                    <Details
-                      selectedRow={selectedRow}
-                      type={type}
-                      articleURL={link}
-                      setArticleURL={setLink}
-                      setIsArticleSaved={setIsArticleSaved}
-                      errorList={errorList}
-                      articleNumber={articleNumber}
-                      setArticleNumber={setArticleNumber}
-                      setLink={setLink}
-                    />
-                  </Box>
-                </Grid>
-                <Grid item xs={12} md={6}>
-                  <Box>
-                    <ArticleView link={link} isResponsive={false} />
-                  </Box>
-                </Grid>
-              </>
-            )}
+          <Grid container spacing={2}>
+            <Grid item xs={12} md={6}>
+              <Box display="flex" flexDirection="column" height="100%">
+                <Details
+                  selectedRow={selectedRow}
+                  type={type}
+                  articleURL={link}
+                  setArticleURL={setLink}
+                  setIsArticleSaved={setIsArticleSaved}
+                  errorList={errorList}
+                  articleNumber={articleNumber}
+                  setArticleNumber={setArticleNumber}
+                  setLink={setLink}
+                />
+              </Box>
+            </Grid>
+            <Grid item xs={12} md={6}>
+              <Box display="flex" flexDirection="column" height="100%">
+                <ArticleView link={link} isResponsive={false} />
+              </Box>
+            </Grid>
           </Grid>
         </DialogContent>
       </Box>

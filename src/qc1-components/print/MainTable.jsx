@@ -34,6 +34,8 @@ import ArticleView from "./edit-dialog/ArticleView";
 
 import EditDialog from "./edit-dialog/EditDialog";
 import { toast } from "react-toastify";
+import { saveTableSettings } from "../../constants/saveTableSetting";
+import useUserSettings from "../../hooks/useUserSettings";
 
 const iconCellStyle = {
   display: "flex",
@@ -71,6 +73,9 @@ const MainTable = ({
   sortedFilteredRows,
   setSortedFilteredRows,
 }) => {
+  // * user settings
+  const userColumnSettings = useUserSettings("online", "Main");
+
   const userToken = localStorage.getItem("user");
   const headers = {
     Authorization: `Bearer ${userToken}`,
@@ -155,11 +160,12 @@ const MainTable = ({
     setSelectedSimilarArticle([data]);
     setOpenEditSimilarArticle((pre) => !pre);
   };
+
   const columns = [
     {
       field: "action",
       headerName: "Action",
-      width: 125,
+      width: userColumnSettings?.action || 125,
       renderCell: (params) => (
         <div style={iconCellStyle}>
           <IconButton onClick={() => handleRowClick(params.row, params.id)}>
@@ -291,27 +297,48 @@ const MainTable = ({
     {
       field: "headline",
       headerName: "Headline",
-      width: 250,
+      width: userColumnSettings?.headline || 250,
       editable: true,
     },
-    { field: "summary", headerName: "Summary", width: 500, editable: true },
+    {
+      field: "summary",
+      headerName: "Summary",
+      width: userColumnSettings?.summary || 500,
+      editable: true,
+    },
     {
       field: "journalist",
       headerName: "Journalist",
       width: 150,
       editable: true,
     },
-    { field: "publication", headerName: "Publication", width: 150 },
+    {
+      field: "publication",
+      headerName: "Publication",
+      width: userColumnSettings?.publication || 150,
+    },
     {
       field: "url",
       headerName: "URL",
-      width: 100,
+      width: userColumnSettings?.publication || 100,
       renderCell: (params) => (
         <a href={params.value} target="_blank" rel="noopener noreferrer">
           Link
         </a>
       ),
     },
+
+    {
+      field: "articleDate",
+      headerName: "Article Date",
+      width: userColumnSettings?.articleDate || 150,
+    },
+    {
+      field: "socialFeedId",
+      headerName: "socialFeedId",
+      width: userColumnSettings?.socialFeedId || 150,
+    },
+
     { field: "qcDone", headerName: "QC Done", width: 100 },
     { field: "qc1on", headerName: "QC1 On", width: 100 },
     { field: "qc1by", headerName: "QC1 By", width: 100 },
@@ -470,6 +497,13 @@ const MainTable = ({
     setSortedFilteredRows(filteredRows);
   };
 
+  // Table  columns settings
+  const handleColumnResize = (params) => {
+    let field = params.colDef.field;
+    let width = params.width;
+    saveTableSettings("online", "Main", field, width);
+  };
+
   return (
     <>
       <Box sx={{ height: 600, width: "100%", mt: 1 }}>
@@ -494,6 +528,7 @@ const MainTable = ({
             },
           }}
           checkboxSelection
+          onColumnResize={handleColumnResize}
           rowSelectionModel={selectionModal}
           onRowSelectionModelChange={(ids) => {
             setSelectionModal(ids);

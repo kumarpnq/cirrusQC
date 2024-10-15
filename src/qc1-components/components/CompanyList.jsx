@@ -16,7 +16,7 @@ const CompanyList = ({
   const fetchCompaniesWithClient = async (key) => {
     try {
       const userToken = localStorage.getItem("user");
-      const endpoint = `${url}companylist/${key}`;
+      const endpoint = `${url}companylist/${key || ""}`;
 
       const response = await axios.get(endpoint, {
         headers: {

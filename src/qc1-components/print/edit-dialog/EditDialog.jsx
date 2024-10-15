@@ -26,6 +26,8 @@ import { url } from "../../../constants/baseUrl";
 import { toast } from "react-toastify";
 import Button from "../../../components/custom/Button";
 import { arrayToString } from "../../../utils/arrayToString";
+import { saveTableSettings } from "../../../constants/saveTableSetting";
+import useUserSettings from "../../../hooks/useUserSettings";
 
 const style = {
   position: "absolute",
@@ -59,6 +61,13 @@ const EditDialog = ({
   isSimilar,
   isMultipleArticles,
 }) => {
+  // * user setting
+
+  const userColumnSettings = useUserSettings(
+    "printSimilarArticles",
+    "EditMain"
+  );
+
   const [row, setRow] = useState(null);
   const articleIds = rowData.map((i) => i.id);
 
@@ -116,6 +125,7 @@ const EditDialog = ({
   const [socialFeedTagDetails, setSocialFeedTagDetails] = useState([]);
   const [socialFeedTagDetailsLoading, setSocialFeedTagDetailsLoading] =
     useState(false);
+  const [headerData, setHeaderData] = useState(null);
 
   // * fetching header & tag details
   const fetchHeaderAndTagDetails = async () => {
@@ -131,6 +141,7 @@ const EditDialog = ({
         { headers }
       );
       const headerData = headerResponse.data.socialfeed[0] || {};
+      setHeaderData(headerData);
       setFormItems({
         headline: headerData.headline,
         summary: headerData.headsummary,
@@ -182,18 +193,34 @@ const EditDialog = ({
 
   const handleSubmit = async (isSkip, isPartial) => {
     try {
+      const data = { updateType: "U", socialFeedId };
+
+      if (formItems.headline !== headerData?.headline) {
+        data.headline = formItems.headline;
+      }
+      if (formItems.summary !== headerData?.headsummary) {
+        data.summary = formItems.summary;
+      }
+      if (formItems.journalist !== headerData?.author_name) {
+        data.author = formItems.journalist;
+      }
+
+      if (formItems.tag !== headerData?.tag && !null) {
+        data.tag = formItems.tag;
+      }
+
       const requestData = {
         data: [
           {
-            UPDATETYPE: "U",
-            SOCIALFEEDID: socialFeedId,
-            HEADLINE: formItems.headline,
-            SUMMARY: formItems.summary,
-            AUTHOR: formItems.journalist,
-            TAG: formItems.tag,
+            updateType: "U",
+            socialFeedId,
+            headline: formItems.headline,
+            summary: formItems.summary,
+            author: formItems.journalist,
+            tag: formItems.tag,
           },
         ],
-        QCTYPE: isPartial ? "QCP" : "QC1",
+        qcType: isPartial ? "QCP" : "QC1",
       };
       const response = await axios.post(
         `${url}updatesocialfeedheader/`,
@@ -209,6 +236,12 @@ const EditDialog = ({
         if (isMultipleArticles) {
           if ((rowNumber || 0) === rowData.length - 1) {
             setOpen(false);
+            setFormItems({
+              headline: "",
+              summary: "",
+              journalist: "",
+              tag: "",
+            });
             setSelectedItems([]);
             setSelectionModal([]);
             setRowNumber(0);
@@ -296,14 +329,14 @@ const EditDialog = ({
     try {
       setAddLoading(true);
       const dataToSend = selectedCompanies.map((i) => ({
-        UPDATETYPE: "I",
-        SOCIALFEEDID: socialFeedId,
-        COMPANYID: i.value,
-        COMPANYNAME: i.label,
+        updateType: "I",
+        socialFeedId,
+        companyId: i.value,
+        companyName: i.label,
       }));
       const requestData = {
         data: dataToSend,
-        QCTYPE: "QC1",
+        qcType: "QC1",
       };
       const response = await axios.post(
         `${url}updatesocialfeedtagdetails/`,
@@ -333,13 +366,13 @@ const EditDialog = ({
       const requestData = {
         data: [
           {
-            UPDATETYPE: "D",
-            SOCIALFEEDID: socialFeedId,
-            COMPANYID: selectedRow.companyId,
-            COMPANYNAME: selectedRow.CompanyName,
+            updateType: "D",
+            socialFeedId,
+            companyId: selectedRow.companyId,
+            companyName: selectedRow.CompanyName,
           },
         ],
-        QCTYPE: "QC1",
+        qcType: "QC1",
       };
       const response = await axios.post(
         `${url}updatesocialfeedtagdetails/`,
@@ -369,7 +402,7 @@ const EditDialog = ({
     {
       field: "Action",
       headerName: "Action",
-      width: 70,
+      width: userColumnSettings?.action || 70,
       renderCell: (params) => (
         <IconButton
           sx={{ color: "red" }}
@@ -379,8 +412,16 @@ const EditDialog = ({
         </IconButton>
       ),
     },
-    { field: "CompanyName", headerName: "Company", width: 300 },
-    { field: "Keyword", headerName: "Keyword", width: 300 },
+    {
+      field: "CompanyName",
+      headerName: "Company",
+      width: userColumnSettings?.CompanyName || 300,
+    },
+    {
+      field: "Keyword",
+      headerName: "Keyword",
+      width: userColumnSettings?.KeyWord || 300,
+    },
   ];
 
   const rows = (socialFeedTagDetails || []).map((detail) => ({
@@ -389,6 +430,12 @@ const EditDialog = ({
     Keyword: detail.keyword,
     companyId: detail.company_id,
   }));
+
+  const handleColumnResize = (params) => {
+    let field = params.colDef.field;
+    let width = params.width;
+    saveTableSettings("printSimilarArticles", "EditMain", field, width);
+  };
 
   const [selectionModel, setSelectionModel] = useState([]);
   const [removeMultipleLoading, setRemoveMultipleLoading] = useState(false);
@@ -406,9 +453,9 @@ const EditDialog = ({
     try {
       setRemoveMultipleLoading(true);
       const params = {
-        socialfeedIds: arrayToString([socialFeedId]),
-        companyIds: arrayToString(selectionModel),
-        QCTYPE: "QC1",
+        socialfeed_ids: arrayToString([socialFeedId]),
+        company_ids: arrayToString(selectionModel),
+        qcType: "QC1",
       };
       const response = await axios.delete(url3, {
         headers: {
@@ -467,15 +514,15 @@ const EditDialog = ({
       const requestData = {
         data: [
           {
-            UPDATETYPE: "U",
-            SOCIALFEEDID: socialFeedId,
-            HEADLINE: formItems.headline,
-            SUMMARY: formItems.summary,
-            AUTHOR: formItems.journalist,
-            TAG: formItems.tag,
+            updateType: "U",
+            socialFeedId,
+            headline: formItems.headline,
+            summary: formItems.summary,
+            author: formItems.journalist,
+            tag: formItems.tag,
           },
         ],
-        QCTYPE: isPartial ? "QCP" : "QC1",
+        qcType: isPartial ? "QCP" : "QC1",
       };
       const response = await axios.post(
         `${url}updatesocialfeedheader/`,
@@ -491,6 +538,7 @@ const EditDialog = ({
         setOpen(false);
         setRowNumber(0);
         setRow(null);
+        handleClose();
       } else {
         const errorMSG = response.data?.result?.errors[0] || {};
         toast.warning(errorMSG.warning);
@@ -656,6 +704,7 @@ const EditDialog = ({
                     columns={columns}
                     density="compact"
                     checkboxSelection
+                    onColumnResize={handleColumnResize}
                     onRowSelectionModelChange={handleRowSelection}
                     loading={
                       socialFeedTagDetailsLoading && <CircularProgress />
