@@ -1,3 +1,4 @@
+import PropTypes from "prop-types";
 import {
   Box,
   Button,
@@ -92,13 +93,23 @@ const Filters = (props) => {
           />
         </Typography>
         <Typography component={"div"} sx={{ mt: 1 }} width={50} height={22}>
-          <StyledButton type="submit" variant="outlined">
+          <StyledButton
+            type="submit"
+            variant={gridLoading ? "outlined" : "contained"}
+          >
             {gridLoading && <CircularProgress size={"1em"} />} Search
           </StyledButton>
         </Typography>
       </FilterWrapper>
     </form>
   );
+};
+
+Filters.propTypes = {
+  gridLoading: PropTypes.bool.isRequired,
+  setGridLoading: PropTypes.func.isRequired,
+  setGridData: PropTypes.func.isRequired,
+  setGridError: PropTypes.func.isRequired,
 };
 
 export default Filters;

@@ -252,6 +252,12 @@ const EditDialog = ({
           return;
         }
         if (!isFiltered) {
+          setFormItems({
+            headline: "",
+            summary: "",
+            journalist: "",
+            tag: "",
+          });
           setRowNumber((prev) => prev + 1);
           return;
         }
@@ -262,6 +268,12 @@ const EditDialog = ({
         isSkip && handleClose();
 
         if (isFiltered) {
+          setFormItems({
+            headline: "",
+            summary: "",
+            journalist: "",
+            tag: "",
+          });
           setRowNumber((prevRowNumber) => {
             const currentIndex = articleIds.indexOf(prevRowNumber);
 
@@ -484,14 +496,33 @@ const EditDialog = ({
         setSelectedItems([]);
         setRowNumber(0);
         setRow(null);
-      }
+        alert("yes");
 
+        setFormItems({
+          headline: "",
+          summary: "",
+          journalist: "",
+          tag: "",
+        });
+      }
       setRowNumber((prev) => prev + 1);
       return;
     }
     if (!isFiltered) {
+      setFormItems({
+        headline: "",
+        summary: "",
+        journalist: "",
+        tag: "",
+      });
       setRowNumber((prev) => prev + 1);
     } else {
+      setFormItems({
+        headline: "",
+        summary: "",
+        journalist: "",
+        tag: "",
+      });
       setRowNumber((prevRowNumber) => {
         const currentIndex = articleIds.indexOf(prevRowNumber);
 
