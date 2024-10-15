@@ -28,7 +28,6 @@ import { addPropertyIfConditionIsTrue } from "../../utils/addProprtyIfConditiont
 import AddCompaniesModal from "../../qc1-components/components/AddCompanyModal";
 import GroupModal from "../../qc1-components/online/components/GroupModal";
 import MainTable from "../../qc1-components/online/MainTable";
-// import DeleteConfirmationDialog from "../../@core/DeleteDialog";
 import GroupUnGroupAccordion from "../../qc1-components/online/GroupUngroup";
 
 const useStyle = makeStyles(() => ({
