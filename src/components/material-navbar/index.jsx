@@ -103,7 +103,7 @@ export default function MainNav() {
       ? [
           {
             id: 1,
-            title: "Online-QC1",
+            title: "QC1 Online",
             path: "/qc1/online",
             icon: <HiStatusOnline />,
           },
@@ -113,7 +113,7 @@ export default function MainNav() {
       ? [
           {
             id: 2,
-            title: "Print-QC1",
+            title: "QC1 Print",
             path: "/qc1/print",
             icon: <FaPrint />,
           },
@@ -133,14 +133,14 @@ export default function MainNav() {
       ? [
           {
             id: 3,
-            title: "Online-QC2",
+            title: "QC2 Online",
             path: "/online",
             icon: <HiStatusOnline />,
           },
         ]
       : []),
     ...(screenPermissions["Print-QC2"]
-      ? [{ id: 4, title: "Print-QC2", path: "/print", icon: <FaPrint /> }]
+      ? [{ id: 4, title: "QC2 Print", path: "/print", icon: <FaPrint /> }]
       : []),
     ...(screenPermissions.Dump
       ? [{ id: 5, title: "Dump", path: "/dump", icon: <FaDumpster /> }]
@@ -149,7 +149,7 @@ export default function MainNav() {
       ? [
           {
             id: 6,
-            title: "Manual-upload",
+            title: "Manual Upload",
             path: "/manual-upload",
             icon: <UploadFileIcon />,
           },
@@ -159,7 +159,7 @@ export default function MainNav() {
       ? [
           {
             id: 7,
-            title: "Non-Tagged",
+            title: "Non Tagged",
             path: "/non-tagged",
             icon: <BookmarkBorderIcon />,
           },
@@ -324,7 +324,10 @@ export default function MainNav() {
                     {item.icon}
                   </span>
                 </ListItemIcon>
-                <ListItemText primary={item.title} />
+                <ListItemText
+                  primary={item.title}
+                  sx={{ textWrap: "nowrap", letterSpacing: "1px" }}
+                />
               </ListItemButton>
             </NavLink>
           </ListItem>
