@@ -326,7 +326,16 @@ export default function MainNav() {
                 </ListItemIcon>
                 <ListItemText
                   primary={item.title}
-                  sx={{ textWrap: "nowrap", letterSpacing: "1px" }}
+                  sx={{
+                    textWrap: "nowrap",
+                    letterSpacing: "1px",
+                    width: 250,
+                    textOverflow: "ellipsis",
+                    transition: "transform 0.3s ease",
+                    "&:hover": {
+                      transform: "scale(1.05)",
+                    },
+                  }}
                 />
               </ListItemButton>
             </NavLink>
@@ -368,18 +377,18 @@ export default function MainNav() {
               }}
             >
               {isSmallScreen ? (
-                <>
-                  <span className="text-black">P</span>
-                  <span className="text-red-500">&</span>
+                <p className="font-medium tracking-wide">
+                  <span className="text-white">P</span>
+                  <span className="mx-1 text-lg text-red-500">&</span>
                   <span className="text-gray-500">Q</span>
-                </>
+                </p>
               ) : (
-                <>
+                <p className="font-medium tracking-wide">
                   {" "}
-                  <span className="text-black">PERCEPTION</span>
-                  <span className="text-red-500">&</span>
+                  <span className="text-white">PERCEPTION</span>
+                  <span className="mx-1 text-lg text-red-500">&</span>
                   <span className="text-gray-500">QUANT</span>
-                </>
+                </p>
               )}
             </Typography>
 
