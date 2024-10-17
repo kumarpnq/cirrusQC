@@ -13,7 +13,7 @@ const YesOrNo = ({
     setValue(event.target.value);
   };
   const formControlStyle = {
-    width: `${width}px`,
+    width: width ? `${width}px` : "100%",
   };
   return (
     <FormControl style={formControlStyle}>
@@ -22,6 +22,7 @@ const YesOrNo = ({
         onChange={handleValueChane}
         className={classes.dropDowns}
         displayEmpty
+        fullWidth
         inputProps={{ "aria-label": "Without label" }}
         sx={{ fontSize: "0.8em" }}
       >

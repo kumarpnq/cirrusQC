@@ -16,6 +16,22 @@ const TableWrapper = styled(TableContainer)({
   borderRadius: "5px",
 });
 
+const CompactTable = styled(Table)`
+  & .MuiTableCell-root {
+    padding: 4px 8px; /* Reduce cell padding */
+    font-size: 0.875rem; /* Make font smaller */
+  }
+
+  & .MuiTableCell-head {
+    font-weight: bold;
+    background-color: #f5f5f5; /* Optional: Light background for headers */
+  }
+
+  & .MuiTableRow-root {
+    height: 32px; /* Reduce row height */
+  }
+`;
+
 const TextFieldForTable = ({ type, value, handleChange }) => {
   return (
     <TextField
@@ -59,7 +75,7 @@ const SelectedPublications = () => {
 
   return (
     <TableWrapper>
-      <Table>
+      <CompactTable>
         <TableHead>
           <TableRow>
             <TableCell>Publication</TableCell>
@@ -88,7 +104,7 @@ const SelectedPublications = () => {
             </TableRow>
           ))}
         </TableBody>
-      </Table>
+      </CompactTable>
     </TableWrapper>
   );
 };

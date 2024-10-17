@@ -9,7 +9,7 @@ const theme = createTheme({
       styleOverrides: {
         checkboxInput: {
           "& .MuiCheckbox-root": {
-            transform: "scale(0.75)", // Adjust the scale to make the checkbox smaller
+            transform: "scale(0.75)",
           },
         },
       },
