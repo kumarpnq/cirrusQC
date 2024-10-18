@@ -14,6 +14,8 @@ import { styled } from "@mui/system";
 const TableWrapper = styled(TableContainer)({
   border: "1px  solid #ddd",
   borderRadius: "5px",
+  maxHeight: 550,
+  overflowY: "scroll",
 });
 
 const CompactTable = styled(Table)`
@@ -32,13 +34,14 @@ const CompactTable = styled(Table)`
   }
 `;
 
-const TextFieldForTable = ({ type, value, handleChange }) => {
+const TextFieldForTable = ({ type, value, handleChange, isDisable }) => {
   return (
     <TextField
       variant="outlined"
       size="small"
       type={type}
       fullWidth
+      disabled={isDisable}
       sx={{ width: type === "text" ? 150 : 70 }}
       InputProps={{
         style: {
@@ -56,21 +59,22 @@ TextFieldForTable.propTypes = {
   type: PropTypes.string.isRequired,
   value: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
   handleChange: PropTypes.func.isRequired,
+  isDisable: PropTypes.bool,
 };
 
-const SelectedPublications = () => {
-  const publications = [
-    { publication: "The Times", city: "New York", page: 1 },
-    { publication: "The Guardian", city: "London", page: 2 },
-    { publication: "Le Monde", city: "Paris", page: 3 },
-  ];
+const SelectedPublications = ({
+  selectedPublications,
+  setSelectedPublications,
+}) => {
+  const handlePageChange = useCallback((e, index) => {
+    const newPageNumber = e.target.value;
 
-  const handleCityChange = useCallback((e) => {
-    console.log("City changed: ", e.target.value);
-  }, []);
-
-  const handlePageChange = useCallback((e) => {
-    console.log("Page changed: ", e.target.value);
+    // Update the pageNumber in the state
+    setSelectedPublications((prevPublications) =>
+      prevPublications.map((pub, pubIndex) =>
+        pubIndex === index ? { ...pub, pageNumber: newPageNumber } : pub
+      )
+    );
   }, []);
 
   return (
@@ -84,21 +88,22 @@ const SelectedPublications = () => {
           </TableRow>
         </TableHead>
         <TableBody>
-          {publications.map((row, index) => (
+          {selectedPublications.map((row, index) => (
             <TableRow key={index}>
-              <TableCell>{row.publication}</TableCell>
+              <TableCell>{row.publicationName}</TableCell>
               <TableCell>
                 <TextFieldForTable
-                  value={row.city}
+                  value={row.cityName}
                   type="text"
-                  handleChange={handleCityChange}
+                  handleChange={() => {}}
+                  isDisable={true}
                 />
               </TableCell>
               <TableCell>
                 <TextFieldForTable
-                  value={row.page}
+                  value={row.pageNumber}
                   type="number"
-                  handleChange={handlePageChange}
+                  handleChange={(e) => handlePageChange(e, index)}
                 />
               </TableCell>
             </TableRow>
@@ -107,6 +112,19 @@ const SelectedPublications = () => {
       </CompactTable>
     </TableWrapper>
   );
+};
+
+SelectedPublications.propTypes = {
+  selectedPublications: PropTypes.arrayOf(
+    PropTypes.shape({
+      publicationId: PropTypes.string.isRequired,
+      publicationName: PropTypes.string.isRequired,
+      cityId: PropTypes.number.isRequired,
+      cityName: PropTypes.string.isRequired,
+      pageNumber: PropTypes.number.isRequired,
+    })
+  ).isRequired,
+  setSelectedPublications: PropTypes.func,
 };
 
 export default SelectedPublications;

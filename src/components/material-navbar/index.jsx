@@ -19,6 +19,7 @@ import UploadFileIcon from "@mui/icons-material/UploadFile";
 import BookmarkBorderIcon from "@mui/icons-material/BookmarkBorder";
 import BarChartIcon from "@mui/icons-material/BarChart";
 import ShoppingBasketIcon from "@mui/icons-material/ShoppingBasket";
+import FolderCopyIcon from "@mui/icons-material/FolderCopy";
 
 import MoreIcon from "@mui/icons-material/MoreVert";
 import Drawer from "@mui/material/Drawer";
@@ -183,6 +184,16 @@ export default function MainNav() {
             title: "ClientBasketCity",
             path: "/client-basket-city-publication",
             icon: <ShoppingBasketIcon />,
+          },
+        ]
+      : []),
+    ...(screenPermissions.CopyArticles
+      ? [
+          {
+            id: 8,
+            title: "Copy Articles",
+            path: "/copy-articles",
+            icon: <FolderCopyIcon />,
           },
         ]
       : []),

@@ -49,12 +49,15 @@ const Filters = (props) => {
     setGridData,
     setGridError,
     setSelectedPublications,
+    selectedRows,
+    selectedPublications,
   } = props;
   const [uploadDate, setUploadDate] = useState(formattedDate);
   const [dateType, setDateType] = useState("ARTICLE");
   const [pageNumber, setPageNumber] = useState();
   const [publication, setPublication] = useState(null);
   const [copyPublications, setCopyPublications] = useState([]);
+  const [saveLoading, setSaveLoading] = useState(false);
 
   const { data } = useFetchData(`${url}articlepublications/`);
   const publications = data.data?.publications || [];
@@ -73,7 +76,7 @@ const Filters = (props) => {
       setGridLoading(true);
       const token = localStorage.getItem("user");
       const params = {
-        publicationIds: arrayToString(copyPublications),
+        publicationId: publication,
         date: format(uploadDate, "yyyy-MM-dd"),
         pageNumber,
         dateType: dateType?.toLocaleLowerCase(),
@@ -83,13 +86,60 @@ const Filters = (props) => {
         params,
       });
 
+      const params2 = {
+        publicationIds: arrayToString(copyPublications),
+      };
+      const response2 = await axios.get(`${url}selectedcopypublication/`, {
+        headers: { Authorization: `Bearer ${token}` },
+        params: params2,
+      });
+
       setGridData(response.data.publications || []);
-      // const tempLogic = setSelectedPublications([...copyPublications]);
+
+      const tempData = response2.data.publications || [];
+      setSelectedPublications(tempData || []);
     } catch (error) {
-      console.log(error);
+      toast.error("Error while fetching data.");
       setGridError(error.message);
     } finally {
       setGridLoading(false);
+    }
+  };
+
+  const handleSaveData = async () => {
+    if (!selectedRows.length) {
+      toast.warning("No data selected.");
+      return;
+    }
+    try {
+      setSaveLoading(true);
+
+      const preparedData = selectedRows.map((row) => ({
+        articleId: row.id,
+        publications: selectedPublications.map((pub) => ({
+          publicationId: pub.publicationId,
+          cityId: pub.cityId,
+          pageNumber: Number(pub.pageNumber),
+        })),
+      }));
+
+      const token = localStorage.getItem("user");
+      const requestData = {
+        articles: preparedData,
+      };
+      const response = await axios.post(
+        `${url}generatecopyarticles/`,
+        requestData,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+
+      toast.success(response.data.result?.status);
+    } catch (error) {
+      toast.error("Something went wrong.");
+    } finally {
+      setSaveLoading(false);
     }
   };
 
@@ -157,6 +207,22 @@ const Filters = (props) => {
             {gridLoading && <CircularProgress size={"1em"} />} Search
           </StyledButton>
         </Typography>
+        <Typography
+          component={"div"}
+          sx={{ mt: 1, ml: 5 }}
+          width={50}
+          height={22}
+        >
+          {!!selectedRows.length && (
+            <StyledButton
+              variant="outlined"
+              size="small"
+              onClick={handleSaveData}
+            >
+              {saveLoading && <CircularProgress size={"1em"} />} Save
+            </StyledButton>
+          )}
+        </Typography>
       </FilterWrapper>
     </form>
   );
@@ -167,6 +233,9 @@ Filters.propTypes = {
   setGridLoading: PropTypes.func.isRequired,
   setGridData: PropTypes.func.isRequired,
   setGridError: PropTypes.func.isRequired,
+  selectedRows: PropTypes.array.isRequired,
+  setSelectedPublications: PropTypes.func.isRequired,
+  selectedPublications: PropTypes.array.isRequired,
 };
 
 export default Filters;

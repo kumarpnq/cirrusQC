@@ -14,6 +14,7 @@ function CopyArticles() {
   const [gridData, setGridData] = useState([]);
   const [gridError, setGridError] = useState(null);
   const [selectedPublications, setSelectedPublications] = useState([]);
+  const [selectedRows, setSelectedRows] = useState([]);
 
   return (
     <StyledWrapper>
@@ -22,18 +23,24 @@ function CopyArticles() {
         setGridLoading={setGridLoading}
         setGridData={setGridData}
         setGridError={setGridError}
+        selectedPublications={selectedPublications}
         setSelectedPublications={setSelectedPublications}
+        selectedRows={selectedRows}
       />
       <Divider sx={{ my: 1 }} />
       <Grid container spacing={1} sx={{ marginTop: 1 }}>
         <Grid item xs={12} md={4}>
-          <SelectedPublications selectedPublications={selectedPublications} />
+          <SelectedPublications
+            selectedPublications={selectedPublications}
+            setSelectedPublications={setSelectedPublications}
+          />
         </Grid>
         <Grid item xs={12} md={8}>
           <ArticlesTable
             loading={gridLoading}
             gridData={gridData}
             gridError={gridError}
+            setSelectedRows={setSelectedRows}
           />
         </Grid>
       </Grid>

@@ -53,6 +53,7 @@ function App() {
     printQc1: false,
     clientBasketCityPublication: false,
     PrintSimilarArticles: false,
+    copyArticles: false,
   });
   const [loading, setLoading] = useState(false);
 
@@ -105,6 +106,7 @@ function App() {
       clientBasketCityPublication:
         screenPermissions.clientBasketCityPublication,
       PrintSimilarArticles: screenPermissions["PrintSimilarArticles"],
+      copyArticles: screenPermissions.CopyArticles,
     });
   }, [screenPermissions]);
 
@@ -254,11 +256,22 @@ function App() {
                   )
                 }
               />
+              <Route
+                path="/copy-articles"
+                element={
+                  permissions.copyArticles ? (
+                    <CopyArticles />
+                  ) : loading ? (
+                    <div>Loading...</div>
+                  ) : (
+                    <NotFound />
+                  )
+                }
+              />
             </>
           ) : (
             <Route path="login" element={<Login />} />
           )}
-          <Route path="copy-articles" element={<CopyArticles />} />
           <Route path="*" element={userToken ? <NotFound /> : <Login />} />
           <Route
             path="/articleview/download-file/:id"

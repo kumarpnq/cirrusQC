@@ -3,8 +3,18 @@ import { DataGrid } from "@mui/x-data-grid";
 import { format } from "date-fns";
 import { Link } from "@mui/material";
 import { url } from "../constants/baseUrl";
+import { useState } from "react";
 
-const ArticlesTable = ({ loading, gridData, error }) => {
+const ArticlesTable = ({ loading, gridData, error, setSelectedRows }) => {
+  const [selectionModel, setSelectionModel] = useState([]);
+
+  const handleSelection = (newSelection) => {
+    setSelectionModel(newSelection);
+    const selectedData = newSelection.map((id) =>
+      rows.find((row) => row.id === id)
+    );
+    setSelectedRows(selectedData);
+  };
   const columns = [
     {
       field: "articleId",
@@ -26,7 +36,7 @@ const ArticlesTable = ({ loading, gridData, error }) => {
   const rows = gridData.map((i) => ({
     id: i.articleId,
     articleId: i.uploadId,
-    date: format(i.articleDate, "dd-mm-yyyy"),
+    date: format(i.articleDate, "dd-MM-yyyy"),
     publication: i.publicationName,
     headline: i.headlines,
     page: i.pageNumber,
@@ -40,6 +50,10 @@ const ArticlesTable = ({ loading, gridData, error }) => {
         columns={columns}
         pageSize={5}
         checkboxSelection
+        rowSelectionModel={selectionModel}
+        onRowSelectionModelChange={(newSelection) =>
+          handleSelection(newSelection)
+        }
         rowsPerPageOptions={[5, 10, 20]}
         density="compact"
         loading={loading}

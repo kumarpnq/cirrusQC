@@ -22,6 +22,7 @@ const ContextProvider = ({ children }) => {
     printQc1: false,
     clientBasketCityPublication: false,
     PrintSimilarArticles: false,
+    copyArticles: false,
   });
   const [permissionLoading, setPermissionLoading] = useState(false);
 

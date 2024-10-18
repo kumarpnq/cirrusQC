@@ -36,7 +36,7 @@ const CustomTextField = ({
 
 CustomTextField.propTypes = {
   placeholder: PropTypes.string,
-  value: PropTypes.string.isRequired,
+  value: PropTypes.any.isRequired,
   setValue: PropTypes.func.isRequired,
   type: PropTypes.string,
   width: PropTypes.number.isRequired,
