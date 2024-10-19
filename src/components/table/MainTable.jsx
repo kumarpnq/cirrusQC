@@ -3,7 +3,7 @@ import { IoIosArrowRoundDown, IoIosArrowRoundUp } from "react-icons/io";
 import getHeaderAbbreviation from "../../constants/concatHeader";
 import React, { useEffect, useState } from "react";
 import PropTypes from "prop-types";
-import { Box, TableCell, TableRow, Tooltip } from "@mui/material";
+import { Box, IconButton, TableCell, TableRow, Tooltip } from "@mui/material";
 import TableRowCheckBox from "./TableRow";
 import { AiOutlineLoading } from "react-icons/ai";
 import { EditAttributesOutlined } from "@mui/icons-material";
@@ -304,9 +304,13 @@ const MainTable = ({
               >
                 <EditAttributesOutlined className="text-primary" />
               </TableCell>
-              <TableCell onClick={handleOpen}>
-                <FlagIcon className="text-primary" />
-              </TableCell>
+              <Tooltip title="Coming soon...">
+                <TableCell>
+                  <IconButton disabled onClick={handleOpen}>
+                    <FlagIcon className="text-primary" />
+                  </IconButton>
+                </TableCell>
+              </Tooltip>
               {tableHeaders?.map((header) => (
                 <React.Fragment key={header}>
                   {(header === "HEADLINE" ||
