@@ -14,6 +14,10 @@ import {
 import { styled } from "@mui/system";
 import { useState } from "react";
 import InfoIcon from "@mui/icons-material/Info";
+import CheckIcon from "@mui/icons-material/Check";
+import DoneAllIcon from "@mui/icons-material/DoneAll";
+import StoreIcon from "@mui/icons-material/Store";
+import CompanyModal from "./CompanyModal";
 
 // Sample dummy data
 const dummyData = [
@@ -25,6 +29,8 @@ const dummyData = [
     summary: "Company A announced a new policy.",
     remarks: "Reviewed",
     savariety: 1,
+    qc3: "p",
+    accepted: false,
   },
   {
     company: "Company B",
@@ -33,7 +39,9 @@ const dummyData = [
     tone: "Neutral",
     summary: "Company B's market update.",
     remarks: "Pending",
-    savariety: 2,
+    savariety: 1,
+    qc3: "p",
+    accepted: false,
   },
   {
     company: "Company C",
@@ -42,7 +50,9 @@ const dummyData = [
     tone: "Negative",
     summary: "Company C faced issues during launch.",
     remarks: "Urgent",
-    savariety: 3,
+    savariety: 2,
+    qc3: "q",
+    accepted: false,
   },
   {
     company: "Company D",
@@ -51,7 +61,9 @@ const dummyData = [
     tone: "Positive",
     summary: "CEO change in Company D.",
     remarks: "Reviewed",
-    savariety: 1,
+    savariety: 3,
+    qc3: "e",
+    accepted: false,
   },
   {
     company: "Company E",
@@ -60,7 +72,9 @@ const dummyData = [
     tone: "Negative",
     summary: "Stock price dropped.",
     remarks: "Pending",
-    savariety: 2,
+    savariety: 3,
+    qc3: "e",
+    accepted: false,
   },
   {
     company: "Company F",
@@ -69,7 +83,9 @@ const dummyData = [
     tone: "Positive",
     summary: "Merger with Company G.",
     remarks: "Reviewed",
-    savariety: 1,
+    savariety: 3,
+    qc3: "e",
+    accepted: false,
   },
   {
     company: "Company G",
@@ -78,7 +94,9 @@ const dummyData = [
     tone: "Neutral",
     summary: "Company G's earnings report.",
     remarks: "Pending",
-    savariety: 2,
+    savariety: 1,
+    qc3: "p",
+    accepted: false,
   },
   {
     company: "Company H",
@@ -87,7 +105,9 @@ const dummyData = [
     tone: "Negative",
     summary: "Company H recalls product.",
     remarks: "Urgent",
-    savariety: 3,
+    savariety: 2,
+    qc3: "q",
+    accepted: false,
   },
   {
     company: "Company I",
@@ -96,7 +116,9 @@ const dummyData = [
     tone: "Positive",
     summary: "Partnership with Company J.",
     remarks: "Reviewed",
-    savariety: 1,
+    savariety: 2,
+    qc3: "q",
+    accepted: false,
   },
   {
     company: "Company J",
@@ -105,25 +127,25 @@ const dummyData = [
     tone: "Negative",
     summary: "Company J announces layoffs.",
     remarks: "Pending",
-    savariety: 3,
+    savariety: 1,
+    qc3: "p",
+    accepted: true,
   },
 ];
 
-// Define row color based on savariety
 const getRowColor = (savariety) => {
   switch (savariety) {
     case 1:
-      return "rgba(198, 255, 221, 0.5)"; // Light green
+      return "rgba(198, 255, 221, 0.5)";
     case 2:
-      return "rgba(255, 251, 198, 0.5)"; // Light yellow
+      return "rgba(255, 251, 198, 0.5)";
     case 3:
-      return "rgba(255, 198, 198, 0.5)"; // Light red
+      return "rgba(255, 198, 198, 0.5)";
     default:
-      return "white"; // Default white
+      return "white";
   }
 };
 
-// Styled components for table and modal
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
   fontSize: "16px",
   fontWeight: "bold",
@@ -168,6 +190,7 @@ const LegendBox = styled(Box)(({ theme }) => ({
 
 export const QC3Modal = ({ open, handleClose }) => {
   const [showLegend, setShowLegend] = useState(true);
+  const [openCompanyModal, setCompanyModal] = useState(false);
   return (
     <div>
       {/* Modal implementation */}
@@ -241,7 +264,6 @@ export const QC3Modal = ({ open, handleClose }) => {
             </LegendBox>
           )}
 
-          {/* Enhanced table with styled components */}
           <TableContainer
             component={Paper}
             elevation={4}
@@ -250,8 +272,13 @@ export const QC3Modal = ({ open, handleClose }) => {
             <Table>
               <TableHead>
                 <TableRow sx={{ color: "#fff" }} className="bg-primary">
+                  <StyledTableCell sx={{ color: "#fff" }}>QC3</StyledTableCell>
                   <StyledTableCell sx={{ color: "#fff" }}>
                     Company
+                  </StyledTableCell>
+
+                  <StyledTableCell sx={{ color: "#fff" }}>
+                    Actions
                   </StyledTableCell>
                   <StyledTableCell sx={{ color: "#fff" }}>
                     Subject
@@ -271,7 +298,21 @@ export const QC3Modal = ({ open, handleClose }) => {
               <TableBody>
                 {dummyData.map((row, index) => (
                   <StyledTableRow key={index} savariety={row.savariety}>
+                    <TableCell>{row.qc3.toUpperCase()}</TableCell>
                     <TableCell>{row.company}</TableCell>
+                    <TableCell>
+                      {row.qc3 === "e" ? (
+                        <IconButton
+                          onClick={() => setCompanyModal((prev) => !prev)}
+                        >
+                          <StoreIcon />
+                        </IconButton>
+                      ) : row.accepted ? (
+                        <DoneAllIcon color="success" />
+                      ) : (
+                        <CheckIcon />
+                      )}
+                    </TableCell>
                     <TableCell>{row.subject}</TableCell>
                     <TableCell>{row.prominence}</TableCell>
                     <TableCell>{row.tone}</TableCell>
@@ -284,6 +325,10 @@ export const QC3Modal = ({ open, handleClose }) => {
           </TableContainer>
         </StyledModalBox>
       </Modal>
+      <CompanyModal
+        open={openCompanyModal}
+        handleClose={() => setCompanyModal(false)}
+      />
     </div>
   );
 };

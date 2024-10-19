@@ -212,7 +212,7 @@ const MainTable = ({
                   </th>
                 )}
                 {!!dataToRender.length && (
-                  <th className="text-white text-[0.9em] sticky bg-primary pl-3 left-10 tracking-widest font-thin pt-2">
+                  <th className="text-white text-[0.9em]  bg-primary pl-8 left-14 tracking-widest font-thin pt-2">
                     QC3
                   </th>
                 )}
@@ -224,7 +224,7 @@ const MainTable = ({
                       handleSort(header.toLowerCase().replace(/ /g, "_"))
                     }
                     className={`text-white cursor-pointer font-thin text-xs tracking-widest px-4 ${
-                      (header === "COMPANY NAME" && "pl-10") ||
+                      (header === "COMPANY NAME" && "pl-6") ||
                       (header === "HEADLINE" && "pl-4") ||
                       (header === "PUBLICATION" && "pl-48 ml-4") ||
                       (header === "LINK" && "pl-7") ||
@@ -299,7 +299,7 @@ const MainTable = ({
               </TableCell>
               <TableCell
                 onClick={() => tableRowClick(rowData)}
-                sx={{ position: "sticky", left: 35, top: 28 }}
+                sx={{ position: "sticky", left: 30, top: 28 }}
                 className="bg-white"
               >
                 <EditAttributesOutlined className="text-primary" />
