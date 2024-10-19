@@ -26,6 +26,7 @@ export default function BasketTabPanel({ value, setValue }) {
           <Tab label="City Master" {...a11yProps(0)} />
           <Tab label="Company Master" {...a11yProps(1)} />
           <Tab label="Publication Master" {...a11yProps(2)} />
+          <Tab label="Publication Master Online" {...a11yProps(2)} />
         </Tabs>
       </Box>
     </Box>

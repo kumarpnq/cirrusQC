@@ -113,6 +113,13 @@ const Filters = (props) => {
     }
     try {
       setSaveLoading(true);
+      const hasPageNumberZero = selectedRows.some((row) =>
+        selectedPublications.some((pub) => Number(pub.pageNumber) === 0)
+      );
+      if (hasPageNumberZero) {
+        toast.warning("Page number zero is not allowed.");
+        return;
+      }
 
       const preparedData = selectedRows.map((row) => ({
         articleId: row.id,
@@ -134,7 +141,9 @@ const Filters = (props) => {
           headers: { Authorization: `Bearer ${token}` },
         }
       );
-
+      if (response.data.result?.length) {
+        toast.success("Data saved successfully.");
+      }
       toast.success(response.data.result?.status);
     } catch (error) {
       toast.error("Something went wrong.");
@@ -173,25 +182,27 @@ const Filters = (props) => {
         <Typography component={"div"} sx={{ mt: 1.5 }}>
           <CustomSingleSelect
             title="Publication"
-            dropdownWidth={300}
+            dropdownWidth={360}
             dropdownToggleWidth={250}
             keyId="publicationId"
             keyName="publicationName"
             options={publications}
             setSelectedItem={setPublication}
             selectedItem={publication}
+            isIncreased
           />
         </Typography>
         <Typography component={"div"} sx={{ mt: 1.5 }} width={200} height={25}>
           <CustomMultiSelect
             title="Copy Publication"
-            dropdownWidth={300}
+            dropdownWidth={360}
             dropdownToggleWidth={250}
             keyId="publicationId"
             keyName="publicationName"
             options={publicationsData.data?.publications || []}
             selectedItems={copyPublications}
             setSelectedItems={setCopyPublications}
+            isIncreased
           />
         </Typography>
         <Typography

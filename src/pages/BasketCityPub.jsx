@@ -1,10 +1,11 @@
+import PropTypes from "prop-types";
 import { useState } from "react";
 import { Box } from "@mui/material";
-import PropTypes from "prop-types";
 import BasketCityPubPage from "../basketCityPub-components/BasketCityPubPage";
 import BasketTabPanel from "../components2/basket/BasketTabPanel";
 import CompanyMaster from "../components2/company-master/CompanyMaster";
 import PublicationMaster from "../components2/publication-master/PublicationMaster";
+import PublicationMasterOnline from "../components2/publication-master-online/PublicationMasterOnline";
 
 const RenderComponent = ({ value }) => {
   switch (value) {
@@ -14,6 +15,8 @@ const RenderComponent = ({ value }) => {
       return <CompanyMaster />;
     case 2:
       return <PublicationMaster />;
+    case 3:
+      return <PublicationMasterOnline />;
   }
 };
 

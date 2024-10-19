@@ -20,6 +20,7 @@ import SearchIcon from "@mui/icons-material/Search";
 import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
 import ArrowDropUpIcon from "@mui/icons-material/ArrowDropUp";
 import { FixedSizeList as ListWindow } from "react-window";
+import { isInaccessible } from "@testing-library/react";
 
 const useStyles = makeStyles((theme) => ({
   formControl: {
@@ -27,7 +28,7 @@ const useStyles = makeStyles((theme) => ({
     maxWidth: 360,
   },
   paperBox: {
-    height: 250,
+    // height: 250,
     background: "#fff",
     overflow: "hidden",
   },
@@ -69,6 +70,7 @@ const CustomSingleSelect = ({
   keyName,
   dropdownWidth,
   dropdownToggleWidth,
+  isIncreased,
 }) => {
   const classes = useStyles();
   const [searchTerm, setSearchTerm] = useState("");
@@ -157,7 +159,10 @@ const CustomSingleSelect = ({
           sx={{ zIndex: 50 }}
         >
           <ClickAwayListener onClickAway={handleClickAway}>
-            <Paper sx={{ width: dropdownWidth }} className={classes.paperBox}>
+            <Paper
+              sx={{ width: dropdownWidth, height: isIncreased ? 400 : 250 }}
+              className={classes.paperBox}
+            >
               <List>
                 <ListItem dense>
                   <Input
@@ -172,7 +177,7 @@ const CustomSingleSelect = ({
                 </ListItem>
                 <Divider />
                 <ListWindow
-                  height={150}
+                  height={isInaccessible ? 300 : 160}
                   itemCount={filteredOptions.length}
                   itemSize={40}
                   width={dropdownWidth}
@@ -202,6 +207,7 @@ CustomSingleSelect.propTypes = {
   keyName: PropTypes.string.isRequired,
   dropdownWidth: PropTypes.number.isRequired,
   dropdownToggleWidth: PropTypes.number.isRequired,
+  isIncreased: PropTypes.bool,
 };
 
 export default CustomSingleSelect;

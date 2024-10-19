@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import PropTypes from "prop-types";
 import {
   Modal,
@@ -8,11 +8,16 @@ import {
   FormControl,
   Divider,
   Paper,
+  CircularProgress,
 } from "@mui/material";
 import CustomTextField from "../../@core/CutsomTextField";
 import { styled } from "@mui/system";
 import { makeStyles } from "@mui/styles";
 import YesOrNo from "../../@core/YesOrNo";
+import { url } from "../../constants/baseUrl";
+import useFetchData from "../../hooks/useFetchData";
+import axios from "axios";
+import { toast } from "react-toastify";
 
 const StyledFormControl = styled(FormControl)({
   display: "flex",
@@ -36,7 +41,7 @@ const useStyle = makeStyles(() => ({
   },
 }));
 
-const CompanyFormModal = ({ open, handleClose, rowId }) => {
+const CompanyFormModal = ({ open, handleClose, rowId, isEdit }) => {
   const classes = useStyle();
   const [companyId, setCompanyId] = useState("");
   const [companyName, setCompanyName] = useState("");
@@ -48,9 +53,89 @@ const CompanyFormModal = ({ open, handleClose, rowId }) => {
   const [country, setCountry] = useState("");
   const [active, setActive] = useState("");
 
-  const handleSubmit = (event) => {
+  const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    if (open && isEdit) {
+      setCompanyId(rowId?.companyId || "");
+      setCompanyName(rowId?.companyName || "");
+      setParentCompany(rowId?.parentCompany || "");
+      setIndustry(rowId?.industry || "");
+      setShortCompany(rowId?.shortCompany || "");
+      setSubcategory(rowId?.hasSubcategory === "Yes" ? "YES" : "NO" || "");
+      setQc3(rowId?.qc3 || "");
+      setCountry(rowId?.countryId || "");
+      setActive(rowId?.isActive === "Y" ? "YES" : "NO" || "");
+    }
+  }, [open]);
+
+  const { data: industryData } = useFetchData(
+    `${url}companymasterddl/?listType=${"industry"}`
+  );
+  const { data: companyData } = useFetchData(
+    `${url}companymasterddl/?listType=${"country"}`
+  );
+  const industryDataArray = industryData?.data?.ddl || [];
+  const countryDataArray = companyData?.data?.ddl || [];
+
+  function yesNo(key) {
+    switch (key) {
+      case "YES":
+        return "Y";
+      case "NO":
+        return "N";
+    }
+  }
+
+  const handleSubmit = async (event) => {
     event.preventDefault();
-    console.log(rowId);
+    if (!isEdit) {
+      if (
+        !companyId ||
+        !companyName ||
+        !parentCompany ||
+        !industry ||
+        !shortCompany ||
+        !subcategory ||
+        !qc3 ||
+        !country ||
+        !active
+      ) {
+        toast.warning("All fields are required.");
+        return;
+      }
+    }
+    try {
+      setLoading(true);
+      const token = localStorage.getItem("user");
+      const updateType = isEdit ? "U" : "I";
+      const requestData = {
+        companyName,
+        companyId,
+        parentCompany,
+        industry,
+        shortCompany,
+        hasSubcategory: yesNo(subcategory),
+        qc3: yesNo(qc3),
+        country: Number(country),
+        active: yesNo(active),
+        updateType,
+      };
+      const response = await axios.post(
+        `${url}updatecompanymaster`,
+        requestData,
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      if (!isEdit) {
+        toast.success(response.data.updateStatus.status);
+      } else {
+        toast.success("Data updated.");
+      }
+    } catch (error) {
+      toast.error("Something went wrong");
+    } finally {
+      setLoading(false);
+    }
     handleClose();
   };
 
@@ -130,19 +215,20 @@ const CompanyFormModal = ({ open, handleClose, rowId }) => {
 
             <StyledFormControl fullWidth margin="normal">
               <StyledTypo variant="body2">Industry : </StyledTypo>
-              <YesOrNo
-                classes={classes}
+              <select
+                name=""
+                id=""
+                className="w-full text-sm text-gray-500 border border-gray-400 rounded-sm hover:border-black"
                 value={industry}
-                setValue={setIndustry}
-                placeholder="Industry"
-                mapValue={[
-                  "Technology",
-                  "Healthcare",
-                  "Finance",
-                  "Energy",
-                  "Retail",
-                ]}
-              />
+                onChange={(e) => setIndustry(e.target.value)}
+              >
+                <option value="">Select Industry</option>
+                {industryDataArray.map((item) => (
+                  <option key={item.industry} value={item.industry}>
+                    {item.industry}
+                  </option>
+                ))}
+              </select>
             </StyledFormControl>
 
             <StyledFormControl fullWidth margin="normal">
@@ -170,13 +256,20 @@ const CompanyFormModal = ({ open, handleClose, rowId }) => {
 
             <StyledFormControl fullWidth margin="normal">
               <StyledTypo variant="body2">Country : </StyledTypo>
-              <YesOrNo
-                classes={classes}
+              <select
+                name=""
+                id=""
+                className="w-full text-sm text-gray-500 border border-gray-400 rounded-sm hover:border-black"
                 value={country}
-                setValue={setCountry}
-                placeholder="Country"
-                mapValue={["India", "Japan", "Brazil", "Germany", "Canada"]}
-              />
+                onChange={(e) => setCountry(e.target.value)}
+              >
+                <option value="">Select Country</option>
+                {countryDataArray.map((item) => (
+                  <option key={item.countryId} value={item.countryId}>
+                    {item.countryName}
+                  </option>
+                ))}
+              </select>
             </StyledFormControl>
 
             <StyledFormControl fullWidth margin="normal">
@@ -192,11 +285,22 @@ const CompanyFormModal = ({ open, handleClose, rowId }) => {
           </Box>
           <Divider sx={{ mt: 1 }} />
           <Box sx={{ display: "flex", justifyContent: "end", mt: 1, gap: 1 }}>
-            <Button variant="outlined" onClick={handleClose} sx={{ ml: 2 }}>
+            <Button
+              variant="outlined"
+              onClick={handleClose}
+              sx={{ ml: 2 }}
+              size={"small"}
+            >
               Cancel
             </Button>
-            <Button variant="contained" type="submit" className="bg-primary">
-              Save
+            <Button
+              variant={!loading && "contained"}
+              type="submit"
+              className="bg-primary"
+              size="small"
+            >
+              {loading && <CircularProgress size={"1em"} />}{" "}
+              {isEdit ? "Update" : "Insert"}
             </Button>
           </Box>
         </form>
@@ -209,6 +313,7 @@ CompanyFormModal.propTypes = {
   open: PropTypes.bool.isRequired,
   handleClose: PropTypes.func.isRequired,
   rowId: PropTypes.any,
+  isEdit: PropTypes.bool,
 };
 
 export default CompanyFormModal;

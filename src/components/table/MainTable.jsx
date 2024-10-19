@@ -11,6 +11,8 @@ import UploadDialog from "../editArticle/UploadDialog";
 import { TableVirtuoso } from "react-virtuoso";
 import TotalRecordsCard from "../../@core/TotalRecords";
 import RadialMenu from "../../@core/RadialMenu";
+import FlagIcon from "@mui/icons-material/Flag";
+import QC3Modal from "../qc3/QC3Modal";
 
 const useStyles = makeStyles(() => ({
   dropDowns: {
@@ -116,6 +118,12 @@ const MainTable = ({
   const [open, setOpen] = useState(false);
   const [selectedArticle, setSelectedArticle] = useState(null);
 
+  // qc3
+  const [qc3Open, setQc3Open] = useState(false);
+
+  const handleOpen = () => setQc3Open(true);
+  const handleCloseQC3 = () => setQc3Open(false);
+
   const tableRowClick = (item) => {
     setOpen(true);
     setSelectedArticle((prev) => (prev === item ? null : item));
@@ -203,6 +211,12 @@ const MainTable = ({
                     Edit
                   </th>
                 )}
+                {!!dataToRender.length && (
+                  <th className="text-white text-[0.9em] sticky bg-primary pl-3 left-10 tracking-widest font-thin pt-2">
+                    QC3
+                  </th>
+                )}
+
                 {tableHeaders?.map((header) => (
                   <th
                     key={header}
@@ -289,6 +303,9 @@ const MainTable = ({
                 className="bg-white"
               >
                 <EditAttributesOutlined className="text-primary" />
+              </TableCell>
+              <TableCell onClick={handleOpen}>
+                <FlagIcon className="text-primary" />
               </TableCell>
               {tableHeaders?.map((header) => (
                 <React.Fragment key={header}>
@@ -430,6 +447,7 @@ const MainTable = ({
         handleClose={handleClose}
         selectedRow={selectedArticle}
       />
+      <QC3Modal open={qc3Open} handleClose={handleCloseQC3} />
     </div>
   );
 };

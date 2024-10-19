@@ -28,7 +28,7 @@ const useStyles = makeStyles((theme) => ({
     maxWidth: 360,
   },
   paperBox: {
-    height: 250,
+    // height: 250,
     background: "#fff",
     overflow: "hidden",
   },
@@ -70,6 +70,7 @@ const CustomMultiSelect = ({
   keyName,
   dropdownWidth,
   dropdownToggleWidth,
+  isIncreased,
 }) => {
   const classes = useStyles();
   const [searchTerm, setSearchTerm] = useState("");
@@ -157,7 +158,10 @@ const CustomMultiSelect = ({
           sx={{ zIndex: 50 }}
         >
           <ClickAwayListener onClickAway={handleClickAway}>
-            <Paper sx={{ width: dropdownWidth }} className={classes.paperBox}>
+            <Paper
+              sx={{ width: dropdownWidth, height: isIncreased ? 400 : 250 }}
+              className={classes.paperBox}
+            >
               <List>
                 <ListItem dense>
                   <Input
@@ -181,7 +185,7 @@ const CustomMultiSelect = ({
                 </ListItem>
                 <Divider />
                 <ListWindow
-                  height={150}
+                  height={isIncreased ? 300 : 150}
                   itemCount={filteredOptions.length}
                   itemSize={40}
                   width={dropdownWidth}
@@ -211,6 +215,7 @@ CustomMultiSelect.propTypes = {
   keyName: PropTypes.string.isRequired,
   dropdownWidth: PropTypes.number.isRequired,
   dropdownToggleWidth: PropTypes.number.isRequired,
+  isIncreased: PropTypes.bool,
 };
 
 export default CustomMultiSelect;

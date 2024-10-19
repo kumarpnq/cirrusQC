@@ -1,4 +1,4 @@
-import { Modal, Box, Button, Typography } from "@mui/material";
+import { Modal, Box, Button, Typography, Divider } from "@mui/material";
 import { styled } from "@mui/system";
 import CustomTextField from "../../@core/CutsomTextField";
 import { useState } from "react";
@@ -12,11 +12,13 @@ const FieldWrapper = styled(Box)({
   display: "flex",
   alignItems: "center",
   justifyContent: "space-between",
+  margin: 1,
 });
 const FieldLabel = styled(Typography)({
   fontSize: "1em",
   color: "gray",
   textWrap: "nowrap",
+  width: 300,
 });
 const useStyle = makeStyles(() => ({
   dropDowns: {
@@ -72,10 +74,12 @@ const AddModal = ({ open, handleClose }) => {
             top: "50%",
             left: "50%",
             transform: "translate(-50%, -50%)",
-            width: 400,
+            width: 500,
             bgcolor: "background.paper",
             border: "1px solid #000",
             boxShadow: 24,
+            height: 600,
+            overflow: "scroll",
             p: 1,
           }}
         >
@@ -174,27 +178,31 @@ const AddModal = ({ open, handleClose }) => {
             </FieldWrapper>
             <FieldWrapper>
               <FieldLabel>City Edition :</FieldLabel>
+              {/* <div className="ml-20"> */}
               <CustomSingleSelect
-                dropdownToggleWidth={200}
-                dropdownWidth={200}
+                dropdownToggleWidth={`100%`}
+                dropdownWidth={"100%"}
                 keyId="cityid"
                 keyName="cityname"
                 options={citiesArray}
                 selectedItem={city}
                 setSelectedItem={setCity}
               />
+              {/* </div> */}
             </FieldWrapper>
             <FieldWrapper>
               <FieldLabel>Language :</FieldLabel>
-              <CustomSingleSelect
-                dropdownToggleWidth={200}
-                dropdownWidth={200}
-                keyId="cityid"
-                keyName="cityname"
-                options={citiesArray}
-                selectedItem={language}
-                setSelectedItem={setLanguage}
-              />
+              <div className="ml-24">
+                <CustomSingleSelect
+                  dropdownToggleWidth={`100%`}
+                  dropdownWidth={"100%"}
+                  keyId="cityid"
+                  keyName="cityname"
+                  options={citiesArray}
+                  selectedItem={language}
+                  setSelectedItem={setLanguage}
+                />
+              </div>
             </FieldWrapper>
             <FieldWrapper>
               <FieldLabel>Subscription Type :</FieldLabel>
@@ -282,15 +290,17 @@ const AddModal = ({ open, handleClose }) => {
             </FieldWrapper>
             <FieldWrapper>
               <FieldLabel>Group Publication :</FieldLabel>
-              <CustomSingleSelect
-                dropdownToggleWidth={200}
-                dropdownWidth={200}
-                keyId="cityid"
-                keyName="cityname"
-                options={citiesArray}
-                selectedItem={groupPublication}
-                setSelectedItem={setGroupPublication}
-              />
+              <div className="ml-8">
+                <CustomSingleSelect
+                  dropdownToggleWidth={`100%`}
+                  dropdownWidth={"100%"}
+                  keyId="cityid"
+                  keyName="cityname"
+                  options={citiesArray}
+                  selectedItem={groupPublication}
+                  setSelectedItem={setGroupPublication}
+                />
+              </div>
             </FieldWrapper>
             <FieldWrapper>
               <FieldLabel>Temporary :</FieldLabel>
@@ -321,12 +331,21 @@ const AddModal = ({ open, handleClose }) => {
                 setValue={setActive}
               />
             </FieldWrapper>
-            <Button onClick={handleClose} variant="outlined" size="small">
-              Close
-            </Button>
-            <Button type="submit" variant="contained" size="small">
-              Save
-            </Button>
+            <Divider sx={{ my: 1 }} />
+            <Box
+              sx={{
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "flex-end",
+              }}
+            >
+              <Button onClick={handleClose} variant="outlined" size="small">
+                Close
+              </Button>
+              <Button type="submit" variant="contained" size="small">
+                Save
+              </Button>
+            </Box>
           </form>
         </Box>
       </Modal>
