@@ -34,50 +34,12 @@ import useMediaQuery from "@mui/material/useMediaQuery";
 import { HiStatusOnline } from "react-icons/hi";
 import { FaPrint } from "react-icons/fa";
 import { FaDumpster } from "react-icons/fa";
+import { IoMail } from "react-icons/io5";
+import { LuBookCopy } from "react-icons/lu";
 
 //**  context
 import { ResearchContext } from "../../context/ContextProvider";
 import { getInitials } from "../../utils/getInitialName";
-
-// const Search = styled("div")(({ theme }) => ({
-//   position: "relative",
-//   borderRadius: theme.shape.borderRadius,
-//   backgroundColor: alpha(theme.palette.common.white, 0.15),
-//   "&:hover": {
-//     backgroundColor: alpha(theme.palette.common.white, 0.25),
-//   },
-//   marginRight: theme.spacing(2),
-//   marginLeft: 0,
-//   width: "100%",
-//   [theme.breakpoints.up("sm")]: {
-//     marginLeft: theme.spacing(3),
-//     width: "auto",
-//   },
-// }));
-
-// const SearchIconWrapper = styled("div")(({ theme }) => ({
-//   padding: theme.spacing(0, 2),
-//   height: "100%",
-//   position: "absolute",
-//   pointerEvents: "none",
-//   display: "flex",
-//   alignItems: "center",
-//   justifyContent: "center",
-// }));
-
-// const StyledInputBase = styled(InputBase)(({ theme }) => ({
-//   color: "inherit",
-//   "& .MuiInputBase-input": {
-//     padding: theme.spacing(1, 1, 1, 0),
-//     // vertical padding + font size from searchIcon
-//     paddingLeft: `calc(1em + ${theme.spacing(4)})`,
-//     transition: theme.transitions.create("width"),
-//     width: "100%",
-//     [theme.breakpoints.up("md")]: {
-//       width: "20ch",
-//     },
-//   },
-// }));
 
 export default function MainNav() {
   const navigate = useNavigate();
@@ -89,8 +51,6 @@ export default function MainNav() {
   const [anchorEl, setAnchorEl] = React.useState(null);
   const [mobileMoreAnchorEl, setMobileMoreAnchorEl] = React.useState(null);
   const [open, setOpen] = React.useState(false);
-  // const [searchValue, setSearchValue] = React.useState();
-  // const [filteredNavItems, setFilteredNavItems] = React.useState([]);
 
   // * vars
   const userToken = localStorage.getItem("user");
@@ -180,7 +140,7 @@ export default function MainNav() {
     ...(screenPermissions.clientBasketCityPublication
       ? [
           {
-            id: 8,
+            id: 9,
             title: "ClientBasketCity",
             path: "/client-basket-city-publication",
             icon: <ShoppingBasketIcon />,
@@ -190,10 +150,30 @@ export default function MainNav() {
     ...(screenPermissions.CopyArticles
       ? [
           {
-            id: 8,
+            id: 10,
             title: "Copy Articles",
             path: "/copy-articles",
             icon: <FolderCopyIcon />,
+          },
+        ]
+      : []),
+    ...(screenPermissions.companySlicing
+      ? [
+          {
+            id: 11,
+            title: "Company Slicing",
+            path: "/company-slicing",
+            icon: <LuBookCopy />,
+          },
+        ]
+      : []),
+    ...(screenPermissions.mailerSchedular
+      ? [
+          {
+            id: 12,
+            title: "Online Mailer Schedular",
+            path: "/online-mailer-schedular",
+            icon: <IoMail />,
           },
         ]
       : []),
@@ -225,24 +205,6 @@ export default function MainNav() {
     handleMenuClose();
     handleLogout();
   };
-
-  // const handleSearchValue = React.useCallback((event) => {
-  //   const { value } = event.target;
-  //   setSearchValue(value);
-  // }, []);
-
-  // const handleEnterKeyPress = (event) => {
-  //   if (event.key === "Enter") {
-  //     const foundItem = navList.find(
-  //       (item) => item.title.toLowerCase() === searchValue.toLowerCase()
-  //     );
-  //     if (foundItem) {
-  //       navigate(foundItem.path);
-  //     } else {
-  //       toast.error("No such page found.");
-  //     }
-  //   }
-  // };
 
   const menuId = "primary-search-account-menu";
   const renderMenu = (
@@ -298,10 +260,10 @@ export default function MainNav() {
   );
 
   const DrawerList = (
-    <Box sx={{ width: 250 }} role="presentation" onClick={toggleDrawer(false)}>
+    <Box sx={{ width: 300 }} role="presentation" onClick={toggleDrawer(false)}>
       <List>
         {navList.map((item) => (
-          <ListItem key={item.id} disablePadding sx={{ width: 180 }}>
+          <ListItem key={item.id} disablePadding sx={{ width: 160 }}>
             <NavLink
               to={item.path}
               className={
@@ -340,7 +302,7 @@ export default function MainNav() {
                   sx={{
                     textWrap: "nowrap",
                     letterSpacing: "1px",
-                    width: 250,
+                    width: 230,
                     textOverflow: "ellipsis",
                     transition: "transform 0.3s ease",
                     "&:hover": {
@@ -411,19 +373,6 @@ export default function MainNav() {
               {activeTabTitle}
             </Typography>
 
-            {/* <Search>
-              <SearchIconWrapper>
-                <SearchIcon />
-              </SearchIconWrapper>
-              <StyledInputBase
-                placeholder="Search…"
-                inputProps={{ "aria-label": "search" }}
-                value={searchValue}
-                onChange={handleSearchValue}
-                onKeyDown={handleEnterKeyPress}
-              />
-            </Search> */}
-
             <Box sx={{ flexGrow: 1 }} />
             <Box sx={{ display: { xs: "none", md: "flex" } }}>
               <IconButton
@@ -437,9 +386,9 @@ export default function MainNav() {
                   background: "#fff",
                   color: "#0a4f7d",
                   fontSize: "0.9em",
-                  width: 40, // adjust the width to make it circular
-                  height: 40, // adjust the height to make it circular
-                  borderRadius: "50%", // this makes the button circular
+                  width: 40,
+                  height: 40,
+                  borderRadius: "50%",
                   display: "flex",
                   alignItems: "center",
                   justifyContent: "center",

@@ -8,7 +8,6 @@ import { url } from "../../constants/baseUrl";
 import CompanyFormModal from "./EditModal";
 import { toast } from "react-toastify";
 import PropTypes from "prop-types";
-import { arrayToString } from "../../utils/arrayToString";
 
 const useStyle = makeStyles(() => ({
   dropDowns: {

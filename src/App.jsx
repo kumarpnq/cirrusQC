@@ -27,6 +27,8 @@ import Analytics from "./pages/Analytics/Analytics";
 import BasketCityPub from "./pages/BasketCityPub";
 import PrintSimilarArticles from "./pages/qc1/PrintSimilarArticles";
 import CopyArticles from "./pages/CopyArticles";
+import OnlineMailSchedular from "./pages/OnlineMailSchedular";
+import OnlineCompanySlicing from "./pages/OnlineCompanySlicing";
 
 // Lazy load the components
 const Home = lazy(() => import("./pages/Home"));
@@ -54,6 +56,8 @@ function App() {
     clientBasketCityPublication: false,
     PrintSimilarArticles: false,
     copyArticles: false,
+    mailerSchedular: false,
+    companySlicing: false,
   });
   const [loading, setLoading] = useState(false);
 
@@ -107,6 +111,8 @@ function App() {
         screenPermissions.clientBasketCityPublication,
       PrintSimilarArticles: screenPermissions["PrintSimilarArticles"],
       copyArticles: screenPermissions.CopyArticles,
+      mailerSchedular: screenPermissions.mailerSchedular,
+      companySlicing: screenPermissions.companySlicing,
     });
   }, [screenPermissions]);
 
@@ -268,11 +274,36 @@ function App() {
                   )
                 }
               />
+              <Route
+                path="/online-mailer-schedular"
+                element={
+                  permissions.mailerSchedular ? (
+                    <OnlineMailSchedular />
+                  ) : loading ? (
+                    <div>Loading...</div>
+                  ) : (
+                    <NotFound />
+                  )
+                }
+              />
+              <Route
+                path="/company-slicing"
+                element={
+                  permissions.companySlicing ? (
+                    <OnlineCompanySlicing />
+                  ) : loading ? (
+                    <div>Loading...</div>
+                  ) : (
+                    <NotFound />
+                  )
+                }
+              />
             </>
           ) : (
             <Route path="login" element={<Login />} />
           )}
           <Route path="*" element={userToken ? <NotFound /> : <Login />} />
+
           <Route
             path="/articleview/download-file/:id"
             element={<ArticleView />}

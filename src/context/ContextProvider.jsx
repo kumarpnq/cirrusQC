@@ -23,6 +23,8 @@ const ContextProvider = ({ children }) => {
     clientBasketCityPublication: false,
     PrintSimilarArticles: false,
     copyArticles: false,
+    mailerSchedular: false,
+    companySlicing: false,
   });
   const [permissionLoading, setPermissionLoading] = useState(false);
 
