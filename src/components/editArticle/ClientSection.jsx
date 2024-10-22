@@ -95,7 +95,7 @@ const ClientSection = ({ selectedArticle }) => {
     const updatedRow = {
       ...editableTagData[index],
       [key]: value,
-      UPDATETYPE: "U",
+      update_type: "U",
     };
 
     setEditableTagData((prevData) => {
@@ -130,22 +130,22 @@ const ClientSection = ({ selectedArticle }) => {
         };
         const requestData = [
           {
-            UPDATETYPE: "I",
-            SOCIALFEEDID: rowData.socialfeed_id,
-            COMPANYID: selectedCompany.value,
-            COMPANYNAME: selectedCompany.label,
-            KEYWORD: rowData.keyword,
+            updateType: "I",
+            socialFeedId: rowData.socialfeed_id,
+            companyId: selectedCompany.value,
+            companyName: selectedCompany.label,
+            keyword: rowData.keyword,
             // AUTHOR: rowData.author,
-            REPORTINGTONE: rowData.reporting_tone,
-            REPORTINGSUBJECT: rowData.reporting_subject,
-            SUBCATEGORY: rowData.subcategory,
-            PROMINENCE: rowData.prominence,
-            SUMMARY: rowData.detail_summary,
-            QC2REMARK: rowData.remarks,
+            reportingTone: rowData.reporting_tone,
+            reportingSubject: rowData.reporting_subject,
+            subCategory: rowData.subcategory,
+            prominence: rowData.prominence,
+            summary: rowData.detail_summary,
+            qc2Remark: rowData.remarks,
           },
         ];
 
-        const data = { data: requestData, QCTYPE: "QC2" };
+        const data = { data: requestData, qcType: "QC2" };
         const response = await axios.post(
           `${url}updatesocialfeedtagdetails/`,
           data,
@@ -196,12 +196,12 @@ const ClientSection = ({ selectedArticle }) => {
     const isValid = await userVerification();
     const requestData = [
       {
-        UPDATETYPE: "D",
-        SOCIALFEEDID: selectedRowForDelete.socialfeed_id,
-        COMPANYID: selectedRowForDelete.company_id,
+        updateType: "D",
+        socialFeedId: selectedRowForDelete.socialfeed_id,
+        companyId: selectedRowForDelete.company_id,
       },
     ];
-    const data = { data: requestData, QCTYPE: "QC2" };
+    const data = { data: requestData, qcType: "QC2" };
     isValid && (await makeRequest(data));
     if (!isValid) {
       return toast.error("Password not match with records");
@@ -240,9 +240,22 @@ const ClientSection = ({ selectedArticle }) => {
     }
     try {
       setSaveLoading(true);
-      const requestData = modifiedRows.map((obj) => convertKeys(obj));
+      const requestData = modifiedRows.map((obj) => ({
+        socialFeedId: obj.socialfeed_id,
+        companyId: obj.company_id,
+        companyName: obj.company_name,
+        prominence: obj.prominence,
+        reportingTone: obj.reporting_tone,
+        reportingSubject: obj.reporting_subject,
+        subcategory: obj.subcategory,
+        keyword: obj.keyword,
+        remarks: obj.remarks,
+        detailSummary: obj.detailSummary,
+        updateType: obj.update_type,
+      }));
+
       const headers = { Authorization: `Bearer ${userToken}` };
-      const data = { data: requestData, QCTYPE: "QC2" };
+      const data = { data: requestData, qcType: "QC2" };
       const response = await axios.post(
         `${url}updatesocialfeedtagdetails/`,
         data,
