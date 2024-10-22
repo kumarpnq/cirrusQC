@@ -29,6 +29,7 @@ import PrintSimilarArticles from "./pages/qc1/PrintSimilarArticles";
 import CopyArticles from "./pages/CopyArticles";
 import OnlineMailSchedular from "./pages/OnlineMailSchedular";
 import OnlineCompanySlicing from "./pages/OnlineCompanySlicing";
+import WhatsAppContact from "./components2/Whatsapp-contact/WhatsAppContact";
 
 // Lazy load the components
 const Home = lazy(() => import("./pages/Home"));
@@ -303,7 +304,7 @@ function App() {
             <Route path="login" element={<Login />} />
           )}
           <Route path="*" element={userToken ? <NotFound /> : <Login />} />
-
+          <Route path="/whatsapp-contact" element={<WhatsAppContact />} />
           <Route
             path="/articleview/download-file/:id"
             element={<ArticleView />}
