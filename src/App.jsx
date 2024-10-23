@@ -113,7 +113,7 @@ function App() {
         screenPermissions.clientBasketCityPublication,
       PrintSimilarArticles: screenPermissions["PrintSimilarArticles"],
       copyArticles: screenPermissions.CopyArticles,
-      mailerSchedular: screenPermissions.MailerSchedular,
+      mailerSchedular: screenPermissions["MailerScheduler"],
       companySlicing: screenPermissions.CompanySlicing,
       whatsappContact: screenPermissions.WhatsappContact,
     });

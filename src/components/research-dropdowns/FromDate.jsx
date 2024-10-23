@@ -1,7 +1,7 @@
 import { FormControl, TextField } from "@mui/material";
 import PropTypes from "prop-types";
 
-const FromDate = ({ fromDate, setFromDate }) => {
+const FromDate = ({ fromDate, setFromDate, isNoMargin }) => {
   const handleFromDate = (e) => {
     const { value } = e.target;
 
@@ -30,7 +30,7 @@ const FromDate = ({ fromDate, setFromDate }) => {
           onChange={handleFromDate}
           variant="outlined"
           InputProps={{
-            style: { fontSize: "0.8rem", height: 25, top: 6 },
+            style: { fontSize: "0.8rem", height: 25, top: isNoMargin ? 0 : 6 },
           }}
         />
       </FormControl>
@@ -40,5 +40,6 @@ const FromDate = ({ fromDate, setFromDate }) => {
 FromDate.propTypes = {
   fromDate: PropTypes.string.isRequired,
   setFromDate: PropTypes.func.isRequired,
+  isNoMargin: PropTypes.bool,
 };
 export default FromDate;

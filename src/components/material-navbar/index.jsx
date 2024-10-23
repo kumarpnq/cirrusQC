@@ -60,8 +60,6 @@ export default function MainNav() {
   const isMenuOpen = Boolean(anchorEl);
   const isMobileMenuOpen = Boolean(mobileMoreAnchorEl);
 
-  console.log(screenPermissions);
-
   const navList = [
     ...(screenPermissions["QC1-Online"]
       ? [
