@@ -1,4 +1,4 @@
-import { Box, Button, Typography } from "@mui/material";
+import { Box, Button, Paper, Typography } from "@mui/material";
 import CustomTextField from "../../@core/CutsomTextField";
 import { useState } from "react";
 import { formattedDate, formattedNextDay } from "../../constants/dates";
@@ -51,8 +51,11 @@ const SearchFilters = () => {
   // 	"PAGE_VIEWS" NUMBER(14,10),
 
   return (
-    <Box>
-      <form onSubmit={handleSubmit}>
+    <Box component={Paper}>
+      <form
+        onSubmit={handleSubmit}
+        className="flex flex-wrap items-center gap-1"
+      >
         <div className="mb-3">
           <FromDate fromDate={fromDate} setFromDate={setFromDate} />
         </div>

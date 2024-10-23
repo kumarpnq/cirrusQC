@@ -20,6 +20,7 @@ import BookmarkBorderIcon from "@mui/icons-material/BookmarkBorder";
 import BarChartIcon from "@mui/icons-material/BarChart";
 import ShoppingBasketIcon from "@mui/icons-material/ShoppingBasket";
 import FolderCopyIcon from "@mui/icons-material/FolderCopy";
+import WhatsAppIcon from "@mui/icons-material/WhatsApp";
 
 import MoreIcon from "@mui/icons-material/MoreVert";
 import Drawer from "@mui/material/Drawer";
@@ -58,6 +59,8 @@ export default function MainNav() {
   const isSmallScreen = useMediaQuery("(max-width:600px)");
   const isMenuOpen = Boolean(anchorEl);
   const isMobileMenuOpen = Boolean(mobileMoreAnchorEl);
+
+  console.log(screenPermissions);
 
   const navList = [
     ...(screenPermissions["QC1-Online"]
@@ -157,7 +160,7 @@ export default function MainNav() {
           },
         ]
       : []),
-    ...(screenPermissions.companySlicing
+    ...(screenPermissions.CompanySlicing
       ? [
           {
             id: 11,
@@ -167,13 +170,23 @@ export default function MainNav() {
           },
         ]
       : []),
-    ...(screenPermissions.mailerSchedular
+    ...(screenPermissions.MailerScheduler
       ? [
           {
             id: 12,
             title: "Online Mailer Schedular",
             path: "/online-mailer-schedular",
             icon: <IoMail />,
+          },
+        ]
+      : []),
+    ...(screenPermissions.WhatsappContact
+      ? [
+          {
+            id: 13,
+            title: "Whatsapp Contact",
+            path: "/whatsapp-contact",
+            icon: <WhatsAppIcon />,
           },
         ]
       : []),

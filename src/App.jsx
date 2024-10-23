@@ -59,6 +59,7 @@ function App() {
     copyArticles: false,
     mailerSchedular: false,
     companySlicing: false,
+    whatsappContact: false,
   });
   const [loading, setLoading] = useState(false);
 
@@ -112,8 +113,9 @@ function App() {
         screenPermissions.clientBasketCityPublication,
       PrintSimilarArticles: screenPermissions["PrintSimilarArticles"],
       copyArticles: screenPermissions.CopyArticles,
-      mailerSchedular: screenPermissions.mailerSchedular,
-      companySlicing: screenPermissions.companySlicing,
+      mailerSchedular: screenPermissions.MailerSchedular,
+      companySlicing: screenPermissions.CompanySlicing,
+      whatsappContact: screenPermissions.WhatsappContact,
     });
   }, [screenPermissions]);
 
@@ -299,12 +301,24 @@ function App() {
                   )
                 }
               />
+              <Route
+                path="/whatsapp-contact"
+                element={
+                  permissions.whatsappContact ? (
+                    <WhatsAppContact />
+                  ) : loading ? (
+                    <div>Loading...</div>
+                  ) : (
+                    <NotFound />
+                  )
+                }
+              />
             </>
           ) : (
             <Route path="login" element={<Login />} />
           )}
           <Route path="*" element={userToken ? <NotFound /> : <Login />} />
-          <Route path="/whatsapp-contact" element={<WhatsAppContact />} />
+
           <Route
             path="/articleview/download-file/:id"
             element={<ArticleView />}
