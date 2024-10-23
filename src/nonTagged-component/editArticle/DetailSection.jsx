@@ -56,16 +56,16 @@ const Details = ({ selectedRow, userToken }) => {
       const request_data = {
         data: [
           {
-            UPDATETYPE: "U",
-            SOCIALFEEDID: selectedRow?.social_feed_id,
-            HEADLINE: headline,
-            SUMMARY: summary,
-            AUTHOR: journalist,
-            HASIMAGE: yesNoToBinary(iAlignment),
-            HASVIDEO: yesNoToBinary(vAlignment),
+            updateType: "U",
+            socialFeedId: selectedRow?.social_feed_id,
+            headline: headline,
+            summary: summary,
+            author: journalist,
+            hasImage: yesNoToBinary(iAlignment),
+            hasVideo: yesNoToBinary(vAlignment),
           },
         ],
-        QCTYPE: "QC2",
+        qcType: "QC2",
       };
       const response = await axios.post(
         `${url}updatesocialfeedheader/`,

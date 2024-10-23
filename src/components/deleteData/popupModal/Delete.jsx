@@ -33,9 +33,9 @@ const Delete = ({
     "updatesocialfeedtagdetails/"
   );
   const requestData = selectedArticles.map((item) => ({
-    UPDATETYPE: "D",
-    SOCIALFEEDID: item.social_feed_id,
-    COMPANYID: item.company_id,
+    updateType: "D",
+    socialFeedId: item.social_feed_id,
+    companyId: item.company_id,
   }));
 
   const userVerification = async () => {

@@ -19,7 +19,6 @@ import PropTypes from "prop-types";
 import useProtectedRequest from "../../hooks/useProtectedRequest";
 import { url } from "../../constants/baseUrl";
 import useFetchData from "../../hooks/useFetchData";
-import { convertKeys } from "../../constants/convertKeys";
 import CustomButton from "../../@core/CustomButton";
 import DebounceSearchCompany from "../../@core/DebounceSearchCompany";
 import Button from "../../components/custom/Button";
@@ -32,6 +31,7 @@ const ClientSection = ({
   setTableData,
   // * cleared states
   tableDataList,
+  setTableDataList,
   editableTagData,
   setEditableTagData,
   modifiedRows,
@@ -68,6 +68,12 @@ const ClientSection = ({
     }
   }, [prominenceLists]);
 
+  useEffect(() => {
+    if (tableDataList.length > 0) {
+      setEditableTagData(tableDataList);
+    }
+  }, [tableDataList]);
+
   const { data: tones } = useFetchData(`${url}reportingtonelist`);
   const reportingTones = tones?.data?.reportingtones_list || [];
 
@@ -75,7 +81,7 @@ const ClientSection = ({
     const updatedRow = {
       ...editableTagData[index],
       [key]: value,
-      UPDATETYPE: "U",
+      update_type: "U",
     };
 
     setEditableTagData((prevData) => {
@@ -86,12 +92,14 @@ const ClientSection = ({
 
     setModifiedRows((prevRows) => {
       const existingIndex = prevRows.findIndex(
-        (row) => row.socialfeed_id === updatedRow.socialfeed_id
+        (row) => row.company_id === updatedRow.company_id
       );
-
-      if (existingIndex !== -1) {
+      if (existingIndex >= 0) {
         const newRows = [...prevRows];
-        newRows[existingIndex] = updatedRow;
+        newRows[existingIndex] = {
+          ...newRows[existingIndex],
+          [key]: value,
+        };
         return newRows;
       } else {
         return [...prevRows, updatedRow];
@@ -108,21 +116,21 @@ const ClientSection = ({
         const requestData = {
           data: [
             {
-              UPDATETYPE: "I",
-              SOCIALFEEDID: selectedArticle?.social_feed_id,
-              COMPANYID: selectedCompany.value,
-              COMPANYNAME: selectedCompany.label,
-              KEYWORD: null,
+              updateType: "I",
+              socialFeedId: selectedArticle?.social_feed_id,
+              companyId: selectedCompany?.value,
+              companyName: selectedCompany?.label,
+              keyword: null,
               // AUTHOR: rowData.author,
-              REPORTINGTONE: null,
-              REPORTINGSUBJECT: null,
-              SUBCATEGORY: null,
-              PROMINENCE: null,
-              SUMMARY: null,
-              QC2REMARK: null,
+              reportingTone: null,
+              reportingSubject: null,
+              subcategory: null,
+              prominence: null,
+              summary: null,
+              qc2Remark: null,
             },
           ],
-          QCTYPE: "QC2",
+          qcType: "QC2",
         };
 
         const response = await axios.post(
@@ -178,10 +186,10 @@ const ClientSection = ({
     const requestData = {
       data: [
         {
-          UPDATETYPE: "D",
-          SOCIALFEEDID: selectedRowForDelete.socialfeed_id,
-          COMPANYID: selectedRowForDelete.company_id,
-          COMPANYNAME: selectedRowForDelete.company_name,
+          updateType: "D",
+          socialFeedId: selectedRowForDelete.socialfeed_id,
+          companyId: selectedRowForDelete.company_id,
+          companyName: selectedRowForDelete.company_name,
         },
       ],
       qcflag: 1,
@@ -202,7 +210,7 @@ const ClientSection = ({
       setEditableTagData([]);
       // setFetchTagDataAfterChange(true);
       setSelectedRowForDelete(null);
-      setFetchAfterSave(true);
+      // setFetchAfterSave(true);
     }
   };
 
@@ -229,7 +237,20 @@ const ClientSection = ({
     }
     try {
       setSaveLoading(true);
-      const requestData = modifiedRows.map((obj) => convertKeys(obj));
+      const requestData = modifiedRows.map((obj) => ({
+        socialFeedId: obj.socialfeed_id,
+        companyId: obj.company_id,
+        companyName: obj.company_name,
+        prominence: obj.prominence,
+        reportingTone: obj.reporting_tone,
+        reportingSubject: obj.reporting_subject,
+        subcategory: obj.subcategory,
+        keyword: obj.keyword,
+        remarks: obj.remarks,
+        detailSummary: obj.detailSummary,
+        updateType: obj.update_type,
+      }));
+
       const dataToSend = { data: requestData, qcflag: 1 };
       const headers = { Authorization: `Bearer ${userToken}` };
       const response = await axios.post(
@@ -247,7 +268,7 @@ const ClientSection = ({
         setModifiedRows([]);
 
         // setFetchTagDataAfterChange(true);
-        setFetchAfterSave(true);
+        // setFetchAfterSave(true);
       } else {
         toast.error("Something went wrong");
       }
@@ -293,7 +314,7 @@ const ClientSection = ({
                 <CircularProgress />
               </Box>
             ) : (
-              tableDataList.map((item, index) => (
+              editableTagData.map((item, index) => (
                 <tr
                   key={item.socialfeed_id + item.company_id}
                   className="border border-gray-300"

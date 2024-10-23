@@ -78,7 +78,7 @@ const Details = ({ selectedRow }) => {
       let video = vAlignment === "Yes" ? 1 : 0;
       const request_data = {
         // *comp
-        SOCIALFEEDID: selectedRow?.social_feed_id,
+        socialFeedId: selectedRow?.social_feed_id,
         // * optional if value changed
         // HEADLINE: headline,
         // SUMMARY: summary,
@@ -88,19 +88,19 @@ const Details = ({ selectedRow }) => {
       };
 
       if (headline !== headerData.headline) {
-        request_data.HEADLINE = headline;
+        request_data.headline = headline;
       }
       if (summary !== headerData.headsummary) {
-        request_data.SUMMARY = summary;
+        request_data.summary = summary;
       }
       if (journalist !== headerData.author_name) {
-        request_data.AUTHOR = journalist;
+        request_data.author = journalist;
       }
       if (img !== (headerData.has_image === "Yes" ? 1 : 0)) {
-        request_data.HASIMAGE = img;
+        request_data.hasImage = img;
       }
       if (video !== (headerData.has_video === "Yes" ? 1 : 0)) {
-        request_data.HASVIDEO = video;
+        request_data.hasVideo = video;
       }
       // Check if there are any updates to be made
       const updatesExist = Object.keys(request_data).length > 1;
@@ -110,7 +110,7 @@ const Details = ({ selectedRow }) => {
         toast.warning("No changes to update.");
         return;
       }
-      const data = { data: [request_data], QCTYPE: "QC2" };
+      const data = { data: [request_data], qcType: "QC2" };
       const response = await axios.post(`${url}updatesocialfeedheader/`, data, {
         headers,
       });
