@@ -1,13 +1,46 @@
-import { Box, IconButton } from "@mui/material";
+import { Box, IconButton, Tooltip } from "@mui/material";
 import { DataGrid, GridToolbar } from "@mui/x-data-grid";
 import EditNoteIcon from "@mui/icons-material/EditNote";
 import DeleteIcon from "@mui/icons-material/Delete";
 import InfoIcon from "@mui/icons-material/Info";
 import EditDialog from "./EditDialog";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import axios from "axios";
+import { url_mongo } from "../../constants/baseUrl";
 
 const MailerSchedularGrid = () => {
   const [open, setOpen] = useState(false);
+  const [scheduleData, setScheduleDate] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [selectedRow, setSelectedRow] = useState(null);
+
+  const handleClose = () => {
+    setOpen(false);
+    setSelectedRow(null);
+  };
+  function yesNo(val) {
+    if (val === true) return "Yes";
+    else return "No";
+  }
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        setLoading(true);
+        const token = localStorage.getItem("user");
+        const response = await axios.get(`${url_mongo}mailerSchedulerData/`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+
+        setScheduleDate(response.data.scheduleData);
+      } catch (error) {
+        console.log(error.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchData();
+  }, []);
+
   const columns = [
     {
       field: "action",
@@ -15,7 +48,12 @@ const MailerSchedularGrid = () => {
       width: 150,
       renderCell: (params) => (
         <>
-          <IconButton onClick={() => setOpen((prev) => !prev)}>
+          <IconButton
+            onClick={() => {
+              setOpen((prev) => !prev);
+              setSelectedRow(params.row);
+            }}
+          >
             <EditNoteIcon
               style={{ cursor: "pointer", marginRight: 10 }}
               className="text-primary"
@@ -46,15 +84,28 @@ const MailerSchedularGrid = () => {
       ),
     },
     {
-      field: "company",
+      field: "clientName",
+      headerName: "Client Name",
+      width: 200,
+    },
+    {
+      field: "scheduledCompanies",
       headerName: "Company",
       width: 150,
       renderCell: (params) => (
-        <InfoIcon
-          style={{ cursor: "pointer" }}
-          titleAccess={params.value}
-          className="text-primary"
-        />
+        <Tooltip
+          title={
+            <>
+              {params.value.map((i, index) => (
+                <div key={index} style={{ whiteSpace: "pre-line" }}>
+                  {i.companyName}
+                </div>
+              ))}
+            </>
+          }
+        >
+          <InfoIcon className="text-primary" />
+        </Tooltip>
       ),
     },
     {
@@ -79,99 +130,15 @@ const MailerSchedularGrid = () => {
     },
     { field: "scheduleDetails", headerName: "Schedule Details", width: 300 },
   ];
-
-  const rows = [
-    {
-      id: 1,
-      action: "",
-      active: "Yes",
-      company: "Example Company 1",
-      sendReport: "Yes",
-      lastReport: "No",
-      scheduleDetails: "Send Report : Every day(s) - 08:30, 10:30, 23:00",
-    },
-    {
-      id: 2,
-      action: "",
-      active: "No",
-      company: "Example Company 2",
-      sendReport: "No",
-      lastReport: "Yes",
-      scheduleDetails: "Send Report : Every day(s) - 08:30, 10:30, 23:00",
-    },
-    {
-      id: 3,
-      action: "",
-      active: "No",
-      company: "Example Company 2",
-      sendReport: "No",
-      lastReport: "Yes",
-      scheduleDetails: "Send Report : Every day(s) - 08:30, 10:30, 23:00",
-    },
-    {
-      id: 4,
-      action: "",
-      active: "No",
-      company: "Example Company 2",
-      sendReport: "No",
-      lastReport: "Yes",
-      scheduleDetails: "Send Report : Every day(s) - 08:30, 10:30, 23:00",
-    },
-    {
-      id: 5,
-      action: "",
-      active: "No",
-      company: "Example Company 2",
-      sendReport: "No",
-      lastReport: "Yes",
-      scheduleDetails: "Send Report : Every day(s) - 08:30, 10:30, 23:00",
-    },
-    {
-      id: 6,
-      action: "",
-      active: "No",
-      company: "Example Company 2",
-      sendReport: "No",
-      lastReport: "Yes",
-      scheduleDetails: "Send Report : Every day(s) - 08:30, 10:30, 23:00",
-    },
-    {
-      id: 7,
-      action: "",
-      active: "No",
-      company: "Example Company 2",
-      sendReport: "No",
-      lastReport: "Yes",
-      scheduleDetails: "Send Report : Every day(s) - 08:30, 10:30, 23:00",
-    },
-    {
-      id: 8,
-      action: "",
-      active: "No",
-      company: "Example Company 2",
-      sendReport: "No",
-      lastReport: "Yes",
-      scheduleDetails: "Send Report : Every day(s) - 08:30, 10:30, 23:00",
-    },
-    {
-      id: 9,
-      action: "",
-      active: "No",
-      company: "Example Company 2",
-      sendReport: "No",
-      lastReport: "Yes",
-      scheduleDetails: "Send Report : Every day(s) - 08:30, 10:30, 23:00",
-    },
-    {
-      id: 10,
-      action: "",
-      active: "No",
-      company: "Example Company 2",
-      sendReport: "No",
-      lastReport: "Yes",
-      scheduleDetails: "Send Report : Every day(s) - 08:30, 10:30, 23:00",
-    },
-  ];
+  const rows = scheduleData.map((item) => ({
+    id: item.clientId,
+    active: yesNo(item.active),
+    clientName: item.clientName,
+    sendReport: yesNo(item.isSendReport),
+    lastReport: yesNo(item.isIncludeReport),
+    scheduledCompanies: item.scheduledCompanies,
+    schedule: item.schedule,
+  }));
 
   return (
     <>
@@ -182,6 +149,7 @@ const MailerSchedularGrid = () => {
           pageSize={5}
           density="standard"
           rowsPerPageOptions={[5, 10, 20]}
+          loading={loading}
           slots={{ toolbar: GridToolbar }}
           slotProps={{
             toolbar: {
@@ -194,7 +162,12 @@ const MailerSchedularGrid = () => {
           disableDensitySelector
         />
       </Box>
-      <EditDialog open={open} setOpen={setOpen} openedFromWhere="edit" />
+      <EditDialog
+        open={open}
+        handleClose={handleClose}
+        row={selectedRow}
+        openedFromWhere="edit"
+      />
     </>
   );
 };

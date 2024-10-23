@@ -2,7 +2,6 @@ import {
   Dialog,
   DialogActions,
   DialogContent,
-  DialogContentText,
   DialogTitle,
   Button,
   Box,
@@ -11,24 +10,29 @@ import {
   FormControl,
   FormControlLabel,
   Checkbox,
+  Divider,
 } from "@mui/material";
 import { styled } from "@mui/system";
 import PropTypes from "prop-types";
 import useFetchData from "../../hooks/useFetchData";
 import { url } from "../../constants/baseUrl";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import CustomMultiSelect from "../../@core/CustomMultiSelect";
 import YesOrNo from "../../@core/YesOrNo";
 import { makeStyles } from "@mui/styles";
+import { yesOrNo } from "../../constants/dataArray";
 
 const StyledItemWrapper = styled(Box)({
   display: "flex",
   alignItems: "center",
-  justifyContent: "space-between",
+  gap: 1,
+  marginTop: 2,
 });
 const StyledText = styled(Typography)({
   color: "GrayText",
   textWrap: "nowrap",
+  width: 150,
+  fontSize: "1em",
 });
 
 const useStyle = makeStyles(() => ({
@@ -69,74 +73,94 @@ const CustomSwitch = styled(Switch)(({ theme }) => ({
 }));
 
 const timeStampData = [
-  { id: 1, timestamp: "00:00" },
-  { id: 2, timestamp: "00:30" },
-  { id: 3, timestamp: "01:00" },
-  { id: 4, timestamp: "01:30" },
-  { id: 5, timestamp: "02:00" },
-  { id: 6, timestamp: "02:30" },
-  { id: 7, timestamp: "03:00" },
-  { id: 8, timestamp: "03:30" },
-  { id: 9, timestamp: "04:00" },
-  { id: 10, timestamp: "04:30" },
-  { id: 11, timestamp: "05:00" },
-  { id: 12, timestamp: "05:30" },
-  { id: 13, timestamp: "06:00" },
-  { id: 14, timestamp: "06:30" },
-  { id: 15, timestamp: "07:00" },
-  { id: 16, timestamp: "07:30" },
-  { id: 17, timestamp: "08:00" },
-  { id: 18, timestamp: "08:30" },
-  { id: 19, timestamp: "09:00" },
-  { id: 20, timestamp: "09:30" },
-  { id: 21, timestamp: "10:00" },
-  { id: 22, timestamp: "10:30" },
-  { id: 23, timestamp: "11:00" },
-  { id: 24, timestamp: "11:30" },
-  { id: 25, timestamp: "12:00" },
-  { id: 26, timestamp: "12:30" },
-  { id: 27, timestamp: "13:00" },
-  { id: 28, timestamp: "13:30" },
-  { id: 29, timestamp: "14:00" },
-  { id: 30, timestamp: "14:30" },
-  { id: 31, timestamp: "15:00" },
-  { id: 32, timestamp: "15:30" },
-  { id: 33, timestamp: "16:00" },
-  { id: 34, timestamp: "16:30" },
-  { id: 35, timestamp: "17:00" },
-  { id: 36, timestamp: "17:30" },
-  { id: 37, timestamp: "18:00" },
-  { id: 38, timestamp: "18:30" },
-  { id: 39, timestamp: "19:00" },
-  { id: 40, timestamp: "19:30" },
-  { id: 41, timestamp: "20:00" },
-  { id: 42, timestamp: "20:30" },
-  { id: 43, timestamp: "21:00" },
-  { id: 44, timestamp: "21:30" },
-  { id: 45, timestamp: "22:00" },
-  { id: 46, timestamp: "22:30" },
-  { id: 47, timestamp: "23:00" },
-  { id: 48, timestamp: "23:30" },
+  { id: "00:00", timestamp: "00:00" },
+  { id: "00:30", timestamp: "00:30" },
+  { id: "01:00", timestamp: "01:00" },
+  { id: "01:30", timestamp: "01:30" },
+  { id: "02:00", timestamp: "02:00" },
+  { id: "02:30", timestamp: "02:30" },
+  { id: "03:00", timestamp: "03:00" },
+  { id: "03:30", timestamp: "03:30" },
+  { id: "04:00", timestamp: "04:00" },
+  { id: "04:30", timestamp: "04:30" },
+  { id: "05:00", timestamp: "05:00" },
+  { id: "05:30", timestamp: "05:30" },
+  { id: "06:00", timestamp: "06:00" },
+  { id: "06:30", timestamp: "06:30" },
+  { id: "07:00", timestamp: "07:00" },
+  { id: "07:30", timestamp: "07:30" },
+  { id: "08:00", timestamp: "08:00" },
+  { id: "08:30", timestamp: "08:30" },
+  { id: "09:00", timestamp: "09:00" },
+  { id: "09:30", timestamp: "09:30" },
+  { id: "10:00", timestamp: "10:00" },
+  { id: "10:30", timestamp: "10:30" },
+  { id: "11:00", timestamp: "11:00" },
+  { id: "11:30", timestamp: "11:30" },
+  { id: "12:00", timestamp: "12:00" },
+  { id: "12:30", timestamp: "12:30" },
+  { id: "13:00", timestamp: "13:00" },
+  { id: "13:30", timestamp: "13:30" },
+  { id: "14:00", timestamp: "14:00" },
+  { id: "14:30", timestamp: "14:30" },
+  { id: "15:00", timestamp: "15:00" },
+  { id: "15:30", timestamp: "15:30" },
+  { id: "16:00", timestamp: "16:00" },
+  { id: "16:30", timestamp: "16:30" },
+  { id: "17:00", timestamp: "17:00" },
+  { id: "17:30", timestamp: "17:30" },
+  { id: "18:00", timestamp: "18:00" },
+  { id: "18:30", timestamp: "18:30" },
+  { id: "19:00", timestamp: "19:00" },
+  { id: "19:30", timestamp: "19:30" },
+  { id: "20:00", timestamp: "20:00" },
+  { id: "20:30", timestamp: "20:30" },
+  { id: "21:00", timestamp: "21:00" },
+  { id: "21:30", timestamp: "21:30" },
+  { id: "22:00", timestamp: "22:00" },
+  { id: "22:30", timestamp: "22:30" },
+  { id: "23:00", timestamp: "23:00" },
+  { id: "23:30", timestamp: "23:30" },
 ];
 
-const EditDialog = ({ open, setOpen, openedFromWhere }) => {
+const EditDialog = ({ open, handleClose, row, openedFromWhere }) => {
   const classes = useStyle();
+  const [screenType, setScreenType] = useState({
+    print: false,
+    online: false,
+    both: false,
+  });
   const [selectedClient, setSelectedClient] = useState("");
   const [selectedCompany, setSelectedCompany] = useState([]);
   const [every, setEvery] = useState("");
   const [timeStamps, setTimeStamps] = useState([]);
-  const [checked, setChecked] = useState(false);
-  const [checkedBox, setCheckedBox] = useState(true);
+  const [report, setReport] = useState({
+    sendReport: false,
+    lastReport: false,
+  });
 
-  const handleChange = (event) => {
-    setChecked(event.target.checked);
-  };
-  const handleClose = () => {
-    setOpen(false);
-  };
+  const [active, setActive] = useState(true);
+
+  function yesNo(val) {
+    if (val === true) return "Yes";
+    else return "No";
+  }
+  useEffect(() => {
+    if (open && openedFromWhere === "edit") {
+      setSelectedClient(row?.id);
+      setSelectedCompany(row?.scheduledCompanies?.map((i) => i.companyId));
+      setActive(yesNo(row?.active));
+      setEvery(row?.every === 1 ? "Daily" : "Monthly");
+      setTimeStamps(row?.schedule?.map((i) => i.time));
+      setReport({
+        sendReport: yesNo(row?.sendReport),
+        lastReport: yesNo(row?.lastReport),
+      });
+    }
+  }, [open]);
 
   const handleCheckboxChange = (event) => {
-    setCheckedBox(event.target.checked);
+    setActive(event.target.checked);
   };
 
   // Fetching data
@@ -150,28 +174,64 @@ const EditDialog = ({ open, setOpen, openedFromWhere }) => {
       open={open}
       onClose={handleClose}
       maxWidth="md"
-      sx={{ "& .MuiDialog-paper": { height: "50vh" } }}
+      sx={{ "& .MuiDialog-paper": { height: "70vh" } }}
     >
-      <DialogTitle>
+      <DialogTitle fontSize={"1em"}>
         {openedFromWhere === "add" ? "Add" : "Edit"} Item
       </DialogTitle>
-      <DialogContent>
-        <DialogContentText>
-          {openedFromWhere === "add"
-            ? "Fill out the details to add a new item."
-            : "Edit the details of your item here."}
-        </DialogContentText>
+      <DialogContent
+        sx={{ border: "1px solid #D3D3D3", margin: 2, borderRadius: "3px" }}
+      >
+        <StyledItemWrapper>
+          <FormControlLabel
+            control={
+              <Checkbox
+                size="small"
+                checked={screenType.print}
+                onChange={(e) => {
+                  setScreenType({ ...screenType, print: e.target.checked });
+                }}
+              />
+            }
+            label="Print"
+          />
+          <FormControlLabel
+            control={
+              <Checkbox
+                size="small"
+                checked={screenType.online}
+                onChange={(e) => {
+                  setScreenType({ ...screenType, online: e.target.checked });
+                }}
+              />
+            }
+            label="Online"
+          />
+          <FormControlLabel
+            control={
+              <Checkbox
+                size="small"
+                checked={screenType.both}
+                onChange={(e) => {
+                  setScreenType({ ...screenType, both: e.target.checked });
+                }}
+              />
+            }
+            label="Both"
+          />
+        </StyledItemWrapper>
         <StyledItemWrapper>
           <StyledText>Client:</StyledText>
           <select
             value={selectedClient}
             onChange={(e) => setSelectedClient(e.target.value)}
-            className="w-full border border-gray-400 rounded-sm hover:border-black"
+            className="w-[278px] border border-gray-400 rounded-sm hover:border-black"
+            disabled={openedFromWhere === "edit"}
           >
             <option value="">Select Client</option>
             {clientData?.data?.clients.map((client) => (
-              <option key={client.id} value={client.id}>
-                {client.name}
+              <option key={client.clientid} value={client.clientid}>
+                {client.clientname}
               </option>
             ))}
           </select>
@@ -180,8 +240,8 @@ const EditDialog = ({ open, setOpen, openedFromWhere }) => {
           <StyledText>Company:</StyledText>
           <CustomMultiSelect
             title="Company"
-            dropdownWidth={250}
-            dropdownToggleWidth={250}
+            dropdownWidth={278}
+            dropdownToggleWidth={278}
             keyId="companyid"
             keyName="companyname"
             options={companyData?.data?.companies || []}
@@ -202,8 +262,8 @@ const EditDialog = ({ open, setOpen, openedFromWhere }) => {
           />
           <CustomMultiSelect
             title="Time stamp"
-            dropdownWidth={250}
-            dropdownToggleWidth={250}
+            dropdownWidth={200}
+            dropdownToggleWidth={200}
             keyId="id"
             keyName="timestamp"
             options={timeStampData}
@@ -212,63 +272,47 @@ const EditDialog = ({ open, setOpen, openedFromWhere }) => {
             isIncreased={false}
           />
         </StyledItemWrapper>
-        <StyledItemWrapper>
-          <StyledText>
+        <Divider sx={{ my: 1 }} />
+        <Box sx={{ display: "flex", alignItems: "center" }}>
+          <Typography width={150}>
             Send report even if no new results were found:
-          </StyledText>
+          </Typography>
           <YesNoSwitchWrapper>
             {/* Yes/No labels */}
-            <Typography
-              variant="body1"
-              color={checked ? "textSecondary" : "textPrimary"}
-              sx={{ fontWeight: checked ? 400 : 600 }}
-            >
-              No
-            </Typography>
-            <CustomSwitch checked={checked} onChange={handleChange} />
-            <Typography
-              variant="body1"
-              color={checked ? "textPrimary" : "textSecondary"}
-              sx={{ fontWeight: checked ? 600 : 400 }}
-            >
-              Yes
-            </Typography>
+            <CustomSwitch
+              checked={report.sendReport}
+              onChange={(e) =>
+                setReport((prev) => ({ ...prev, sendReport: e.target.checked }))
+              }
+            />
           </YesNoSwitchWrapper>
-        </StyledItemWrapper>
-        <StyledItemWrapper>
-          <StyledText>Only include new results since last report:</StyledText>
+        </Box>
+        <Box sx={{ display: "flex", alignItems: "center" }}>
+          <Typography width={150}>
+            Only include new results since last report:
+          </Typography>
           <YesNoSwitchWrapper>
-            {/* Yes/No labels */}
-            <Typography
-              variant="body1"
-              color={checked ? "textSecondary" : "textPrimary"}
-              sx={{ fontWeight: checked ? 400 : 600 }}
-            >
-              No
-            </Typography>
-            <CustomSwitch checked={checked} onChange={handleChange} />
-            <Typography
-              variant="body1"
-              color={checked ? "textPrimary" : "textSecondary"}
-              sx={{ fontWeight: checked ? 600 : 400 }}
-            >
-              Yes
-            </Typography>
+            <CustomSwitch
+              checked={report.lastReport}
+              onChange={(e) =>
+                setReport((prev) => ({ ...prev, lastReport: e.target.checked }))
+              }
+            />
           </YesNoSwitchWrapper>
-        </StyledItemWrapper>
+        </Box>
+        <Divider sx={{ my: 1 }} />
         {openedFromWhere === "edit" && (
           <StyledItemWrapper>
-            <StyledText>Active:</StyledText>
             <FormControl component="fieldset">
               <FormControlLabel
                 control={
                   <Checkbox
-                    checked={checkedBox}
+                    checked={active}
                     onChange={handleCheckboxChange}
                     color="primary"
                   />
                 }
-                label="Default Checked"
+                label="Active"
               />
             </FormControl>
           </StyledItemWrapper>
@@ -293,8 +337,9 @@ const EditDialog = ({ open, setOpen, openedFromWhere }) => {
 
 EditDialog.propTypes = {
   open: PropTypes.bool.isRequired,
-  setOpen: PropTypes.func.isRequired,
+  handleClose: PropTypes.func.isRequired,
   openedFromWhere: PropTypes.string.isRequired,
+  row: PropTypes.object,
 };
 
 export default EditDialog;

@@ -16,6 +16,10 @@ const OnlineMailSchedular = () => {
   const [open, setOpen] = useState(false);
   const [value, setValue] = useState(0);
 
+  const handleClose = () => {
+    setOpen(false);
+  };
+
   const handleChange = (event, newValue) => {
     setValue(newValue);
   };
@@ -52,7 +56,7 @@ const OnlineMailSchedular = () => {
       <Divider sx={{ my: 1 }} />
       {value ? <SendMailGrid /> : <MailerSchedularGrid />}
 
-      <EditDialog open={open} setOpen={setOpen} openedFromWhere="add" />
+      <EditDialog open={open} handleClose={handleClose} openedFromWhere="add" />
     </Box>
   );
 };
