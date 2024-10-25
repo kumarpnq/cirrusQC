@@ -1,4 +1,4 @@
-import { useContext } from "react";
+import { useContext, useState } from "react";
 import CryptoJS from "crypto-js";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import TextField from "@mui/material/TextField";
@@ -10,6 +10,7 @@ import { ResearchContext } from "../context/ContextProvider";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
 import { url } from "../constants/baseUrl";
+import { CircularProgress } from "@mui/material";
 
 const theme = createTheme({
   palette: {
@@ -67,11 +68,14 @@ const Login = () => {
     const encryptedBase64 = encrypted.toString();
     return ivBase64 + ":" + encryptedBase64;
   };
+
+  const [loading, setLoading] = useState(false);
   //encryptPassword(password, keyHex)
   const handleSubmit = async (event) => {
     event.preventDefault();
     setPermissionLoading(true);
     try {
+      setLoading(true);
       const res = await axios.post(`${url}authenticate/`, {
         loginname: name,
         password: encryptPassword(password, keyHex),
@@ -117,6 +121,7 @@ const Login = () => {
       });
     } finally {
       setPermissionLoading(false);
+      setLoading(false);
     }
   };
 
@@ -147,11 +152,18 @@ const Login = () => {
           />
           <Button
             type="submit"
-            variant="contained"
+            variant={loading ? "outlined" : "contained"}
             color="primary"
             fullWidth
             className={classes.button}
+            sx={{
+              display: "flex",
+              alignItems: "center",
+              gap: 2,
+              color: loading ? "#0a4f7d" : "white",
+            }}
           >
+            {loading && <CircularProgress size={"1em"} />}
             Login
           </Button>
         </form>

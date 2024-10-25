@@ -11,22 +11,24 @@ import {
   FormControlLabel,
   Checkbox,
   Divider,
+  CircularProgress,
 } from "@mui/material";
 import { styled } from "@mui/system";
 import PropTypes from "prop-types";
 import useFetchData from "../../hooks/useFetchData";
-import { url } from "../../constants/baseUrl";
+import { url, url_mongo } from "../../constants/baseUrl";
 import { useEffect, useState } from "react";
 import CustomMultiSelect from "../../@core/CustomMultiSelect";
 import YesOrNo from "../../@core/YesOrNo";
 import { makeStyles } from "@mui/styles";
-import { yesOrNo } from "../../constants/dataArray";
+import axios from "axios";
+import { toast } from "react-toastify";
 
 const StyledItemWrapper = styled(Box)({
   display: "flex",
   alignItems: "center",
   gap: 1,
-  marginTop: 2,
+  marginTop: 4,
 });
 const StyledText = styled(Typography)({
   color: "GrayText",
@@ -123,41 +125,63 @@ const timeStampData = [
   { id: "23:30", timestamp: "23:30" },
 ];
 
-const EditDialog = ({ open, handleClose, row, openedFromWhere }) => {
+const EditDialog = ({
+  open,
+  handleClose,
+  row,
+  openedFromWhere,
+  handleFetch,
+}) => {
   const classes = useStyle();
-  const [screenType, setScreenType] = useState({
-    print: false,
-    online: false,
-    both: false,
-  });
+
+  const [screenTypeDD, setScreenTypeDD] = useState("print");
   const [selectedClient, setSelectedClient] = useState("");
   const [selectedCompany, setSelectedCompany] = useState([]);
-  const [every, setEvery] = useState("");
+  const [every, setEvery] = useState("Daily");
   const [timeStamps, setTimeStamps] = useState([]);
   const [report, setReport] = useState({
     sendReport: false,
     lastReport: false,
   });
-
   const [active, setActive] = useState(true);
-
-  function yesNo(val) {
-    if (val === true) return "Yes";
-    else return "No";
+  const [initialState, setInitialState] = useState(null);
+  function boolToYesNo(value) {
+    return value ? "Yes" : "No";
   }
+  function yesNoToBool(value) {
+    return value === "Yes" ? true : false;
+  }
+
   useEffect(() => {
     if (open && openedFromWhere === "edit") {
-      setSelectedClient(row?.id);
-      setSelectedCompany(row?.scheduledCompanies?.map((i) => i.companyId));
-      setActive(yesNo(row?.active));
-      setEvery(row?.every === 1 ? "Daily" : "Monthly");
-      setTimeStamps(row?.schedule?.map((i) => i.time));
-      setReport({
-        sendReport: yesNo(row?.sendReport),
-        lastReport: yesNo(row?.lastReport),
-      });
+      const filteredCompanies = row?.scheduledCompanies
+        ?.filter((i) => i.isActive)
+        .map((i) => i.companyId);
+
+      const initialData = {
+        selectedClient: row?.id,
+        selectedCompany: filteredCompanies,
+        active: yesNoToBool(row?.active),
+        every: "Daily",
+        timeStamps: row?.schedule
+          ?.filter((i) => i.entityType === screenTypeDD)
+          .filter((i) => i.isActive)
+          ?.map((i) => i.time),
+        report: {
+          sendReport: yesNoToBool(row?.sendReport),
+          lastReport: yesNoToBool(row?.lastReport),
+        },
+      };
+
+      setSelectedClient(initialData.selectedClient);
+      setSelectedCompany(initialData.selectedCompany);
+      setActive(initialData.active);
+      setEvery(initialData.every);
+      setTimeStamps(initialData.timeStamps);
+      setReport(initialData.report);
+      setInitialState(initialData);
     }
-  }, [open]);
+  }, [open, screenTypeDD]);
 
   const handleCheckboxChange = (event) => {
     setActive(event.target.checked);
@@ -168,6 +192,162 @@ const EditDialog = ({ open, handleClose, row, openedFromWhere }) => {
   const { data: companyData } = useFetchData(
     selectedClient ? `${url}companylist/${selectedClient}` : ""
   );
+
+  const [updateLoading, setUpdateLoading] = useState(false);
+  const [insertLoading, setInsertLoading] = useState(false);
+
+  const handleSave = async () => {
+    try {
+      setUpdateLoading(true);
+      const removedCompanies = initialState.selectedCompany.filter(
+        (companyId) => !selectedCompany.includes(companyId)
+      );
+
+      const addedCompanies = selectedCompany.filter(
+        (companyId) => !initialState.selectedCompany.includes(companyId)
+      );
+
+      const removedSlots = initialState?.timeStamps?.filter(
+        (stamp) => !timeStamps.includes(stamp)
+      );
+
+      const addedSlots = timeStamps.filter(
+        (stamp) => !initialState.timeStamps.includes(stamp)
+      );
+
+      const hasCompanyChanges =
+        removedCompanies.length > 0 || addedCompanies.length > 0;
+      const hasSlotChanges = removedSlots.length > 0 || addedSlots.length > 0;
+
+      const hasOtherChanges =
+        active !== initialState.active ||
+        every !== initialState.every ||
+        timeStamps.some(
+          (timestamp, index) => timestamp !== initialState.timeStamps[index]
+        ) ||
+        report.sendReport !== initialState.report.sendReport ||
+        report.lastReport !== initialState.report.lastReport;
+
+      const hasChanges = hasCompanyChanges || hasOtherChanges;
+
+      if (!hasChanges) {
+        toast.warning("No changes detected, not sending data.");
+        return;
+      }
+      const companyUpdates = [
+        ...removedCompanies.map((companyId) => ({
+          companyId,
+          isActive: false,
+        })),
+        ...addedCompanies.map((companyId) => ({
+          companyId,
+          isActive: true,
+        })),
+      ];
+      const slotUpdates = [
+        ...removedSlots.map((time) => ({
+          time,
+          isActive: false,
+        })),
+        ...addedSlots.map((time) => ({
+          time,
+          isActive: true,
+        })),
+      ];
+
+      const token = localStorage.getItem("user");
+      const requestData = {
+        clientId: selectedClient,
+        // companyIds: [{ companyId: "", isActive: "" }],
+        // isSendReport: "",
+        // isIncludeReport: "",
+        // isActive: "",
+        // entityType: "",
+        // slots: [{ time: "", isActive: "" }],
+        // frequency: "",
+        updateType: "U",
+      };
+      if (hasCompanyChanges) {
+        requestData.companyIds = companyUpdates;
+      }
+      if (hasSlotChanges) {
+        requestData.slots = slotUpdates;
+      }
+      if (initialState?.report?.sendReport !== report.sendReport) {
+        requestData.isSendReport = boolToYesNo(report.sendReport);
+      }
+      if (initialState?.report?.lastReport !== report.lastReport) {
+        requestData.isIncludeReport = boolToYesNo(report.sendReport);
+      }
+      if (initialState.active !== active) {
+        requestData.isActive = boolToYesNo(active);
+      }
+
+      if (screenTypeDD) {
+        requestData.entityType = screenTypeDD;
+      }
+      if (initialState.every !== every || hasSlotChanges) {
+        requestData.frequency = every;
+      }
+
+      const response = await axios.post(
+        `${url_mongo}updateMailerScheduler`,
+        requestData,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+
+      if (response.status === 200) {
+        handleClose();
+        handleFetch();
+        toast.success("Schedule updated successfully");
+      }
+    } catch (error) {
+      toast.error("Something went wrong.");
+    } finally {
+      setUpdateLoading(false);
+    }
+  };
+
+  const handleInsert = async () => {
+    try {
+      setInsertLoading(true);
+      const client = await clientData.data.clients.find(
+        (client) => client.clientid === selectedClient
+      );
+
+      const requestData = {
+        clientId: client.clientid,
+        clientName: client.clientname,
+        companyIds: selectedCompany,
+        isSendReport: report.sendReport,
+        isIncludeReport: report.lastReport,
+        entityType: screenTypeDD,
+        slots: timeStamps,
+        frequency: every,
+        updateType: "I",
+      };
+      const token = localStorage.getItem("user");
+      const response = await axios.post(
+        `${url_mongo}updateMailerScheduler/`,
+        requestData,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+
+      if (response.status === 200) {
+        handleFetch();
+        handleClose();
+        toast.success(response.data.scheduleData.status);
+      }
+    } catch (error) {
+      toast.error("Something went wrong.");
+    } finally {
+      setInsertLoading(false);
+    }
+  };
 
   return (
     <Dialog
@@ -183,54 +363,20 @@ const EditDialog = ({ open, handleClose, row, openedFromWhere }) => {
         sx={{ border: "1px solid #D3D3D3", margin: 2, borderRadius: "3px" }}
       >
         <StyledItemWrapper>
-          <FormControlLabel
-            control={
-              <Checkbox
-                size="small"
-                checked={screenType.print}
-                onChange={(e) => {
-                  setScreenType({ ...screenType, print: e.target.checked });
-                }}
-              />
-            }
-            label="Print"
-          />
-          <FormControlLabel
-            control={
-              <Checkbox
-                size="small"
-                checked={screenType.online}
-                onChange={(e) => {
-                  setScreenType({ ...screenType, online: e.target.checked });
-                }}
-              />
-            }
-            label="Online"
-          />
-          <FormControlLabel
-            control={
-              <Checkbox
-                size="small"
-                checked={screenType.both}
-                onChange={(e) => {
-                  setScreenType({ ...screenType, both: e.target.checked });
-                }}
-              />
-            }
-            label="Both"
-          />
-        </StyledItemWrapper>
-        <StyledItemWrapper>
           <StyledText>Client:</StyledText>
           <select
             value={selectedClient}
             onChange={(e) => setSelectedClient(e.target.value)}
-            className="w-[278px] border border-gray-400 rounded-sm hover:border-black"
+            className="w-[278px] border border-gray-400 rounded-sm hover:border-black text-sm"
             disabled={openedFromWhere === "edit"}
           >
             <option value="">Select Client</option>
             {clientData?.data?.clients.map((client) => (
-              <option key={client.clientid} value={client.clientid}>
+              <option
+                key={client.clientid}
+                value={client.clientid}
+                className="text-sm"
+              >
                 {client.clientname}
               </option>
             ))}
@@ -251,26 +397,41 @@ const EditDialog = ({ open, handleClose, row, openedFromWhere }) => {
           />
         </StyledItemWrapper>
         <StyledItemWrapper>
-          <StyledText>Send Report Every:</StyledText>
+          <StyledText>Screen Type:</StyledText>
           <YesOrNo
             classes={classes}
-            mapValue={["Daily"]}
-            placeholder="Every"
-            value={every}
-            setValue={setEvery}
-            width={"100%"}
+            mapValue={["online", "print", "both"]}
+            placeholder="Screen"
+            value={screenTypeDD}
+            setValue={setScreenTypeDD}
+            width={278}
           />
-          <CustomMultiSelect
-            title="Time stamp"
-            dropdownWidth={200}
-            dropdownToggleWidth={200}
-            keyId="id"
-            keyName="timestamp"
-            options={timeStampData}
-            selectedItems={timeStamps}
-            setSelectedItems={setTimeStamps}
-            isIncreased={false}
-          />
+        </StyledItemWrapper>
+        <StyledItemWrapper>
+          <StyledText>Send Report Every:</StyledText>
+          <Box>
+            <YesOrNo
+              classes={classes}
+              mapValue={["Daily"]}
+              placeholder="Every"
+              value={every}
+              setValue={setEvery}
+              width={278}
+            />
+            <div className="mt-1">
+              <CustomMultiSelect
+                title="Time stamp"
+                dropdownWidth={278}
+                dropdownToggleWidth={278}
+                keyId="id"
+                keyName="timestamp"
+                options={timeStampData}
+                selectedItems={timeStamps}
+                setSelectedItems={setTimeStamps}
+                isIncreased={false}
+              />
+            </div>
+          </Box>
         </StyledItemWrapper>
         <Divider sx={{ my: 1 }} />
         <Box sx={{ display: "flex", alignItems: "center" }}>
@@ -323,11 +484,14 @@ const EditDialog = ({ open, handleClose, row, openedFromWhere }) => {
           Cancel
         </Button>
         <Button
-          onClick={handleClose}
+          onClick={openedFromWhere === "edit" ? handleSave : handleInsert}
           size="small"
-          variant="contained"
           color="primary"
+          variant="outlined"
+          sx={{ display: "flex", alignItems: "center", gap: 1 }}
         >
+          {insertLoading ||
+            (updateLoading && <CircularProgress size={"1em"} />)}{" "}
           Save
         </Button>
       </DialogActions>
@@ -340,6 +504,7 @@ EditDialog.propTypes = {
   handleClose: PropTypes.func.isRequired,
   openedFromWhere: PropTypes.string.isRequired,
   row: PropTypes.object,
+  handleFetch: PropTypes.func,
 };
 
 export default EditDialog;
