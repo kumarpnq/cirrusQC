@@ -7,6 +7,7 @@ import {
   IconButton,
   Paper,
   TextField,
+  Tooltip,
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import { styled } from "@mui/system";
@@ -144,12 +145,14 @@ const CompanyModal = ({ open, handleClose }) => {
               },
             }}
           />
-          <IconButton
-            sx={{ ml: 1 }}
-            onClick={() => setSearchQuery(selectedCompany?.companyname || "")}
-          >
-            <InfoIcon />
-          </IconButton>
+          <Tooltip title="Beam Me to the Company">
+            <IconButton
+              sx={{ ml: 1 }}
+              onClick={() => setSearchQuery(selectedCompany?.companyname || "")}
+            >
+              <InfoIcon />
+            </IconButton>
+          </Tooltip>
         </Box>
 
         <Paper

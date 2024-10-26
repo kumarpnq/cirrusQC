@@ -1,4 +1,10 @@
-import { Box, Typography, FormControl, TextField } from "@mui/material";
+import {
+  Box,
+  Typography,
+  FormControl,
+  TextField,
+  CircularProgress,
+} from "@mui/material";
 
 import Button from "../components/custom/Button";
 import { useEffect, useState } from "react";
@@ -51,6 +57,7 @@ const Details = ({
   const [dateNow, setDateNow] = useState(selectedRow?.feeddate);
   const [saveLoading, setSaveLoading] = useState(false);
   const [languages, setLanguages] = useState([]);
+  const [pasteLoading, setPasteLoading] = useState(false);
 
   const {
     data: langs,
@@ -65,19 +72,39 @@ const Details = ({
     }
   }, [langs, langsError]);
 
+  const handleOnPaste = async (event) => {
+    const text = event.clipboardData.getData("text");
+    try {
+      setPasteLoading(true);
+      const token = localStorage.getItem("user");
+      const response = await axios.get(
+        `${url}getpublicationfromurl/?url=${text}`,
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+
+      setPublication(response.data.publication);
+    } catch (error) {
+      toast.warning("Something went wrong.");
+    } finally {
+      setPasteLoading(false);
+    }
+  };
   const handleSave = async () => {
     const isBothUrlSame = isDomainIncluded(articleURL, publication);
+    const emptyFields = [];
 
-    if (
-      !articleURL ||
-      !selectedCompanies?.value ||
-      !dateNow ||
-      !title ||
-      !summary ||
-      !content ||
-      !selectedLanguages
-    ) {
-      return toast.warning("Some fields are empty!");
+    if (!articleURL) emptyFields.push("Article URL");
+    if (!selectedCompanies?.value) emptyFields.push("Company");
+    if (!dateNow) emptyFields.push("Date");
+    if (!title) emptyFields.push("Title");
+    if (!summary) emptyFields.push("Summary");
+    if (!content) emptyFields.push("Content");
+    if (!selectedLanguages) emptyFields.push("Language");
+
+    if (emptyFields.length > 0) {
+      return toast.warning(
+        `The following fields are empty: ${emptyFields.join(", ")}`
+      );
     }
     if (!isBothUrlSame) return toast.warning("Url not match with publication");
     try {
@@ -236,11 +263,13 @@ const Details = ({
               sx={{ ml: 1 }}
               value={articleURL}
               onChange={(e) => setArticleURL(e.target.value)}
+              onPaste={handleOnPaste}
               InputProps={{
                 style: {
                   fontSize: "0.8rem",
                   height: 25,
                 },
+                endAdornment: pasteLoading && <CircularProgress size={20} />,
               }}
             />
           </Box>
@@ -295,6 +324,7 @@ const Details = ({
                 sx={{ ml: 1 }}
                 value={publication}
                 onChange={(e) => setPublication(e.target.value)}
+                disabled={type === 1}
                 InputProps={{
                   style: {
                     fontSize: "0.8rem",

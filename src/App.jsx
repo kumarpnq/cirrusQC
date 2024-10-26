@@ -30,6 +30,7 @@ import CopyArticles from "./pages/CopyArticles";
 import OnlineMailSchedular from "./pages/OnlineMailSchedular";
 import OnlineCompanySlicing from "./pages/OnlineCompanySlicing";
 import WhatsAppContact from "./components2/Whatsapp-contact/WhatsAppContact";
+import ClientMaster from "./pages/ClientMaster";
 
 // Lazy load the components
 const Home = lazy(() => import("./pages/Home"));
@@ -60,6 +61,7 @@ function App() {
     mailerSchedular: false,
     companySlicing: false,
     whatsappContact: false,
+    clientMaster: false,
   });
   const [loading, setLoading] = useState(false);
 
@@ -116,6 +118,7 @@ function App() {
       mailerSchedular: screenPermissions["MailerScheduler"],
       companySlicing: screenPermissions.CompanySlicing,
       whatsappContact: screenPermissions.WhatsappContact,
+      clientMaster: screenPermissions.ClientMaster,
     });
   }, [screenPermissions]);
 
@@ -306,6 +309,18 @@ function App() {
                 element={
                   permissions.whatsappContact ? (
                     <WhatsAppContact />
+                  ) : loading ? (
+                    <div>Loading...</div>
+                  ) : (
+                    <NotFound />
+                  )
+                }
+              />
+              <Route
+                path="/client-master"
+                element={
+                  permissions.clientMaster ? (
+                    <ClientMaster />
                   ) : loading ? (
                     <div>Loading...</div>
                   ) : (

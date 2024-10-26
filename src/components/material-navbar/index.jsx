@@ -37,6 +37,7 @@ import { FaPrint } from "react-icons/fa";
 import { FaDumpster } from "react-icons/fa";
 import { IoMail } from "react-icons/io5";
 import { LuBookCopy } from "react-icons/lu";
+import { IoPeopleOutline } from "react-icons/io5";
 
 //**  context
 import { ResearchContext } from "../../context/ContextProvider";
@@ -185,6 +186,16 @@ export default function MainNav() {
             title: "Whatsapp Contact",
             path: "/whatsapp-contact",
             icon: <WhatsAppIcon />,
+          },
+        ]
+      : []),
+    ...(screenPermissions.ClientMaster
+      ? [
+          {
+            id: 14,
+            title: "Client Master",
+            path: "/client-master",
+            icon: <IoPeopleOutline />,
           },
         ]
       : []),

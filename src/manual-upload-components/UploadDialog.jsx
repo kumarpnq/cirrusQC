@@ -7,7 +7,7 @@ import Details from "./DetailSection";
 import ArticleView from "./ArticleView";
 import Box from "@mui/material/Box";
 import Modal from "@mui/material/Modal";
-import { Grid, useMediaQuery } from "@mui/material";
+import { Grid } from "@mui/material";
 import { useState } from "react";
 
 const style = {

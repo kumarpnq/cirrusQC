@@ -36,7 +36,7 @@ const useStyles = makeStyles(() => ({
   },
   button: {
     backgroundColor: "#0a4f7d",
-    color: "white",
+    // color: "white",
     marginTop: "1rem",
   },
 }));
