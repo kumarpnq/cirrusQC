@@ -6,6 +6,7 @@ export default function Button({
   isLoading,
   icon,
   isDanger,
+  type,
 }) {
   return (
     <button
@@ -14,6 +15,7 @@ export default function Button({
       }`}
       onClick={onClick}
       disabled={isLoading}
+      type={type}
     >
       {icon}
       {btnText}
@@ -27,4 +29,5 @@ Button.propTypes = {
   isLoading: PropTypes.bool,
   icon: PropTypes.element,
   isDanger: PropTypes.bool,
+  type: PropTypes.string,
 };

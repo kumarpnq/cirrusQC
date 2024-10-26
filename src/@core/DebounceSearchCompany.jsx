@@ -4,6 +4,7 @@ import { debounce } from "lodash";
 import { IoMdArrowDropup, IoMdArrowDropdown } from "react-icons/io";
 import PropTypes from "prop-types";
 import { url } from "../constants/baseUrl";
+import { Tooltip } from "@mui/material";
 
 const DebounceSearchCompany = ({
   setSelectedCompany,
@@ -102,7 +103,13 @@ const DebounceSearchCompany = ({
     if (isMultiple && selectedOptions.length > 0) {
       return `${selectedOptions.length} selected`;
     } else if (selectedOptions) {
-      return selectedOptions.label;
+      return (
+        <Tooltip title={selectedOptions.label}>
+          <span className="text-nowrap">
+            {selectedOptions.label.substring(0, 22) + "..."}
+          </span>
+        </Tooltip>
+      );
     } else {
       return <span className="italic text-gray-500">Company</span>;
     }
