@@ -1,10 +1,19 @@
-import { Box, Button, Typography, Divider, useMediaQuery } from "@mui/material";
+import {
+  Box,
+  Button,
+  Typography,
+  Divider,
+  useMediaQuery,
+  Tooltip,
+  IconButton,
+} from "@mui/material";
 import UploadFileIcon from "@mui/icons-material/UploadFile";
 import { useRef, useState } from "react";
 import * as XLSX from "xlsx";
 import PropTypes from "prop-types";
+import { FaFileExcel } from "react-icons/fa";
 
-const UploadSection = ({ setData }) => {
+const UploadSection = ({ setData, setDataForGrid }) => {
   const [file, setFile] = useState(null);
   const [isDragging, setIsDragging] = useState(false);
   const fileInputRef = useRef(null);
@@ -22,14 +31,23 @@ const UploadSection = ({ setData }) => {
         dateNF: "DD-MMM-YY",
       });
 
-      const parsedData = jsonData.map((row) => {
-        Object.keys(row).forEach((key) => {
-          if (typeof row[key] === "number" && row[key] > 30000) {
-            row[key] = formatExcelDate(row[key]);
-          }
+      const parsedData = jsonData
+        .map((row) => {
+          Object.keys(row).forEach((key) => {
+            if (typeof row[key] === "number" && row[key] > 30000) {
+              row[key] = formatExcelDate(row[key]);
+            }
+          });
+          return row;
+        })
+        .filter((row) => {
+          const datePattern = /^\d{1,2}-[A-Za-z]{3}-\d{2}$/;
+
+          const isLinkPresent = row["Link"];
+          const isDateValid = row["Date"] && datePattern.test(row["Date"]);
+
+          return isLinkPresent && isDateValid;
         });
-        return row;
-      });
 
       setData(parsedData);
     };
@@ -76,9 +94,19 @@ const UploadSection = ({ setData }) => {
   const handleClear = () => {
     setFile(null);
     setData([]);
+    setDataForGrid([]);
     if (fileInputRef.current) {
       fileInputRef.current.value = "";
     }
+  };
+
+  const handleSampleBookDownload = () => {
+    const link = document.createElement("a");
+    link.href = "/samplebook.xlsx";
+    link.download = "samplebook.xlsx";
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
   };
 
   return (
@@ -95,6 +123,7 @@ const UploadSection = ({ setData }) => {
           margin: "auto",
           textAlign: "center",
           position: "relative",
+          height: 100,
         }}
       >
         <input
@@ -120,21 +149,24 @@ const UploadSection = ({ setData }) => {
       <Box
         sx={{
           display: "flex",
-          justifyContent: "space-between",
           alignItems: "center",
           gap: 1,
-          margin: "16px auto 0",
         }}
       >
+        <Tooltip title="Download sample excel sheet.">
+          <IconButton onClick={handleSampleBookDownload}>
+            <FaFileExcel className="text-primary" />
+          </IconButton>
+        </Tooltip>
+        <Button variant="outlined" size="small" onClick={handleClear}>
+          Clear
+        </Button>
         {file && (
           <>
             <Divider sx={{ my: 1 }} />
-            <Typography variant="body3" color="GrayText">
+            <Typography variant="body3" color="GrayText" fontSize={"1em"}>
               {file.name}
             </Typography>
-            <Button variant="outlined" onClick={handleClear}>
-              Clear
-            </Button>
           </>
         )}
       </Box>
@@ -144,6 +176,7 @@ const UploadSection = ({ setData }) => {
 
 UploadSection.propTypes = {
   setData: PropTypes.func.isRequired,
+  setDataForGrid: PropTypes.func.isRequired,
 };
 
 export default UploadSection;

@@ -10,11 +10,11 @@ const BulkTable = ({
 }) => {
   const returnColor = (value) => {
     switch (value) {
-      case "not exist":
-        return "green";
-      case "exist":
+      case "Article Not Uploaded.":
         return "red";
-      case "pending":
+      case "Article Already Exist.":
+        return "green";
+      case "Pending Check":
         return "orange";
       default:
         return "gray";
@@ -24,11 +24,11 @@ const BulkTable = ({
   const columns = [
     { field: "date", headerName: "Date", width: 150 },
     { field: "company", headerName: "Company", width: 200, editable: true },
-    { field: "socialfeedid", headerName: "Social Feed ID", width: 180 },
+    { field: "socialfeedid", headerName: "Social Feed ID", width: 140 },
     {
       field: "status",
       headerName: "Status",
-      width: 80,
+      width: 200,
       renderCell: (params) => {
         const color = returnColor(params.row.status);
         return (
@@ -36,7 +36,6 @@ const BulkTable = ({
             sx={{
               color: color,
               fontWeight: "bold",
-              textAlign: "center",
               borderRadius: "4px",
               padding: "4px",
             }}
@@ -46,7 +45,7 @@ const BulkTable = ({
         );
       },
     },
-    { field: "link", headerName: "Link", width: 300 },
+    { field: "link", headerName: "Link", width: 400 },
   ];
 
   const rowDataMap = data.reduce((map, item, index) => {
@@ -81,6 +80,7 @@ const BulkTable = ({
         onRowSelectionModelChange={handleRowSelection}
         rowsPerPageOptions={[5, 10, 20]}
         slots={{ toolbar: GridToolbar }}
+        density="standard"
         slotProps={{ toolbar: { showQuickFilter: true } }}
         disableDensitySelector
         disableColumnFilter

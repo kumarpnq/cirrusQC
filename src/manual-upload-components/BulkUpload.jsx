@@ -16,7 +16,7 @@ function BulkUpload() {
     if (data) {
       const parsedData = data.map((item) => ({
         ...item,
-        status: "pending",
+        status: "Pending Check",
       }));
 
       setDataForGrid(parsedData);
@@ -39,7 +39,7 @@ function BulkUpload() {
       <div className="flex flex-wrap items-center gap-5 border-2 rounded-md shadow-md">
         {/* upload section */}
 
-        <UploadSection setData={setData} />
+        <UploadSection setData={setData} setDataForGrid={setDataForGrid} />
 
         <UploadControl
           onParse={handleParse}
