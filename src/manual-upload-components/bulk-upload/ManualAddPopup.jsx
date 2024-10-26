@@ -68,7 +68,8 @@ const ManualAddPopup = ({ open, onClose, setData }) => {
     // setSelectedCompany([]);
   };
 
-  const handleAddRecords = () => {
+  const handleAddRecords = (event) => {
+    event.preventDefault();
     setData((prev) => [...records, ...prev]);
   };
 
@@ -90,112 +91,127 @@ const ManualAddPopup = ({ open, onClose, setData }) => {
   return (
     <Dialog open={open} onClose={onClose} fullWidth maxWidth="sm">
       <DialogTitle>Manual Add</DialogTitle>
-      <DialogContent>
-        <Grid container spacing={1}>
-          {/* <Grid item xs={12} sm={6}>
+      <form onSubmit={handleAddRecords}>
+        <DialogContent>
+          <Grid container spacing={1}>
+            {/* <Grid item xs={12} sm={6}>
             <DebounceSearchCompany
               selectedCompany={selectedCompany}
               setSelectedCompany={setSelectedCompany}
             />
           </Grid> */}
-          <Grid item xs={12} sm={6}>
-            <TextField
-              label="Date"
-              fullWidth
-              margin="dense"
-              type="date"
-              size="small"
-              InputLabelProps={{ shrink: true }}
-              value={format(parse(date, "dd-MMM-yy", new Date()), "yyyy-MM-dd")}
-              onChange={handleDateChange}
-            />
-          </Grid>
-          <Grid item xs={12} sm={6}>
-            <DebounceSearchCompany
-              selectedCompany={selectedCompany}
-              setSelectedCompany={setSelectedCompany}
-              isMultiple
-              width={"100%"}
-              height={"h-10"}
-            />
-          </Grid>
-          <Grid item xs={12} sm={12}>
-            <TextField
-              label="Link"
-              fullWidth
-              margin="dense"
-              size="small"
-              value={link}
-              onChange={handleLinkChange}
-              error={linkError}
-              helperText={linkError ? "Please enter a valid URL" : ""}
-            />
-          </Grid>
-        </Grid>
-        <Button
-          variant="contained"
-          color="primary"
-          onClick={handleAddRecord}
-          sx={{ mt: 2 }}
-        >
-          Add Record
-        </Button>
-
-        <List sx={{ mt: 2, maxHeight: 300, overflowY: "scroll" }}>
-          {records.map((record, index) => (
-            <ListItem
-              key={index}
-              sx={{
-                border: "1px solid #ddd",
-                borderRadius: "8px",
-                boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
-                mb: 1,
-                p: 1,
-                bgcolor: "#fff",
-              }}
-            >
-              <ListItemText
-                primary={
-                  <Typography
-                    component={"div"}
-                    display={"flex"}
-                    alignItems={"center"}
-                    gap={1}
-                  >
-                    <span className="text-gray-400">{record.socialFeedId}</span>
-                    <span className="text-gray-400">{record.Date}</span>
-                    <span className="text-gray-400">{record.CompanyName}</span>
-                    <Link
-                      href={record.Link || ""}
-                      target="_blank"
-                      rel="noopener"
-                    >
-                      {record.Link}
-                    </Link>
-                  </Typography>
-                }
+            <Grid item xs={12} sm={6}>
+              <TextField
+                label="Date"
+                fullWidth
+                margin="dense"
+                type="date"
+                size="small"
+                InputLabelProps={{ shrink: true }}
+                value={format(
+                  parse(date, "dd-MMM-yy", new Date()),
+                  "yyyy-MM-dd"
+                )}
+                onChange={handleDateChange}
               />
+            </Grid>
+            <Grid item xs={12} sm={6}>
+              <DebounceSearchCompany
+                selectedCompany={selectedCompany}
+                setSelectedCompany={setSelectedCompany}
+                isMultiple
+                width={"100%"}
+                height={"h-10"}
+              />
+            </Grid>
+            <Grid item xs={12} sm={12}>
+              <TextField
+                label="Link"
+                fullWidth
+                margin="dense"
+                size="small"
+                value={link}
+                required
+                onChange={handleLinkChange}
+                error={linkError}
+                helperText={linkError ? "Please enter a valid URL" : ""}
+              />
+            </Grid>
+          </Grid>
+          <Button
+            variant="contained"
+            color="primary"
+            onClick={handleAddRecord}
+            sx={{ mt: 2 }}
+          >
+            Add Record
+          </Button>
 
-              <ListItemSecondaryAction>
-                <IconButton
-                  edge="end"
-                  onClick={() => handleDeleteRecord(index)}
-                >
-                  <DeleteIcon />
-                </IconButton>
-              </ListItemSecondaryAction>
-            </ListItem>
-          ))}
-        </List>
-      </DialogContent>
-      <DialogActions>
-        <Button onClick={onClose} color="primary">
-          Close
-        </Button>
-        <Button color="primary" onClick={handleAddRecords}>
-          Add
-        </Button>
-      </DialogActions>
+          <List sx={{ mt: 2, maxHeight: 300, overflowY: "scroll" }}>
+            {records.map((record, index) => (
+              <ListItem
+                key={index}
+                sx={{
+                  border: "1px solid #ddd",
+                  borderRadius: "8px",
+                  boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
+                  mb: 1,
+                  p: 1,
+                  bgcolor: "#fff",
+                }}
+              >
+                <ListItemText
+                  primary={
+                    <Typography
+                      component={"div"}
+                      display={"flex"}
+                      alignItems={"center"}
+                      gap={1}
+                    >
+                      <span className="text-gray-400">
+                        {record.socialFeedId}
+                      </span>
+                      <span className="text-gray-400">{record.Date}</span>
+                      <span className="text-gray-400">
+                        {record.CompanyName}
+                      </span>
+                      <Link
+                        href={record.Link || ""}
+                        target="_blank"
+                        rel="noopener"
+                      >
+                        {record.Link}
+                      </Link>
+                    </Typography>
+                  }
+                />
+
+                <ListItemSecondaryAction>
+                  <IconButton
+                    edge="end"
+                    onClick={() => handleDeleteRecord(index)}
+                  >
+                    <DeleteIcon />
+                  </IconButton>
+                </ListItemSecondaryAction>
+              </ListItem>
+            ))}
+          </List>
+        </DialogContent>
+        <DialogActions>
+          <Button
+            onClick={onClose}
+            color="primary"
+            size="small"
+            variant="outlined"
+          >
+            Close
+          </Button>
+          <Button color="primary" type="submit" size="small" variant="outlined">
+            Add
+          </Button>
+        </DialogActions>
+      </form>
     </Dialog>
   );
 };

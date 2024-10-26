@@ -52,15 +52,25 @@ const UploadControl = ({
       const responseData = responses.map((i) => i.data);
 
       const responseMap = responseData.reduce((map, item) => {
-        map[item.link] = item.articleExist ? "exist" : "not exist";
+        const socialFeedId = item.articleExist.processStatus.socialFeedId;
+
+        map[item.link] = socialFeedId === null ? "not exist" : "exist";
+
+        if (socialFeedId) {
+          map["socialFeedId"] = socialFeedId;
+        }
+
         return map;
       }, {});
 
       const updatedGridData = gridData.map((row) => {
         const status = responseMap[row.Link] || row.status;
+        const socialFeedId = responseMap["socialFeedId"] || row.socialFeedId;
+
         return {
           ...row,
           status,
+          ...(socialFeedId && { socialfeedid: socialFeedId }),
         };
       });
 
@@ -100,19 +110,40 @@ const UploadControl = ({
         });
       });
       const responses = await Promise.all(requests);
-      const processResponseData = responses.map((i) => i.data);
-      const processedLinks = processResponseData
-        .filter((item) => item.message.update_status)
-        .map((item) => item.message.link);
 
-      const updatedGridData = gridData.filter(
+      const processResponseData = responses.map((i) => i.data.response);
+
+      const processedLinks = processResponseData
+        .filter((item) => item.processStatus.message !== "Already uploaded")
+        .map((item) => item.processStatus.link);
+      const processedFailedLinks = processResponseData
+        .filter((item) => item.processStatus.message === "Already uploaded")
+        .map((item) => item.processStatus.link);
+
+      const toastMessage = `Articles Updated: ${
+        processedLinks.length || 0
+      }, Articles Not Updated: ${processedFailedLinks.length || 0}`;
+
+      let updatedGridData = gridData.filter(
         (row) => !processedLinks.includes(row.Link)
       );
+
+      updatedGridData = updatedGridData.map((row) => {
+        if (processedFailedLinks.includes(row.Link)) {
+          return {
+            ...row,
+            status: "Already uploaded",
+          };
+        }
+        return row;
+      });
       setGridData(updatedGridData);
       if (processedLinks.length) {
-        toast.success("Data inserted.");
+        toast.info(toastMessage);
         setSelectedRows([]);
         setSelectionModal([]);
+      } else {
+        toast.info(toastMessage);
       }
     } catch (error) {
       console.log(error);

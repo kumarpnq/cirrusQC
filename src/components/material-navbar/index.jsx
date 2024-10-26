@@ -85,7 +85,7 @@ export default function MainNav() {
     ...(screenPermissions["PrintSimilarArticles"]
       ? [
           {
-            id: 2,
+            id: 3,
             title: "PrintSimilarArticles",
             path: "/qc1/print-similar-articles",
             icon: <FaPrint />,
@@ -95,7 +95,7 @@ export default function MainNav() {
     ...(screenPermissions["Online-QC2"]
       ? [
           {
-            id: 3,
+            id: 4,
             title: "QC2 Online",
             path: "/online",
             icon: <HiStatusOnline />,
@@ -103,15 +103,15 @@ export default function MainNav() {
         ]
       : []),
     ...(screenPermissions["Print-QC2"]
-      ? [{ id: 4, title: "QC2 Print", path: "/print", icon: <FaPrint /> }]
+      ? [{ id: 5, title: "QC2 Print", path: "/print", icon: <FaPrint /> }]
       : []),
     ...(screenPermissions.Dump
-      ? [{ id: 5, title: "Dump", path: "/dump", icon: <FaDumpster /> }]
+      ? [{ id: 6, title: "Dump", path: "/dump", icon: <FaDumpster /> }]
       : []),
     ...(screenPermissions["Manual-upload"]
       ? [
           {
-            id: 6,
+            id: 7,
             title: "Manual Upload",
             path: "/manual-upload",
             icon: <UploadFileIcon />,
@@ -121,7 +121,7 @@ export default function MainNav() {
     ...(screenPermissions["Non-Tagged"]
       ? [
           {
-            id: 7,
+            id: 8,
             title: "Non Tagged",
             path: "/non-tagged",
             icon: <BookmarkBorderIcon />,
@@ -132,7 +132,7 @@ export default function MainNav() {
     ...(screenPermissions.Analytics
       ? [
           {
-            id: 8,
+            id: 9,
             title: "Analytics",
             path: "/analytics",
             icon: <BarChartIcon />,
@@ -142,7 +142,7 @@ export default function MainNav() {
     ...(screenPermissions.clientBasketCityPublication
       ? [
           {
-            id: 9,
+            id: 10,
             title: "ClientBasketCity",
             path: "/client-basket-city-publication",
             icon: <ShoppingBasketIcon />,
@@ -152,7 +152,7 @@ export default function MainNav() {
     ...(screenPermissions.CopyArticles
       ? [
           {
-            id: 10,
+            id: 11,
             title: "Copy Articles",
             path: "/copy-articles",
             icon: <FolderCopyIcon />,
@@ -162,7 +162,7 @@ export default function MainNav() {
     ...(screenPermissions.CompanySlicing
       ? [
           {
-            id: 11,
+            id: 12,
             title: "Company Slicing",
             path: "/company-slicing",
             icon: <LuBookCopy />,
@@ -172,7 +172,7 @@ export default function MainNav() {
     ...(screenPermissions.MailerScheduler
       ? [
           {
-            id: 12,
+            id: 13,
             title: "Online Mailer Schedular",
             path: "/online-mailer-schedular",
             icon: <IoMail />,
@@ -182,7 +182,7 @@ export default function MainNav() {
     ...(screenPermissions.WhatsappContact
       ? [
           {
-            id: 13,
+            id: 14,
             title: "Whatsapp Contact",
             path: "/whatsapp-contact",
             icon: <WhatsAppIcon />,
@@ -192,7 +192,7 @@ export default function MainNav() {
     ...(screenPermissions.ClientMaster
       ? [
           {
-            id: 14,
+            id: 15,
             title: "Client Master",
             path: "/client-master",
             icon: <IoPeopleOutline />,

@@ -72,9 +72,8 @@ const DebounceSearchCompany = ({
   const handleSearchTermChange = (newValue) => {
     if (newValue.length >= 3) {
       debouncedFetchData(newValue);
-      setShowResults(true); // Show results when typing
+      setShowResults(true);
     }
-    // Do not hide the results when input is empty
   };
 
   const handleSelectOption = (option) => {
@@ -98,15 +97,14 @@ const DebounceSearchCompany = ({
     }
   };
 
-  // Function to render the header based on selected options count
   const renderHeader = () => {
     if (isMultiple && selectedOptions.length > 0) {
-      return `${selectedOptions.length} selected`;
-    } else if (selectedOptions) {
+      return `${selectedOptions?.length} selected` || "Company";
+    } else if (selectedOptions && !isMultiple) {
       return (
         <Tooltip title={selectedOptions.label}>
           <span className="text-nowrap">
-            {selectedOptions.label.substring(0, 22) + "..."}
+            {selectedOptions?.label?.substring(0, 22) + "..."}
           </span>
         </Tooltip>
       );
@@ -181,6 +179,9 @@ const DebounceSearchCompany = ({
 DebounceSearchCompany.propTypes = {
   setSelectedCompany: PropTypes.func.isRequired,
   isMultiple: PropTypes.bool,
+  selectedCompany: PropTypes.any,
+  width: PropTypes.string,
+  height: PropTypes.string,
 };
 
 DebounceSearchCompany.defaultProps = {
