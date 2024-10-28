@@ -48,16 +48,12 @@ const ManualUpload = () => {
   const [errorListLoading, setErrorListLoading] = useState(false);
   const [errorList, setErrorList] = useState([]);
   const [searchLink, setSearchLink] = useState("");
-  // const [totalRecords, setTotalRecords] = useState(0);
-  // const [fetchingUsingPrevNext, setFetchingUsingPrevNext] = useState(false);
   const [fetchAfterSave, setFetchAfterSave] = useState(false);
   const [isArticleSaved, setIsArticleSaved] = useState(false);
   const [modalType, setModalType] = useState();
 
-  // article number after save the article automatically get next article
   const [articleNumber, setArticleNumber] = useState(0);
 
-  // sort
   const [sortBy, setSortBy] = useState(null);
   const [sortOrder, setSortOrder] = useState("asc");
 
@@ -120,7 +116,11 @@ const ManualUpload = () => {
   const [link, setLink] = useState(selectedRow?.articlelink);
 
   useEffect(() => {
-    setLink(selectedRow?.articlelink);
+    if (!modalType) {
+      setLink(selectedRow?.articlelink);
+    } else {
+      setLink("");
+    }
   }, [selectedRow]);
 
   const handleClose = () => {

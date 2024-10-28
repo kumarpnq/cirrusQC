@@ -44,14 +44,18 @@ const Details = ({
   }, [articleNumber, errorList]);
 
   useEffect(() => {
-    setLink(selectedRow?.articlelink);
+    if (!type) {
+      setLink(selectedRow?.articlelink);
+    } else {
+      setLink("");
+    }
   }, [articleNumber, selectedRow]);
 
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
   const [summary, setSummary] = useState("");
   const [image, setImage] = useState("");
-  const [searchURl, setSearchURL] = useState(selectedRow?.searchlink);
+  const [searchURl, setSearchURL] = useState("");
   const [articleURL, setArticleURL] = useState("");
   const [publication, setPublication] = useState();
   const [selectedLanguages, setSelectedLanguages] = useState("en");
