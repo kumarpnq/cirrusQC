@@ -383,7 +383,7 @@ const SearchFilters = ({
           setValue={setSystemArticleId}
         />
         <CustomTextField
-          placeholder={"PageNumber"}
+          placeholder={"Page"}
           type={"number"}
           width={100}
           value={pageNumber}

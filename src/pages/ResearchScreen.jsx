@@ -14,6 +14,7 @@ import {
   continents,
   countriesByContinent,
   qc2Array,
+  qc3Values,
 } from "../constants/dataArray";
 import { url } from "../constants/baseUrl";
 
@@ -37,6 +38,8 @@ import Countries from "../components/research-dropdowns/Countries";
 import CustomAutocomplete from "../components/custom/Autocomplet";
 import CustomMultiSelect from "../@core/CustomMultiSelect";
 import CompanyList from "../qc1-components/components/CompanyList";
+import YesOrNo from "../@core/YesOrNo";
+import { getValueByTitle } from "../utils/getQc3ValueUsingTitle";
 
 const useStyle = makeStyles(() => ({
   dropDowns: {
@@ -93,6 +96,7 @@ const ResearchScreen = () => {
   const [langsToString, setLangsToString] = useState("");
   const [continentsToString, setContinentsToString] = useState("");
   const [countriesToString, setCountriesToString] = useState("");
+  const [qc3, setQc3] = useState("");
 
   // main data
   const [tableData, setTableData] = useState([]);
@@ -259,6 +263,8 @@ const ResearchScreen = () => {
             arrayToString(matchingLanguageKeys)
           );
 
+          addPropertyIfConditionIsTrue(qc3, "is_qc3", getValueByTitle(qc3));
+
           const requestDataJSON = JSON.stringify(requestData);
           const response = await axios.post(
             `${url}listArticlebyQCTemp/`,
@@ -335,19 +341,8 @@ const ResearchScreen = () => {
                 width={200}
               />
             </div>
-            {/* comapany */}
 
             <div className="w-[200px] mt-3">
-              {/* <CustomMultiSelect
-                dropdownToggleWidth={200}
-                dropdownWidth={250}
-                keyId="companyid"
-                keyName="companyname"
-                options={company || []}
-                selectedItems={companies}
-                setSelectedItems={setCompanies}
-                title="companies"
-              /> */}
               <CompanyList
                 selectedCompanies={companies}
                 setSelectedCompanies={setCompanies}
@@ -379,6 +374,14 @@ const ResearchScreen = () => {
               classes={classes}
               qc2Array={qc2Array}
             />
+            <YesOrNo
+              classes={classes}
+              mapValue={["With Auto", "Without Auto", "All", "Only Auto"]}
+              placeholder="QC3"
+              value={qc3}
+              setValue={setQc3}
+              width={100}
+            />
             {/* qc1 by */}
             <Qc1By
               qcUsersData={qcUsersData}
@@ -393,6 +396,7 @@ const ResearchScreen = () => {
               qc2by={qc2by}
               setQc2by={setQc2by}
             />
+
             {/* image checkbox */}
             <div className="flex items-center" style={{ height: 20 }}>
               <div className="mt-4">
@@ -434,6 +438,7 @@ const ResearchScreen = () => {
               classes={classes}
               filteredCountries={filteredCountries}
             />
+
             <button
               onClick={() => {
                 handleSearch();

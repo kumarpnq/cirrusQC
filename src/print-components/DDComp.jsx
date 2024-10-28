@@ -38,8 +38,7 @@ import axios from "axios";
 import { toast } from "react-toastify";
 import CustomDebounceDropdown from "../@core/CustomDebounceDropdown";
 import { arrayToString } from "../utils/arrayToString";
-// import CustomMultiSelect from "../@core/CustomMultiSelect";
-import CompanyList from "../qc1-components/components/CompanyList";
+
 import CustomMultiSelect from "../@core/CustomMultiSelect";
 
 const useStyle = makeStyles(() => ({
@@ -355,11 +354,6 @@ const DDComp = () => {
               />
             </div>
             <div className="h-[25px] pt-1.5 w-[200px]">
-              {/* <CompanyList
-                selectedCompanies={companies}
-                setSelectedCompanies={setCompanies}
-                selectedClient={client}
-              /> */}
               <CustomMultiSelect
                 dropdownToggleWidth={200}
                 dropdownWidth={250}
@@ -370,16 +364,6 @@ const DDComp = () => {
                 setSelectedItems={setCompanies}
                 title="companies"
               />
-              {/* <CustomMultiSelect
-                dropdownToggleWidth={200}
-                dropdownWidth={250}
-                keyId="companyid"
-                keyName="companyname"
-                options={companyData || []}
-                selectedItems={companies}
-                setSelectedItems={setCompanies}
-                title="companies"
-              /> */}
             </div>
             <div className="h-[25px] flex items-center justify-center">
               <Datetype
@@ -543,7 +527,6 @@ const DDComp = () => {
           setSelectedItems={setSelectedItems}
         />
       </div>
-      {/* <FormDialog open={open} setOpen={setOpen} setIsProceed={setIsProceed} /> */}
     </div>
   );
 };

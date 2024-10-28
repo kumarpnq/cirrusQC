@@ -575,3 +575,26 @@ export const timeSlots = [
   "23:30",
   "23:59",
 ];
+
+export const qc3Values = [
+  {
+    id: 1,
+    title: "With Auto",
+    value: 2,
+  },
+  {
+    id: 2,
+    title: "Without Auto",
+    value: 1,
+  },
+  {
+    id: 3,
+    title: "All",
+    value: 3,
+  },
+  {
+    id: 4,
+    title: "Only Auto",
+    value: 4,
+  },
+];

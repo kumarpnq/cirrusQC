@@ -8,6 +8,8 @@ import {
   Paper,
   TextField,
   Tooltip,
+  Button,
+  CircularProgress,
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import { styled } from "@mui/system";
@@ -15,6 +17,9 @@ import CheckIcon from "@mui/icons-material/Check";
 import InfoIcon from "@mui/icons-material/Info";
 import useFetchData from "../../hooks/useFetchData";
 import { url } from "../../constants/baseUrl";
+import PropTypes from "prop-types";
+import axios from "axios";
+import toast from "react-hot-toast";
 
 // Styled modal box
 const StyledModalBox = styled(Box)(({ theme }) => ({
@@ -50,21 +55,28 @@ const ItemContainer = styled(Box)(({ theme, selected }) => ({
   cursor: "pointer",
 }));
 
-const CompanyModal = ({ open, handleClose }) => {
+const CompanyModal = ({
+  open,
+  handleClose,
+  selectedCompany,
+  setSelectedCompany,
+  socialFeedId,
+  handleFetch,
+}) => {
   const [searchQuery, setSearchQuery] = useState("");
   const [filteredCompanies, setFilteredCompanies] = useState([]);
-  const [selectedCompany, setSelectedCompany] = useState(null);
+  const [insertLoading, setInsertLoading] = useState(false);
 
   const {
     data: companyData,
-    isLoading,
+    loading,
     error,
   } = useFetchData(`${url}companylist/`);
 
   const companies = companyData?.data?.companies || [];
 
   const handleSearchChange = (event) => {
-    const value = event.target.value.toLowerCase();
+    const value = event?.target?.value?.toLowerCase();
     setSearchQuery(value);
 
     const filtered = companies.filter((company) =>
@@ -100,6 +112,43 @@ const CompanyModal = ({ open, handleClose }) => {
         {isSelected && <CheckIcon color="primary" />}{" "}
       </ItemContainer>
     );
+  };
+
+  const insertCompany = async () => {
+    try {
+      setInsertLoading(true);
+      const token = localStorage.getItem("user");
+      const requestData = {
+        data: [
+          {
+            updateType: "I",
+            socialFeedId,
+            companyId: selectedCompany?.companyid,
+            companyName: selectedCompany?.companyname,
+          },
+        ],
+        qcType: "QC3",
+      };
+      const response = await axios.post(
+        `${url}updatesocialfeedtagdetails`,
+        requestData,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+
+      if (response.data?.result?.success?.length) {
+        toast.success("Data inserted.");
+        handleFetch();
+        handleClose();
+      } else {
+        toast.error("Error while inserting record.");
+      }
+    } catch (error) {
+      console.log(error.message);
+    } finally {
+      setInsertLoading(false);
+    }
   };
 
   return (
@@ -154,12 +203,35 @@ const CompanyModal = ({ open, handleClose }) => {
             </IconButton>
           </Tooltip>
         </Box>
+        <Box
+          sx={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+            px: 2,
+            mb: 0.5,
+          }}
+        >
+          <Typography sx={{ fontWeight: "bold" }}>
+            {selectedCompany?.companyname}
+          </Typography>
+          <Button
+            variant="outlined"
+            size="small"
+            sx={{ display: "flex", alignItems: "center", gap: 2 }}
+            disabled={!selectedCompany}
+            onClick={insertCompany}
+          >
+            {insertLoading && <CircularProgress size={"1em"} color="inherit" />}
+            Save
+          </Button>
+        </Box>
 
         <Paper
           elevation={4}
           sx={{ borderRadius: "10px", padding: "20px", overflow: "hidden" }}
         >
-          {isLoading ? (
+          {loading ? (
             <Typography variant="body2">Loading companies...</Typography>
           ) : error ? (
             <Typography variant="body2" color="error">
@@ -181,4 +253,15 @@ const CompanyModal = ({ open, handleClose }) => {
   );
 };
 
+CompanyModal.propTypes = {
+  open: PropTypes.bool.isRequired,
+  handleClose: PropTypes.func.isRequired,
+  selectedCompany: PropTypes.shape({
+    companyid: PropTypes.number,
+    companyname: PropTypes.string,
+  }),
+  setSelectedCompany: PropTypes.func.isRequired,
+  socialFeedId: PropTypes.number,
+  handleFetch: PropTypes.func,
+};
 export default CompanyModal;

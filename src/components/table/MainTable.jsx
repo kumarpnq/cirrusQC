@@ -121,8 +121,14 @@ const MainTable = ({
   // qc3
   const [qc3Open, setQc3Open] = useState(false);
 
-  const handleOpen = () => setQc3Open(true);
-  const handleCloseQC3 = () => setQc3Open(false);
+  const handleOpen = (item) => {
+    setQc3Open(true);
+    setSelectedArticle((prev) => (prev === item ? null : item));
+  };
+  const handleCloseQC3 = () => {
+    setQc3Open(false);
+    setSelectedArticle(null);
+  };
 
   const tableRowClick = (item) => {
     setOpen(true);
@@ -213,7 +219,7 @@ const MainTable = ({
                 )}
                 {!!dataToRender.length && (
                   <th className="text-white text-[0.9em]  bg-primary pl-8 left-14 tracking-widest font-thin pt-2">
-                    QC3
+                    Automation
                   </th>
                 )}
 
@@ -224,8 +230,8 @@ const MainTable = ({
                       handleSort(header.toLowerCase().replace(/ /g, "_"))
                     }
                     className={`text-white cursor-pointer font-thin text-xs tracking-widest px-4 ${
-                      (header === "COMPANY NAME" && "pl-6") ||
-                      (header === "HEADLINE" && "pl-4") ||
+                      (header === "COMPANY NAME" && "pl-3") ||
+                      (header === "HEADLINE" && "pl-9") ||
                       (header === "PUBLICATION" && "pl-48 ml-4") ||
                       (header === "LINK" && "pl-7") ||
                       (header === "REPORTING SUBJECT" && "pl-12") ||
@@ -304,13 +310,12 @@ const MainTable = ({
               >
                 <EditAttributesOutlined className="text-primary" />
               </TableCell>
-              <Tooltip title="Coming soon...">
-                <TableCell>
-                  <IconButton disabled onClick={handleOpen}>
-                    <FlagIcon className="text-primary" />
-                  </IconButton>
-                </TableCell>
-              </Tooltip>
+              <TableCell>
+                <IconButton onClick={() => handleOpen(rowData)}>
+                  <FlagIcon className="text-primary" />
+                </IconButton>
+              </TableCell>
+
               {tableHeaders?.map((header) => (
                 <React.Fragment key={header}>
                   {(header === "HEADLINE" ||
@@ -392,7 +397,8 @@ const MainTable = ({
                             (header === "QC2 DONE" && "w-4") ||
                             (header === "QC1 DONE" && "w-4") ||
                             (header === "HAS VIDEO" && "w-6") ||
-                            (header === "HAS IMAGE" && "w-6")
+                            (header === "HAS IMAGE" && "w-6") ||
+                            (header === "COMPANY NAME" && "pl-6 w-28")
                           }`}
                           style={{
                             display: "-webkit-box",
@@ -451,7 +457,11 @@ const MainTable = ({
         handleClose={handleClose}
         selectedRow={selectedArticle}
       />
-      <QC3Modal open={qc3Open} handleClose={handleCloseQC3} />
+      <QC3Modal
+        open={qc3Open}
+        handleClose={handleCloseQC3}
+        selectedArticle={selectedArticle}
+      />
     </div>
   );
 };
