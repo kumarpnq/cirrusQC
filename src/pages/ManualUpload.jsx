@@ -124,9 +124,11 @@ const ManualUpload = () => {
   }, [selectedRow]);
 
   const handleClose = () => {
+    setSelectedRow(null);
     setOpen((prev) => !prev);
     setFetchAfterSave(isArticleSaved ? true : false);
     setArticleNumber(0);
+    setModalType();
   };
   const handleRowClick = (row, index) => {
     setArticleNumber(index);
@@ -343,6 +345,7 @@ const ManualUpload = () => {
             open={open}
             handleClose={handleClose}
             selectedRow={selectedRow}
+            setSelectedRow={setSelectedRow}
             type={modalType}
             link={link}
             setLink={setLink}

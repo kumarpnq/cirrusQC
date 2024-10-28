@@ -29,6 +29,7 @@ const UploadDialog = ({
   open,
   handleClose,
   selectedRow,
+  setSelectedRow,
   type,
   // link,
   // setLink,
@@ -40,7 +41,13 @@ const UploadDialog = ({
   const [link, setLink] = useState("");
 
   return (
-    <Modal open={open} onClose={handleClose}>
+    <Modal
+      open={open}
+      onClose={() => {
+        handleClose();
+        setSelectedRow(null);
+      }}
+    >
       <Box sx={style}>
         <DialogTitle
           display={"flex"}
@@ -48,7 +55,14 @@ const UploadDialog = ({
           justifyContent={"space-between"}
         >
           <Typography> Article Edit</Typography>
-          <Button onClick={handleClose}>Close</Button>
+          <Button
+            onClick={() => {
+              handleClose();
+              setSelectedRow(null);
+            }}
+          >
+            Close
+          </Button>
         </DialogTitle>
         <DialogContent>
           <Grid container spacing={2}>
@@ -90,6 +104,7 @@ UploadDialog.propTypes = {
   errorList: PropTypes.array.isRequired,
   articleNumber: PropTypes.number.isRequired,
   setArticleNumber: PropTypes.func.isRequired,
+  setSelectedRow: PropTypes.func,
 };
 
 export default UploadDialog;

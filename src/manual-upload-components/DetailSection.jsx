@@ -24,7 +24,6 @@ import { url } from "../constants/baseUrl";
 import useFetchData from "../hooks/useFetchData";
 import DebounceSearchCompany from "../@core/DebounceSearchCompany";
 import { isDomainIncluded } from "../utils/isDomainIncluded";
-import { formattedNextDay } from "../constants/dates";
 
 const Details = ({
   type,
@@ -38,7 +37,7 @@ const Details = ({
 }) => {
   const userToken = localStorage.getItem("user");
   const [selectedRow, setSelectedRow] = useState(errorList[articleNumber]);
-  const today = format(new Date(), "dd-MM-yyyy");
+  const today = format(new Date(), "yyyy-MM-dd'T'HH:mm:ss");
 
   useEffect(() => {
     setSelectedRow(errorList.length > 0 ? errorList[articleNumber] : null);
@@ -57,13 +56,19 @@ const Details = ({
   const [publication, setPublication] = useState();
   const [selectedLanguages, setSelectedLanguages] = useState("en");
   const [selectedCompanies, setSelectedCompanies] = useState(null);
-  const [dateNow, setDateNow] = useState(
-    selectedRow?.feeddate || formattedNextDay
-  );
+  const [dateNow, setDateNow] = useState(null);
   const [saveLoading, setSaveLoading] = useState(false);
   const [languages, setLanguages] = useState([]);
   const [pasteLoading, setPasteLoading] = useState(false);
   const [helperText, setHelperText] = useState("");
+
+  useEffect(() => {
+    if (type) {
+      setDateNow(today);
+    } else {
+      setDateNow(selectedRow?.feeddate);
+    }
+  }, [type]);
 
   const {
     data: langs,
@@ -152,7 +157,6 @@ const Details = ({
 
       if (isSuccess) {
         toast.success("Updated successfully");
-
         setArticleNumber((prev) => prev + 1);
         setSelectedRow(errorList[articleNumber]);
         setIsArticleSaved(true);
@@ -188,7 +192,7 @@ const Details = ({
         setArticleURL(selectedRow.articlelink);
         handleOnPasteOrChange(null, selectedRow?.articlelink);
         // setPublication(selectedRow.publicationname);
-        setDateNow(selectedRow.feeddate);
+        setDateNow(selectedRow.feeddate || today);
       } else {
         setTitle("");
         setContent("");

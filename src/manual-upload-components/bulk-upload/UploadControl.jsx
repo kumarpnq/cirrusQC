@@ -25,11 +25,37 @@ const UploadControl = ({
       return;
     }
 
+    const updatedGridData = gridData.map((row) => {
+      const selectedRow = selectedRows.find(
+        (selected) => selected.Link === row.Link
+      );
+
+      if (selectedRow && !selectedRow.CompanyID) {
+        return {
+          ...row,
+          status: "Invalid Company ID(s)",
+        };
+      }
+
+      return row;
+    });
+
+    setGridData(updatedGridData);
+
+    const validRecords = selectedRows.filter((record) => record.CompanyID);
+    const updatedSelectedArticles = selectedRows.filter((article) => {
+      return validRecords.some(
+        (validRecord) => validRecord.Link === article.Link
+      );
+    });
+
+    setSelectedRows(updatedSelectedArticles);
+
     setCheckLoading(true);
     try {
       const userToken = localStorage.getItem("user");
 
-      const requests = selectedRows.map((row) => {
+      const requests = validRecords.map((row) => {
         const { Link, Date: dateStr } = row;
         const parsedDate = parse(dateStr, "dd-MMM-yy", new Date());
         const formattedDate = format(parsedDate, "yyyy-MM-dd");
@@ -56,7 +82,7 @@ const UploadControl = ({
         };
       });
 
-      const updatedGridData = gridData.map((row) => {
+      const finalUpdatedGridData = updatedGridData.map((row) => {
         const responseEntry = responseMap.find(
           (entry) => entry.link === row.Link
         );
@@ -73,7 +99,7 @@ const UploadControl = ({
         };
       });
 
-      setGridData(updatedGridData);
+      setGridData(finalUpdatedGridData);
       setSelectedRows([]);
       setSelectionModal([]);
     } catch (error) {
@@ -89,17 +115,6 @@ const UploadControl = ({
       const validRowsForProcess = selectedRows.filter(
         (i) => i.status === "Article Not Uploaded."
       );
-
-      const inValidRecords = validRowsForProcess.filter((record, index) => {
-        if (!record.CompanyID) {
-          toast.error(`${index + 1} records is missing a CompanyID`);
-          return true;
-        }
-        return false;
-      });
-      if (inValidRecords.length > 0) {
-        return;
-      }
 
       if (!validRowsForProcess.length) {
         toast.warning("No rows found for process.");
@@ -127,7 +142,7 @@ const UploadControl = ({
         .filter(
           (item) =>
             item.processStatus.message !== "Already uploaded" &&
-            item.processStatus.message !== "Invalid URL"
+            item.processStatus.message !== "Invalid Company ID(s) "
         )
         .map((item) => item.processStatus.link);
 
@@ -135,7 +150,9 @@ const UploadControl = ({
         .filter((item) => item.processStatus.message === "Already uploaded")
         .map((item) => item.processStatus.link);
       const processedFailedLinks2 = processResponseData
-        .filter((item) => item.processStatus.message === "Invalid URL")
+        .filter(
+          (item) => item.processStatus.message === "Invalid Company ID(s) "
+        )
         .map((item) => ({
           link: item.processStatus.link,
           msg: item.processStatus.message,
