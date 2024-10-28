@@ -92,7 +92,7 @@ const ManualAddPopup = ({ open, onClose, setData }) => {
     <Dialog open={open} onClose={onClose} fullWidth maxWidth="sm">
       <DialogTitle>Manual Add</DialogTitle>
       <form onSubmit={handleAddRecords}>
-        <DialogContent>
+        <DialogContent sx={{ height: 330 }}>
           <Grid container spacing={1}>
             {/* <Grid item xs={12} sm={6}>
             <DebounceSearchCompany
