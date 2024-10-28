@@ -54,7 +54,7 @@ export const QC3Modal = ({ open, handleClose, selectedArticle }) => {
       setLoading(true);
       const token = localStorage.getItem("user");
       const response = await axios.get(
-        `${url}getSocialFeedAutoTagDetails/?socialfeed_id=${"18195032005"}`,
+        `${url}getSocialFeedAutoTagDetails/?socialfeed_id=${socialFeedId}`,
         { headers: { Authorization: `Bearer ${token}` } }
       );
 
