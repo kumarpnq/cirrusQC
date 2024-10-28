@@ -8,7 +8,7 @@ import {
   Divider,
 } from "@mui/material";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import ToDate from "../components/research-dropdowns/ToDate";
 import CloseIcon from "@mui/icons-material/Close";
 import CheckIcon from "@mui/icons-material/Check";
@@ -54,7 +54,7 @@ const Details = ({
   const [image, setImage] = useState("");
   const [searchURl, setSearchURL] = useState(selectedRow?.searchlink);
   const [articleURL, setArticleURL] = useState("");
-  const [publication, setPublication] = useState(selectedRow?.publicationname);
+  const [publication, setPublication] = useState();
   const [selectedLanguages, setSelectedLanguages] = useState("en");
   const [selectedCompanies, setSelectedCompanies] = useState(null);
   const [dateNow, setDateNow] = useState(
@@ -78,26 +78,32 @@ const Details = ({
     }
   }, [langs, langsError]);
 
-  const handleOnPaste = async (event) => {
-    const text = event.clipboardData.getData("text");
-    try {
-      setPasteLoading(true);
-      const token = localStorage.getItem("user");
-      const response = await axios.get(
-        `${url}getpublicationfromurl/?url=${text}`,
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
-      if (response.data.status?.statusCode === -1) {
-        setHelperText(response.data?.status?.message);
-      } else {
-        setPublication(response.data.publication);
+  const handleOnPasteOrChange = useCallback(
+    async (event, textFromChange) => {
+      const text = event?.clipboardData?.getData("text") || textFromChange;
+      try {
+        setPasteLoading(true);
+        const token = localStorage.getItem("user");
+        const response = await axios.get(
+          `${url}getpublicationfromurl/?url=${text}`,
+          { headers: { Authorization: `Bearer ${token}` } }
+        );
+        if (response.data.status?.statusCode === -1) {
+          setHelperText(response.data?.status?.message);
+          setPublication("");
+        } else {
+          setPublication(response.data.publication);
+          setHelperText("");
+        }
+      } catch (error) {
+        toast.warning("Something went wrong.");
+      } finally {
+        setPasteLoading(false);
       }
-    } catch (error) {
-      toast.warning("Something went wrong.");
-    } finally {
-      setPasteLoading(false);
-    }
-  };
+    },
+    [setPasteLoading, setHelperText, setPublication]
+  );
+
   const handleSave = async (event) => {
     event.preventDefault();
     const isBothUrlSame = isDomainIncluded(articleURL, publication);
@@ -143,7 +149,7 @@ const Details = ({
 
       const isSuccess = response.data?.result?.success?.length;
       const isFail = response.data?.result?.errors?.length;
-      const erMessage = response.data?.result?.errors?.map((i) => i.errors);
+
       if (isSuccess) {
         toast.success("Updated successfully");
 
@@ -161,13 +167,13 @@ const Details = ({
       setSummary("");
       setImage("");
       setArticleURL("");
-      if (!type) {
-        setSelectedCompanies(null);
-        setSelectedLanguages("en");
-      }
+      // if (!type) {
+      //   setSelectedCompanies(null);
+      //   setSelectedLanguages("en");
+      // }
       setPublication("");
     } catch (error) {
-      console.log(error);
+      console.error(error?.message || "Something went wrong while scrapping.");
     }
   };
   useEffect(() => {
@@ -177,10 +183,11 @@ const Details = ({
         setContent("");
         setSummary("");
         setImage("");
-        setSelectedLanguages("");
+        setSelectedLanguages("en");
         setSearchURL(selectedRow.searchlink);
         setArticleURL(selectedRow.articlelink);
-        setPublication(selectedRow.publicationname);
+        handleOnPasteOrChange(null, selectedRow?.articlelink);
+        // setPublication(selectedRow.publicationname);
         setDateNow(selectedRow.feeddate);
       } else {
         setTitle("");
@@ -191,7 +198,7 @@ const Details = ({
         setSearchURL("");
         setArticleURL("");
         setPublication("");
-        setSelectedCompanies(null);
+        // setSelectedCompanies(null);
         setDateNow(today);
       }
     }
@@ -283,8 +290,11 @@ const Details = ({
                 sx={{ ml: 1 }}
                 value={articleURL}
                 required
-                onChange={(e) => setArticleURL(e.target.value)}
-                onPaste={handleOnPaste}
+                onChange={(e) => {
+                  setArticleURL(e.target.value);
+                  handleOnPasteOrChange(null, e.target.value);
+                }}
+                onPaste={handleOnPasteOrChange}
                 helperText={<span className="text-red-500">{helperText}</span>}
                 InputProps={{
                   style: {
@@ -348,7 +358,7 @@ const Details = ({
                   value={publication}
                   required
                   onChange={(e) => setPublication(e.target.value)}
-                  disabled={type === 1}
+                  disabled
                   InputProps={{
                     style: {
                       fontSize: "0.8rem",

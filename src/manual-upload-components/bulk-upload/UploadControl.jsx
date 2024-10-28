@@ -90,6 +90,17 @@ const UploadControl = ({
         (i) => i.status === "Article Not Uploaded."
       );
 
+      const inValidRecords = validRowsForProcess.filter((record, index) => {
+        if (!record.CompanyID) {
+          toast.error(`${index + 1} records is missing a CompanyID`);
+          return true;
+        }
+        return false;
+      });
+      if (inValidRecords.length > 0) {
+        return;
+      }
+
       if (!validRowsForProcess.length) {
         toast.warning("No rows found for process.");
         return;
@@ -113,18 +124,32 @@ const UploadControl = ({
       const processResponseData = responses.map((i) => i.data.response);
 
       const processedLinks = processResponseData
-        .filter((item) => item.processStatus.message !== "Already uploaded")
+        .filter(
+          (item) =>
+            item.processStatus.message !== "Already uploaded" &&
+            item.processStatus.message !== "Invalid URL"
+        )
         .map((item) => item.processStatus.link);
+
       const processedFailedLinks = processResponseData
         .filter((item) => item.processStatus.message === "Already uploaded")
         .map((item) => item.processStatus.link);
+      const processedFailedLinks2 = processResponseData
+        .filter((item) => item.processStatus.message === "Invalid URL")
+        .map((item) => ({
+          link: item.processStatus.link,
+          msg: item.processStatus.message,
+        }));
 
       const toastMessage = `Articles Updated: ${
         processedLinks.length || 0
-      }, Articles Not Updated: ${processedFailedLinks.length || 0}`;
+      }, Articles Not Updated: ${
+        processedFailedLinks.length || 0
+      }, Invalid Links: ${processedFailedLinks2.length || 0}`;
 
       let updatedGridData = gridData.map((row) => {
         if (processedLinks.includes(row.Link)) {
+          console.log("Updating row:", row);
           return {
             ...row,
             status: "Updated Successfully",
@@ -134,13 +159,24 @@ const UploadControl = ({
             ...row,
             status: "Article Already Uploaded.",
           };
+        } else {
+          const invalidLink = processedFailedLinks2.find(
+            (item) => item.link === row.Link
+          );
+
+          if (invalidLink) {
+            return {
+              ...row,
+              status: invalidLink.msg,
+            };
+          }
         }
 
         return row;
       });
       setGridData(updatedGridData);
       if (processedLinks.length) {
-        toast.info(toastMessage);
+        toast.info(toastMessage, { autoClose: 5000 });
         setSelectedRows([]);
         setSelectionModal([]);
       } else {
