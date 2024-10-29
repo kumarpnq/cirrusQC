@@ -115,22 +115,17 @@ export const QC3Modal = ({ open, handleClose, selectedArticle, type }) => {
       field: "automation",
       headerName: "Automation",
       width: 150,
-      headerAlign: "center",
-      align: "center",
     },
     {
       field: "company_name",
       headerName: "Company",
       width: 150,
-      headerAlign: "center",
-      align: "center",
     },
     {
       field: "actions",
       headerName: "Actions",
       width: 140,
-      headerAlign: "center",
-      align: "center",
+
       renderCell: (params) => {
         if (params.row.qc3 === "E") {
           return (
@@ -150,13 +145,13 @@ export const QC3Modal = ({ open, handleClose, selectedArticle, type }) => {
           );
         } else if (params.row.qc3 === "N") {
           return (
-            <Typography variant="body2" textAlign={"center"} mt={2}>
+            <Typography variant="body2" mt={2}>
               No Action
             </Typography>
           );
         } else if (params.row.qc3 === "Z") {
           return (
-            <Typography variant="body2" textAlign={"center"} mt={2}>
+            <Typography variant="body2" mt={2}>
               No Action
             </Typography>
           );
@@ -177,6 +172,16 @@ export const QC3Modal = ({ open, handleClose, selectedArticle, type }) => {
           );
         }
       },
+    },
+    {
+      field: "headline",
+      headerName: "Headline",
+      width: 300,
+    },
+    {
+      field: "headSummary",
+      headerName: "Head Summary",
+      width: 300,
     },
     {
       field: "reporting_subject",
@@ -210,6 +215,9 @@ export const QC3Modal = ({ open, handleClose, selectedArticle, type }) => {
     },
   ];
 
+  console.log(automationData);
+  console.log(selectedArticle);
+
   const rows = automationData.map((row, index) => ({
     id: index + 1,
     automation: row.automation,
@@ -223,6 +231,8 @@ export const QC3Modal = ({ open, handleClose, selectedArticle, type }) => {
     detail_summary: row.detail_summary,
     remarks: row.remarks,
     subcategory: row.subcategory,
+    headline: selectedArticle?.headline,
+    headSummary: selectedArticle?.headsummary,
   }));
 
   const CustomToolbar = () => {
@@ -320,6 +330,8 @@ QC3Modal.propTypes = {
     social_feed_id: PropTypes.string,
     article_id: PropTypes.string,
     company_id: PropTypes.number,
+    headline: PropTypes.string,
+    headsummary: PropTypes.string,
   }).isRequired,
   type: PropTypes.string,
 };
