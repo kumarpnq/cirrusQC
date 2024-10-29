@@ -492,6 +492,7 @@ const SecondSection = (props) => {
                   sx={{
                     "&:last-child td, &:last-child th": { border: 0 },
                   }}
+                  className={`${"qc3-" + editableTagData.qc3}`}
                 >
                   <TableCell sx={{ fontSize: "0.8em" }} size="small">
                     {row.company_name}

@@ -353,11 +353,13 @@ const Qc2Table = ({
                     >
                       <EditAttributesOutlined className="text-primary" />
                     </td>
-                    <td className="pl-14">
-                      <IconButton onClick={() => handleOpen(items)}>
-                        <FlagIcon className="text-primary" />
-                      </IconButton>
-                    </td>
+                    <Tooltip title="Coming soon...">
+                      <td className="pl-14">
+                        <IconButton onClick={() => handleOpen(items)} disabled>
+                          <FlagIcon className="text-primary" />
+                        </IconButton>
+                      </td>
+                    </Tooltip>
                     <td className="px-1 py-2 pl-6 whitespace-nowrap">
                       <div className="truncate w-28">{items.company}</div>
                     </td>

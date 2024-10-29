@@ -310,11 +310,13 @@ const MainTable = ({
               >
                 <EditAttributesOutlined className="text-primary" />
               </TableCell>
-              <TableCell>
-                <IconButton onClick={() => handleOpen(rowData)}>
-                  <FlagIcon className="text-primary" />
-                </IconButton>
-              </TableCell>
+              <Tooltip title="Coming soon...">
+                <TableCell>
+                  <IconButton onClick={() => handleOpen(rowData)} disabled>
+                    <FlagIcon className="text-primary" />
+                  </IconButton>
+                </TableCell>
+              </Tooltip>
 
               {tableHeaders?.map((header) => (
                 <React.Fragment key={header}>

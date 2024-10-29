@@ -313,7 +313,7 @@ const ClientSection = ({ selectedArticle }) => {
               editableTagData.map((item, index) => (
                 <tr
                   key={item.socialfeed_id + item.company_id}
-                  className="border border-gray-300"
+                  className={`border border-gray-300 ${"qc3-" + item.qc3}`}
                 >
                   <td
                     className="text-red-500 cursor-pointer"
@@ -429,15 +429,17 @@ const ClientSection = ({ selectedArticle }) => {
                 onClick={handleClose}
                 bg={"bg-primary"}
               />
-              {verificationLoading ? (
-                <CircularProgress />
-              ) : (
-                <CustomButton
-                  btnText="Delete"
-                  onClick={handleDelete}
-                  bg={"bg-red-500"}
-                />
-              )}
+              <Box width={140} textAlign={"center"}>
+                {verificationLoading ? (
+                  <CircularProgress size={"1.5em"} />
+                ) : (
+                  <CustomButton
+                    btnText="Delete"
+                    onClick={handleDelete}
+                    bg={"bg-red-500"}
+                  />
+                )}
+              </Box>
             </DialogActions>
           </Dialog>
         </div>
