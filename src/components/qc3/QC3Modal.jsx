@@ -154,6 +154,12 @@ export const QC3Modal = ({ open, handleClose, selectedArticle, type }) => {
               No Action
             </Typography>
           );
+        } else if (params.row.qc3 === "Z") {
+          return (
+            <Typography variant="body2" textAlign={"center"} mt={2}>
+              No Action
+            </Typography>
+          );
         } else if (params.row.accepted) {
           return <DoneAllIcon color="success" />;
         } else {
