@@ -38,6 +38,7 @@ import CustomAccordionDetails from "../../qc1-components/print/edit-dialog/Searc
 import GroupUnGroupModal from "../../qc1-components/print/Group&Ungroup";
 import MainTable from "../../qc1-components/print/MainTable";
 import AddCompaniesModal from "../../qc1-components/components/AddCompanyModal";
+import { mapBinaryToYesNoAll } from "../../utils/mapBinaryToYesNoAll";
 
 const useStyle = makeStyles(() => ({
   dropDowns: {
@@ -107,22 +108,6 @@ const Online = () => {
     fetchUserList();
   }, [fromDate, dateNow, selectedClient]);
 
-  function mapBinaryToYesNoAll(value) {
-    switch (value) {
-      case 1:
-        return "Y";
-      case "0":
-        return "N";
-      case 2:
-        return "ALL";
-      case 3:
-        return "PY";
-      case 4:
-        return "PN";
-      default:
-        return value;
-    }
-  }
   // * table data
   const [tableData, setTableData] = useState([]);
   const [selectedItems, setSelectedItems] = useState([]);

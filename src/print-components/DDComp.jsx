@@ -8,7 +8,10 @@ import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 
 // ** constantss
 import { formattedDate, formattedNextDay } from "../constants/dates";
-import { qc1Array, qc2Array } from "../constants/dataArray";
+import {
+  qc1ArrayWithPartially,
+  qc2ArrayWithPartially,
+} from "../constants/dataArray";
 import { url } from "../constants/baseUrl";
 // **component imports
 import Client from "./dropdowns/Client";
@@ -32,6 +35,7 @@ import Qc2Table from "./Qc2Table";
 import { ResearchContext } from "../context/ContextProvider";
 import Button from "../components/custom/Button";
 import TextFields from "../components/TextFields/TextField";
+import { mapBinaryToYesNoAll } from "../utils/mapBinaryToYesNoAll";
 
 // ** third party imports
 import axios from "axios";
@@ -100,7 +104,7 @@ const DDComp = () => {
       setProminences(prominenceLists.data.prominence_list);
     }
   }, [prominenceLists]);
-  const [qc1Done, setQc1Done] = useState("2");
+  const [qc1Done, setQc1Done] = useState(2);
   const [qc2Done, setQc2Done] = useState("0");
   const [qc1By, setQc1By] = useState("");
   const [qc2By, setQc2By] = useState("");
@@ -220,13 +224,13 @@ const DDComp = () => {
         qc1Done,
         requestData,
         "is_qc1",
-        Number(qc1Done)
+        mapBinaryToYesNoAll(qc1Done)
       );
       addPropertyIfConditionIsTrue(
         qc2Done,
         requestData,
         "is_qc2",
-        Number(qc2Done)
+        mapBinaryToYesNoAll(qc2Done)
       );
       addPropertyIfConditionIsTrue(qc1By, requestData, "qc1_by", qc1By);
       addPropertyIfConditionIsTrue(qc2By, requestData, "qc2_by", qc2By);
@@ -448,7 +452,7 @@ const DDComp = () => {
                 qc1done={qc1Done}
                 setQc1done={setQc1Done}
                 classes={classes}
-                qc1Array={qc1Array}
+                qc1Array={qc1ArrayWithPartially}
               />
             </div>
             <div className="h-[25px] flex items-center justify-center">
@@ -456,7 +460,7 @@ const DDComp = () => {
                 qc2done={qc2Done}
                 setQc2done={setQc2Done}
                 classes={classes}
-                qc2Array={qc2Array}
+                qc2Array={qc2ArrayWithPartially}
               />
             </div>
             <div className="h-[25px] flex items-center justify-center">

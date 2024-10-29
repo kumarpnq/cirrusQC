@@ -47,6 +47,33 @@ export const qc1ArrayWithPartially = [
     value: 4,
   },
 ];
+export const qc2ArrayWithPartially = [
+  {
+    id: 1,
+    option: "Yes",
+    value: 1,
+  },
+  {
+    id: 2,
+    option: "No",
+    value: "0",
+  },
+  {
+    id: 3,
+    option: "QC2 All",
+    value: 2,
+  },
+  {
+    id: 4,
+    option: "Partially Yes",
+    value: 3,
+  },
+  {
+    id: 5,
+    option: "Partially No",
+    value: 4,
+  },
+];
 export const qc2Array = [
   {
     id: 1,

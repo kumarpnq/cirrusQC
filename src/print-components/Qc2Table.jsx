@@ -278,7 +278,10 @@ const Qc2Table = ({
                           (item === "box_value" && "pl-8") ||
                           (item === "qc1_on" && "pl-28") ||
                           (item === "qc2_by" && "pl-28") ||
-                          (item === "qc2_on" && "pl-32 pr-20")
+                          (item === "qc2_on" && "pl-32 pr-20") ||
+                          (item === "partial_qc_by" && "pl-24") ||
+                          (item === "partial_qc_on" && "pl-28") ||
+                          (item === "default_link" && "pl-28 pr-44")
                         }`}
                         onClick={() => sortTableData(item)}
                       >
@@ -544,6 +547,19 @@ const Qc2Table = ({
                     </td>
                     <td className="px-3 py-2 whitespace-nowrap">
                       <div style={{ width: "200px" }}>{items.qc2_on}</div>
+                    </td>
+                    <td className="px-3 py-2 whitespace-nowrap">
+                      <div style={{ width: "200px" }}>
+                        {items.partial_qc_by}
+                      </div>
+                    </td>
+                    <td className="px-3 py-2 whitespace-nowrap">
+                      <div style={{ width: "200px" }}>
+                        {items.partial_qc_on}
+                      </div>
+                    </td>
+                    <td className="px-3 py-2 whitespace-nowrap">
+                      <div style={{ width: "300px" }}>{items.default_link}</div>
                     </td>
                   </tr>
                 </tbody>

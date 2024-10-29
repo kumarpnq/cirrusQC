@@ -10,11 +10,11 @@ import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 // * constants
 import {
   dateTypes,
-  qc1Array,
   continents,
   countriesByContinent,
   qc2Array,
-  qc3Values,
+  qc1ArrayWithPartially,
+  qc2ArrayWithPartially,
 } from "../constants/dataArray";
 import { url } from "../constants/baseUrl";
 
@@ -35,11 +35,10 @@ import Qc2By from "../components/research-dropdowns/Qc2By";
 import Languages from "../components/research-dropdowns/Languages";
 import Continents from "../components/research-dropdowns/Continents";
 import Countries from "../components/research-dropdowns/Countries";
-import CustomAutocomplete from "../components/custom/Autocomplet";
-import CustomMultiSelect from "../@core/CustomMultiSelect";
 import CompanyList from "../qc1-components/components/CompanyList";
 import YesOrNo from "../@core/YesOrNo";
 import { getValueByTitle } from "../utils/getQc3ValueUsingTitle";
+import { mapBinaryToYesNoAll } from "../utils/mapBinaryToYesNoAll";
 
 const useStyle = makeStyles(() => ({
   dropDowns: {
@@ -227,8 +226,8 @@ const ResearchScreen = () => {
             // search_text: searchValue,
             // qc1_by: "qc1_user", //optional using condition
             // qc2_by: "qc2_user", //optional using condition
-            is_qc1: Number(qc1done),
-            is_qc2: Number(qc2done),
+            is_qc1: mapBinaryToYesNoAll(qc1done),
+            is_qc2: mapBinaryToYesNoAll(qc2done),
             has_image: isImage,
             has_video: isVideo,
             // continent: "Asia", //optional using condition
@@ -365,14 +364,14 @@ const ResearchScreen = () => {
               qc1done={qc1done}
               setQc1done={setQc1done}
               classes={classes}
-              qc1Array={qc1Array}
+              qc1Array={qc1ArrayWithPartially}
             />
             {/* qc2 done */}
             <Qc2All
               qc2done={qc2done}
               setQc2done={setQc2done}
               classes={classes}
-              qc2Array={qc2Array}
+              qc2Array={qc2ArrayWithPartially}
             />
             <YesOrNo
               classes={classes}
