@@ -39,6 +39,7 @@ import CompanyList from "../qc1-components/components/CompanyList";
 import YesOrNo from "../@core/YesOrNo";
 import { getValueByTitle } from "../utils/getQc3ValueUsingTitle";
 import { mapBinaryToYesNoAll } from "../utils/mapBinaryToYesNoAll";
+import CustomTextField from "../@core/CutsomTextField";
 
 const useStyle = makeStyles(() => ({
   dropDowns: {
@@ -96,6 +97,7 @@ const ResearchScreen = () => {
   const [continentsToString, setContinentsToString] = useState("");
   const [countriesToString, setCountriesToString] = useState("");
   const [qc3, setQc3] = useState("");
+  const [searchSocialFeed, setSearchSocialFeed] = useState();
 
   // main data
   const [tableData, setTableData] = useState([]);
@@ -263,6 +265,11 @@ const ResearchScreen = () => {
           );
 
           addPropertyIfConditionIsTrue(qc3, "is_qc3", getValueByTitle(qc3));
+          addPropertyIfConditionIsTrue(
+            searchSocialFeed,
+            "search_id",
+            Number(searchSocialFeed)
+          );
 
           const requestDataJSON = JSON.stringify(requestData);
           const response = await axios.post(
@@ -437,6 +444,15 @@ const ResearchScreen = () => {
               classes={classes}
               filteredCountries={filteredCountries}
             />
+            <div className="h-3">
+              <CustomTextField
+                width={170}
+                placeholder={"SocialFeedID"}
+                type={"number"}
+                value={searchSocialFeed}
+                setValue={setSearchSocialFeed}
+              />
+            </div>
 
             <button
               onClick={() => {

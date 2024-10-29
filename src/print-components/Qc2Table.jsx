@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { Box, Tooltip } from "@mui/material";
+import { Box, IconButton, Tooltip } from "@mui/material";
 import PropTypes from "prop-types";
 import { FindSection } from "./find-section/FindSection";
 import EditSection from "./edit-section/EditSection";
@@ -12,6 +12,8 @@ import { EditAttributesOutlined } from "@mui/icons-material";
 import { TableVirtuoso } from "react-virtuoso";
 import TotalRecordsCard from "../@core/TotalRecords";
 import RadialMenu from "../@core/RadialMenu";
+import FlagIcon from "@mui/icons-material/Flag";
+import QC3Modal from "../components/qc3/QC3Modal";
 
 const Qc2Table = ({
   isTableDataLoading,
@@ -33,12 +35,9 @@ const Qc2Table = ({
 }) => {
   // tableheaders
   const [tableHeaders, setTableHeaders] = useState([]);
-  // searchedData
-  // const [searchedData, setSearchedData] = useState([]);
-  // single article selection for edit
+
   const [selectedArticle, setSelectedArticle] = useState(null);
-  // for highlight the rows
-  // const [highlightRows, setHighlightRows] = useState([]);
+
   // loading states
   const [tableLoading, setTableLoading] = useState(false);
   const [masterCheckBoxLoading, setMasterCheckBoxLoading] = useState(false);
@@ -144,6 +143,16 @@ const Qc2Table = ({
   //for edit modal
   const [open, setOpen] = useState(false);
   const [editedSingleArticle, setEditedSingleArticle] = useState(null);
+  const [openQC3, setOpenQC3] = useState(false);
+
+  const handleOpen = (item) => {
+    setOpenQC3(true);
+    setSelectedArticle((prev) => (prev === item ? null : item));
+  };
+
+  const handleCloseQC3 = () => {
+    setOpenQC3((prev) => !prev);
+  };
 
   const handleClose = () => {
     setOpen(false);
@@ -250,6 +259,14 @@ const Qc2Table = ({
                         Edit
                       </th>
                     )}
+                    {!!dataToRender.length && (
+                      <th
+                        scope="col"
+                        className={`px-2 py-1 text-left text-xs font-medium uppercase tracking-wider cursor-pointer whitespace-nowrap pt-2 pr-2 sticky left-14 bg-primary`}
+                      >
+                        Automation
+                      </th>
+                    )}
 
                     {tableHeaders.map((item) => (
                       <th
@@ -335,6 +352,11 @@ const Qc2Table = ({
                       className="sticky font-thin text-gray-800 bg-white top-10 left-14"
                     >
                       <EditAttributesOutlined className="text-primary" />
+                    </td>
+                    <td className="pl-14">
+                      <IconButton onClick={() => handleOpen(items)}>
+                        <FlagIcon className="text-primary" />
+                      </IconButton>
                     </td>
                     <td className="px-1 py-2 pl-6 whitespace-nowrap">
                       <div className="truncate w-28">{items.company}</div>
@@ -576,6 +598,12 @@ const Qc2Table = ({
         setEditedSingleArticle={setEditedSingleArticle}
         tableData={qc2PrintTableData}
         setTableData={setQc2PrintTableData}
+      />
+      <QC3Modal
+        open={openQC3}
+        handleClose={handleCloseQC3}
+        selectedArticle={selectedArticle}
+        type="print"
       />
     </div>
   );

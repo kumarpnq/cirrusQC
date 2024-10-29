@@ -461,6 +461,7 @@ const MainTable = ({
         open={qc3Open}
         handleClose={handleCloseQC3}
         selectedArticle={selectedArticle}
+        type="online"
       />
     </div>
   );

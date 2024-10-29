@@ -42,8 +42,10 @@ import axios from "axios";
 import { toast } from "react-toastify";
 import CustomDebounceDropdown from "../@core/CustomDebounceDropdown";
 import { arrayToString } from "../utils/arrayToString";
-
+import CustomTextField from "../@core/CutsomTextField";
 import CustomMultiSelect from "../@core/CustomMultiSelect";
+import YesOrNo from "../@core/YesOrNo";
+import { getValueByTitle } from "../utils/getQc3ValueUsingTitle";
 
 const useStyle = makeStyles(() => ({
   dropDowns: {
@@ -83,8 +85,9 @@ const DDComp = () => {
   const [pubType, setPubType] = useState("");
   const [category, setCategory] = useState("");
   const [subject, setSubject] = useState("");
-  // const [mProm, setMProm] = useState();
   const [pageNo, setPageNo] = useState();
+  const [searchArticleID, setSearchArticleID] = useState();
+  const [qc3, setQc3] = useState("");
 
   // reporting tone
   const [reportingTones, setReportingTones] = useState([]);
@@ -232,6 +235,12 @@ const DDComp = () => {
         "is_qc2",
         mapBinaryToYesNoAll(qc2Done)
       );
+      addPropertyIfConditionIsTrue(
+        qc3,
+        requestData,
+        "is_qc3",
+        getValueByTitle(qc3)
+      );
       addPropertyIfConditionIsTrue(qc1By, requestData, "qc1_by", qc1By);
       addPropertyIfConditionIsTrue(qc2By, requestData, "qc2_by", qc2By);
       addPropertyIfConditionIsTrue(
@@ -245,6 +254,12 @@ const DDComp = () => {
         requestData,
         "pagenumber",
         Number(pageNo)
+      );
+      addPropertyIfConditionIsTrue(
+        Number(searchArticleID),
+        requestData,
+        "search_id",
+        Number(searchArticleID)
       );
 
       const headers = {
@@ -306,6 +321,7 @@ const DDComp = () => {
     toast,
     setFetchAfterSave,
     isInitialMount,
+    searchArticleID,
   ]);
 
   // separation of company list logic
@@ -464,6 +480,16 @@ const DDComp = () => {
               />
             </div>
             <div className="h-[25px] flex items-center justify-center">
+              <YesOrNo
+                classes={classes}
+                mapValue={["With Auto", "Without Auto", "All", "Only Auto"]}
+                placeholder="QC3"
+                value={qc3}
+                setValue={setQc3}
+                width={100}
+              />
+            </div>
+            <div className="h-[25px] flex items-center justify-center">
               <Qc1By
                 qcUsersData={qcUsersData || []}
                 qc1by={qc1By}
@@ -498,6 +524,15 @@ const DDComp = () => {
                 type={"number"}
                 value={pageNo}
                 setValue={setPageNo}
+              />
+            </div>
+            <div className="flex items-center justify-center h-3 pt-3">
+              <CustomTextField
+                width={170}
+                placeholder={"ArticleID"}
+                type={"number"}
+                value={searchArticleID}
+                setValue={setSearchArticleID}
               />
             </div>
             <div className="h-[25px] flex items-center justify-center">

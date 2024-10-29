@@ -60,8 +60,9 @@ const CompanyModal = ({
   handleClose,
   selectedCompany,
   setSelectedCompany,
-  socialFeedId,
+  id,
   handleFetch,
+  type,
 }) => {
   const [searchQuery, setSearchQuery] = useState("");
   const [filteredCompanies, setFilteredCompanies] = useState([]);
@@ -118,24 +119,25 @@ const CompanyModal = ({
     try {
       setInsertLoading(true);
       const token = localStorage.getItem("user");
+      const endpoint =
+        type === "print"
+          ? "updatearticletagdetails//"
+          : "updatesocialfeedtagdetails";
+      const idKey = type === "print" ? "articleId" : "socialFeedId";
       const requestData = {
         data: [
           {
             updateType: "I",
-            socialFeedId,
+            [idKey]: id,
             companyId: selectedCompany?.companyid,
             companyName: selectedCompany?.companyname,
           },
         ],
         qcType: "QC3",
       };
-      const response = await axios.post(
-        `${url}updatesocialfeedtagdetails`,
-        requestData,
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        }
-      );
+      const response = await axios.post(`${url + endpoint}`, requestData, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
 
       if (response.data?.result?.success?.length) {
         toast.success("Data inserted.");
@@ -261,7 +263,8 @@ CompanyModal.propTypes = {
     companyname: PropTypes.string,
   }),
   setSelectedCompany: PropTypes.func.isRequired,
-  socialFeedId: PropTypes.number,
+  id: PropTypes.number,
   handleFetch: PropTypes.func,
+  type: PropTypes.string,
 };
 export default CompanyModal;

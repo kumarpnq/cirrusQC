@@ -40,8 +40,9 @@ const StyledModalBox = styled(Box)(({ theme }) => ({
   background: "#FFF",
 }));
 
-export const QC3Modal = ({ open, handleClose, selectedArticle }) => {
+export const QC3Modal = ({ open, handleClose, selectedArticle, type }) => {
   const socialFeedId = selectedArticle?.social_feed_id;
+  const articleId = selectedArticle?.article_id;
   const [openCompanyModal, setCompanyModal] = useState(false);
   const [automationData, setAutomationData] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -53,12 +54,17 @@ export const QC3Modal = ({ open, handleClose, selectedArticle }) => {
     try {
       setLoading(true);
       const token = localStorage.getItem("user");
-      const response = await axios.get(
-        `${url}getSocialFeedAutoTagDetails/?socialfeed_id=${socialFeedId}`,
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
+      const URL_ENDPOINT =
+        type === "print"
+          ? `${url}getArticleAutoTagDetails/?article_id=${articleId}`
+          : `${url}getSocialFeedAutoTagDetails/?socialfeed_id=${socialFeedId}`;
+      const response = await axios.get(URL_ENDPOINT, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
 
-      setAutomationData(response.data.socialfeed_details || []);
+      setAutomationData(
+        response.data.socialfeed_details || response.data.article_details || []
+      );
     } catch (error) {
       console.log(error.message);
     } finally {
@@ -78,10 +84,16 @@ export const QC3Modal = ({ open, handleClose, selectedArticle }) => {
       const token = localStorage.getItem("user");
 
       const requestData = {
-        socialFeedId: socialFeedId,
         companyId: row?.company_id,
       };
-      const response = await axios.post(`${url}updateqc3status/`, requestData, {
+      if (type === "print") {
+        requestData.articleId = articleId;
+      } else {
+        requestData.socialFeedId = socialFeedId;
+      }
+      const endpoint =
+        type === "print" ? "updateqc3statusprint/" : "updateqc3statusonline/";
+      const response = await axios.post(`${url + endpoint}`, requestData, {
         headers: { Authorization: `Bearer ${token}` },
       });
       if (response.data.result?.status?.statusCode === 1) {
@@ -288,7 +300,8 @@ export const QC3Modal = ({ open, handleClose, selectedArticle }) => {
         handleFetch={fetchAutomationData}
         selectedCompany={selectedCompany}
         setSelectedCompany={setSelectedCompany}
-        socialFeedId={socialFeedId}
+        id={type === "print" ? articleId : socialFeedId}
+        type={type}
       />
     </div>
   );
@@ -299,8 +312,10 @@ QC3Modal.propTypes = {
   handleClose: PropTypes.func.isRequired,
   selectedArticle: PropTypes.shape({
     social_feed_id: PropTypes.string,
+    article_id: PropTypes.string,
     company_id: PropTypes.number,
   }).isRequired,
+  type: PropTypes.string,
 };
 
 export default QC3Modal;
