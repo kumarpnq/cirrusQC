@@ -15,6 +15,7 @@ import {
   qc2Array,
   qc1ArrayWithPartially,
   qc2ArrayWithPartially,
+  qc1Array,
 } from "../constants/dataArray";
 import { url } from "../constants/baseUrl";
 
@@ -40,6 +41,7 @@ import YesOrNo from "../@core/YesOrNo";
 import { getValueByTitle } from "../utils/getQc3ValueUsingTitle";
 import { mapBinaryToYesNoAll } from "../utils/mapBinaryToYesNoAll";
 import CustomTextField from "../@core/CutsomTextField";
+import { yesNoToBinary } from "../utils/yesNoToBinary";
 
 const useStyle = makeStyles(() => ({
   dropDowns: {
@@ -82,7 +84,7 @@ const ResearchScreen = () => {
   // qc by defaut it will be null
   const [qc1done, setQc1done] = useState(2);
   // qc2done
-  const [qc2done, setQc2done] = useState(0);
+  const [qc2done, setQc2done] = useState("0");
   // qc1by
   const [qc1by, setQc1by] = useState("");
   // qc2by
@@ -229,7 +231,7 @@ const ResearchScreen = () => {
             // qc1_by: "qc1_user", //optional using condition
             // qc2_by: "qc2_user", //optional using condition
             is_qc1: mapBinaryToYesNoAll(qc1done),
-            is_qc2: mapBinaryToYesNoAll(qc2done),
+            is_qc2: Number(qc2done),
             has_image: isImage,
             has_video: isVideo,
             // continent: "Asia", //optional using condition
@@ -378,7 +380,7 @@ const ResearchScreen = () => {
               qc2done={qc2done}
               setQc2done={setQc2done}
               classes={classes}
-              qc2Array={qc2ArrayWithPartially}
+              qc2Array={qc2Array}
             />
             <YesOrNo
               classes={classes}

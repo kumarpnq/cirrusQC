@@ -213,10 +213,21 @@ export const QC3Modal = ({ open, handleClose, selectedArticle, type }) => {
       headerName: "Remarks",
       width: 150,
     },
+    ...(type === "print"
+      ? [
+          {
+            field: "header_space",
+            headerName: "Header Space",
+            width: 110,
+          },
+          {
+            field: "space",
+            headerName: "space",
+            width: 110,
+          },
+        ]
+      : []),
   ];
-
-  console.log(automationData);
-  console.log(selectedArticle);
 
   const rows = automationData.map((row, index) => ({
     id: index + 1,
@@ -226,13 +237,18 @@ export const QC3Modal = ({ open, handleClose, selectedArticle, type }) => {
     qc3: row.qc3,
     accepted: row.accepted,
     reporting_subject: row.reporting_subject,
-    prominence: row.prominence,
+    prominence: row.prominence || row.manual_prominence,
     reporting_tone: row.reporting_tone,
     detail_summary: row.detail_summary,
     remarks: row.remarks,
     subcategory: row.subcategory,
     headline: selectedArticle?.headline,
-    headSummary: selectedArticle?.headsummary,
+    headSummary:
+      type === "online"
+        ? selectedArticle?.headsummary
+        : selectedArticle?.head_summary,
+    header_space: row.header_space,
+    space: row.space,
   }));
 
   const CustomToolbar = () => {
@@ -332,6 +348,7 @@ QC3Modal.propTypes = {
     company_id: PropTypes.number,
     headline: PropTypes.string,
     headsummary: PropTypes.string,
+    head_summary: PropTypes.string,
   }).isRequired,
   type: PropTypes.string,
 };

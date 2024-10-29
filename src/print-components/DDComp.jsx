@@ -10,6 +10,7 @@ import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import { formattedDate, formattedNextDay } from "../constants/dates";
 import {
   qc1ArrayWithPartially,
+  qc2Array,
   qc2ArrayWithPartially,
 } from "../constants/dataArray";
 import { url } from "../constants/baseUrl";
@@ -233,7 +234,7 @@ const DDComp = () => {
         qc2Done,
         requestData,
         "is_qc2",
-        mapBinaryToYesNoAll(qc2Done)
+        Number(qc2Done)
       );
       addPropertyIfConditionIsTrue(
         qc3,
@@ -476,7 +477,7 @@ const DDComp = () => {
                 qc2done={qc2Done}
                 setQc2done={setQc2Done}
                 classes={classes}
-                qc2Array={qc2ArrayWithPartially}
+                qc2Array={qc2Array}
               />
             </div>
             <div className="h-[25px] flex items-center justify-center">
