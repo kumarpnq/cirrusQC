@@ -21,7 +21,7 @@ const useStyles = makeStyles({
     backgroundColor: "rgb(204, 255, 204) !important",
   },
   P: {
-    backgroundColor: "#8B8000 !important",
+    backgroundColor: "#fff !important",
   },
   NU: {
     backgroundColor: "red !important",
