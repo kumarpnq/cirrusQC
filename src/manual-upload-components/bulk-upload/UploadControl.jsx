@@ -181,7 +181,7 @@ const UploadControl = ({
         setSelectionModal([]);
       }
     } catch (error) {
-      console.log(error);
+      console.log(error.message);
     } finally {
       setProcessLoading(false);
     }
@@ -260,7 +260,7 @@ const UploadControl = ({
         setSelectionModal([]);
       }
     } catch (error) {
-      console.log(error);
+      console.log(error.message);
     } finally {
       setBypassScrapLoading(false);
     }

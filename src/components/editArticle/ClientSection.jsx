@@ -314,7 +314,9 @@ const ClientSection = ({ selectedArticle, selectedClient }) => {
               editableTagData.map((item, index) => (
                 <tr
                   key={item.socialfeed_id + item.company_id}
-                  className={`border border-gray-300 ${"qc3-" + item.qc3}`}
+                  className={`border border-gray-300 ${
+                    "qc3-" + item.qc3_status
+                  }`}
                 >
                   <td
                     className="text-red-500 cursor-pointer"

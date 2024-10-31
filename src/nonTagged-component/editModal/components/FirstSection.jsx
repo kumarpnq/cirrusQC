@@ -110,14 +110,6 @@ const FirstSection = (props) => {
     setEditedSingleArticle,
   ]);
 
-  const handleUpdateArticleHeader = async (e) => {
-    e.preventDefault();
-    try {
-      const response = await axios.post(`${url}`);
-    } catch (error) {
-      console.log(error);
-    }
-  };
   return (
     <form>
       <div className="flex flex-wrap items-center gap-2">
