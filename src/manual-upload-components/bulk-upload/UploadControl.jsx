@@ -163,7 +163,7 @@ const UploadControl = ({
           return {
             ...row,
             status: matchedProcessData.processStatus.message,
-            socialFeedId: matchedProcessData.processStatus.socialFeedId,
+            SocialFeedId: matchedProcessData.processStatus.socialFeedId,
             statusFlag: matchedProcessData.processStatus.processStatusCode,
           };
         }
