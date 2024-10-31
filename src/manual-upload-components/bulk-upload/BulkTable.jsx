@@ -109,7 +109,7 @@ const BulkTable = ({
         onRowSelectionModelChange={handleRowSelection}
         rowsPerPageOptions={[5, 10, 20]}
         slots={{ toolbar: GridToolbar }}
-        density="standard"
+        density="compact"
         slotProps={{ toolbar: { showQuickFilter: true } }}
         disableDensitySelector
         disableColumnFilter
