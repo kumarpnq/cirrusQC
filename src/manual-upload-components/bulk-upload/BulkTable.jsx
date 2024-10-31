@@ -1,6 +1,35 @@
 import { DataGrid, GridToolbar } from "@mui/x-data-grid";
 import { Box } from "@mui/material";
 import PropTypes from "prop-types";
+import { makeStyles } from "@mui/styles"; // If you're using JSS for styling
+
+// Create custom styles for row colors
+const useStyles = makeStyles({
+  DUP: {
+    backgroundColor: "rgb(255, 255, 153) !important",
+  },
+  UP: {
+    backgroundColor: "rgb(204, 229, 255) !important",
+  },
+  SE: {
+    backgroundColor: "rgb(255, 229, 204) !important",
+  },
+  IC: {
+    backgroundColor: "rgb(255, 204, 204) !important",
+  },
+  US: {
+    backgroundColor: "rgb(204, 255, 204) !important",
+  },
+  P: {
+    backgroundColor: "#8B8000 !important",
+  },
+  NU: {
+    backgroundColor: "red !important",
+  },
+  default: {
+    backgroundColor: "gray !important",
+  },
+});
 
 const BulkTable = ({
   data,
@@ -8,26 +37,7 @@ const BulkTable = ({
   selectionModal,
   setSelectionModal,
 }) => {
-  const returnColor = (value) => {
-    switch (value) {
-      case "DUP":
-        return "rgb(255, 255, 153)";
-      case "UP":
-        return "rgb(204, 229, 255)";
-      case "SE":
-        return "rgb(255, 229, 204)";
-      case "IC":
-        return "rgb(255, 204, 204)";
-      case "US":
-        return "rgb(204, 255, 204)";
-      case "P":
-        return "#8B8000";
-      case "NU":
-        return "red";
-      default:
-        return "gray";
-    }
-  };
+  const classes = useStyles();
 
   const columns = [
     { field: "date", headerName: "Date", width: 150 },
@@ -38,11 +48,10 @@ const BulkTable = ({
       headerName: "Status",
       width: 200,
       renderCell: (params) => {
-        const color = returnColor(params.row.statusFlag);
         return (
           <Box
             sx={{
-              color: color,
+              color: "black",
               fontWeight: "bold",
               borderRadius: "4px",
               padding: "4px",
@@ -84,6 +93,11 @@ const BulkTable = ({
     setSelectedRows(selectedRowData);
   };
 
+  // Function to assign classes based on the statusFlag
+  const getRowClassName = (params) => {
+    return classes[params.row.statusFlag] || classes.default;
+  };
+
   return (
     <Box sx={{ height: 400, width: "100%" }}>
       <DataGrid
@@ -102,6 +116,7 @@ const BulkTable = ({
         disableColumnSelector
         disableRowSelectionOnClick
         disableSelectionOnClick
+        getRowClassName={getRowClassName} // Apply row class based on the statusFlag
       />
     </Box>
   );
