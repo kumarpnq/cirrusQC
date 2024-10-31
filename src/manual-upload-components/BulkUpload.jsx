@@ -25,7 +25,7 @@ function BulkUpload() {
           `${url}buttonspermissions/?screen=manualUpload`,
           { headers: { Authorization: `Bearer ${token}` } }
         );
-        console.log(response.data);
+
         let bypassScrapping = response.data.permission_data[0];
         setButtonPermission({
           bypassScrap: bypassScrapping.manual_upload,
