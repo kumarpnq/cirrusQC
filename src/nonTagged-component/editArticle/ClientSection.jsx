@@ -26,12 +26,10 @@ import Button from "../../components/custom/Button";
 const ClientSection = ({
   selectedArticle,
   userToken,
-  setFetchAfterSave,
   tableData,
   setTableData,
   // * cleared states
   tableDataList,
-  setTableDataList,
   editableTagData,
   setEditableTagData,
   modifiedRows,

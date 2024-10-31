@@ -480,7 +480,7 @@ const DDComp = () => {
                 qc2Array={qc2Array}
               />
             </div>
-            <div className="h-[25px] flex items-center justify-center">
+            <div className="h-[25px] flex items-center justify-center mt-3">
               <YesOrNo
                 classes={classes}
                 mapValue={["With Auto", "Without Auto", "All", "Only Auto"]}
@@ -565,6 +565,7 @@ const DDComp = () => {
           setDifferData={setDifferData}
           selectedItems={selectedItems}
           setSelectedItems={setSelectedItems}
+          selectedClient={client}
         />
       </div>
     </div>

@@ -15,9 +15,11 @@ const UploadControl = ({
   setSelectionModal,
   gridData,
   setGridData,
+  buttonPermission,
 }) => {
   const [checkLoading, setCheckLoading] = useState(false);
   const [processLoading, setProcessLoading] = useState(false);
+  const [bypassScrapLoading, setBypassScrapLoading] = useState(false);
 
   const handleCheckRecord = async () => {
     if (selectedRows.length === 0) {
@@ -68,17 +70,21 @@ const UploadControl = ({
       const responses = await Promise.all(requests);
       const responseData = responses.map((i) => i.data);
 
+      const failedRecords = responseData.filter(
+        (item) => item.articleExist.status.statusCode === -1
+      );
+
       const responseMap = responseData.map((item) => {
         const socialFeedId = item.articleExist.processStatus.socialFeedId;
+        const message = item.articleExist.processStatus.message;
         const link = item.link;
+        const statusFlag = item.articleExist.processStatus.processStatusCode;
 
         return {
           link,
           socialFeedId,
-          message:
-            socialFeedId === null
-              ? "Article Not Uploaded."
-              : "Article Already Exist.",
+          message,
+          statusFlag,
         };
       });
 
@@ -88,6 +94,8 @@ const UploadControl = ({
         );
 
         const status = responseEntry ? responseEntry.message : row.status;
+        const statusFlag = responseEntry && responseEntry.statusFlag;
+
         const socialFeedId = responseEntry
           ? responseEntry.socialFeedId
           : row.socialFeedId;
@@ -95,6 +103,7 @@ const UploadControl = ({
         return {
           ...row,
           status,
+          statusFlag,
           ...(socialFeedId && { SocialFeedId: socialFeedId }),
         };
       });
@@ -102,6 +111,9 @@ const UploadControl = ({
       setGridData(finalUpdatedGridData);
       setSelectedRows([]);
       setSelectionModal([]);
+      if (failedRecords.length) {
+        toast.info(`${failedRecords.length} record are getting error.`);
+      }
     } catch (error) {
       console.error("Error checking records:", error.message);
     } finally {
@@ -113,7 +125,7 @@ const UploadControl = ({
     try {
       setProcessLoading(true);
       const validRowsForProcess = selectedRows.filter(
-        (i) => i.status === "Article Not Uploaded."
+        (i) => i.statusFlag === "NU"
       );
 
       if (!validRowsForProcess.length) {
@@ -135,74 +147,122 @@ const UploadControl = ({
         });
       });
       const responses = await Promise.all(requests);
-
+      4;
       const processResponseData = responses.map((i) => i.data.response);
 
-      const processedLinks = processResponseData
-        .filter(
-          (item) =>
-            item.processStatus.message !== "Already uploaded" &&
-            item.processStatus.message !== "Invalid Company ID(s) "
-        )
-        .map((item) => item.processStatus.link);
-
-      const processedFailedLinks = processResponseData
-        .filter((item) => item.processStatus.message === "Already uploaded")
-        .map((item) => item.processStatus.link);
-      const processedFailedLinks2 = processResponseData
-        .filter(
-          (item) => item.processStatus.message === "Invalid Company ID(s) "
-        )
-        .map((item) => ({
-          link: item.processStatus.link,
-          msg: item.processStatus.message,
-        }));
-
-      const toastMessage = `Articles Updated: ${
-        processedLinks.length || 0
-      }, Articles Not Updated: ${
-        processedFailedLinks.length || 0
-      }, Invalid Links: ${processedFailedLinks2.length || 0}`;
+      const failedRecords = processResponseData.filter(
+        (item) => item.status.statusCode === -1
+      );
 
       let updatedGridData = gridData.map((row) => {
-        if (processedLinks.includes(row.Link)) {
-          console.log("Updating row:", row);
-          return {
-            ...row,
-            status: "Updated Successfully",
-          };
-        } else if (processedFailedLinks.includes(row.Link)) {
-          return {
-            ...row,
-            status: "Article Already Uploaded.",
-          };
-        } else {
-          const invalidLink = processedFailedLinks2.find(
-            (item) => item.link === row.Link
-          );
+        const matchedProcessData = processResponseData.find(
+          (item) => item.processStatus.link === row.Link
+        );
 
-          if (invalidLink) {
-            return {
-              ...row,
-              status: invalidLink.msg,
-            };
-          }
+        if (matchedProcessData) {
+          return {
+            ...row,
+            status: matchedProcessData.processStatus.message,
+            socialFeedId: matchedProcessData.processStatus.socialFeedId,
+            statusFlag: matchedProcessData.processStatus.processStatusCode,
+          };
         }
 
         return row;
       });
+
       setGridData(updatedGridData);
-      if (processedLinks.length) {
-        toast.info(toastMessage, { autoClose: 5000 });
+      if (failedRecords.length) {
+        toast.info(`${failedRecords.length} record are getting error.`);
+      }
+      if (processResponseData.length) {
+        toast.info("Success", { autoClose: 5000 });
         setSelectedRows([]);
         setSelectionModal([]);
-      } else {
-        toast.info(toastMessage);
       }
     } catch (error) {
       console.log(error);
     } finally {
       setProcessLoading(false);
+    }
+  };
+
+  const handleBypassScrapping = async () => {
+    try {
+      setBypassScrapLoading(true);
+      const validRowsForBypass =
+        selectedRows.filter((item) => item.statusFlag === "SE") || [];
+      if (!validRowsForBypass.length) {
+        toast.warning("No rows found to bypass");
+        return;
+      }
+      const requests = validRowsForBypass.map((row) => {
+        const {
+          Link,
+          Date: dateStr,
+          Headline,
+          summary,
+          Language,
+          CompanyID,
+        } = row;
+        const parsedDate = parse(dateStr, "dd-MMM-yy", new Date());
+        const formattedDate = format(parsedDate, "yyyy-MM-dd");
+        const requestData = {
+          link: Link,
+          date: formattedDate,
+          headline: Headline,
+          summary: summary,
+          language: Language,
+          companyId: CompanyID,
+        };
+        const userToken = localStorage.getItem("user");
+        const result = axios.post(
+          `${url}insertUnscrappedSocialFeed/`,
+          requestData,
+          {
+            headers: {
+              Authorization: `Bearer ${userToken}`,
+            },
+          }
+        );
+        return result;
+      });
+      const responses = await Promise.all(requests);
+      const processResponseData = responses.map((item) => item.data);
+      const failedRecords = processResponseData.filter(
+        (item) => item.result.status.statusCode === -1
+      );
+
+      let updatedGridData = gridData.map((row) => {
+        const matchedProcessData = processResponseData.find(
+          (item) => item.result.processStatus.link === row.Link
+        );
+
+        if (matchedProcessData) {
+          return {
+            ...row,
+            status: matchedProcessData.result.processStatus.message,
+            socialFeedId: matchedProcessData.result.processStatus.socialFeedId,
+            statusFlag:
+              matchedProcessData.result.processStatus.processStatusCode,
+          };
+        }
+
+        return row;
+      });
+
+      setGridData(updatedGridData);
+
+      if (failedRecords.length) {
+        toast.info(`${failedRecords.length} record are getting error.`);
+      } else {
+        setSelectedRows([]);
+        setSelectionModal([]);
+      }
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setBypassScrapLoading(false);
     }
   };
 
@@ -250,6 +310,17 @@ const UploadControl = ({
           Process
           {processLoading && <CircularProgress size={"1em"} />}
         </Button>
+        {buttonPermission.bypassScrap === "Yes" && (
+          <Button
+            size="small"
+            variant="outlined"
+            sx={{ display: "flex", alignItems: "center", gap: 1 }}
+            onClick={handleBypassScrapping}
+          >
+            {bypassScrapLoading && <CircularProgress size={"1em"} />}
+            Bypass Scrapping
+          </Button>
+        )}
       </div>
     </Box>
   );
@@ -263,6 +334,7 @@ UploadControl.propTypes = {
   gridData: PropTypes.array,
   setGridData: PropTypes.func,
   setSelectionModal: PropTypes.func,
+  buttonPermission: PropTypes.object,
 };
 
 export default UploadControl;

@@ -25,7 +25,7 @@ const style = {
   flexDirection: "column",
 };
 
-const UploadDialog = ({ open, handleClose, selectedRow }) => {
+const UploadDialog = ({ open, handleClose, selectedRow, selectedClient }) => {
   const userToken = localStorage.getItem("user");
   return (
     <Modal open={open} onClose={handleClose}>
@@ -49,6 +49,7 @@ const UploadDialog = ({ open, handleClose, selectedRow }) => {
             <ClientSection
               selectedArticle={selectedRow}
               userToken={userToken}
+              selectedClient={selectedClient}
             />
           </Box>
         </DialogContent>
@@ -61,6 +62,7 @@ UploadDialog.propTypes = {
   open: PropTypes.bool.isRequired,
   handleClose: PropTypes.func.isRequired,
   selectedRow: PropTypes.object.isRequired,
+  selectedClient: PropTypes.string,
 };
 
 export default UploadDialog;

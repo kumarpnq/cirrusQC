@@ -34,6 +34,7 @@ import DebounceSearchCompany from "../../../@core/DebounceSearchCompany";
 const SecondSection = (props) => {
   const userToken = localStorage.getItem("user");
   const { selectedClient, selectedArticle } = props;
+
   const [selectedCompany, setSelectedCompany] = useState(null);
   const [tagData, setTagData] = useState([]);
   const [tagDataLoading, setTagDataLoading] = useState(false);
@@ -54,20 +55,24 @@ const SecondSection = (props) => {
       try {
         setTagDataLoading(true);
         const headers = { Authorization: `Bearer ${userToken}` };
-        const res = await axios.get(
-          `${url}articletagdetails/?article_id=${articleId}`,
-          { headers }
-        );
+        const params = {
+          article_id: articleId,
+          clientId: selectedClient,
+        };
+        const res = await axios.get(`${url}articletagdetails/`, {
+          headers,
+          params,
+        });
         setTagData(res.data.article_details);
         setTagDataLoading(false);
       } catch (error) {
-        console.log(error);
+        console.log(error.message);
       } finally {
         setFetchTagDataAfterChange(false);
       }
     };
     fetchTagDetails();
-  }, [fetchTagDataAfterChange, userToken, articleId]);
+  }, [fetchTagDataAfterChange, userToken, articleId, selectedClient]);
 
   const { data: tones } = useFetchData(`${url}reportingtonelist`);
   const reportingTones = tones?.data?.reportingtones_list || [];

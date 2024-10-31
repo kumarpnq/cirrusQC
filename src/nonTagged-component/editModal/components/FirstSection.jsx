@@ -8,7 +8,7 @@ import { yesOrNo } from "../../../constants/dataArray";
 import CustomSingleSelect from "../../../@core/CustomSingleSelect";
 import useFetchData from "../../../hooks/useFetchData";
 import { url } from "../../../constants/baseUrl";
-import Button from "../../../components/custom/Button";
+
 import axios from "axios";
 
 const FirstSection = (props) => {

@@ -45,6 +45,7 @@ const MainTable = ({
   setSortColumn,
   highlightUpdatedRows,
   setTableData,
+  selectedClient,
 }) => {
   const classes = useStyles();
   const [checkBoxLoading, setCheckBoxLoading] = useState(false);
@@ -458,6 +459,7 @@ const MainTable = ({
         open={open}
         handleClose={handleClose}
         selectedRow={selectedArticle}
+        selectedClient={selectedClient}
       />
       <QC3Modal
         open={qc3Open}
@@ -480,5 +482,6 @@ MainTable.propTypes = {
   setSortColumn: PropTypes.func,
   highlightUpdatedRows: PropTypes.array,
   setTableData: PropTypes.func,
+  selectedClient: PropTypes.string,
 };
 export default MainTable;

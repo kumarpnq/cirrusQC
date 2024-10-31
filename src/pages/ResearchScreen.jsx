@@ -382,14 +382,17 @@ const ResearchScreen = () => {
               classes={classes}
               qc2Array={qc2Array}
             />
-            <YesOrNo
-              classes={classes}
-              mapValue={["With Auto", "Without Auto", "All", "Only Auto"]}
-              placeholder="QC3"
-              value={qc3}
-              setValue={setQc3}
-              width={100}
-            />
+            <div className="h-3">
+              <YesOrNo
+                classes={classes}
+                mapValue={["With Auto", "Without Auto", "All", "Only Auto"]}
+                placeholder="QC3"
+                value={qc3}
+                setValue={setQc3}
+                width={100}
+              />
+            </div>
+
             {/* qc1 by */}
             <Qc1By
               qcUsersData={qcUsersData}
@@ -477,6 +480,7 @@ const ResearchScreen = () => {
           tableData={tableData}
           tableHeaders={tableHeaders}
           setTableData={setTableData}
+          selectedClient={clientId}
         />
       </div>
     </div>

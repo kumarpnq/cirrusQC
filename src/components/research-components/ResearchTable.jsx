@@ -52,6 +52,7 @@ const ResearchTable = ({
   tableData,
   tableHeaders,
   setTableData,
+  selectedClient,
 }) => {
   const classes = useStyles();
   // context values
@@ -673,6 +674,7 @@ const ResearchTable = ({
         updatedRows={updatedRows}
         highlightUpdatedRows={highlightUpdatedRows}
         setTableData={setTableData}
+        selectedClient={selectedClient}
       />
       <Delete
         open={openDeleteDialog}
@@ -691,5 +693,6 @@ ResearchTable.propTypes = {
   tableData: PropTypes.array.isRequired,
   tableHeaders: PropTypes.array.isRequired,
   setTableData: PropTypes.func.isRequired,
+  selectedClient: PropTypes.string,
 };
 export default ResearchTable;

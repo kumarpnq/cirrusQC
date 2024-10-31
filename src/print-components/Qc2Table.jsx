@@ -32,6 +32,7 @@ const Qc2Table = ({
   setUpdatedData,
   selectedItems,
   setSelectedItems,
+  selectedClient,
 }) => {
   // tableheaders
   const [tableHeaders, setTableHeaders] = useState([]);
@@ -600,6 +601,7 @@ const Qc2Table = ({
         setEditedSingleArticle={setEditedSingleArticle}
         tableData={qc2PrintTableData}
         setTableData={setQc2PrintTableData}
+        selectedClient={selectedClient}
       />
       <QC3Modal
         open={openQC3}
@@ -634,5 +636,6 @@ Qc2Table.propTypes = {
   setUpdatedData: PropTypes.func.isRequired,
   selectedItems: PropTypes.array.isRequired,
   setSelectedItems: PropTypes.func.isRequired,
+  selectedClient: PropTypes.string,
 };
 export default Qc2Table;

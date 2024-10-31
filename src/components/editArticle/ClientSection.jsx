@@ -22,7 +22,7 @@ import DebounceSearchCompany from "../../@core/DebounceSearchCompany";
 import Button from "../custom/Button";
 import PropTypes from "prop-types";
 
-const ClientSection = ({ selectedArticle }) => {
+const ClientSection = ({ selectedArticle, selectedClient }) => {
   const userToken = localStorage.getItem("user");
   const [selectedCompany, setSelectedCompany] = useState("");
   const [tableDataList, setTableDataList] = useState([]);
@@ -48,13 +48,14 @@ const ClientSection = ({ selectedArticle }) => {
         const headers = {
           Authorization: `Bearer ${userToken}`,
         };
-
-        const response = await axios.get(
-          `${url}socialfeedtagdetails/?socialfeed_id=${selectedArticle.social_feed_id}`,
-          {
-            headers: headers,
-          }
-        );
+        const params = {
+          socialfeed_id: selectedArticle.social_feed_id,
+          clientId: selectedClient,
+        };
+        const response = await axios.get(`${url}socialfeedtagdetails/`, {
+          headers: headers,
+          params,
+        });
         setTableDataList(response.data.socialfeed_details);
         setTableDataLoading(false);
         setFetchTagDataAfterChange(false);
@@ -451,6 +452,7 @@ const ClientSection = ({ selectedArticle }) => {
 ClientSection.propTypes = {
   selectedArticle: PropTypes.object.isRequired,
   userToken: PropTypes.string.isRequired,
+  selectedClient: PropTypes.string,
 };
 
 export default ClientSection;

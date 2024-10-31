@@ -10,12 +10,20 @@ const BulkTable = ({
 }) => {
   const returnColor = (value) => {
     switch (value) {
-      case "Article Not Uploaded.":
+      case "DUP":
+        return "rgb(255, 255, 153)";
+      case "UP":
+        return "rgb(204, 229, 255)";
+      case "SE":
+        return "rgb(255, 229, 204)";
+      case "IC":
+        return "rgb(255, 204, 204)";
+      case "US":
+        return "rgb(204, 255, 204)";
+      case "P":
+        return "#8B8000";
+      case "NU":
         return "red";
-      case "Article Already Exist.":
-        return "green";
-      case "Pending Check":
-        return "orange";
       default:
         return "gray";
     }
@@ -23,14 +31,14 @@ const BulkTable = ({
 
   const columns = [
     { field: "date", headerName: "Date", width: 150 },
-    { field: "company", headerName: "Company", width: 200, editable: true },
+    { field: "company", headerName: "Company ID", width: 200, editable: true },
     { field: "socialfeedid", headerName: "Social Feed ID", width: 140 },
     {
       field: "status",
       headerName: "Status",
       width: 200,
       renderCell: (params) => {
-        const color = returnColor(params.row.status);
+        const color = returnColor(params.row.statusFlag);
         return (
           <Box
             sx={{
@@ -46,6 +54,9 @@ const BulkTable = ({
       },
     },
     { field: "link", headerName: "Link", width: 400 },
+    { field: "headline", headerName: "Headline", width: 200 },
+    { field: "summary", headerName: "Summary", width: 250 },
+    { field: "language", headerName: "Language", width: 100 },
   ];
 
   const rowDataMap = data.reduce((map, item, index) => {
@@ -59,7 +70,11 @@ const BulkTable = ({
     date: item.Date,
     company: item.CompanyID,
     link: item.Link,
-    status: item.status,
+    status: item.status || "Pending",
+    headline: item.Headline,
+    summary: item.Summary,
+    language: item.Language,
+    statusFlag: item.statusFlag || "P",
   }));
 
   const handleRowSelection = (newSelectionModel) => {

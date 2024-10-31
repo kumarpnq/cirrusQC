@@ -1,4 +1,4 @@
-import { useContext, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Box,
   Typography,
@@ -70,6 +70,7 @@ const SecondSection = (props) => {
         console.log(error);
       } finally {
         setFetchTagDataAfterChange(false);
+        setTagDataLoading(false);
       }
     };
     fetchTagDetails();

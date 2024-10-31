@@ -43,9 +43,9 @@ const useStyle = makeStyles(() => ({
     background: "#d4c8c7",
   },
   iframe: {
-    width: "100%", // Make the iframe fill the entire width of the modal content
-    height: "100%", // Make the iframe fill the entire height of the modal content
-    border: "none", // Remove border around iframe
+    width: "100%",
+    height: "100%",
+    border: "none",
   },
 }));
 
@@ -55,10 +55,8 @@ export default function EditModal({
   selectedArticle,
   editedSingleArticle,
   setEditedSingleArticle,
+  selectedClient,
 }) {
-  // first section states
-  // second section states
-  const [selectedClient, setSelectedClient] = useState("");
   const classes = useStyle();
   return (
     <div style={{ height: "800px !important", overflow: "scroll" }}>
@@ -89,7 +87,6 @@ export default function EditModal({
               />
               <SecondSection
                 selectedClient={selectedClient}
-                setSelectedClient={setSelectedClient}
                 selectedArticle={selectedArticle}
               />
             </Box>
@@ -135,4 +132,5 @@ EditModal.propTypes = {
   setEditedSingleArticle: PropTypes.func.isRequired,
   tableData: PropTypes.array.isRequired,
   setTableData: PropTypes.func.isRequired,
+  selectedClient: PropTypes.string,
 };

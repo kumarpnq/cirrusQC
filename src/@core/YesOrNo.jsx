@@ -1,14 +1,16 @@
 import { FormControl, Select, MenuItem } from "@mui/material";
+import { makeStyles } from "@mui/styles";
 import PropTypes from "prop-types";
 
-const YesOrNo = ({
-  value,
-  setValue,
-  classes,
-  width,
-  mapValue,
-  placeholder,
-}) => {
+const useStyle = makeStyles(() => ({
+  dropDowns: {
+    height: 25,
+    fontSize: "0.8em",
+  },
+}));
+
+const YesOrNo = ({ value, setValue, width, mapValue, placeholder }) => {
+  const classes = useStyle();
   const handleValueChane = (event) => {
     setValue(event.target.value);
   };

@@ -12,6 +12,8 @@ import {
   Checkbox,
   Divider,
   CircularProgress,
+  Select,
+  MenuItem,
 } from "@mui/material";
 import { styled } from "@mui/system";
 import PropTypes from "prop-types";
@@ -364,23 +366,30 @@ const EditDialog = ({
       >
         <StyledItemWrapper>
           <StyledText>Client:</StyledText>
-          <select
-            value={selectedClient}
-            onChange={(e) => setSelectedClient(e.target.value)}
-            className="w-[278px] border border-gray-400 rounded-sm hover:border-black text-sm"
-            disabled={openedFromWhere === "edit"}
-          >
-            <option value="">Select Client</option>
-            {clientData?.data?.clients.map((client) => (
-              <option
-                key={client.clientid}
-                value={client.clientid}
-                className="text-sm"
-              >
-                {client.clientname}
-              </option>
-            ))}
-          </select>
+          <FormControl>
+            <Select
+              disabled={openedFromWhere === "edit"}
+              value={selectedClient}
+              onChange={(e) => setSelectedClient(e.target.value)}
+              className={`${classes.dropDowns} w-[278px]`}
+              displayEmpty
+              inputProps={{ "aria-label": "Without label" }}
+              sx={{ fontSize: "0.8em" }}
+            >
+              <MenuItem value="" sx={{ fontSize: "0.8em", opacity: 0.7 }}>
+                <em>Client</em>
+              </MenuItem>
+              {clientData?.data?.clients?.map((client) => (
+                <MenuItem
+                  key={client.clientid}
+                  value={client.clientid}
+                  sx={{ fontSize: "0.8em", opacity: 0.7 }}
+                >
+                  {client.clientname}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
         </StyledItemWrapper>
         <StyledItemWrapper>
           <StyledText>Company:</StyledText>

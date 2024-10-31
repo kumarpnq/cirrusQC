@@ -1,9 +1,11 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import BulkTable from "./bulk-upload/BulkTable";
 import UploadSection from "./bulk-upload/UploadSection";
 import UploadControl from "./bulk-upload/UploadControl";
 import { toast } from "react-toastify";
 import ManualAddPopup from "./bulk-upload/ManualAddPopup";
+import axios from "axios";
+import { url } from "../constants/baseUrl";
 
 function BulkUpload() {
   const [data, setData] = useState([]);
@@ -11,6 +13,29 @@ function BulkUpload() {
   const [isPopupOpen, setIsPopupOpen] = useState(false);
   const [selectedRows, setSelectedRows] = useState([]);
   const [selectionModal, setSelectionModal] = useState([]);
+  const [buttonPermission, setButtonPermission] = useState({
+    bypassScrap: false,
+  });
+
+  useEffect(() => {
+    const fetchButtonPermission = async () => {
+      try {
+        const token = localStorage.getItem("user");
+        const response = await axios.get(
+          `${url}buttonspermissions/?screen=manualUpload`,
+          { headers: { Authorization: `Bearer ${token}` } }
+        );
+        console.log(response.data);
+        let bypassScrapping = response.data.permission_data[0];
+        setButtonPermission({
+          bypassScrap: bypassScrapping.manual_upload,
+        });
+      } catch (error) {
+        console.log(error.message);
+      }
+    };
+    fetchButtonPermission();
+  }, []);
 
   const handleParse = () => {
     if (data) {
@@ -49,6 +74,7 @@ function BulkUpload() {
           setSelectionModal={setSelectionModal}
           gridData={dataForGrid}
           setGridData={setDataForGrid}
+          buttonPermission={buttonPermission}
         />
       </div>
 
