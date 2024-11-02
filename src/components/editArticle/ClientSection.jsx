@@ -132,6 +132,21 @@ const ClientSection = ({ selectedArticle, selectedClient }) => {
     const rowData = editableTagData.length > 0 && editableTagData[0];
     if (selectedCompany) {
       try {
+        const existingCompanyIds = editableTagData.map(
+          (item) => item.company_id
+        );
+        const uniqueCompanies = selectedCompanies.filter(
+          (item) => !existingCompanyIds.includes(item.value)
+        );
+        const duplicates = selectedCompanies.length - uniqueCompanies.length;
+        if (duplicates > 0) {
+          toast.warning(`${duplicates} duplicate record(s) removed`);
+        }
+
+        if (uniqueCompanies.length === 0) {
+          toast.info("No new companies to add");
+          return;
+        }
         const header = {
           Authorization: `Bearer ${userToken}`,
         };

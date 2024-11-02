@@ -3,7 +3,6 @@ import axios from "axios";
 import PropTypes from "prop-types";
 import { useState } from "react";
 import { url } from "../../constants/baseUrl";
-import { parse, format } from "date-fns";
 import { toast } from "react-toastify";
 import { arrayToString } from "../../utils/arrayToString";
 
@@ -59,10 +58,9 @@ const UploadControl = ({
 
       const requests = validRecords.map((row) => {
         const { Link, Date: dateStr } = row;
-        const parsedDate = parse(dateStr, "dd-MMM-yy", new Date());
-        const formattedDate = format(parsedDate, "yyyy-MM-dd");
+
         return axios.get(`${url}checkSocialFeedExist/`, {
-          params: { url: Link, date: formattedDate },
+          params: { url: Link, date: dateStr },
           headers: { Authorization: `Bearer ${userToken}` },
         });
       });
@@ -135,11 +133,10 @@ const UploadControl = ({
       const userToken = localStorage.getItem("user");
       const requests = validRowsForProcess.map((row) => {
         const { Link, Date: dateStr, CompanyID } = row;
-        const parsedDate = parse(dateStr, "dd-MMM-yy", new Date());
-        const formattedDate = format(parsedDate, "yyyy-MM-dd");
+
         const request_data = {
           url: Link,
-          date: formattedDate,
+          date: dateStr,
           company_ids: arrayToString([CompanyID]),
         };
         return axios.post(`${url}processBulkUpload/`, request_data, {
@@ -147,7 +144,6 @@ const UploadControl = ({
         });
       });
       const responses = await Promise.all(requests);
-      4;
       const processResponseData = responses.map((i) => i.data.response);
 
       const failedRecords = processResponseData.filter(
@@ -205,11 +201,10 @@ const UploadControl = ({
           Language,
           CompanyID,
         } = row;
-        const parsedDate = parse(dateStr, "dd-MMM-yy", new Date());
-        const formattedDate = format(parsedDate, "yyyy-MM-dd");
+
         const requestData = {
           link: Link,
-          date: formattedDate,
+          date: dateStr,
           headline: Headline,
           summary: summary,
           language: Language,

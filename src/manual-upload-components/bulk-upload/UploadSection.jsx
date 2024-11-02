@@ -18,7 +18,6 @@ const UploadSection = ({ setData, setDataForGrid }) => {
   const [isDragging, setIsDragging] = useState(false);
   const fileInputRef = useRef(null);
   const isMobile = useMediaQuery("(max-width:600px)");
-
   const readExcelFile = (file) => {
     const reader = new FileReader();
     reader.onload = (e) => {
@@ -28,24 +27,22 @@ const UploadSection = ({ setData, setDataForGrid }) => {
 
       const jsonData = XLSX.utils.sheet_to_json(firstSheet, {
         raw: false,
-        dateNF: "DD-MMM-YY",
+        defval: "",
       });
 
       const parsedData = jsonData
         .map((row) => {
           Object.keys(row).forEach((key) => {
-            if (typeof row[key] === "number" && row[key] > 30000) {
-              row[key] = formatExcelDate(row[key]);
+            if (key.toLowerCase() === "date") {
+              row[key] = ensureCorrectDateFormat(row[key]);
             }
           });
           return row;
         })
         .filter((row) => {
-          const datePattern = /^\d{1,2}-[A-Za-z]{3}-\d{2}$/;
-
+          const datePattern = /^\d{4}-\d{2}-\d{2}$/;
           const isLinkPresent = row["Link"];
           const isDateValid = row["Date"] && datePattern.test(row["Date"]);
-
           return isLinkPresent && isDateValid;
         });
 
@@ -54,13 +51,27 @@ const UploadSection = ({ setData, setDataForGrid }) => {
     reader.readAsArrayBuffer(file);
   };
 
-  const formatExcelDate = (excelDate) => {
-    const date = XLSX.SSF.parse_date_code(excelDate);
-    return new Date(date.y, date.m - 1, date.d).toLocaleDateString("en-GB", {
-      day: "2-digit",
-      month: "short",
-      year: "2-digit",
-    });
+  const ensureCorrectDateFormat = (dateValue) => {
+    const datePattern = /^\d{4}-\d{2}-\d{2}$/;
+
+    if (datePattern.test(dateValue)) {
+      return dateValue;
+    }
+
+    if (typeof dateValue === "string" && dateValue.includes("/")) {
+      const [year, month, day] = dateValue.split("/");
+      return `${year}-${month.padStart(2, "0")}-${day.padStart(2, "0")}`;
+    }
+
+    if (typeof dateValue === "number") {
+      const parsedDate = XLSX.SSF.parse_date_code(dateValue);
+      const day = String(parsedDate.d).padStart(2, "0");
+      const month = String(parsedDate.m).padStart(2, "0");
+      const year = parsedDate.y;
+      return `${year}-${month}-${day}`;
+    }
+
+    return "";
   };
 
   const handleFileChange = (e) => {

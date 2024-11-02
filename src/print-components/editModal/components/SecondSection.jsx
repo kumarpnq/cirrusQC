@@ -111,10 +111,12 @@ const SecondSection = (props) => {
         (i) => i.companyid === selectedCompanyId
       );
 
-      setSelectedCompany({
-        value: localCompany?.companyid,
-        label: localCompany?.companyName,
-      });
+      setSelectedCompany([
+        {
+          value: localCompany?.companyid,
+          label: localCompany?.companyName,
+        },
+      ]);
     }
   }, [selectedCompanyId]);
 
@@ -276,10 +278,26 @@ const SecondSection = (props) => {
       }));
 
     setSelectedCompanies(filtered);
-  }, [selectedCompany, companies]);
+  }, [selectedCompany]);
 
   const handleAddCompanies = async () => {
     const rowData = editableTagData.length > 0 && editableTagData[0];
+
+    const existingCompanyIds = editableTagData.map((item) => item.company_id);
+
+    const uniqueCompanies = selectedCompanies.filter(
+      (item) => !existingCompanyIds.includes(item.value)
+    );
+
+    const duplicates = selectedCompanies.length - uniqueCompanies.length;
+    if (duplicates > 0) {
+      toast.warning(`${duplicates} duplicate record(s) removed`);
+    }
+
+    if (uniqueCompanies.length === 0) {
+      toast.info("No new companies to add");
+      return;
+    }
     if (selectedCompany) {
       try {
         const header = {
@@ -299,22 +317,7 @@ const SecondSection = (props) => {
           qc2Remark: rowData.qc2_remark,
           detailSummary: rowData.detail_summary,
         }));
-        // const requestData = [
-        //   {
-        //     articleId: rowData.article_id,
-        //     companyId: selectedCompany.value,
-        //     companyName: selectedCompany.label,
-        //     manualProminence: rowData.manual_prominence,
-        //     headerSpace: rowData.header_space,
-        //     space: rowData.space,
-        //     reportingTone: rowData.reporting_tone,
-        //     reportingSubject: rowData.reporting_subject,
-        //     subcategory: rowData.subcategory,
-        //     keyword: rowData.keyword,
-        //     qc2Remark: rowData.qc2_remark,
-        //     detailSummary: rowData.detail_summary,
-        //   },
-        // ];
+
         const response = await axios.post(
           `${url}insertarticledetails/`,
           requestData,
