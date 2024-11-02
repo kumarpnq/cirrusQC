@@ -2,13 +2,6 @@ import { useEffect, useState } from "react";
 import {
   Box,
   Typography,
-  Table,
-  TableBody,
-  TableCell,
-  TableRow,
-  TableContainer,
-  Paper,
-  TableHead,
   Checkbox,
   Dialog,
   DialogTitle,
@@ -298,12 +291,14 @@ const SecondSection = (props) => {
       toast.info("No new companies to add");
       return;
     }
+
     if (selectedCompany) {
       try {
         const header = {
           Authorization: `Bearer ${userToken}`,
         };
-        const requestData = selectedCompanies.map((item) => ({
+
+        const requestData = uniqueCompanies.map((item) => ({
           articleId: rowData.article_id,
           companyId: item.value,
           companyName: item.label,
@@ -325,6 +320,7 @@ const SecondSection = (props) => {
             headers: header,
           }
         );
+
         const successOrError =
           (response.data.result.success.length && "company added") ||
           (response.data.result.errors.length && "something went wrong");
@@ -508,185 +504,181 @@ const SecondSection = (props) => {
           Copy
         </button>
       </Box>
-      <TableContainer component={Paper} sx={{ maxHeight: 400, minHeight: 400 }}>
-        <Table sx={{ overflow: "scroll" }} aria-label="simple table">
-          <TableHead
-            sx={{ position: "sticky", top: 0, zIndex: 10, color: "white" }}
-            className="bg-primary"
-          >
-            <TableRow sx={{ fontSize: "0.8em" }}>
-              <TableCell sx={{ color: "white" }}>CompanyName</TableCell>
-              <TableCell size="small" sx={{ color: "white" }}>
-                Subject
-              </TableCell>
-              <TableCell size="small" sx={{ color: "white" }}>
-                HeaderSpace
-              </TableCell>
-              <TableCell size="small" sx={{ color: "white" }}>
-                Prominence
-              </TableCell>
-              <TableCell size="small" sx={{ color: "white" }}>
-                Space
-              </TableCell>
-              <TableCell size="small" sx={{ color: "white" }}>
-                Tone
-              </TableCell>
-              <TableCell size="small" sx={{ color: "white" }}>
-                Delete
-              </TableCell>
-              <TableCell size="small" sx={{ color: "white" }}>
-                SubCategory
-              </TableCell>
-              <TableCell size="small" sx={{ color: "white" }}>
-                Remarks
-              </TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {tagDataLoading ? (
-              <TableRow>
-                <TableCell colSpan={9} align="center">
-                  <CircularProgress />
-                </TableCell>
-              </TableRow>
-            ) : (
-              editableTagData?.map((row, index) => (
-                <TableRow
-                  key={row.company_id}
-                  sx={{
-                    "&:last-child td, &:last-child th": { border: 0 },
-                  }}
-                  className={`${"qc3-" + editableTagData.qc3_status}`}
-                >
-                  <TableCell sx={{ fontSize: "0.8em" }} size="small">
-                    {row.company_name}
-                  </TableCell>
-                  <TableCell size="small" sx={{ fontSize: "0.9em" }}>
-                    <select
-                      value={row.reporting_subject}
-                      onChange={(e) =>
-                        handleChange(index, "reporting_subject", e.target.value)
-                      }
-                      className="border border-black w-28"
-                    >
-                      <option value={null}>select</option>
-                      {subjects.map((subject) => (
-                        <option
-                          value={subject}
-                          key={subject + Math.random(0, 100)}
-                        >
-                          {subject}
-                        </option>
-                      ))}
-                    </select>
-                  </TableCell>
-                  <TableCell size="small">
-                    <input
-                      className="border border-black outline-none w-14"
-                      value={row.header_space}
-                      type="number"
-                      onBlur={() => handleHeaderSpaceBlur(index)}
-                      onChange={(e) =>
-                        handleChange(index, "header_space", e.target.value)
-                      }
-                    />
-                  </TableCell>
-                  <TableCell
-                    size="small"
-                    onClick={() => handleProminenceBlur(index)}
+      <div
+        style={{
+          maxHeight: 400,
+          minHeight: 400,
+          overflow: "auto",
+          border: "1px solid #ccc",
+        }}
+      >
+        <div className="overflow-auto max-h-96">
+          <table className="w-full border border-collapse border-gray-300">
+            <thead className="sticky top-0 z-10 text-white bg-primary">
+              <tr className="text-sm">
+                <th className="p-2">CompanyName</th>
+                <th className="p-2 min-w-20">Subject</th>
+                <th className="p-2 ">HeaderSpace</th>
+                <th className="p-2">Prominence</th>
+                <th className="p-2 ">Space</th>
+                <th className="p-2 min-w-20">Tone</th>
+                <th className="p-2 ">Delete</th>
+                <th className="p-2 ">SubCategory</th>
+                <th className="p-2">Remarks</th>
+              </tr>
+            </thead>
+            <tbody>
+              {tagDataLoading ? (
+                <tr>
+                  <td colSpan={9} className="p-4 text-center">
+                    <CircularProgress />
+                  </td>
+                </tr>
+              ) : (
+                editableTagData?.map((row, index) => (
+                  <tr
+                    key={row.company_id}
+                    className={`transition-colors hover:bg-blue-100 ${
+                      "qc3-" + row.qc3_status
+                    }`}
                   >
-                    <select
-                      value={row.manual_prominence}
-                      onChange={(e) => {
-                        handleChange(
-                          index,
-                          "manual_prominence",
-                          e.target.value
-                        );
-                      }}
-                      className="border border-black w-28"
+                    <td className="p-2 border border-gray-300">
+                      {row.company_name}
+                    </td>
+                    <td className="p-2 border border-gray-300">
+                      <select
+                        value={row.reporting_subject}
+                        onChange={(e) =>
+                          handleChange(
+                            index,
+                            "reporting_subject",
+                            e.target.value
+                          )
+                        }
+                        className="w-full border border-black"
+                      >
+                        <option value={null}>select</option>
+                        {subjects.map((subject) => (
+                          <option
+                            value={subject}
+                            key={subject + Math.random(0, 100)}
+                          >
+                            {subject}
+                          </option>
+                        ))}
+                      </select>
+                    </td>
+                    <td className="p-2 border border-gray-300">
+                      <input
+                        className="w-full border border-black outline-none"
+                        value={row.header_space}
+                        type="number"
+                        onBlur={() => handleHeaderSpaceBlur(index)}
+                        onChange={(e) =>
+                          handleChange(index, "header_space", e.target.value)
+                        }
+                      />
+                    </td>
+                    <td
+                      className="p-2 border border-gray-300"
+                      onClick={() => handleProminenceBlur(index)}
                     >
-                      <option value={null}>select</option>
-                      {prominences.map((item, index) => (
-                        <option
-                          value={item.prominence}
-                          key={item.prominence + String(index)}
-                        >
-                          {item.prominence}
-                        </option>
-                      ))}
-                    </select>
-                  </TableCell>
-                  <TableCell size="small">
-                    <input
-                      type="number"
-                      value={row.space}
-                      onChange={(e) =>
-                        handleChange(index, "space", e.target.value)
-                      }
-                      disabled
-                      className="border border-black outline-none w-14"
-                    />
-                  </TableCell>
-                  <TableCell size="small">
-                    <select
-                      value={row.reporting_tone}
-                      onChange={(e) =>
-                        handleChange(index, "reporting_tone", e.target.value)
-                      }
-                      className="border border-black w-28"
-                    >
-                      <option value={null}>select</option>
-                      {reportingTones.map((tone, index) => (
-                        <option
-                          value={tone.tonality}
-                          key={tone.tonality + String(index)}
-                        >
-                          {tone.tonality}
-                        </option>
-                      ))}
-                    </select>
-                  </TableCell>
-                  <TableCell size="small">
-                    <Checkbox
-                      checked={checkedRows.some(
-                        (checkedRow) => checkedRow.company_id === row.company_id
-                      )}
-                      onChange={() => handleCheckboxChange(row)}
-                    />
-                  </TableCell>
-                  <TableCell size="small">
-                    <select
-                      value={row.subcategory}
-                      onChange={(e) =>
-                        handleChange(index, "subcategory", e.target.value)
-                      }
-                      className="border border-black w-28"
-                    >
-                      <option value={null}>select</option>
-                      {categories.map((cate, index) => (
-                        <option value={cate} key={cate + String(index)}>
-                          {cate}
-                        </option>
-                      ))}
-                    </select>
-                  </TableCell>
-                  <TableCell size="small">
-                    <input
-                      type="text"
-                      className="border border-black outline-none w-14"
-                      value={row.qc2_remark}
-                      onChange={(e) =>
-                        handleChange(index, "qc2_remark", e.target.value)
-                      }
-                    />
-                  </TableCell>
-                </TableRow>
-              ))
-            )}
-          </TableBody>
-        </Table>
-      </TableContainer>
+                      <select
+                        value={row.manual_prominence}
+                        onChange={(e) =>
+                          handleChange(
+                            index,
+                            "manual_prominence",
+                            e.target.value
+                          )
+                        }
+                        className="w-full border border-black"
+                      >
+                        <option value={null}>select</option>
+                        {prominences.map((item, index) => (
+                          <option
+                            value={item.prominence}
+                            key={item.prominence + String(index)}
+                          >
+                            {item.prominence}
+                          </option>
+                        ))}
+                      </select>
+                    </td>
+                    <td className="p-2 border border-gray-300">
+                      <input
+                        type="number"
+                        value={row.space}
+                        onChange={(e) =>
+                          handleChange(index, "space", e.target.value)
+                        }
+                        disabled
+                        className="w-full border border-black outline-none"
+                      />
+                    </td>
+                    <td className="p-2 border border-gray-300">
+                      <select
+                        value={row.reporting_tone}
+                        onChange={(e) =>
+                          handleChange(index, "reporting_tone", e.target.value)
+                        }
+                        className="w-full border border-black"
+                      >
+                        <option value={null}>select</option>
+                        {reportingTones.map((tone, index) => (
+                          <option
+                            value={tone.tonality}
+                            key={tone.tonality + String(index)}
+                          >
+                            {tone.tonality}
+                          </option>
+                        ))}
+                      </select>
+                    </td>
+                    <td className="p-2 border border-gray-300">
+                      <Checkbox
+                        type="checkbox"
+                        checked={checkedRows.some(
+                          (checkedRow) =>
+                            checkedRow.company_id === row.company_id
+                        )}
+                        onChange={() => handleCheckboxChange(row)}
+                      />
+                    </td>
+                    <td className="p-2 border border-gray-300">
+                      <select
+                        value={row.subcategory}
+                        onChange={(e) =>
+                          handleChange(index, "subcategory", e.target.value)
+                        }
+                        className="w-full border border-black"
+                      >
+                        <option value={null}>select</option>
+                        {categories.map((cate, index) => (
+                          <option value={cate} key={cate + String(index)}>
+                            {cate}
+                          </option>
+                        ))}
+                      </select>
+                    </td>
+                    <td className="p-2 border border-gray-300">
+                      <input
+                        type="text"
+                        className="w-full border border-black outline-none"
+                        value={row.qc2_remark}
+                        onChange={(e) =>
+                          handleChange(index, "qc2_remark", e.target.value)
+                        }
+                      />
+                    </td>
+                  </tr>
+                ))
+              )}
+            </tbody>
+          </table>
+        </div>
+      </div>
+
       <div>
         <Dialog open={open} onClose={handleClose}>
           <DialogTitle fontSize={"1em"}>

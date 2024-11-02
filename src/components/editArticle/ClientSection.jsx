@@ -150,7 +150,7 @@ const ClientSection = ({ selectedArticle, selectedClient }) => {
         const header = {
           Authorization: `Bearer ${userToken}`,
         };
-        const requestData = selectedCompanies.map((item) => ({
+        const requestData = uniqueCompanies.map((item) => ({
           updateType: "I",
           socialFeedId: rowData.socialfeed_id,
           companyId: item.value,
@@ -181,7 +181,7 @@ const ClientSection = ({ selectedArticle, selectedClient }) => {
         if (successOrError === "company added") {
           toast.success(successOrError);
           setSelectedCompanies([]);
-          setSelectedCompanies([]);
+          setSelectedCompany([]);
           setFetchTagDataAfterChange(true);
         } else if (successOrError === "something went wrong") {
           toast.warning(successOrError);
