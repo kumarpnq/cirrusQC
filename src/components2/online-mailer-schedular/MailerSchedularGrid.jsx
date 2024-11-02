@@ -170,7 +170,7 @@ const MailerSchedularGrid = ({
 
   return (
     <>
-      <Box sx={{ height: 600, width: "100%" }}>
+      <Box sx={{ height: "80vh", width: "100%" }}>
         <DataGrid
           rows={rows}
           columns={columns}

@@ -129,7 +129,12 @@ const CustomSingleSelect = ({
           ref={anchorRef}
           className={classes.dropdownToggle}
           onClick={handleToggle}
-          sx={{ width: dropdownToggleWidth }}
+          sx={{
+            width: dropdownToggleWidth,
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+          }}
         >
           <Typography
             component={"p"}
@@ -147,7 +152,7 @@ const CustomSingleSelect = ({
               <span className="italic text-gray-500 text-[0.9em]">{title}</span>
             )}
           </Typography>
-          <IconButton aria-label="toggle list">
+          <IconButton aria-label="toggle list" sx={{ padding: 0 }}>
             {listOpen ? <ArrowDropUpIcon /> : <ArrowDropDownIcon />}
           </IconButton>
         </Box>

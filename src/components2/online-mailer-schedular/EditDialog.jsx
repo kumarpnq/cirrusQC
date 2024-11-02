@@ -14,6 +14,8 @@ import {
   CircularProgress,
   Select,
   MenuItem,
+  Tabs,
+  Tab,
 } from "@mui/material";
 import { styled } from "@mui/system";
 import PropTypes from "prop-types";
@@ -25,6 +27,8 @@ import YesOrNo from "../../@core/YesOrNo";
 import { makeStyles } from "@mui/styles";
 import axios from "axios";
 import { toast } from "react-toastify";
+import axiosInstance from "../../../axiosConfig";
+import CustomSingleSelect from "../../@core/CustomSingleSelect2";
 
 const StyledItemWrapper = styled(Box)({
   display: "flex",
@@ -147,12 +151,30 @@ const EditDialog = ({
   });
   const [active, setActive] = useState(true);
   const [initialState, setInitialState] = useState(null);
+  const [login, setLogin] = useState("");
+  const [loginNames, setLoginNames] = useState([]);
+
   function boolToYesNo(value) {
     return value ? "Yes" : "No";
   }
   function yesNoToBool(value) {
     return value === "Yes" ? true : false;
   }
+
+  useEffect(() => {
+    const fetchLoginDetail = async () => {
+      try {
+        const response = await axiosInstance.get(
+          `getusersforclient/?clientId=${row?.id}`
+        );
+
+        setLoginNames(response.data.loginNames || []);
+      } catch (error) {
+        console.log(error.message);
+      }
+    };
+    fetchLoginDetail();
+  }, [open, row?.id]);
 
   useEffect(() => {
     if (open && openedFromWhere === "edit") {
@@ -187,6 +209,10 @@ const EditDialog = ({
 
   const handleCheckboxChange = (event) => {
     setActive(event.target.checked);
+  };
+
+  const handleChange = (event, newValue) => {
+    setScreenTypeDD(newValue);
   };
 
   // Fetching data
@@ -356,7 +382,7 @@ const EditDialog = ({
       open={open}
       onClose={handleClose}
       maxWidth="md"
-      sx={{ "& .MuiDialog-paper": { height: "70vh" } }}
+      sx={{ "& .MuiDialog-paper": { height: "90vh" } }}
     >
       <DialogTitle fontSize={"1em"}>
         {openedFromWhere === "add" ? "Add" : "Edit"} Item
@@ -405,15 +431,45 @@ const EditDialog = ({
             isIncreased={false}
           />
         </StyledItemWrapper>
-        <StyledItemWrapper>
-          <StyledText>Screen Type:</StyledText>
-          <YesOrNo
-            classes={classes}
-            mapValue={["online", "print", "both"]}
-            placeholder="Screen"
+
+        <Box sx={{ width: "100%" }}>
+          <Tabs
             value={screenTypeDD}
-            setValue={setScreenTypeDD}
-            width={278}
+            onChange={handleChange}
+            variant="fullWidth"
+            textColor="primary"
+            indicatorColor="primary"
+            aria-label="small tabs"
+            sx={{ minHeight: "32px" }}
+          >
+            <Tab
+              label="Print"
+              value="print"
+              sx={{ minHeight: "32px", fontSize: "0.8rem" }}
+            />
+            <Tab
+              label="Online"
+              value="online"
+              sx={{ minHeight: "32px", fontSize: "0.8rem" }}
+            />
+            <Tab
+              label="Both"
+              value="both"
+              sx={{ minHeight: "32px", fontSize: "0.8rem" }}
+            />
+          </Tabs>
+        </Box>
+        <StyledItemWrapper>
+          <StyledText>Login : </StyledText>
+          <CustomSingleSelect
+            dropdownToggleWidth={278}
+            dropdownWidth={278}
+            keyId="_id"
+            keyName="loginName"
+            options={loginNames}
+            selectedItem={login}
+            setSelectedItem={setLogin}
+            title="Login"
           />
         </StyledItemWrapper>
         <StyledItemWrapper>
