@@ -132,5 +132,5 @@ EditModal.propTypes = {
   setEditedSingleArticle: PropTypes.func.isRequired,
   tableData: PropTypes.array.isRequired,
   setTableData: PropTypes.func.isRequired,
-  selectedClient: PropTypes.string,
+  selectedClient: PropTypes.object,
 };

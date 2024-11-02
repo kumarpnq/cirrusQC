@@ -32,6 +32,7 @@ const ClientSection = ({ selectedArticle, selectedClient }) => {
   const [password, setPassword] = useState("");
   const [fetchTagDataAfterChange, setFetchTagDataAfterChange] = useState(false);
   const [modifiedRows, setModifiedRows] = useState([]);
+  const [selectedCompanies, setSelectedCompanies] = useState([]);
   const { loading, error, data, makeRequest } = useProtectedRequest(
     userToken,
     "updatesocialfeedtagdetails/"
@@ -134,22 +135,20 @@ const ClientSection = ({ selectedArticle, selectedClient }) => {
         const header = {
           Authorization: `Bearer ${userToken}`,
         };
-        const requestData = [
-          {
-            updateType: "I",
-            socialFeedId: rowData.socialfeed_id,
-            companyId: selectedCompany.value,
-            companyName: selectedCompany.label,
-            keyword: rowData.keyword,
-            // AUTHOR: rowData.author,
-            reportingTone: rowData.reporting_tone,
-            reportingSubject: rowData.reporting_subject,
-            subCategory: rowData.subcategory,
-            prominence: rowData.prominence,
-            summary: rowData.detail_summary,
-            qc2Remark: rowData.remarks,
-          },
-        ];
+        const requestData = selectedCompanies.map((item) => ({
+          updateType: "I",
+          socialFeedId: rowData.socialfeed_id,
+          companyId: item.value,
+          companyName: item.label,
+          keyword: rowData.keyword,
+          // AUTHOR: rowData.author,
+          reportingTone: rowData.reporting_tone,
+          reportingSubject: rowData.reporting_subject,
+          subCategory: rowData.subcategory,
+          prominence: rowData.prominence,
+          summary: rowData.detail_summary,
+          qc2Remark: rowData.remarks,
+        }));
 
         const data = { data: requestData, qcType: "QC2" };
         const response = await axios.post(
@@ -166,6 +165,8 @@ const ClientSection = ({ selectedArticle, selectedClient }) => {
 
         if (successOrError === "company added") {
           toast.success(successOrError);
+          setSelectedCompanies([]);
+          setSelectedCompanies([]);
           setFetchTagDataAfterChange(true);
         } else if (successOrError === "something went wrong") {
           toast.warning(successOrError);
@@ -282,6 +283,17 @@ const ClientSection = ({ selectedArticle, selectedClient }) => {
       setSaveLoading(false);
     }
   };
+
+  useEffect(() => {
+    const filtered = companies
+      .filter((record) => selectedCompany.includes(record.companyid))
+      .map((record) => ({
+        value: record.companyid,
+        label: record.companyname,
+      }));
+
+    setSelectedCompanies(filtered);
+  }, [selectedCompany, companies]);
 
   return (
     <>

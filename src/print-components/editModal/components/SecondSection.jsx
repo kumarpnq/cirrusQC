@@ -29,13 +29,14 @@ import { toast } from "react-toastify";
 import axios from "axios";
 import PropTypes from "prop-types";
 import { convertKeys } from "../../../constants/convertKeys";
-import CustomSingleSelect from "../../../@core/CustomSingleSelect2";
+import CustomMultiSelect from "../../../@core/CustomMultiSelect";
 
 const SecondSection = (props) => {
   const userToken = localStorage.getItem("user");
   const { selectedClient, selectedArticle } = props;
 
-  const [selectedCompany, setSelectedCompany] = useState(null);
+  const [selectedCompany, setSelectedCompany] = useState([]);
+  const [selectedCompanies, setSelectedCompanies] = useState([]);
   const [selectedCompanyId, setSelectedCompanyId] = useState("");
   const [tagData, setTagData] = useState([]);
   const [tagDataLoading, setTagDataLoading] = useState(false);
@@ -58,7 +59,7 @@ const SecondSection = (props) => {
         const headers = { Authorization: `Bearer ${userToken}` };
         const params = {
           article_id: articleId,
-          clientId: selectedClient,
+          clientId: selectedClient?.clientId,
         };
         const res = await axios.get(`${url}articletagdetails/`, {
           headers,
@@ -99,7 +100,7 @@ const SecondSection = (props) => {
   }, [prominenceLists]);
 
   const { data: companyData } = useFetchData(
-    `${url}companylist/${selectedClient}`
+    `${url}companylist/${selectedClient?.clientId}`
   );
 
   const companies = companyData?.data?.companies || [];
@@ -266,6 +267,16 @@ const SecondSection = (props) => {
       setSaveLoading(false);
     }
   };
+  useEffect(() => {
+    const filtered = companies
+      .filter((record) => selectedCompany.includes(record.companyid))
+      .map((record) => ({
+        value: record.companyid,
+        label: record.companyname,
+      }));
+
+    setSelectedCompanies(filtered);
+  }, [selectedCompany, companies]);
 
   const handleAddCompanies = async () => {
     const rowData = editableTagData.length > 0 && editableTagData[0];
@@ -274,22 +285,36 @@ const SecondSection = (props) => {
         const header = {
           Authorization: `Bearer ${userToken}`,
         };
-        const requestData = [
-          {
-            articleId: rowData.article_id,
-            companyId: selectedCompany.value,
-            companyName: selectedCompany.label,
-            manualProminence: rowData.manual_prominence,
-            headerSpace: rowData.header_space,
-            space: rowData.space,
-            reportingTone: rowData.reporting_tone,
-            reportingSubject: rowData.reporting_subject,
-            subcategory: rowData.subcategory,
-            keyword: rowData.keyword,
-            qc2Remark: rowData.qc2_remark,
-            detailSummary: rowData.detail_summary,
-          },
-        ];
+        const requestData = selectedCompanies.map((item) => ({
+          articleId: rowData.article_id,
+          companyId: item.value,
+          companyName: item.label,
+          manualProminence: rowData.manual_prominence,
+          headerSpace: rowData.header_space,
+          space: rowData.space,
+          reportingTone: rowData.reporting_tone,
+          reportingSubject: rowData.reporting_subject,
+          subcategory: rowData.subcategory,
+          keyword: rowData.keyword,
+          qc2Remark: rowData.qc2_remark,
+          detailSummary: rowData.detail_summary,
+        }));
+        // const requestData = [
+        //   {
+        //     articleId: rowData.article_id,
+        //     companyId: selectedCompany.value,
+        //     companyName: selectedCompany.label,
+        //     manualProminence: rowData.manual_prominence,
+        //     headerSpace: rowData.header_space,
+        //     space: rowData.space,
+        //     reportingTone: rowData.reporting_tone,
+        //     reportingSubject: rowData.reporting_subject,
+        //     subcategory: rowData.subcategory,
+        //     keyword: rowData.keyword,
+        //     qc2Remark: rowData.qc2_remark,
+        //     detailSummary: rowData.detail_summary,
+        //   },
+        // ];
         const response = await axios.post(
           `${url}insertarticledetails/`,
           requestData,
@@ -303,7 +328,8 @@ const SecondSection = (props) => {
 
         if (successOrError === "company added") {
           toast.success(successOrError);
-          setSelectedCompany(null);
+          setSelectedCompany([]);
+          setSelectedCompanies([]);
           setSelectedCompanyId("");
           setFetchTagDataAfterChange(true);
         } else if (successOrError === "something went wrong") {
@@ -423,15 +449,15 @@ const SecondSection = (props) => {
         flexWrap={"wrap"}
       >
         <div className="z-50 mt-3">
-          <CustomSingleSelect
+          <CustomMultiSelect
             dropdownToggleWidth={300}
             dropdownWidth={300}
             keyId="companyid"
             keyName="companyname"
             options={companies || []}
             title="Company"
-            selectedItem={selectedCompanyId}
-            setSelectedItem={setSelectedCompanyId}
+            selectedItems={selectedCompany}
+            setSelectedItems={setSelectedCompany}
           />
         </div>
         <button
@@ -469,7 +495,7 @@ const SecondSection = (props) => {
         component={"div"}
       >
         <Typography sx={{ fontSize: "0.9em", my: 1 }}>
-          Client: {selectedClient || "No client selected"}
+          Client: {selectedClient?.clientName || "No client selected"}
         </Typography>
         <button
           className="px-6 text-white uppercase rounded-md bg-primary"
@@ -696,7 +722,7 @@ const SecondSection = (props) => {
 };
 
 SecondSection.propTypes = {
-  selectedClient: PropTypes.string.isRequired,
+  selectedClient: PropTypes.object.isRequired,
   selectedArticle: PropTypes.array.isRequired,
 };
 export default SecondSection;

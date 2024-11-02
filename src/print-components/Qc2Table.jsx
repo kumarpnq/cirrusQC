@@ -636,6 +636,6 @@ Qc2Table.propTypes = {
   setUpdatedData: PropTypes.func.isRequired,
   selectedItems: PropTypes.array.isRequired,
   setSelectedItems: PropTypes.func.isRequired,
-  selectedClient: PropTypes.string,
+  selectedClient: PropTypes.object,
 };
 export default Qc2Table;

@@ -89,6 +89,10 @@ const DDComp = () => {
   const [pageNo, setPageNo] = useState();
   const [searchArticleID, setSearchArticleID] = useState();
   const [qc3, setQc3] = useState("");
+  const [selectedFullClient, setSelectedFullClient] = useState({
+    clientId: "",
+    clientName: "",
+  });
 
   // reporting tone
   const [reportingTones, setReportingTones] = useState([]);
@@ -116,7 +120,25 @@ const DDComp = () => {
     qc1By,
     qc2By,
   });
+
   const qcUsersData = qcUserData?.data?.qc_users || [];
+  const { data: clientList } = useFetchData(`${url}clientlist/`);
+  const clientLists = clientList?.data?.clients || [];
+
+  useEffect(() => {
+    let selectedClient = client;
+    if (client) {
+      const clientData = clientLists.find(
+        (client) => client?.clientid === selectedClient
+      );
+
+      setSelectedFullClient({
+        clientId: clientData?.clientid,
+        clientName: clientData?.clientname,
+      });
+    }
+  }, [client, clientLists]);
+
   const [city, setCity] = useState([]);
   const [languages, setLanguages] = useState([]);
   // main TableData
@@ -565,7 +587,7 @@ const DDComp = () => {
           setDifferData={setDifferData}
           selectedItems={selectedItems}
           setSelectedItems={setSelectedItems}
-          selectedClient={client}
+          selectedClient={selectedFullClient}
         />
       </div>
     </div>
