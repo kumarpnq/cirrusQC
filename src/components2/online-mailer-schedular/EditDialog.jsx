@@ -283,7 +283,6 @@ const EditDialog = ({
         })),
       ];
 
-      const token = localStorage.getItem("user");
       const requestData = {
         clientId: selectedClient,
         // companyIds: [{ companyId: "", isActive: "" }],
@@ -318,12 +317,9 @@ const EditDialog = ({
         requestData.frequency = every;
       }
 
-      const response = await axios.post(
-        `${url_mongo}updateMailerScheduler`,
-        requestData,
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        }
+      const response = await axiosInstance.post(
+        `updateMailerScheduler`,
+        requestData
       );
 
       if (response.status === 200) {
@@ -356,13 +352,10 @@ const EditDialog = ({
         frequency: every,
         updateType: "I",
       };
-      const token = localStorage.getItem("user");
-      const response = await axios.post(
-        `${url_mongo}updateMailerScheduler/`,
-        requestData,
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        }
+
+      const response = await axiosInstance.post(
+        `updateMailerScheduler/`,
+        requestData
       );
 
       if (response.status === 200) {
