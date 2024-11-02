@@ -347,7 +347,7 @@ const Online = () => {
       });
       const data = {
         data: requestData,
-        qcflag: "QCP",
+        qcType: "QCP",
       };
       const response = await axios.post(`${url}updatesocialfeedheader/`, data, {
         headers,
