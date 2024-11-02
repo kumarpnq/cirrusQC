@@ -443,11 +443,6 @@ const MainTable = ({
         </p>
       ),
     },
-    {
-      field: "main_id",
-      headerName: "Main Id",
-      width: 150,
-    },
   ];
 
   const rows = gridData?.map((item, index) => ({

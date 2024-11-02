@@ -289,7 +289,11 @@ const SearchFilters = ({
         />
       </Typography>
 
-      <Typography component={"div"} className={classes.componentHeight}>
+      <Typography
+        component={"div"}
+        className={classes.componentHeight}
+        pt={1.5}
+      >
         <YesOrNo
           classes={classes}
           mapValue={["Yes", "No", "All"]}
