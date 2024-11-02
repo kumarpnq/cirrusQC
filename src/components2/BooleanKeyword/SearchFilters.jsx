@@ -48,12 +48,20 @@ const SearchFilters = () => {
           <Button variant="outlined" size="small">
             Reset
           </Button>
-          <Button variant="outlined" size="small">
+          <Button
+            variant="outlined"
+            size="small"
+            onClick={() => setOpen((prev) => !prev)}
+          >
             Add
           </Button>
         </Box>
       </form>
-      <AddEditDialog open={open} handleClose={() => setOpen((prev) => !prev)} />
+      <AddEditDialog
+        open={open}
+        handleClose={() => setOpen((prev) => !prev)}
+        fromWhere="Add"
+      />
     </Fragment>
   );
 };

@@ -359,7 +359,7 @@ const MainTable = ({
     },
     {
       field: "headline",
-      headerName: "Headlines",
+      headerName: "Headline",
       width: userColumnSettings?.headline || 300,
       editable: true,
       renderCell: (params) => (
@@ -403,7 +403,7 @@ const MainTable = ({
     },
     {
       field: "page_number",
-      headerName: "Pages",
+      headerName: "Page",
       width: userColumnSettings?.page_number || 80,
     },
     {
@@ -421,8 +421,8 @@ const MainTable = ({
     { field: "uploadTime", headerName: "Upload Time", width: 150 },
     { field: "qc1on", headerName: "QC1 On", width: 150 },
     { field: "qc1by", headerName: "QC1 By", width: 150 },
-    { field: "qcpartial_on", headerName: "QCPartial On", width: 150 },
-    { field: "qcpartial_by", headerName: "QCPartial By", width: 150 },
+    { field: "qcpartial_on", headerName: "QC Partial On", width: 150 },
+    { field: "qcpartial_by", headerName: "QC Partial By", width: 150 },
 
     {
       field: "tagTime",

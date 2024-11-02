@@ -12,6 +12,7 @@ const DebounceSearchCompany = ({
   isMultiple,
   width,
   height,
+  clientId,
 }) => {
   const [searchResults, setSearchResults] = useState([]);
   const [selectedOptions, setSelectedOptions] = useState(
@@ -182,6 +183,7 @@ DebounceSearchCompany.propTypes = {
   selectedCompany: PropTypes.any,
   width: PropTypes.string,
   height: PropTypes.string,
+  clientId: PropTypes.string,
 };
 
 DebounceSearchCompany.defaultProps = {

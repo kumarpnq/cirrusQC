@@ -335,17 +335,15 @@ const MainTable = ({
     },
     {
       field: "socialFeedId",
-      headerName: "socialFeedId",
+      headerName: "SocialFeed ID",
       width: userColumnSettings?.socialFeedId || 150,
     },
 
     { field: "qcDone", headerName: "QC Done", width: 100 },
     { field: "qc1on", headerName: "QC1 On", width: 100 },
     { field: "qc1by", headerName: "QC1 By", width: 100 },
-    { field: "qcpartial_on", headerName: "QCPartial On", width: 100 },
-    { field: "qcpartial_by", headerName: "QCPartial By", width: 100 },
-    { field: "articleDate", headerName: "Article Date", width: 150 },
-    { field: "socialFeedId", headerName: "socialFeedId", width: 150 },
+    { field: "qcpartial_on", headerName: "QC Partial On", width: 100 },
+    { field: "qcpartial_by", headerName: "QC Partial By", width: 100 },
   ];
   const rows = tableData?.map((item, index) => ({
     id: index,

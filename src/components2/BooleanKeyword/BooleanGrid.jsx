@@ -92,6 +92,7 @@ const BooleanGrid = () => {
       <AddEditDialog
         open={openEdit}
         handleClose={() => setOpenEdit((prev) => !prev)}
+        fromWhere="Edit"
       />
     </>
   );

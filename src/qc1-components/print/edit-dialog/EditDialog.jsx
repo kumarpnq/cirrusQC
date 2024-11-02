@@ -713,6 +713,7 @@ const EditDialog = ({
                     selectedCompany={selectedCompanies}
                     isMultiple
                   />
+
                   <div className="flex gap-1 pb-1">
                     <Button
                       onClick={handleAddCompany}

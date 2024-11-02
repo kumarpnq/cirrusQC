@@ -18,9 +18,9 @@ import useFetchData from "../../hooks/useFetchData";
 import { toast } from "react-toastify";
 import useProtectedRequest from "../../hooks/useProtectedRequest";
 import CustomButton from "../../@core/CustomButton";
-import DebounceSearchCompany from "../../@core/DebounceSearchCompany";
 import Button from "../custom/Button";
 import PropTypes from "prop-types";
+import CustomMultiSelect from "../../@core/CustomMultiSelect";
 
 const ClientSection = ({ selectedArticle, selectedClient }) => {
   const userToken = localStorage.getItem("user");
@@ -84,6 +84,12 @@ const ClientSection = ({ selectedArticle, selectedClient }) => {
 
   const { data: tones } = useFetchData(`${url}reportingtonelist`);
   const reportingTones = tones?.data?.reportingtones_list || [];
+
+  const { data: companyData } = useFetchData(
+    `${url}companylist/${selectedClient}`
+  );
+
+  const companies = companyData?.data?.companies || [];
 
   useEffect(() => {
     if (tableDataList.length > 0) {
@@ -276,13 +282,23 @@ const ClientSection = ({ selectedArticle, selectedClient }) => {
       setSaveLoading(false);
     }
   };
+
   return (
     <>
       <Box display="flex" alignItems="center" my={1} gap={1}>
         <Box display="flex" alignItems="center">
           <Typography sx={{ fontSize: "0.9em", mt: 1 }}>Company:</Typography>
-          <div className="z-50 ml-4">
-            <DebounceSearchCompany setSelectedCompany={setSelectedCompany} />
+          <div className="z-50 mt-3 ml-4">
+            <CustomMultiSelect
+              dropdownToggleWidth={300}
+              dropdownWidth={300}
+              keyId="companyid"
+              keyName="companyname"
+              options={companies}
+              selectedItems={selectedCompany}
+              setSelectedItems={setSelectedCompany}
+              title="Company"
+            />
           </div>
         </Box>
         <Button btnText="Add" onClick={handleAddCompanies} />

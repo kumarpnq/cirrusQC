@@ -29,13 +29,14 @@ import { toast } from "react-toastify";
 import axios from "axios";
 import PropTypes from "prop-types";
 import { convertKeys } from "../../../constants/convertKeys";
-import DebounceSearchCompany from "../../../@core/DebounceSearchCompany";
+import CustomSingleSelect from "../../../@core/CustomSingleSelect2";
 
 const SecondSection = (props) => {
   const userToken = localStorage.getItem("user");
   const { selectedClient, selectedArticle } = props;
 
   const [selectedCompany, setSelectedCompany] = useState(null);
+  const [selectedCompanyId, setSelectedCompanyId] = useState("");
   const [tagData, setTagData] = useState([]);
   const [tagDataLoading, setTagDataLoading] = useState(false);
   const [fetchTagDataAfterChange, setFetchTagDataAfterChange] = useState(false);
@@ -96,6 +97,25 @@ const SecondSection = (props) => {
       setProminences(prominenceLists.data.prominence_list);
     }
   }, [prominenceLists]);
+
+  const { data: companyData } = useFetchData(
+    `${url}companylist/${selectedClient}`
+  );
+
+  const companies = companyData?.data?.companies || [];
+
+  useEffect(() => {
+    if (companies.length > 0) {
+      const localCompany = companies.find(
+        (i) => i.companyid === selectedCompanyId
+      );
+
+      setSelectedCompany({
+        value: localCompany?.companyid,
+        label: localCompany?.companyName,
+      });
+    }
+  }, [selectedCompanyId]);
 
   useEffect(() => {
     if (tagData.length > 0) {
@@ -283,6 +303,8 @@ const SecondSection = (props) => {
 
         if (successOrError === "company added") {
           toast.success(successOrError);
+          setSelectedCompany(null);
+          setSelectedCompanyId("");
           setFetchTagDataAfterChange(true);
         } else if (successOrError === "something went wrong") {
           toast.warning(successOrError);
@@ -393,17 +415,25 @@ const SecondSection = (props) => {
   };
 
   return (
-    <div className="px-2 mt-2 border border-black">
+    <div className="px-2 mt-2 border border-black min-h-[400px]">
       <Box
         display={"flex"}
         alignItems={"center"}
         justifyContent={"space-between"}
+        flexWrap={"wrap"}
       >
-        {/* <DebounceSearch
-          selectedCompany={selectedCompany}
-          setSelectedCompany={setSelectedCompany}
-        /> */}
-        <DebounceSearchCompany setSelectedCompany={setSelectedCompany} />
+        <div className="z-50 mt-3">
+          <CustomSingleSelect
+            dropdownToggleWidth={300}
+            dropdownWidth={300}
+            keyId="companyid"
+            keyName="companyname"
+            options={companies || []}
+            title="Company"
+            selectedItem={selectedCompanyId}
+            setSelectedItem={setSelectedCompanyId}
+          />
+        </div>
         <button
           onClick={handleAddCompanies}
           className="px-6 text-white uppercase rounded-md bg-primary"
@@ -439,7 +469,7 @@ const SecondSection = (props) => {
         component={"div"}
       >
         <Typography sx={{ fontSize: "0.9em", my: 1 }}>
-          ClientName: {selectedClient ? selectedClient : "No client selected"}
+          Client: {selectedClient || "No client selected"}
         </Typography>
         <button
           className="px-6 text-white uppercase rounded-md bg-primary"
@@ -449,7 +479,7 @@ const SecondSection = (props) => {
           Copy
         </button>
       </Box>
-      <TableContainer component={Paper} sx={{ maxHeight: 400 }}>
+      <TableContainer component={Paper} sx={{ maxHeight: 400, minHeight: 400 }}>
         <Table sx={{ overflow: "scroll" }} aria-label="simple table">
           <TableHead
             sx={{ position: "sticky", top: 0, zIndex: 10, color: "white" }}

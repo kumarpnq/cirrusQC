@@ -23,7 +23,7 @@ import { url } from "../../constants/baseUrl";
 import CustomSingleSelect from "../../@core/CustomSingleSelect2";
 import QueryBox from "./QueryBox";
 
-const AddEditDialog = ({ open, handleClose }) => {
+const AddEditDialog = ({ open, handleClose, fromWhere }) => {
   const [isSplit, setIsSplit] = useState(true);
   const [tabValue, setTabValue] = useState(0);
   const [includeExcludeTab, setIncludeExcludeTab] = useState(0);
@@ -64,7 +64,7 @@ const AddEditDialog = ({ open, handleClose }) => {
           justifyContent: "space-between",
         }}
       >
-        <DialogTitle fontSize={"1em"}>Add/Edit Item</DialogTitle>
+        <DialogTitle fontSize={"1em"}>{fromWhere} Item</DialogTitle>
         <FormControlLabel
           label="Split"
           control={
@@ -136,6 +136,7 @@ const AddEditDialog = ({ open, handleClose }) => {
               }}
             />
           </Typography>
+
           {!!tabValue && (
             <>
               {" "}
@@ -204,5 +205,6 @@ const AddEditDialog = ({ open, handleClose }) => {
 AddEditDialog.propTypes = {
   open: PropTypes.bool.isRequired,
   handleClose: PropTypes.func.isRequired,
+  fromWhere: PropTypes.string.isRequired,
 };
 export default AddEditDialog;
