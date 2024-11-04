@@ -1,6 +1,7 @@
 import PropTypes from "prop-types";
 import {
   Box,
+  Button,
   CircularProgress,
   ClickAwayListener,
   IconButton,
@@ -45,19 +46,6 @@ const iconCellStyle = {
 };
 
 // * custom toolbar
-function CustomToolbar() {
-  return (
-    <GridToolbarContainer
-      sx={{ display: "flex", justifyContent: "space-between" }}
-    >
-      <Box sx={{ display: "flex" }}>
-        <GridToolbarFilterButton />
-        <GridPagination />
-      </Box>
-      <GridToolbarQuickFilter />
-    </GridToolbarContainer>
-  );
-}
 
 const MainTable = ({
   gridData,
@@ -76,9 +64,33 @@ const MainTable = ({
   gridDataLoading,
   getRowClassName,
   setSortedFilteredRows,
+  handleSave,
+  savePermission,
 }) => {
   // * user settings
   const userColumnSettings = useUserSettings("print", "Main");
+
+  function CustomToolbar() {
+    return (
+      <GridToolbarContainer
+        sx={{ display: "flex", justifyContent: "space-between" }}
+      >
+        <Box sx={{ display: "flex" }}>
+          <GridToolbarFilterButton />
+          <GridPagination />
+        </Box>
+        <Box>
+          {!!savePermission && (
+            <Button size="small" onClick={handleSave}>
+              Save
+            </Button>
+          )}
+
+          <GridToolbarQuickFilter />
+        </Box>
+      </GridToolbarContainer>
+    );
+  }
 
   const [openEditSimilarArticle, setOpenEditSimilarArticle] = useState(false);
   const [selectedSimilarArticle, setSelectedSimilarArticle] = useState({});
@@ -671,5 +683,7 @@ MainTable.propTypes = {
   getRowClassName: PropTypes.func.isRequired,
   setSortedFilteredRows: PropTypes.func.isRequired,
   setChildArticles: PropTypes.func.isRequired,
+  handleSave: PropTypes.func,
+  savePermission: PropTypes.bool,
 };
 export default MainTable;

@@ -27,6 +27,7 @@ const ContextProvider = ({ children }) => {
     companySlicing: false,
     whatsappContact: false,
     clientMaster: false,
+    booleanKeyword: false,
   });
   const [permissionLoading, setPermissionLoading] = useState(false);
 

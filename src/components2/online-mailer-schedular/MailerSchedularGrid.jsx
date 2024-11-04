@@ -5,11 +5,10 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import InfoIcon from "@mui/icons-material/Info";
 import EditDialog from "./EditDialog";
 import { useState } from "react";
-import axios from "axios";
-import { url_mongo } from "../../constants/baseUrl";
 import DeleteConfirmationDialog from "../../@core/DeleteConfirmationDialog";
 import { toast } from "react-toastify";
 import PropTypes from "prop-types";
+import axiosInstance from "../../../axiosConfig";
 
 const MailerSchedularGrid = ({
   loading,
@@ -33,25 +32,28 @@ const MailerSchedularGrid = ({
   const [deleteOpen, setDeleteOpen] = useState(false);
   const handleDelete = async () => {
     try {
-      const token = localStorage.getItem("user");
       const requestData = {
         clientId: selectedRow?.id,
         updateType: "D",
       };
-      const response = await axios.post(
-        `${url_mongo}updateMailerScheduler`,
-        requestData,
-        { headers: { Authorization: `Bearer ${token}` } }
+      const preparedData = {
+        data: [requestData],
+      };
+      const response = await axiosInstance.post(
+        `updateMailerScheduler`,
+        preparedData
       );
 
-      if (response.status === 200) {
+      if (response.data?.scheduleData?.success?.length) {
         const filteredData = scheduleData.filter(
           (item) => item.clientId !== selectedRow?.id
         );
         setScheduleData(filteredData);
         setSelectedRow(null);
         setDeleteOpen(false);
-        toast.success("Record removed successfully.");
+        toast.success(response.data?.scheduleData?.success[0].status);
+      } else {
+        toast.success(response.data?.scheduleData?.success[0].status);
       }
     } catch (error) {
       toast.error("Something went wrong.");
@@ -199,7 +201,9 @@ const MailerSchedularGrid = ({
       />
       <DeleteConfirmationDialog
         open={deleteOpen}
-        onClose={() => setDeleteOpen(false)}
+        onClose={() => {
+          setDeleteOpen(false);
+        }}
         onDelete={handleDelete}
       />
     </>

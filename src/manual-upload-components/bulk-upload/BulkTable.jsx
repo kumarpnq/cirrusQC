@@ -1,7 +1,7 @@
 import { DataGrid, GridToolbar } from "@mui/x-data-grid";
 import { Box } from "@mui/material";
 import PropTypes from "prop-types";
-import { makeStyles } from "@mui/styles"; // If you're using JSS for styling
+import { makeStyles } from "@mui/styles";
 
 // Create custom styles for row colors
 const useStyles = makeStyles({
@@ -66,6 +66,7 @@ const BulkTable = ({
     { field: "headline", headerName: "Headline", width: 200 },
     { field: "summary", headerName: "Summary", width: 250 },
     { field: "language", headerName: "Language", width: 100 },
+    { field: "otherCompanies", headerName: "Other Companies", width: 200 },
   ];
 
   const rowDataMap = data.reduce((map, item, index) => {
@@ -79,11 +80,12 @@ const BulkTable = ({
     date: item.Date,
     company: item.CompanyID,
     link: item.Link,
-    status: item.status || "Pending",
+    status: item.status || "Pending Check",
     headline: item.Headline,
     summary: item.Summary,
     language: item.Language,
     statusFlag: item.statusFlag || "P",
+    otherCompanies: item.otherCompanies.join(",") || "",
   }));
 
   const handleRowSelection = (newSelectionModel) => {
@@ -116,7 +118,7 @@ const BulkTable = ({
         disableColumnSelector
         disableRowSelectionOnClick
         disableSelectionOnClick
-        getRowClassName={getRowClassName} // Apply row class based on the statusFlag
+        getRowClassName={getRowClassName}
       />
     </Box>
   );

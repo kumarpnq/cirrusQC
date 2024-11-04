@@ -315,10 +315,11 @@ const Online = () => {
     return newRow;
   }, []);
 
-  const handleSaveManualEditedCells = async () => {
-    const changedRows = unsavedChangesRef.current.unsavedRows;
-    const rowsBeforeChange = unsavedChangesRef.current.rowsBeforeChange;
+  const [isRowUpdated, setIsRowUpdated] = useState(false);
+  const changedRows = unsavedChangesRef.current.unsavedRows;
+  const rowsBeforeChange = unsavedChangesRef.current.rowsBeforeChange;
 
+  const handleSaveManualEditedCells = async () => {
     if (Object.keys(changedRows).length === 0) {
       toast.warning("No changes found.");
       return;
@@ -360,6 +361,8 @@ const Online = () => {
         //   (item) => !changedRowIds.includes(item.social_feed_id)
         // );
         fetchTableData();
+
+        setHasUnsavedRows(false);
         // setTableData(filteredArray);
       } else {
         toast.warning("Something wrong try again.");
@@ -504,13 +507,13 @@ const Online = () => {
                   onClick={() => setOpenAddCompanies(true)}
                 />
               )}
-              {buttonsPermission?.save === "Yes" && (
+              {/* {buttonsPermission?.save === "Yes" && (
                 <Button
                   btnText={saveLoading ? "saving" : "save"}
                   onClick={handleSaveManualEditedCells}
                   isLoading={saveLoading}
                 />
-              )}
+              )} */}
             </Box>
           </AccordionDetails>
         </Accordion>
@@ -528,6 +531,8 @@ const Online = () => {
         processRowUpdate={processRowUpdate}
         sortedFilteredRows={sortedFilteredRows}
         setSortedFilteredRows={setSortedFilteredRows}
+        handleSave={handleSaveManualEditedCells}
+        savePermission={buttonsPermission?.save === "Yes" && hasUnsavedRows}
         // childArticles={child}
       />
       <EditDialog

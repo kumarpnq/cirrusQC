@@ -20,12 +20,11 @@ import {
 import { styled } from "@mui/system";
 import PropTypes from "prop-types";
 import useFetchData from "../../hooks/useFetchData";
-import { url, url_mongo } from "../../constants/baseUrl";
+import { url } from "../../constants/baseUrl";
 import { useEffect, useState } from "react";
 import CustomMultiSelect from "../../@core/CustomMultiSelect";
 import YesOrNo from "../../@core/YesOrNo";
 import { makeStyles } from "@mui/styles";
-import axios from "axios";
 import { toast } from "react-toastify";
 import axiosInstance from "../../../axiosConfig";
 import CustomSingleSelect from "../../@core/CustomSingleSelect2";
@@ -153,6 +152,39 @@ const EditDialog = ({
   const [initialState, setInitialState] = useState(null);
   const [login, setLogin] = useState("");
   const [loginNames, setLoginNames] = useState([]);
+  const [modifiedData, setModifiedData] = useState([]);
+  const [insertStatus, setInsertStatus] = useState([
+    {
+      entityType: "print",
+      companyIds: [],
+      isSendReport: false,
+      isIncludeReport: false,
+      slots: [],
+      loginName: "",
+      frequency: "Daily",
+      updateType: "I",
+    },
+    {
+      entityType: "online",
+      companyIds: [],
+      isSendReport: false,
+      isIncludeReport: false,
+      slots: [],
+      loginName: "",
+      frequency: "Daily",
+      updateType: "I",
+    },
+    {
+      entityType: "both",
+      companyIds: [],
+      isSendReport: false,
+      isIncludeReport: false,
+      slots: [],
+      loginName: "",
+      frequency: "Daily",
+      updateType: "I",
+    },
+  ]);
 
   function boolToYesNo(value) {
     return value ? "Yes" : "No";
@@ -165,7 +197,7 @@ const EditDialog = ({
     const fetchLoginDetail = async () => {
       try {
         const response = await axiosInstance.get(
-          `getusersforclient/?clientId=${row?.id}`
+          `getusersforclient/?clientId=${row?.id || selectedClient}`
         );
 
         setLoginNames(response.data.loginNames || []);
@@ -173,39 +205,183 @@ const EditDialog = ({
         console.log(error.message);
       }
     };
-    fetchLoginDetail();
-  }, [open, row?.id]);
+    if (open) {
+      fetchLoginDetail();
+    }
+  }, [open, row?.id, selectedClient]);
 
   useEffect(() => {
     if (open && openedFromWhere === "edit") {
-      const filteredCompanies = row?.scheduledCompanies
-        ?.filter((i) => i.isActive)
-        .map((i) => i.companyId);
+      const modifiedScreenData = modifiedData?.[screenTypeDD];
 
-      const initialData = {
+      const filteredCompanies =
+        row?.scheduledCompanies
+          ?.filter((company) => company.isActive)
+          .map((company) => company.companyId) || [];
+
+      const timeStamps = modifiedScreenData?.slotUpdates?.length
+        ? modifiedScreenData.slotUpdates
+            .filter((slot) => slot.isActive)
+            .map((slot) => slot.time)
+        : row?.schedule
+            ?.filter(
+              (scheduleItem) =>
+                scheduleItem.isActive &&
+                scheduleItem.entityType === screenTypeDD
+            )
+            .map((scheduleItem) => scheduleItem.time) || [];
+
+      const newInitialData = {
         selectedClient: row?.id,
-        selectedCompany: filteredCompanies,
+        selectedCompany: modifiedScreenData?.companyUpdates?.length
+          ? modifiedScreenData.companyUpdates.map(
+              (company) => company.companyId
+            )
+          : filteredCompanies,
         active: yesNoToBool(row?.active),
-        every: "Daily",
-        timeStamps: row?.schedule
-          ?.filter((i) => i.entityType === screenTypeDD)
-          .filter((i) => i.isActive)
-          ?.map((i) => i.time),
+        every: row.schedule[0]?.isDayOrMonth || "Daily",
+        loginName: row?.schedule[0]?.loginName || "",
+        timeStamps: timeStamps,
         report: {
           sendReport: yesNoToBool(row?.sendReport),
           lastReport: yesNoToBool(row?.lastReport),
         },
       };
 
-      setSelectedClient(initialData.selectedClient);
-      setSelectedCompany(initialData.selectedCompany);
-      setActive(initialData.active);
-      setEvery(initialData.every);
-      setTimeStamps(initialData.timeStamps);
-      setReport(initialData.report);
-      setInitialState(initialData);
+      setInitialState(newInitialData);
+
+      const hasChanges =
+        JSON.stringify(newInitialData) !== JSON.stringify(initialState);
+
+      if (hasChanges) {
+        setSelectedClient(newInitialData.selectedClient);
+        setSelectedCompany(newInitialData.selectedCompany);
+        setActive(newInitialData.active);
+        setEvery(newInitialData.every);
+        setTimeStamps(newInitialData.timeStamps);
+        setReport(newInitialData.report);
+        setLogin(newInitialData?.loginName || "");
+      } else {
+        if (initialState) {
+          setSelectedClient(initialState.selectedClient || row?.id);
+          setSelectedCompany(initialState.selectedCompany || filteredCompanies);
+          setActive(initialState.active || yesNoToBool(row?.active));
+          setEvery(
+            initialState.every || row.schedule[0]?.isDayOrMonth || "Daily"
+          );
+          setTimeStamps(initialState.timeStamps || timeStamps);
+          setReport(
+            initialState.report || {
+              sendReport: yesNoToBool(row?.sendReport),
+              lastReport: yesNoToBool(row?.lastReport),
+            }
+          );
+        }
+      }
     }
-  }, [open, screenTypeDD]);
+  }, [open, openedFromWhere, row, screenTypeDD]);
+
+  // * insert status
+  useEffect(() => {
+    if (open && openedFromWhere === "add") {
+      setInsertStatus((prevInsertStatus) => {
+        let updatedInsertStatus = [...prevInsertStatus];
+
+        const createEntityStatus = (entityType) => ({
+          entityType,
+          companyIds: selectedCompany,
+          isSendReport: report.sendReport,
+          isIncludeReport: report.lastReport,
+          slots: timeStamps,
+          loginName: login,
+          frequency: every || "Daily",
+          updateType: "I",
+        });
+
+        const updateEntityStatus = (entityType) => {
+          const existingIndex = updatedInsertStatus.findIndex(
+            (status) => status.entityType === entityType
+          );
+          if (existingIndex !== -1) {
+            updatedInsertStatus[existingIndex] = createEntityStatus(entityType);
+          } else {
+            updatedInsertStatus.push(createEntityStatus(entityType));
+          }
+        };
+
+        // Handle "print"
+        if (screenTypeDD === "print") {
+          updateEntityStatus("print");
+        }
+
+        // Handle "online"
+        if (screenTypeDD === "online") {
+          updateEntityStatus("online");
+        }
+
+        // Handle "both"
+        if (screenTypeDD === "both") {
+          updateEntityStatus("both");
+        }
+
+        return updatedInsertStatus;
+      });
+    }
+  }, [
+    open,
+    openedFromWhere,
+    screenTypeDD,
+    selectedCompany,
+    report,
+    timeStamps,
+    every,
+  ]);
+
+  useEffect(() => {
+    if (insertStatus.length > 0 && openedFromWhere === "add") {
+      const currentEntity = insertStatus.find(
+        (status) => status.entityType === screenTypeDD
+      );
+
+      if (currentEntity) {
+        if (
+          selectedCompany.length !== currentEntity.companyIds.length ||
+          !selectedCompany.every(
+            (id, index) => id === currentEntity.companyIds[index]
+          )
+        ) {
+          setSelectedCompany(currentEntity.companyIds || []);
+        }
+
+        if (
+          report.sendReport !== currentEntity.isSendReport ||
+          report.lastReport !== currentEntity.isIncludeReport
+        ) {
+          setReport({
+            sendReport: currentEntity.isSendReport,
+            lastReport: currentEntity.isIncludeReport,
+          });
+        }
+
+        if (
+          timeStamps.length !== currentEntity.slots.length ||
+          !timeStamps.every(
+            (time, index) => time === currentEntity.slots[index]
+          )
+        ) {
+          setTimeStamps(currentEntity.slots || []);
+        }
+
+        if (every !== currentEntity.frequency) {
+          setEvery(currentEntity.frequency || "Daily");
+        }
+
+        if (login !== currentEntity.loginName) {
+          setLogin(currentEntity.loginName || "");
+        }
+      }
+    }
+  }, [screenTypeDD]);
 
   const handleCheckboxChange = (event) => {
     setActive(event.target.checked);
@@ -224,44 +400,24 @@ const EditDialog = ({
   const [updateLoading, setUpdateLoading] = useState(false);
   const [insertLoading, setInsertLoading] = useState(false);
 
-  const handleSave = async () => {
-    try {
-      setUpdateLoading(true);
+  // * save the changes in state
+  useEffect(() => {
+    const detectChanges = () => {
+      if (!initialState) return;
+
       const removedCompanies = initialState.selectedCompany.filter(
         (companyId) => !selectedCompany.includes(companyId)
       );
-
       const addedCompanies = selectedCompany.filter(
         (companyId) => !initialState.selectedCompany.includes(companyId)
       );
-
-      const removedSlots = initialState?.timeStamps?.filter(
+      const removedSlots = initialState.timeStamps?.filter(
         (stamp) => !timeStamps.includes(stamp)
       );
-
       const addedSlots = timeStamps.filter(
         (stamp) => !initialState.timeStamps.includes(stamp)
       );
 
-      const hasCompanyChanges =
-        removedCompanies.length > 0 || addedCompanies.length > 0;
-      const hasSlotChanges = removedSlots.length > 0 || addedSlots.length > 0;
-
-      const hasOtherChanges =
-        active !== initialState.active ||
-        every !== initialState.every ||
-        timeStamps.some(
-          (timestamp, index) => timestamp !== initialState.timeStamps[index]
-        ) ||
-        report.sendReport !== initialState.report.sendReport ||
-        report.lastReport !== initialState.report.lastReport;
-
-      const hasChanges = hasCompanyChanges || hasOtherChanges;
-
-      if (!hasChanges) {
-        toast.warning("No changes detected, not sending data.");
-        return;
-      }
       const companyUpdates = [
         ...removedCompanies.map((companyId) => ({
           companyId,
@@ -272,6 +428,7 @@ const EditDialog = ({
           isActive: true,
         })),
       ];
+
       const slotUpdates = [
         ...removedSlots.map((time) => ({
           time,
@@ -282,6 +439,38 @@ const EditDialog = ({
           isActive: true,
         })),
       ];
+
+      const hasCompanyChanges = companyUpdates.length > 0;
+      const hasSlotChanges = slotUpdates.length > 0;
+
+      if (hasCompanyChanges || hasSlotChanges) {
+        // Update modifiedData based on the screenTypeDD
+        setModifiedData((prevData) => ({
+          ...prevData,
+          [screenTypeDD]: {
+            companyUpdates: hasCompanyChanges ? companyUpdates : [],
+            slotUpdates: hasSlotChanges ? slotUpdates : [],
+          },
+        }));
+      }
+    };
+
+    detectChanges();
+  }, [selectedCompany, timeStamps, screenTypeDD, initialState]);
+
+  const handleSave = async () => {
+    try {
+      setUpdateLoading(true);
+
+      const removedSlots = initialState?.timeStamps?.filter(
+        (stamp) => !timeStamps.includes(stamp)
+      );
+
+      const addedSlots = timeStamps.filter(
+        (stamp) => !initialState.timeStamps.includes(stamp)
+      );
+
+      const hasSlotChanges = removedSlots.length > 0 || addedSlots.length > 0;
 
       const requestData = {
         clientId: selectedClient,
@@ -294,12 +483,12 @@ const EditDialog = ({
         // frequency: "",
         updateType: "U",
       };
-      if (hasCompanyChanges) {
-        requestData.companyIds = companyUpdates;
-      }
-      if (hasSlotChanges) {
-        requestData.slots = slotUpdates;
-      }
+      // if (hasCompanyChanges) {
+      //   requestData.companyIds = companyUpdates;
+      // }
+      // if (hasSlotChanges) {
+      //   requestData.slots = slotUpdates;
+      // }
       if (initialState?.report?.sendReport !== report.sendReport) {
         requestData.isSendReport = boolToYesNo(report.sendReport);
       }
@@ -310,22 +499,61 @@ const EditDialog = ({
         requestData.isActive = boolToYesNo(active);
       }
 
-      if (screenTypeDD) {
-        requestData.entityType = screenTypeDD;
-      }
+      // if (screenTypeDD) {
+      //   requestData.entityType = screenTypeDD;
+      // }
       if (initialState.every !== every || hasSlotChanges) {
         requestData.frequency = every;
       }
 
+      const data = Object.keys(modifiedData)
+        .map((item) => {
+          const slotUpdates = modifiedData[item]?.slotUpdates;
+          const companyUpdates = modifiedData[item]?.companyUpdates;
+
+          if (slotUpdates && slotUpdates.length > 0) {
+            return {
+              ...requestData,
+              entityType: item,
+              loginName: login,
+              slots: slotUpdates,
+              ...(companyUpdates &&
+                companyUpdates.length > 0 && { companyIds: companyUpdates }),
+            };
+          } else if (companyUpdates && companyUpdates.length > 0) {
+            return {
+              ...requestData,
+              entityType: item,
+              loginName: login,
+              ...(companyUpdates &&
+                companyUpdates.length > 0 && { companyIds: companyUpdates }),
+            };
+          }
+
+          return null;
+        })
+        .filter(Boolean);
+
+      const requestDataInDict = {
+        data,
+      };
+
       const response = await axiosInstance.post(
         `updateMailerScheduler`,
-        requestData
+        requestDataInDict
       );
 
-      if (response.status === 200) {
+      if (response.data.scheduleData?.success?.length) {
+        setModifiedData([]);
         handleClose();
         handleFetch();
-        toast.success("Schedule updated successfully");
+        toast.info(
+          ` ${response.data.scheduleData?.success?.length} Schedule updated successfully`
+        );
+      } else {
+        toast.info(
+          ` ${response.data.scheduleData?.error?.length} Schedule not updated.`
+        );
       }
     } catch (error) {
       toast.error("Something went wrong.");
@@ -340,17 +568,14 @@ const EditDialog = ({
       const client = await clientData.data.clients.find(
         (client) => client.clientid === selectedClient
       );
-
-      const requestData = {
+      const preparedData = insertStatus.map((item) => ({
+        ...item,
         clientId: client.clientid,
         clientName: client.clientname,
-        companyIds: selectedCompany,
-        isSendReport: report.sendReport,
-        isIncludeReport: report.lastReport,
-        entityType: screenTypeDD,
-        slots: timeStamps,
-        frequency: every,
-        updateType: "I",
+      }));
+
+      const requestData = {
+        data: preparedData,
       };
 
       const response = await axiosInstance.post(
@@ -358,10 +583,57 @@ const EditDialog = ({
         requestData
       );
 
-      if (response.status === 200) {
-        handleFetch();
+      if (response.data.scheduleData?.success?.length) {
+        setInsertStatus([
+          [
+            {
+              entityType: "print",
+              companyIds: [],
+              isSendReport: false,
+              isIncludeReport: false,
+              slots: [],
+              loginName: "",
+              frequency: "Daily",
+              updateType: "I",
+            },
+            {
+              entityType: "online",
+              companyIds: [],
+              isSendReport: false,
+              isIncludeReport: false,
+              slots: [],
+              loginName: "",
+              frequency: "Daily",
+              updateType: "I",
+            },
+            {
+              entityType: "both",
+              companyIds: [],
+              isSendReport: false,
+              isIncludeReport: false,
+              slots: [],
+              loginName: "",
+              frequency: "Daily",
+              updateType: "I",
+            },
+          ],
+        ]);
+        setScreenTypeDD("print");
+        setSelectedClient("");
+        setSelectedCompany([]);
+        setEvery("Daily");
+        setTimeStamps([]);
+        setReport({
+          sendReport: false,
+          lastReport: false,
+        });
+        setLogin("");
+
         handleClose();
-        toast.success(response.data.scheduleData.status);
+        handleFetch();
+        toast.info(` ${response.data.scheduleData?.success?.[0]?.status}`);
+      } else {
+        toast.info(`${response.data.scheduleData?.error?.[0]?.status}`);
       }
     } catch (error) {
       toast.error("Something went wrong.");
@@ -373,7 +645,10 @@ const EditDialog = ({
   return (
     <Dialog
       open={open}
-      onClose={handleClose}
+      onClose={() => {
+        handleClose();
+        setModifiedData([]);
+      }}
       maxWidth="md"
       sx={{ "& .MuiDialog-paper": { height: "90vh" } }}
     >
@@ -383,6 +658,17 @@ const EditDialog = ({
       <DialogContent
         sx={{ border: "1px solid #D3D3D3", margin: 2, borderRadius: "3px" }}
       >
+        {!!openedFromWhere === "add" && (
+          <Typography
+            variant="body2"
+            color={"GrayText"}
+            fontSize={"0.7em"}
+            textAlign={"right"}
+          >
+            *All fields are required.
+          </Typography>
+        )}
+
         <StyledItemWrapper>
           <StyledText>Client:</StyledText>
           <FormControl>
@@ -424,6 +710,34 @@ const EditDialog = ({
             isIncreased={false}
           />
         </StyledItemWrapper>
+        <Divider sx={{ my: 1 }} />
+        <Box sx={{ display: "flex", alignItems: "center" }}>
+          <Typography width={150}>
+            Send report even if no new results were found:
+          </Typography>
+          <YesNoSwitchWrapper>
+            {/* Yes/No labels */}
+            <CustomSwitch
+              checked={report.sendReport}
+              onChange={(e) =>
+                setReport((prev) => ({ ...prev, sendReport: e.target.checked }))
+              }
+            />
+          </YesNoSwitchWrapper>
+        </Box>
+        <Box sx={{ display: "flex", alignItems: "center" }}>
+          <Typography width={150}>
+            Only include new results since last report:
+          </Typography>
+          <YesNoSwitchWrapper>
+            <CustomSwitch
+              checked={report.lastReport}
+              onChange={(e) =>
+                setReport((prev) => ({ ...prev, lastReport: e.target.checked }))
+              }
+            />
+          </YesNoSwitchWrapper>
+        </Box>
 
         <Box sx={{ width: "100%" }}>
           <Tabs
@@ -457,7 +771,7 @@ const EditDialog = ({
           <CustomSingleSelect
             dropdownToggleWidth={278}
             dropdownWidth={278}
-            keyId="_id"
+            keyId="loginName"
             keyName="loginName"
             options={loginNames}
             selectedItem={login}
@@ -491,34 +805,7 @@ const EditDialog = ({
             </div>
           </Box>
         </StyledItemWrapper>
-        <Divider sx={{ my: 1 }} />
-        <Box sx={{ display: "flex", alignItems: "center" }}>
-          <Typography width={150}>
-            Send report even if no new results were found:
-          </Typography>
-          <YesNoSwitchWrapper>
-            {/* Yes/No labels */}
-            <CustomSwitch
-              checked={report.sendReport}
-              onChange={(e) =>
-                setReport((prev) => ({ ...prev, sendReport: e.target.checked }))
-              }
-            />
-          </YesNoSwitchWrapper>
-        </Box>
-        <Box sx={{ display: "flex", alignItems: "center" }}>
-          <Typography width={150}>
-            Only include new results since last report:
-          </Typography>
-          <YesNoSwitchWrapper>
-            <CustomSwitch
-              checked={report.lastReport}
-              onChange={(e) =>
-                setReport((prev) => ({ ...prev, lastReport: e.target.checked }))
-              }
-            />
-          </YesNoSwitchWrapper>
-        </Box>
+
         <Divider sx={{ my: 1 }} />
         {openedFromWhere === "edit" && (
           <StyledItemWrapper>
@@ -538,7 +825,14 @@ const EditDialog = ({
         )}
       </DialogContent>
       <DialogActions>
-        <Button onClick={handleClose} size="small" variant="outlined">
+        <Button
+          onClick={() => {
+            handleClose();
+            setModifiedData([]);
+          }}
+          size="small"
+          variant="outlined"
+        >
           Cancel
         </Button>
         <Button

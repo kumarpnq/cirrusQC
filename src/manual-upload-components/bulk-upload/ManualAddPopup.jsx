@@ -19,13 +19,17 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import PropTypes from "prop-types";
 import DebounceSearchCompany from "../../@core/DebounceSearchCompany";
 import { format, parse } from "date-fns";
+import { toast } from "react-toastify";
 
 const ManualAddPopup = ({ open, onClose, setData }) => {
-  const [date, setDate] = useState(() => format(new Date(), "dd-MMM-yy"));
+  // Initialize with today's date in 'yyyy-MM-dd' format
+  const [date, setDate] = useState(() => format(new Date(), "yyyy-MM-dd"));
   const [link, setLink] = useState("");
   const [records, setRecords] = useState([]);
   const [linkError, setLinkError] = useState(false);
   const [selectedCompany, setSelectedCompany] = useState([]);
+  const [headline, setHeadline] = useState("");
+  const [summary, setSummary] = useState("");
 
   const formatSelectedCompanies = () => {
     return selectedCompany.map((company) => company.value).join(",");
@@ -52,24 +56,36 @@ const ManualAddPopup = ({ open, onClose, setData }) => {
     }
   };
 
-  const handleAddRecord = () => {
+  const handleAddRecord = (event) => {
+    event.preventDefault();
+    const isDuplicate = records.some((record) => record.Link === link);
+
+    if (isDuplicate) {
+      toast.warning("A record with this link already exists.");
+      return;
+    }
+
     setRecords([
       ...records,
       {
         Date: date,
         CompanyID: formatSelectedCompanies(),
-        CompanyName: formatSelectedCompaniesLabel,
+        CompanyName: formatSelectedCompaniesLabel(),
         Link: link,
+        Headline: headline,
+        Summary: summary,
       },
     ]);
+
     // Clear the fields after adding
     // setDate("");
-    // setLink("");
+    setLink("");
+    setHeadline("");
+    setSummary("");
     // setSelectedCompany([]);
   };
 
-  const handleAddRecords = (event) => {
-    event.preventDefault();
+  const handleAddRecords = () => {
     setData((prev) => [...records, ...prev]);
   };
 
@@ -80,26 +96,19 @@ const ManualAddPopup = ({ open, onClose, setData }) => {
   const handleDateChange = (e) => {
     const newDate = e.target.value;
     try {
-      // Parse and format the date to match 'dd-MMM-yy'
       const parsedDate = parse(newDate, "yyyy-MM-dd", new Date());
-      setDate(format(parsedDate, "dd-MMM-yy"));
+      setDate(format(parsedDate, "yyyy-MM-dd"));
     } catch (error) {
       console.error("Error parsing date:", error);
     }
   };
 
   return (
-    <Dialog open={open} onClose={onClose} fullWidth maxWidth="sm">
+    <Dialog open={open} onClose={onClose} fullWidth maxWidth="lg">
       <DialogTitle>Manual Add</DialogTitle>
-      <form onSubmit={handleAddRecords}>
-        <DialogContent sx={{ height: 330 }}>
+      <DialogContent sx={{ height: 330 }}>
+        <form onSubmit={handleAddRecord}>
           <Grid container spacing={1}>
-            {/* <Grid item xs={12} sm={6}>
-            <DebounceSearchCompany
-              selectedCompany={selectedCompany}
-              setSelectedCompany={setSelectedCompany}
-            />
-          </Grid> */}
             <Grid item xs={12} sm={6}>
               <TextField
                 label="Date"
@@ -108,10 +117,7 @@ const ManualAddPopup = ({ open, onClose, setData }) => {
                 type="date"
                 size="small"
                 InputLabelProps={{ shrink: true }}
-                value={format(
-                  parse(date, "dd-MMM-yy", new Date()),
-                  "yyyy-MM-dd"
-                )}
+                value={date}
                 onChange={handleDateChange}
               />
             </Grid>
@@ -122,6 +128,26 @@ const ManualAddPopup = ({ open, onClose, setData }) => {
                 isMultiple
                 width={"100%"}
                 height={"h-10"}
+              />
+            </Grid>
+            <Grid item xs={12} sm={12}>
+              <TextField
+                label="Headline"
+                fullWidth
+                margin="dense"
+                size="small"
+                value={headline}
+                onChange={(e) => setHeadline(e.target.value)}
+              />
+            </Grid>
+            <Grid item xs={12} sm={12}>
+              <TextField
+                label="Summary"
+                fullWidth
+                margin="dense"
+                size="small"
+                value={summary}
+                onChange={(e) => setSummary(e.target.value)}
               />
             </Grid>
             <Grid item xs={12} sm={12}>
@@ -141,77 +167,80 @@ const ManualAddPopup = ({ open, onClose, setData }) => {
           <Button
             variant="contained"
             color="primary"
-            onClick={handleAddRecord}
+            type="submit"
             sx={{ mt: 2 }}
           >
             Add Record
           </Button>
+        </form>
 
-          <List sx={{ mt: 2, maxHeight: 300, overflowY: "scroll" }}>
-            {records.map((record, index) => (
-              <ListItem
-                key={index}
-                sx={{
-                  border: "1px solid #ddd",
-                  borderRadius: "8px",
-                  boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
-                  mb: 1,
-                  p: 1,
-                  bgcolor: "#fff",
-                }}
-              >
-                <ListItemText
-                  primary={
-                    <Typography
-                      component={"div"}
-                      display={"flex"}
-                      alignItems={"center"}
-                      gap={1}
-                    >
-                      <span className="text-gray-400">
-                        {record.socialFeedId}
-                      </span>
-                      <span className="text-gray-400">{record.Date}</span>
-                      <span className="text-gray-400">
-                        {record.CompanyName}
-                      </span>
-                      <Link
-                        href={record.Link || ""}
-                        target="_blank"
-                        rel="noopener"
-                      >
-                        {record.Link}
-                      </Link>
-                    </Typography>
-                  }
-                />
-
-                <ListItemSecondaryAction>
-                  <IconButton
-                    edge="end"
-                    onClick={() => handleDeleteRecord(index)}
+        <List sx={{ mt: 2, maxHeight: 300, overflowY: "scroll" }}>
+          {records.map((record, index) => (
+            <ListItem
+              key={index}
+              sx={{
+                border: "1px solid #ddd",
+                borderRadius: "8px",
+                boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
+                mb: 1,
+                p: 1,
+                bgcolor: "#fff",
+              }}
+            >
+              <ListItemText
+                primary={
+                  <Typography
+                    component={"div"}
+                    display={"flex"}
+                    alignItems={"center"}
+                    gap={1}
+                    textOverflow={"ellipsis"}
                   >
-                    <DeleteIcon />
-                  </IconButton>
-                </ListItemSecondaryAction>
-              </ListItem>
-            ))}
-          </List>
-        </DialogContent>
-        <DialogActions>
-          <Button
-            onClick={onClose}
-            color="primary"
-            size="small"
-            variant="outlined"
-          >
-            Close
-          </Button>
-          <Button color="primary" type="submit" size="small" variant="outlined">
-            Add
-          </Button>
-        </DialogActions>
-      </form>
+                    <span className="text-gray-400">{record.Date}</span>
+                    <span className="text-gray-400">{record.CompanyName}</span>
+                    <Link
+                      href={record.Link || ""}
+                      target="_blank"
+                      rel="noopener"
+                    >
+                      {record.Link}
+                    </Link>
+                    <span>{record.Headline}</span>
+                    <span>{record.Summary}</span>
+                  </Typography>
+                }
+              />
+
+              <ListItemSecondaryAction>
+                <IconButton
+                  edge="end"
+                  onClick={() => handleDeleteRecord(index)}
+                >
+                  <DeleteIcon />
+                </IconButton>
+              </ListItemSecondaryAction>
+            </ListItem>
+          ))}
+        </List>
+      </DialogContent>
+      <DialogActions>
+        <Button
+          onClick={onClose}
+          color="primary"
+          size="small"
+          variant="outlined"
+        >
+          Close
+        </Button>
+        <Button
+          color="primary"
+          size="small"
+          variant="outlined"
+          onClick={handleAddRecords}
+        >
+          Add
+        </Button>
+      </DialogActions>
     </Dialog>
   );
 };

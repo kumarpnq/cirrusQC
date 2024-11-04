@@ -635,6 +635,7 @@ const Print = () => {
         );
         // fetchListArticleByQC1Print();
         setGridData(filteredArray);
+        setHasUnsavedRows(false);
       } else {
         toast.warning("Something went wrong, please try again.");
       }
@@ -793,6 +794,8 @@ const Print = () => {
         gridDataLoading={gridDataLoading}
         getRowClassName={getRowClassName}
         setSortedFilteredRows={setSortedFilteredRows}
+        handleSave={handleSaveManualEditedCells}
+        savePermission={buttonsPermission?.save === "Yes" && hasUnsavedRows}
       />
 
       <EditDialog

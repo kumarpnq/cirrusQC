@@ -46,6 +46,7 @@ const DeleteConfirmationDialog = ({ open, onClose, onDelete }) => {
     const isValidUser = await userVerification();
     if (isValidUser) {
       onDelete();
+      setPassword("");
       // onClose();
       // toast.success("Deleted successfully!");
     } else {

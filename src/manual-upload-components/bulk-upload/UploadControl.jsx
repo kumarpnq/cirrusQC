@@ -57,10 +57,10 @@ const UploadControl = ({
       const userToken = localStorage.getItem("user");
 
       const requests = validRecords.map((row) => {
-        const { Link, Date: dateStr } = row;
+        const { Link, Date: dateStr, CompanyID } = row;
 
         return axios.get(`${url}checkSocialFeedExist/`, {
-          params: { url: Link, date: dateStr },
+          params: { url: Link, date: dateStr, companyIds: CompanyID },
           headers: { Authorization: `Bearer ${userToken}` },
         });
       });
@@ -77,12 +77,15 @@ const UploadControl = ({
         const message = item.articleExist.processStatus.message;
         const link = item.link;
         const statusFlag = item.articleExist.processStatus.processStatusCode;
+        const otherCompanies =
+          item.articleExist.processStatus.otherCompanies || [];
 
         return {
           link,
           socialFeedId,
           message,
           statusFlag,
+          otherCompanies,
         };
       });
 

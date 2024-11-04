@@ -80,13 +80,13 @@ const GroupUnGroupAccordion = ({
               onClick={() => setUnStitchModalOpen(true)}
             />
           )}
-          {buttonsPermission?.save === "Yes" && (
+          {/* {buttonsPermission?.save === "Yes" && (
             <Button
               btnText={saveLoading ? "Saving" : "Save"}
               onClick={handleSaveManualEditedCells}
               isLoading={saveLoading}
             />
-          )}
+          )} */}
         </AccordionDetails>
       </Accordion>
       <EditDialog

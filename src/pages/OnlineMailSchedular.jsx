@@ -4,9 +4,8 @@ import { useEffect, useState } from "react";
 import EditDialog from "../components2/online-mailer-schedular/EditDialog";
 import SearchFilters from "../components2/online-mailer-schedular/SearchFilters";
 import SendMailGrid from "../components2/online-mailer-schedular/SendMailGrid";
-import { url_mongo } from "../constants/baseUrl";
-import axios from "axios";
 import { toast } from "react-toastify";
+import axiosInstance from "../../axiosConfig";
 
 function a11yProps(index) {
   return {
@@ -32,10 +31,7 @@ const OnlineMailSchedular = () => {
   const fetchData = async () => {
     try {
       setLoading(true);
-      const token = localStorage.getItem("user");
-      const response = await axios.get(`${url_mongo}mailerSchedulerData/`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      const response = await axiosInstance.get(`mailerSchedulerData/`, {});
       const activeClients = response.data.scheduleData.filter((i) => i.active);
       setScheduleData(activeClients);
     } catch (error) {

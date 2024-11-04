@@ -72,7 +72,7 @@ const CompanyList = ({
         options={companies || []}
         selectedItems={selectedCompanies}
         setSelectedItems={setSelectedCompanies}
-        title="companies"
+        title="Companies"
       />
     </div>
   );

@@ -145,9 +145,23 @@ const CustomSingleSelect = ({
             }}
           >
             {selectedItem ? (
-              options
-                .find((option) => option[keyId] === selectedItem)
-                [keyName].substring(0, 30) + "..."
+              options.find((option) => option[keyId] === selectedItem) ? (
+                options.find((option) => option[keyId] === selectedItem)[
+                  keyName
+                ].length > 30 ? (
+                  options
+                    .find((option) => option[keyId] === selectedItem)
+                    [keyName].substring(0, 30) + "..."
+                ) : (
+                  options.find((option) => option[keyId] === selectedItem)[
+                    keyName
+                  ]
+                )
+              ) : (
+                <span className="italic text-gray-500 text-[0.9em]">
+                  {title}
+                </span>
+              )
             ) : (
               <span className="italic text-gray-500 text-[0.9em]">{title}</span>
             )}

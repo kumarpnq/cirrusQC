@@ -63,6 +63,7 @@ function App() {
     companySlicing: false,
     whatsappContact: false,
     clientMaster: false,
+    booleanKeyword: false,
   });
   const [loading, setLoading] = useState(false);
 
@@ -120,6 +121,7 @@ function App() {
       companySlicing: screenPermissions.CompanySlicing,
       whatsappContact: screenPermissions.WhatsappContact,
       clientMaster: screenPermissions.ClientMaster,
+      booleanKeyword: screenPermissions.BooleanKeyword,
     });
   }, [screenPermissions]);
 
@@ -322,6 +324,18 @@ function App() {
                 element={
                   permissions.clientMaster ? (
                     <ClientMaster />
+                  ) : loading ? (
+                    <div>Loading...</div>
+                  ) : (
+                    <NotFound />
+                  )
+                }
+              />
+              <Route
+                path="/boolean-keyword"
+                element={
+                  permissions.booleanKeyword ? (
+                    <BooleanKeyword />
                   ) : loading ? (
                     <div>Loading...</div>
                   ) : (

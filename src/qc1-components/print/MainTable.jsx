@@ -4,6 +4,7 @@ import AttachmentIcon from "@mui/icons-material/Attachment";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import {
   Box,
+  Button,
   CircularProgress,
   ClickAwayListener,
   IconButton,
@@ -44,23 +45,6 @@ const iconCellStyle = {
   height: "100%",
 };
 
-// * custom toolbar
-function CustomToolbar() {
-  return (
-    <GridToolbarContainer
-      sx={{ display: "flex", justifyContent: "space-between" }}
-    >
-      {/* <GridToolbarColumnsButton /> */}
-      <Box sx={{ display: "flex" }}>
-        <GridToolbarFilterButton />
-        <GridPagination />
-      </Box>
-      {/* <GridToolbarDensitySelector /> */}
-      <GridToolbarQuickFilter />
-      {/* Export button is not included */}
-    </GridToolbarContainer>
-  );
-}
 const MainTable = ({
   tableData,
   tableDataLoading,
@@ -72,7 +56,35 @@ const MainTable = ({
   processRowUpdate,
   sortedFilteredRows,
   setSortedFilteredRows,
+  handleSave,
+  savePermission,
 }) => {
+  // * custom toolbar
+  function CustomToolbar() {
+    return (
+      <GridToolbarContainer
+        sx={{ display: "flex", justifyContent: "space-between" }}
+      >
+        {/* <GridToolbarColumnsButton /> */}
+        <Box sx={{ display: "flex" }}>
+          <GridToolbarFilterButton />
+          <GridPagination />
+        </Box>
+        <Box>
+          {!!savePermission && (
+            <Button size="small" onClick={handleSave}>
+              Save
+            </Button>
+          )}
+
+          <GridToolbarQuickFilter />
+        </Box>
+        {/* <GridToolbarDensitySelector /> */}
+
+        {/* Export button is not included */}
+      </GridToolbarContainer>
+    );
+  }
   // * user settings
   const userColumnSettings = useUserSettings("online", "Main");
 
@@ -577,6 +589,8 @@ MainTable.propTypes = {
   processRowUpdate: PropTypes.func.isRequired,
   sortedFilteredRows: PropTypes.array,
   setSortedFilteredRows: PropTypes.func,
+  handleSave: PropTypes.func,
+  savePermission: PropTypes.bool,
 };
 
 export default MainTable;

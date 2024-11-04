@@ -38,6 +38,7 @@ import { FaDumpster } from "react-icons/fa";
 import { IoMail } from "react-icons/io5";
 import { LuBookCopy } from "react-icons/lu";
 import { IoPeopleOutline } from "react-icons/io5";
+import { RiKeyboardLine } from "react-icons/ri";
 
 //**  context
 import { ResearchContext } from "../../context/ContextProvider";
@@ -196,6 +197,16 @@ export default function MainNav() {
             title: "Client Master",
             path: "/client-master",
             icon: <IoPeopleOutline />,
+          },
+        ]
+      : []),
+    ...(screenPermissions.BooleanKeyword
+      ? [
+          {
+            id: 16,
+            title: "Boolean Keyword",
+            path: "/boolean-keyword",
+            icon: <RiKeyboardLine />,
           },
         ]
       : []),
