@@ -191,7 +191,7 @@ const EditDialog = ({
     return value ? "Yes" : "No";
   }
   function yesNoToBool(value) {
-    return value === "Yes" ? true : false;
+    return value === "Yes";
   }
 
   useEffect(() => {
@@ -228,7 +228,8 @@ const EditDialog = ({
             ?.filter(
               (scheduleItem) =>
                 scheduleItem.isActive &&
-                scheduleItem.entityType === screenTypeDD
+                scheduleItem.entityType === screenTypeDD &&
+                scheduleItem.loginName === login
             )
             .map((scheduleItem) => scheduleItem.time) || [];
 
@@ -241,7 +242,7 @@ const EditDialog = ({
           : filteredCompanies,
         active: yesNoToBool(row?.active),
         every: row.schedule[0]?.isDayOrMonth || "Daily",
-        loginName: row?.schedule[0]?.loginName || "",
+        loginName: login || row?.schedule[0]?.loginName,
         timeStamps: timeStamps,
         report: {
           sendReport: yesNoToBool(row?.sendReport),
@@ -261,7 +262,7 @@ const EditDialog = ({
         setEvery(newInitialData.every);
         setTimeStamps(newInitialData.timeStamps);
         setReport(newInitialData.report);
-        setLogin(newInitialData?.loginName || "");
+        setLogin(newInitialData.loginName);
       } else {
         if (initialState) {
           setSelectedClient(initialState.selectedClient || row?.id);
@@ -280,7 +281,74 @@ const EditDialog = ({
         }
       }
     }
-  }, [open, openedFromWhere, row, screenTypeDD]);
+  }, [open, openedFromWhere, row, screenTypeDD, login]);
+
+  // * save the changes in state
+  useEffect(() => {
+    const detectChanges = () => {
+      if (!initialState) return;
+
+      // Filter removed and added companies
+      const removedCompanies = initialState.selectedCompany.filter(
+        (companyId) => !selectedCompany.includes(companyId)
+      );
+      const addedCompanies = selectedCompany.filter(
+        (companyId) => !initialState.selectedCompany.includes(companyId)
+      );
+
+      // Filter removed and added time slots
+      const removedSlots = initialState.timeStamps?.filter(
+        (stamp) => !timeStamps.includes(stamp)
+      );
+      const addedSlots = timeStamps.filter(
+        (stamp) => !initialState.timeStamps.includes(stamp)
+      );
+
+      // Prepare company updates
+      const companyUpdates = [
+        ...removedCompanies.map((companyId) => ({
+          companyId,
+          isActive: false,
+        })),
+        ...addedCompanies.map((companyId) => ({
+          companyId,
+          isActive: true,
+        })),
+      ];
+
+      // Prepare slot updates
+      const slotUpdates = [
+        ...removedSlots.map((time) => ({
+          time,
+          isActive: false,
+        })),
+        ...addedSlots.map((time) => ({
+          time,
+          isActive: true,
+        })),
+      ];
+
+      const hasCompanyChanges = companyUpdates.length > 0;
+      const hasSlotChanges = slotUpdates.length > 0;
+
+      // Update only if there are actual changes
+      if (hasCompanyChanges || hasSlotChanges) {
+        setModifiedData((prevData) => ({
+          ...prevData,
+          [screenTypeDD]: {
+            ...prevData[screenTypeDD], // Retain any existing data for this screen
+            companyUpdates: hasCompanyChanges
+              ? companyUpdates
+              : prevData[screenTypeDD]?.companyUpdates || [],
+            slotUpdates: hasSlotChanges
+              ? slotUpdates
+              : prevData[screenTypeDD]?.slotUpdates || [],
+          },
+        }));
+      }
+    };
+    detectChanges();
+  }, [selectedCompany, timeStamps, screenTypeDD, initialState]);
 
   // * insert status
   useEffect(() => {
@@ -389,6 +457,10 @@ const EditDialog = ({
   };
 
   const handleChange = (event, newValue) => {
+    if (modifiedData?.length || Object.keys(modifiedData)?.length) {
+      toast.warn("Please save the changes first.");
+      return;
+    }
     setScreenTypeDD(newValue);
   };
 
@@ -400,64 +472,6 @@ const EditDialog = ({
 
   const [updateLoading, setUpdateLoading] = useState(false);
   const [insertLoading, setInsertLoading] = useState(false);
-
-  // * save the changes in state
-  useEffect(() => {
-    const detectChanges = () => {
-      if (!initialState) return;
-
-      const removedCompanies = initialState.selectedCompany.filter(
-        (companyId) => !selectedCompany.includes(companyId)
-      );
-      const addedCompanies = selectedCompany.filter(
-        (companyId) => !initialState.selectedCompany.includes(companyId)
-      );
-      const removedSlots = initialState.timeStamps?.filter(
-        (stamp) => !timeStamps.includes(stamp)
-      );
-      const addedSlots = timeStamps.filter(
-        (stamp) => !initialState.timeStamps.includes(stamp)
-      );
-
-      const companyUpdates = [
-        ...removedCompanies.map((companyId) => ({
-          companyId,
-          isActive: false,
-        })),
-        ...addedCompanies.map((companyId) => ({
-          companyId,
-          isActive: true,
-        })),
-      ];
-
-      const slotUpdates = [
-        ...removedSlots.map((time) => ({
-          time,
-          isActive: false,
-        })),
-        ...addedSlots.map((time) => ({
-          time,
-          isActive: true,
-        })),
-      ];
-
-      const hasCompanyChanges = companyUpdates.length > 0;
-      const hasSlotChanges = slotUpdates.length > 0;
-
-      if (hasCompanyChanges || hasSlotChanges) {
-        // Update modifiedData based on the screenTypeDD
-        setModifiedData((prevData) => ({
-          ...prevData,
-          [screenTypeDD]: {
-            companyUpdates: hasCompanyChanges ? companyUpdates : [],
-            slotUpdates: hasSlotChanges ? slotUpdates : [],
-          },
-        }));
-      }
-    };
-
-    detectChanges();
-  }, [selectedCompany, timeStamps, screenTypeDD, initialState]);
 
   const handleSave = async () => {
     try {

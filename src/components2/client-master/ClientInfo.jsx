@@ -1,4 +1,12 @@
-import { Box, Divider, styled, Typography } from "@mui/material";
+import {
+  Box,
+  Checkbox,
+  Divider,
+  FormControlLabel,
+  styled,
+  TextField,
+  Typography,
+} from "@mui/material";
 import CustomTextField from "../../@core/CutsomTextField";
 import { useEffect, useState } from "react";
 import { format, addYears } from "date-fns";
@@ -64,6 +72,10 @@ const ClientInfo = () => {
   const [AllowSearchablePDF, setAllowSearchablePDF] = useState("");
   const [excelExport, setExcelExport] = useState("");
   const [active, setActive] = useState("");
+  const [advArticle, setAdvArticle] = useState({
+    advertise: false,
+    articles: true,
+  });
 
   // * section
   const [section, setSection] = useState({
@@ -346,125 +358,178 @@ const ClientInfo = () => {
         />
       </StyledWrapper>
       {/* second portion of section */}
-      <Box sx={{ border: "1px solid #DDD" }}>
-        <StyledWrapper>
-          <StyledText>Bulk Mailer : </StyledText>
-          <YesOrNo
-            classes={classes}
-            mapValue={["Yes", "No"]}
-            placeholder="Bulk Mailer"
-            value={bulkMailer}
-            setValue={setBulkMailer}
-            width={150}
-          />
-        </StyledWrapper>
-        <StyledWrapper>
-          <StyledText>Summary : </StyledText>
-          <YesOrNo
-            classes={classes}
-            mapValue={["Normal", "CompanyWise", "No"]}
-            placeholder="Summary"
-            value={summary}
-            setValue={setSummary}
-            width={150}
-          />
-        </StyledWrapper>
-        <StyledWrapper>
-          <StyledText>Allow Tagging : </StyledText>
-          <YesOrNo
-            classes={classes}
-            mapValue={["Yes", "No"]}
-            placeholder="Tagging"
-            value={allowTagging}
-            setValue={setAllowTagging}
-            width={150}
-          />
-        </StyledWrapper>
-        <StyledWrapper>
-          <StyledText>Allow Tonality : </StyledText>
-          <YesOrNo
-            classes={classes}
-            mapValue={["Yes", "No"]}
-            placeholder="Tonality"
-            value={allowTonality}
-            setValue={setAllowTonality}
-            width={150}
-          />
-        </StyledWrapper>
-        <StyledWrapper>
-          <StyledText>Online Refresh : </StyledText>
-          <YesOrNo
-            classes={classes}
-            mapValue={["Yes", "No"]}
-            placeholder="Refresh"
-            value={onlineRefresh}
-            setValue={setOnlineRefresh}
-            width={150}
-          />
-        </StyledWrapper>
-        <StyledWrapper>
-          <StyledText>All Permission Online :</StyledText>
-          <YesOrNo
-            classes={classes}
-            mapValue={["Yes", "No"]}
-            placeholder="Permission"
-            value={allPermissionOnline}
-            setValue={setAllPermissionOnline}
-            width={150}
-          />
-        </StyledWrapper>
-        <StyledWrapper>
-          <StyledText>Mailer Missing Alert :</StyledText>
-          <YesOrNo
-            classes={classes}
-            mapValue={["Yes", "No"]}
-            placeholder="Alert"
-            value={mailerMissingAlert}
-            setValue={setMailerMissingAlert}
-            width={150}
-          />
-        </StyledWrapper>
-        <StyledWrapper>
-          <StyledText>Allow Searchable PDF :</StyledText>
-          <YesOrNo
-            classes={classes}
-            mapValue={["Yes", "No"]}
-            placeholder="Alert"
-            value={AllowSearchablePDF}
-            setValue={setAllowSearchablePDF}
-            width={150}
-          />
-        </StyledWrapper>
-        <StyledWrapper>
-          <StyledText>Excel Export :</StyledText>
-          <YesOrNo
-            classes={classes}
-            mapValue={["Yes", "No"]}
-            placeholder="Export"
-            value={excelExport}
-            setValue={setExcelExport}
-            width={150}
-          />
-        </StyledWrapper>
-        <StyledWrapper>
-          <StyledText>Active :</StyledText>
-          <YesOrNo
-            classes={classes}
-            mapValue={["Yes", "No"]}
-            placeholder="Active"
-            value={active}
-            setValue={setActive}
-            width={150}
-          />
-        </StyledWrapper>
-      </Box>
-      <Box>
-        {sectionArray.map((item) => (
-          <StyledWrapper key={item.name}>
-            <StyledText>{item.name}</StyledText>
+      <Box
+        sx={{
+          display: "flex",
+          alignItems: "baseline",
+          justifyContent: "space-between",
+        }}
+      >
+        <Box sx={{ border: "1px solid #DDD" }}>
+          <StyledWrapper>
+            <StyledText>Bulk Mailer : </StyledText>
+            <YesOrNo
+              classes={classes}
+              mapValue={["Yes", "No"]}
+              placeholder="Bulk Mailer"
+              value={bulkMailer}
+              setValue={setBulkMailer}
+              width={150}
+            />
           </StyledWrapper>
-        ))}
+          <StyledWrapper>
+            <StyledText>Summary : </StyledText>
+            <YesOrNo
+              classes={classes}
+              mapValue={["Normal", "CompanyWise", "No"]}
+              placeholder="Summary"
+              value={summary}
+              setValue={setSummary}
+              width={150}
+            />
+          </StyledWrapper>
+          <StyledWrapper>
+            <StyledText>Allow Tagging : </StyledText>
+            <YesOrNo
+              classes={classes}
+              mapValue={["Yes", "No"]}
+              placeholder="Tagging"
+              value={allowTagging}
+              setValue={setAllowTagging}
+              width={150}
+            />
+          </StyledWrapper>
+          <StyledWrapper>
+            <StyledText>Allow Tonality : </StyledText>
+            <YesOrNo
+              classes={classes}
+              mapValue={["Yes", "No"]}
+              placeholder="Tonality"
+              value={allowTonality}
+              setValue={setAllowTonality}
+              width={150}
+            />
+          </StyledWrapper>
+          <StyledWrapper>
+            <StyledText>Online Refresh : </StyledText>
+            <YesOrNo
+              classes={classes}
+              mapValue={["Yes", "No"]}
+              placeholder="Refresh"
+              value={onlineRefresh}
+              setValue={setOnlineRefresh}
+              width={150}
+            />
+          </StyledWrapper>
+          <StyledWrapper>
+            <StyledText>All Permission Online :</StyledText>
+            <YesOrNo
+              classes={classes}
+              mapValue={["Yes", "No"]}
+              placeholder="Permission"
+              value={allPermissionOnline}
+              setValue={setAllPermissionOnline}
+              width={150}
+            />
+          </StyledWrapper>
+          <StyledWrapper>
+            <StyledText>Mailer Missing Alert :</StyledText>
+            <YesOrNo
+              classes={classes}
+              mapValue={["Yes", "No"]}
+              placeholder="Alert"
+              value={mailerMissingAlert}
+              setValue={setMailerMissingAlert}
+              width={150}
+            />
+          </StyledWrapper>
+          <StyledWrapper>
+            <StyledText>Allow Searchable PDF :</StyledText>
+            <YesOrNo
+              classes={classes}
+              mapValue={["Yes", "No"]}
+              placeholder="Alert"
+              value={AllowSearchablePDF}
+              setValue={setAllowSearchablePDF}
+              width={150}
+            />
+          </StyledWrapper>
+          <StyledWrapper>
+            <StyledText>Excel Export :</StyledText>
+            <YesOrNo
+              classes={classes}
+              mapValue={["Yes", "No"]}
+              placeholder="Export"
+              value={excelExport}
+              setValue={setExcelExport}
+              width={150}
+            />
+          </StyledWrapper>
+          <StyledWrapper>
+            <StyledText>Active :</StyledText>
+            <YesOrNo
+              classes={classes}
+              mapValue={["Yes", "No"]}
+              placeholder="Active"
+              value={active}
+              setValue={setActive}
+              width={150}
+            />
+          </StyledWrapper>
+        </Box>
+        <Box sx={{ border: "1px solid #DDD" }}>
+          {sectionArray.map((item) => (
+            <StyledWrapper
+              key={item.name}
+              sx={{ border: "1px solid #DDD", margin: 0.5 }}
+            >
+              <TextField
+                value={item.name}
+                fullWidth
+                InputProps={{
+                  style: {
+                    fontSize: "0.8rem",
+                    height: 25,
+                  },
+                }}
+              />
+              <StyledText>{item.value}</StyledText>
+            </StyledWrapper>
+          ))}
+        </Box>
       </Box>
+      <Divider />
+      <StyledWrapper>
+        <StyledText>Client Type : </StyledText>
+        <FormControlLabel
+          control={
+            <Checkbox
+              checked={advArticle.advertise}
+              onChange={(e) => {
+                setAdvArticle((prev) => ({
+                  ...prev,
+                  advertise: e.target.checked,
+                }));
+              }}
+            />
+          }
+          label="Advertise"
+        />
+        <FormControlLabel
+          control={
+            <Checkbox
+              checked={advArticle.articles}
+              onChange={(e) => {
+                setAdvArticle((prev) => ({
+                  ...prev,
+                  articles: e.target.checked,
+                }));
+              }}
+            />
+          }
+          label="Articles"
+        />
+      </StyledWrapper>
     </Box>
   );
 };
