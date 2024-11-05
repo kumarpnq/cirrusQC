@@ -43,6 +43,7 @@ const BulkTable = ({
     { field: "date", headerName: "Date", width: 150 },
     { field: "company", headerName: "Company ID", width: 200, editable: true },
     { field: "socialfeedid", headerName: "Social Feed ID", width: 140 },
+    { field: "otherCompanies", headerName: "Other Companies", width: 200 },
     {
       field: "status",
       headerName: "Status",
@@ -66,7 +67,6 @@ const BulkTable = ({
     { field: "headline", headerName: "Headline", width: 200 },
     { field: "summary", headerName: "Summary", width: 250 },
     { field: "language", headerName: "Language", width: 100 },
-    { field: "otherCompanies", headerName: "Other Companies", width: 200 },
   ];
 
   const rowDataMap = data.reduce((map, item, index) => {
@@ -85,7 +85,9 @@ const BulkTable = ({
     summary: item.Summary,
     language: item.Language,
     statusFlag: item.statusFlag || "P",
-    otherCompanies: item.otherCompanies.join(",") || "",
+    otherCompanies: Array.isArray(item.otherCompanies)
+      ? item.otherCompanies.join(",")
+      : "",
   }));
 
   const handleRowSelection = (newSelectionModel) => {

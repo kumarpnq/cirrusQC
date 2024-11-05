@@ -36,6 +36,12 @@ const ClientInfo = () => {
   const [subFromDate, setSubFromDate] = useState(null);
   const [subToDate, setSubToDate] = useState(null);
   const [clientGroupID, setClientGroupID] = useState("");
+  const [mailerID, setMailerID] = useState("");
+  const [mailerSubject, setMailerSubject] = useState("");
+  const [individualMail, setIsIndividualMail] = useState("");
+  const [mailTimeSlot, setMailTimeSlot] = useState("");
+  const [mailerLogic, setMailerLogic] = useState("");
+  const [mailerFormat, setMailerFormat] = useState("");
 
   useEffect(() => {
     const today = new Date();
@@ -183,6 +189,28 @@ const ClientInfo = () => {
           value={clientGroupID}
           setValue={setClientGroupID}
           width={300}
+        />
+      </StyledWrapper>
+      <Divider />
+      <StyledWrapper>
+        <StyledText>Mail ID : </StyledText>
+        <CustomTextField
+          value={mailerID}
+          setValue={setMailerID}
+          width={300}
+          placeholder={"Email"}
+          type={"email"}
+        />
+      </StyledWrapper>
+      <Divider />
+      <StyledWrapper>
+        <StyledText>Mail Subject : </StyledText>
+        <CustomTextField
+          value={mailerSubject}
+          setValue={setMailerSubject}
+          width={300}
+          placeholder={"Subject"}
+          type={"text"}
         />
       </StyledWrapper>
     </Box>
