@@ -101,7 +101,7 @@ const UploadControl = ({
         const otherCompanies =
           (responseEntry && responseEntry.otherCompanies) || [];
         const newCompanies =
-          (responseEntry && responseEntry.otherCompanies) || [];
+          (responseEntry && responseEntry.newCompanies) || [];
 
         const socialFeedId = responseEntry
           ? responseEntry.socialFeedId
