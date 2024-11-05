@@ -42,6 +42,7 @@ const BulkTable = ({
   const columns = [
     { field: "date", headerName: "Date", width: 150 },
     { field: "company", headerName: "Company ID", width: 200, editable: true },
+    { field: "newCompanies", headerName: "Company Name", width: 200 },
     { field: "socialfeedid", headerName: "Social Feed ID", width: 140 },
     { field: "otherCompanies", headerName: "Other Companies", width: 220 },
 
@@ -68,7 +69,6 @@ const BulkTable = ({
     { field: "headline", headerName: "Headline", width: 200 },
     { field: "summary", headerName: "Summary", width: 250 },
     { field: "language", headerName: "Language", width: 100 },
-    { field: "newCompanies", headerName: "Added Companies", width: 200 },
   ];
 
   const rowDataMap = data.reduce((map, item, index) => {

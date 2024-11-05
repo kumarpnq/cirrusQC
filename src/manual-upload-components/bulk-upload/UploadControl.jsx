@@ -79,8 +79,7 @@ const UploadControl = ({
         const statusFlag = item.articleExist.processStatus.processStatusCode;
         const otherCompanies =
           item.articleExist.processStatus.otherCompanies || [];
-        const newCompanies =
-          item.articleExist.processStatus.otherCompanies || [];
+        const newCompanies = item.articleExist.processStatus.newCompanies || [];
 
         return {
           link,

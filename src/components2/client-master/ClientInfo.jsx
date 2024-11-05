@@ -14,7 +14,7 @@ const StyledText = styled(Typography)({
   fontSize: "1em",
   color: "GrayText",
   textWrap: "nowrap",
-  width: 150,
+  width: 170,
 });
 const useStyle = makeStyles(() => ({
   dropDowns: {
@@ -22,6 +22,16 @@ const useStyle = makeStyles(() => ({
     fontSize: "0.8em",
   },
 }));
+const sectionArray = [
+  { name: "Ikea", value: 0 },
+  { name: "Industry", value: 0 },
+  { name: "Industry2", value: 0 },
+  { name: "Competition", value: 0 },
+  { name: "Category", value: 0 },
+  { name: "Industry3", value: 0 },
+  { name: "Others", value: 0 },
+];
+
 const ClientInfo = () => {
   const classes = useStyle();
   const [clientId, setClientId] = useState("");
@@ -38,10 +48,33 @@ const ClientInfo = () => {
   const [clientGroupID, setClientGroupID] = useState("");
   const [mailerID, setMailerID] = useState("");
   const [mailerSubject, setMailerSubject] = useState("");
-  const [individualMail, setIsIndividualMail] = useState("");
+  const [individualMail, setIndividualMail] = useState("");
   const [mailTimeSlot, setMailTimeSlot] = useState("");
   const [mailerLogic, setMailerLogic] = useState("");
   const [mailerFormat, setMailerFormat] = useState("");
+  const [onlineMailerFormat, setOnlineMailerFormat] = useState("");
+  const [mailedArticles, setMailedArticles] = useState("");
+  const [bulkMailer, setBulkMailer] = useState("");
+  const [summary, setSummary] = useState("");
+  const [allowTagging, setAllowTagging] = useState("");
+  const [allowTonality, setAllowTonality] = useState("");
+  const [onlineRefresh, setOnlineRefresh] = useState("");
+  const [allPermissionOnline, setAllPermissionOnline] = useState("");
+  const [mailerMissingAlert, setMailerMissingAlert] = useState("");
+  const [AllowSearchablePDF, setAllowSearchablePDF] = useState("");
+  const [excelExport, setExcelExport] = useState("");
+  const [active, setActive] = useState("");
+
+  // * section
+  const [section, setSection] = useState({
+    Ikea: 0,
+    Industry: 0,
+    Industry2: 0,
+    Competition: 0,
+    Category: 0,
+    Industry3: 0,
+    Others: 0,
+  });
 
   useEffect(() => {
     const today = new Date();
@@ -57,7 +90,7 @@ const ClientInfo = () => {
         <StyledText>Client Id : </StyledText>
         <CustomTextField
           width={150}
-          placeholder={"client id"}
+          placeholder={"Client id"}
           value={clientId}
           setValue={setClientId}
           type={"text"}
@@ -68,7 +101,7 @@ const ClientInfo = () => {
           <StyledText>Encrypted ClientId : </StyledText>
           <CustomTextField
             width={150}
-            placeholder={"encrypted id"}
+            placeholder={"Encrypted id"}
             value={encryptedClientId}
             setValue={setEncryptedClientId}
             type={"text"}
@@ -80,7 +113,7 @@ const ClientInfo = () => {
         <StyledText>Client Name : </StyledText>
         <CustomTextField
           width={300}
-          placeholder={"client name"}
+          placeholder={"Client name"}
           value={clientName}
           setValue={setClientName}
           type={"text"}
@@ -103,7 +136,7 @@ const ClientInfo = () => {
         <StyledText>Contact Person : </StyledText>
         <CustomTextField
           width={300}
-          placeholder={"contact person"}
+          placeholder={"Contact person"}
           value={contactPerson}
           setValue={setContactPerson}
           type={"text"}
@@ -115,7 +148,7 @@ const ClientInfo = () => {
         <StyledText>Designation : </StyledText>
         <CustomTextField
           width={300}
-          placeholder={"designation"}
+          placeholder={"Designation"}
           value={designation}
           setValue={setDesignation}
           type={"text"}
@@ -127,7 +160,7 @@ const ClientInfo = () => {
         <StyledText>Email ID : </StyledText>
         <CustomTextField
           width={300}
-          placeholder={"email"}
+          placeholder={"Email"}
           value={emailID}
           setValue={setEmailID}
           type={"email"}
@@ -185,7 +218,7 @@ const ClientInfo = () => {
         <YesOrNo
           classes={classes}
           mapValue={["One", "Two", "Three", "Four", "Five"]}
-          placeholder="client group id"
+          placeholder="Client group id"
           value={clientGroupID}
           setValue={setClientGroupID}
           width={300}
@@ -213,6 +246,225 @@ const ClientInfo = () => {
           type={"text"}
         />
       </StyledWrapper>
+      <Divider />
+      <StyledWrapper>
+        <StyledText>Individual Mail : </StyledText>
+
+        <YesOrNo
+          classes={classes}
+          mapValue={["Yes", "No"]}
+          placeholder="IND Mail"
+          value={individualMail}
+          setValue={setIndividualMail}
+          width={150}
+        />
+        <StyledWrapper>
+          <StyledText>Mail Time Slot : </StyledText>
+          <YesOrNo
+            classes={classes}
+            mapValue={[
+              "ALL",
+              "8:00",
+              "8:30",
+              "9:00",
+              "9:30",
+              "10:00",
+              "10:30",
+              "11:00",
+              "11:30",
+              "12:00",
+              "12:30",
+              "13:00",
+              "13:30",
+              "14:00",
+              "14:30",
+              "15:00",
+              "15:30",
+              "16:00",
+              "16:30",
+              "17:00",
+            ]}
+            placeholder="Slots"
+            value={mailTimeSlot}
+            setValue={setMailTimeSlot}
+            width={150}
+          />
+        </StyledWrapper>
+      </StyledWrapper>
+      <Divider />
+      <StyledWrapper>
+        <StyledText>Mailer Logic : </StyledText>
+        <YesOrNo
+          classes={classes}
+          mapValue={[
+            "CompanyWise",
+            "HeadlineWise",
+            "SectionCompanyWise",
+            "SectionWise",
+            "StateWise",
+          ]}
+          placeholder="Mailer logic"
+          value={mailerLogic}
+          setValue={setMailerLogic}
+          width={300}
+        />
+
+        <StyledText>Mailer Format : </StyledText>
+        <YesOrNo
+          classes={classes}
+          mapValue={[
+            "Samsung",
+            "Simple Blue",
+            "Custom Tabular 2022",
+            "Cirrus Gold",
+            "BB Big Font",
+          ]}
+          placeholder="Mailer logic"
+          value={mailerFormat}
+          setValue={setMailerFormat}
+          width={300}
+        />
+      </StyledWrapper>
+      <StyledWrapper>
+        <StyledText>Online Mailer Format : </StyledText>
+        <YesOrNo
+          classes={classes}
+          mapValue={["Online", "Online Summary", "GIONEE Format"]}
+          placeholder="Mailer format"
+          value={onlineMailerFormat}
+          setValue={setOnlineMailerFormat}
+          width={150}
+        />
+        <StyledText>Mailed Articles : </StyledText>
+        <YesOrNo
+          classes={classes}
+          mapValue={["All", "Mailed"]}
+          placeholder="Mailed Article"
+          value={mailedArticles}
+          setValue={setMailedArticles}
+          width={150}
+        />
+      </StyledWrapper>
+      {/* second portion of section */}
+      <Box sx={{ border: "1px solid #DDD" }}>
+        <StyledWrapper>
+          <StyledText>Bulk Mailer : </StyledText>
+          <YesOrNo
+            classes={classes}
+            mapValue={["Yes", "No"]}
+            placeholder="Bulk Mailer"
+            value={bulkMailer}
+            setValue={setBulkMailer}
+            width={150}
+          />
+        </StyledWrapper>
+        <StyledWrapper>
+          <StyledText>Summary : </StyledText>
+          <YesOrNo
+            classes={classes}
+            mapValue={["Normal", "CompanyWise", "No"]}
+            placeholder="Summary"
+            value={summary}
+            setValue={setSummary}
+            width={150}
+          />
+        </StyledWrapper>
+        <StyledWrapper>
+          <StyledText>Allow Tagging : </StyledText>
+          <YesOrNo
+            classes={classes}
+            mapValue={["Yes", "No"]}
+            placeholder="Tagging"
+            value={allowTagging}
+            setValue={setAllowTagging}
+            width={150}
+          />
+        </StyledWrapper>
+        <StyledWrapper>
+          <StyledText>Allow Tonality : </StyledText>
+          <YesOrNo
+            classes={classes}
+            mapValue={["Yes", "No"]}
+            placeholder="Tonality"
+            value={allowTonality}
+            setValue={setAllowTonality}
+            width={150}
+          />
+        </StyledWrapper>
+        <StyledWrapper>
+          <StyledText>Online Refresh : </StyledText>
+          <YesOrNo
+            classes={classes}
+            mapValue={["Yes", "No"]}
+            placeholder="Refresh"
+            value={onlineRefresh}
+            setValue={setOnlineRefresh}
+            width={150}
+          />
+        </StyledWrapper>
+        <StyledWrapper>
+          <StyledText>All Permission Online :</StyledText>
+          <YesOrNo
+            classes={classes}
+            mapValue={["Yes", "No"]}
+            placeholder="Permission"
+            value={allPermissionOnline}
+            setValue={setAllPermissionOnline}
+            width={150}
+          />
+        </StyledWrapper>
+        <StyledWrapper>
+          <StyledText>Mailer Missing Alert :</StyledText>
+          <YesOrNo
+            classes={classes}
+            mapValue={["Yes", "No"]}
+            placeholder="Alert"
+            value={mailerMissingAlert}
+            setValue={setMailerMissingAlert}
+            width={150}
+          />
+        </StyledWrapper>
+        <StyledWrapper>
+          <StyledText>Allow Searchable PDF :</StyledText>
+          <YesOrNo
+            classes={classes}
+            mapValue={["Yes", "No"]}
+            placeholder="Alert"
+            value={AllowSearchablePDF}
+            setValue={setAllowSearchablePDF}
+            width={150}
+          />
+        </StyledWrapper>
+        <StyledWrapper>
+          <StyledText>Excel Export :</StyledText>
+          <YesOrNo
+            classes={classes}
+            mapValue={["Yes", "No"]}
+            placeholder="Export"
+            value={excelExport}
+            setValue={setExcelExport}
+            width={150}
+          />
+        </StyledWrapper>
+        <StyledWrapper>
+          <StyledText>Active :</StyledText>
+          <YesOrNo
+            classes={classes}
+            mapValue={["Yes", "No"]}
+            placeholder="Active"
+            value={active}
+            setValue={setActive}
+            width={150}
+          />
+        </StyledWrapper>
+      </Box>
+      <Box>
+        {sectionArray.map((item) => (
+          <StyledWrapper key={item.name}>
+            <StyledText>{item.name}</StyledText>
+          </StyledWrapper>
+        ))}
+      </Box>
     </Box>
   );
 };

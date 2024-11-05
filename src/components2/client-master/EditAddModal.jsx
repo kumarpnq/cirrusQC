@@ -28,6 +28,7 @@ const EditAddModal = ({ open, onClose, openFromWhere }) => {
           boxShadow: 24,
           p: 1,
           outline: "none",
+          overflow: "auto",
         }}
       >
         <Box
