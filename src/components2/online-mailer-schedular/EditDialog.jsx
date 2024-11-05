@@ -136,6 +136,7 @@ const EditDialog = ({
   row,
   openedFromWhere,
   handleFetch,
+  clientIds,
 }) => {
   const classes = useStyle();
 
@@ -156,9 +157,9 @@ const EditDialog = ({
   const [insertStatus, setInsertStatus] = useState([
     {
       entityType: "print",
-      companyIds: [],
-      isSendReport: false,
-      isIncludeReport: false,
+      // companyIds: [],
+      // isSendReport: false,
+      // isIncludeReport: false,
       slots: [],
       loginName: "",
       frequency: "Daily",
@@ -166,9 +167,9 @@ const EditDialog = ({
     },
     {
       entityType: "online",
-      companyIds: [],
-      isSendReport: false,
-      isIncludeReport: false,
+      // companyIds: [],
+      // isSendReport: false,
+      // isIncludeReport: false,
       slots: [],
       loginName: "",
       frequency: "Daily",
@@ -176,9 +177,9 @@ const EditDialog = ({
     },
     {
       entityType: "both",
-      companyIds: [],
-      isSendReport: false,
-      isIncludeReport: false,
+      // companyIds: [],
+      // isSendReport: false,
+      // isIncludeReport: false,
       slots: [],
       loginName: "",
       frequency: "Daily",
@@ -344,24 +345,24 @@ const EditDialog = ({
       );
 
       if (currentEntity) {
-        if (
-          selectedCompany.length !== currentEntity.companyIds.length ||
-          !selectedCompany.every(
-            (id, index) => id === currentEntity.companyIds[index]
-          )
-        ) {
-          setSelectedCompany(currentEntity.companyIds || []);
-        }
+        // if (
+        //   selectedCompany.length !== currentEntity.companyIds.length ||
+        //   !selectedCompany.every(
+        //     (id, index) => id === currentEntity.companyIds[index]
+        //   )
+        // ) {
+        //   setSelectedCompany(currentEntity.companyIds || []);
+        // }
 
-        if (
-          report.sendReport !== currentEntity.isSendReport ||
-          report.lastReport !== currentEntity.isIncludeReport
-        ) {
-          setReport({
-            sendReport: currentEntity.isSendReport,
-            lastReport: currentEntity.isIncludeReport,
-          });
-        }
+        // if (
+        //   report.sendReport !== currentEntity.isSendReport ||
+        //   report.lastReport !== currentEntity.isIncludeReport
+        // ) {
+        //   setReport({
+        //     sendReport: currentEntity.isSendReport,
+        //     lastReport: currentEntity.isIncludeReport,
+        //   });
+        // }
 
         if (
           timeStamps.length !== currentEntity.slots.length ||
@@ -568,11 +569,46 @@ const EditDialog = ({
       const client = await clientData.data.clients.find(
         (client) => client.clientid === selectedClient
       );
-      const preparedData = insertStatus.map((item) => ({
-        ...item,
-        clientId: client.clientid,
-        clientName: client.clientname,
-      }));
+
+      if (!client) {
+        toast.error("Selected client not found.");
+        setInsertLoading(false);
+        return;
+      }
+
+      // Filter out objects that have any missing fields
+      const preparedData = insertStatus
+        .map((item) => ({
+          ...item,
+          clientId: client.clientid,
+          clientName: client.clientname,
+        }))
+        .filter((item) => {
+          const isValid =
+            item.entityType &&
+            item.companyIds?.length > 0 &&
+            item.slots?.length > 0 &&
+            item.loginName &&
+            item.frequency &&
+            item.updateType &&
+            item.clientId &&
+            item.clientName;
+
+          // Warn for any invalid item being removed
+          if (!isValid) {
+            console.log(`Removed an entry due to missing fields.`);
+          }
+
+          return isValid;
+        });
+
+      if (!preparedData.length) {
+        toast.error(
+          "No valid entries to insert. All were removed due to missing fields."
+        );
+        setInsertLoading(false);
+        return;
+      }
 
       const requestData = {
         data: preparedData,
@@ -588,9 +624,9 @@ const EditDialog = ({
           [
             {
               entityType: "print",
-              companyIds: [],
-              isSendReport: false,
-              isIncludeReport: false,
+              // companyIds: [],
+              // isSendReport: false,
+              // isIncludeReport: false,
               slots: [],
               loginName: "",
               frequency: "Daily",
@@ -598,9 +634,9 @@ const EditDialog = ({
             },
             {
               entityType: "online",
-              companyIds: [],
-              isSendReport: false,
-              isIncludeReport: false,
+              // companyIds: [],
+              // isSendReport: false,
+              // isIncludeReport: false,
               slots: [],
               loginName: "",
               frequency: "Daily",
@@ -608,9 +644,9 @@ const EditDialog = ({
             },
             {
               entityType: "both",
-              companyIds: [],
-              isSendReport: false,
-              isIncludeReport: false,
+              // companyIds: [],
+              // isSendReport: false,
+              // isIncludeReport: false,
               slots: [],
               loginName: "",
               frequency: "Daily",
@@ -631,11 +667,13 @@ const EditDialog = ({
 
         handleClose();
         handleFetch();
-        toast.info(` ${response.data.scheduleData?.success?.[0]?.status}`);
+        toast.info(`${response.data.scheduleData?.success?.[0]?.status}`);
       } else {
         toast.info(`${response.data.scheduleData?.error?.[0]?.status}`);
       }
     } catch (error) {
+      console.log(error);
+
       toast.error("Something went wrong.");
     } finally {
       setInsertLoading(false);
@@ -658,7 +696,7 @@ const EditDialog = ({
       <DialogContent
         sx={{ border: "1px solid #D3D3D3", margin: 2, borderRadius: "3px" }}
       >
-        {!!openedFromWhere === "add" && (
+        {openedFromWhere === "add" && (
           <Typography
             variant="body2"
             color={"GrayText"}
@@ -689,6 +727,10 @@ const EditDialog = ({
                   key={client.clientid}
                   value={client.clientid}
                   sx={{ fontSize: "0.8em", opacity: 0.7 }}
+                  disabled={
+                    openedFromWhere === "add" &&
+                    clientIds.includes(client.clientid)
+                  }
                 >
                   {client.clientname}
                 </MenuItem>
@@ -857,6 +899,7 @@ EditDialog.propTypes = {
   openedFromWhere: PropTypes.string.isRequired,
   row: PropTypes.object,
   handleFetch: PropTypes.func,
+  clientIds: PropTypes.array,
 };
 
 export default EditDialog;

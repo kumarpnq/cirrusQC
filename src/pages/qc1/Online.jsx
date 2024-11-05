@@ -315,7 +315,6 @@ const Online = () => {
     return newRow;
   }, []);
 
-  const [isRowUpdated, setIsRowUpdated] = useState(false);
   const changedRows = unsavedChangesRef.current.unsavedRows;
   const rowsBeforeChange = unsavedChangesRef.current.rowsBeforeChange;
 

@@ -79,6 +79,8 @@ const UploadControl = ({
         const statusFlag = item.articleExist.processStatus.processStatusCode;
         const otherCompanies =
           item.articleExist.processStatus.otherCompanies || [];
+        const newCompanies =
+          item.articleExist.processStatus.otherCompanies || [];
 
         return {
           link,
@@ -86,6 +88,7 @@ const UploadControl = ({
           message,
           statusFlag,
           otherCompanies,
+          newCompanies,
         };
       });
 
@@ -96,6 +99,10 @@ const UploadControl = ({
 
         const status = responseEntry ? responseEntry.message : row.status;
         const statusFlag = responseEntry && responseEntry.statusFlag;
+        const otherCompanies =
+          (responseEntry && responseEntry.otherCompanies) || [];
+        const newCompanies =
+          (responseEntry && responseEntry.otherCompanies) || [];
 
         const socialFeedId = responseEntry
           ? responseEntry.socialFeedId
@@ -105,6 +112,8 @@ const UploadControl = ({
           ...row,
           status,
           statusFlag,
+          otherCompanies,
+          newCompanies,
           ...(socialFeedId && { SocialFeedId: socialFeedId }),
         };
       });

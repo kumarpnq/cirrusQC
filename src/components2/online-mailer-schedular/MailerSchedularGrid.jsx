@@ -49,6 +49,7 @@ const MailerSchedularGrid = ({
           (item) => item.clientId !== selectedRow?.id
         );
         setScheduleData(filteredData);
+        handleFetch();
         setSelectedRow(null);
         setDeleteOpen(false);
         toast.success(response.data?.scheduleData?.success[0].status);

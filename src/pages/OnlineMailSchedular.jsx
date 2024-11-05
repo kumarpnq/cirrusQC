@@ -19,6 +19,7 @@ const OnlineMailSchedular = () => {
   const [value, setValue] = useState(0);
   const [scheduleData, setScheduleData] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [clientIds, setClientIds] = useState([]);
 
   const handleClose = () => {
     setOpen(false);
@@ -29,11 +30,15 @@ const OnlineMailSchedular = () => {
   };
 
   const fetchData = async () => {
+    setClientIds([]);
     try {
       setLoading(true);
       const response = await axiosInstance.get(`mailerSchedulerData/`, {});
-      const activeClients = response.data.scheduleData.filter((i) => i.active);
+      const activeClients =
+        response.data.scheduleData.filter((i) => i.active) || [];
+      const filteredIds = activeClients.map((item) => item.clientId);
       setScheduleData(activeClients);
+      setClientIds(filteredIds);
     } catch (error) {
       toast.warning(error.message);
     } finally {
@@ -90,6 +95,7 @@ const OnlineMailSchedular = () => {
         handleClose={handleClose}
         openedFromWhere="add"
         handleFetch={fetchData}
+        clientIds={clientIds}
       />
     </Box>
   );
