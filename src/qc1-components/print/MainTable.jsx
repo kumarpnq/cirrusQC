@@ -37,6 +37,7 @@ import EditDialog from "./edit-dialog/EditDialog";
 import { toast } from "react-toastify";
 import { saveTableSettings } from "../../constants/saveTableSetting";
 import useUserSettings from "../../hooks/useUserSettings";
+import EditTextarea from "../../@core/EditTextarea";
 
 const iconCellStyle = {
   display: "flex",
@@ -171,6 +172,11 @@ const MainTable = ({
     };
     setSelectedSimilarArticle([data]);
     setOpenEditSimilarArticle((pre) => !pre);
+  };
+
+  const multilineColumn = {
+    type: "string",
+    renderEditCell: (params) => <EditTextarea {...params} />,
   };
 
   const columns = [
@@ -311,18 +317,21 @@ const MainTable = ({
       headerName: "Headline",
       width: userColumnSettings?.headline || 250,
       editable: true,
+      ...multilineColumn,
     },
     {
       field: "summary",
       headerName: "Summary",
       width: userColumnSettings?.summary || 500,
       editable: true,
+      ...multilineColumn,
     },
     {
       field: "journalist",
       headerName: "Journalist",
       width: 150,
       editable: true,
+      ...multilineColumn,
     },
     {
       field: "publication",

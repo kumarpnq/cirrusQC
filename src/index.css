@@ -100,25 +100,25 @@
 
 .qc3-Z {
   /* Accepted Match */
-  background-color: rgb(173, 216, 230); /* Light Blue */
+  background-color: rgb(173, 216, 230);
 }
 
 .qc3-P {
   /* High Match */
-  background-color: rgb(255, 255, 153); /* Light Yellow */
+  background-color: #ffeb84;
 }
 
 .qc3-Q {
   /* Medium Match */
-  background-color: rgb(255, 204, 153); /* Light Orange */
+  background-color: #ffc287;
 }
 
 .qc3-R {
   /* Low Match */
-  background-color: rgb(255, 182, 193); /* Light Coral */
+  background-color: #ffc287;
 }
 
 .qc3-E {
   /* Extra */
-  background-color: rgb(221, 160, 221); /* Plum */
+  background-color: #e0e0e0;
 }

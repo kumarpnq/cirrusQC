@@ -37,6 +37,7 @@ import axios from "axios";
 import { url } from "../../constants/baseUrl";
 import useUserSettings from "../../hooks/useUserSettings";
 import { saveTableSettings } from "../../constants/saveTableSetting";
+import EditTextarea from "../../@core/EditTextarea";
 
 const iconCellStyle = {
   display: "flex",
@@ -130,6 +131,11 @@ const MainTable = ({
     setOpenEditSimilarArticle((pre) => !pre);
   };
 
+  const multilineColumn = {
+    type: "string",
+    renderEditCell: (params) => <EditTextarea {...params} />,
+  };
+
   const columns = [
     {
       field: "Action",
@@ -161,60 +167,6 @@ const MainTable = ({
                 <EditAttributesOutlined className="text-primary" />
               </IconButton>
             </Tooltip>
-            {/* <Grid container spacing={1} justifyContent="center"> */}
-            {/* Top Row */}
-            {/* <Grid item>
-                <Tooltip title="View PDF">
-                  <IconButton>
-                    <Link
-                      to={`/articleview/download-file/${params.row.link}`}
-                      target="_blank"
-                      rel="noreferrer"
-                    >
-                      <PictureAsPdfIcon className="text-primary" />
-                    </Link>
-                  </IconButton>
-                </Tooltip>
-              </Grid>
-              <Grid item>
-                <Tooltip title="View JPG">
-                  <IconButton>
-                    <Link
-                      to={`/articleview/download-file/${params.row.link}`}
-                      target="_blank"
-                      rel="noreferrer"
-                    >
-                      <ImageIcon className="text-primary" />
-                    </Link>
-                  </IconButton>
-                </Tooltip>
-              </Grid> */}
-            {/* </Grid> */}
-            {/* <Grid container spacing={1} justifyContent="center"> */}
-            {/* Bottom Row */}
-            {/* <Grid item>
-                <Tooltip title="View HTML">
-                  <IconButton>
-                    <Link
-                      to={`/articleview/download-file/${params.row.link}`}
-                      target="_blank"
-                      rel="noreferrer"
-                    >
-                      <MdHtml className="text-primary" />
-                    </Link>
-                  </IconButton>
-                </Tooltip>
-              </Grid>
-              <Grid item>
-                <Tooltip title="Edit article">
-                  <IconButton
-                    onClick={() => handleRowClick(params.row, params.id)}
-                  >
-                    <EditAttributesOutlined className="text-primary" />
-                  </IconButton>
-                </Tooltip>
-              </Grid> */}
-            {/* </Grid> */}
           </Box>
           {params.row.similar_articles === "Yes" && (
             <>
@@ -374,29 +326,31 @@ const MainTable = ({
       headerName: "Headline",
       width: userColumnSettings?.headline || 300,
       editable: true,
-      renderCell: (params) => (
-        <div style={{ whiteSpace: "pre-wrap", wordWrap: "break-word" }}>
-          {params.value}
-        </div>
-      ),
+      ...multilineColumn,
+      // renderCell: (params) => (
+      //   <div style={{ whiteSpace: "pre-wrap", wordWrap: "break-word" }}>
+      //     {params.value}
+      //   </div>
+      // ),
     },
     {
       field: "head_summary",
       headerName: "Summary",
       width: userColumnSettings?.head_summary || 450,
       editable: true,
-
-      renderCell: (params) => (
-        <div style={{ whiteSpace: "pre-wrap", wordWrap: "break-word" }}>
-          {params.value}
-        </div>
-      ),
+      ...multilineColumn,
+      // renderCell: (params) => (
+      //   <div style={{ whiteSpace: "pre-wrap", wordWrap: "break-word" }}>
+      //     {params.value}
+      //   </div>
+      // ),
     },
     {
       field: "journalist",
       headerName: "Journalist",
       width: userColumnSettings?.journalist || 150,
       editable: true,
+      ...multilineColumn,
     },
     {
       field: "article_id",
@@ -600,7 +554,7 @@ const MainTable = ({
 
   return (
     <>
-      <Box sx={{ height: 600, width: "100%", mt: 1 }}>
+      <Box sx={{ height: "90vh", width: "100%", mt: 1 }}>
         <DataGrid
           rows={rows}
           columns={columns}
@@ -649,6 +603,7 @@ const MainTable = ({
           }}
           hideFooterPagination
           getRowClassName={getRowClassName}
+          editMode="row"
         />
       </Box>
       <EditDialog

@@ -97,11 +97,12 @@ const UploadControl = ({
         );
 
         const status = responseEntry ? responseEntry.message : row.status;
-        const statusFlag = responseEntry && responseEntry.statusFlag;
+        const statusFlag =
+          (responseEntry && responseEntry.statusFlag) || row.statusFlag;
         const otherCompanies =
-          (responseEntry && responseEntry.otherCompanies) || [];
+          (responseEntry && responseEntry.otherCompanies) || row.otherCompanies;
         const newCompanies =
-          (responseEntry && responseEntry.newCompanies) || [];
+          (responseEntry && responseEntry.newCompanies) || row.newCompanies;
 
         const socialFeedId = responseEntry
           ? responseEntry.socialFeedId

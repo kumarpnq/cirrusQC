@@ -55,6 +55,7 @@ const SecondSection = (props) => {
         const headers = { Authorization: `Bearer ${userToken}` };
         const params = {
           article_id: articleId,
+
           clientId: selectedClient?.clientId,
         };
         const res = await axios.get(`${url}articletagdetails/`, {
@@ -101,20 +102,20 @@ const SecondSection = (props) => {
 
   const companies = companyData?.data?.companies || [];
 
-  useEffect(() => {
-    if (companies.length > 0) {
-      const localCompany = companies.find(
-        (i) => i.companyid === selectedCompanyId
-      );
+  // useEffect(() => {
+  //   if (companies.length > 0) {
+  //     const localCompany = companies.find(
+  //       (i) => i.companyid === selectedCompanyId
+  //     );
 
-      setSelectedCompany([
-        {
-          value: localCompany?.companyid,
-          label: localCompany?.companyName,
-        },
-      ]);
-    }
-  }, [selectedCompanyId]);
+  //     setSelectedCompany([
+  //       {
+  //         value: localCompany?.companyid,
+  //         label: localCompany?.companyName,
+  //       },
+  //     ]);
+  //   }
+  // }, [selectedCompanyId]);
 
   useEffect(() => {
     if (tagData.length > 0) {
@@ -141,12 +142,17 @@ const SecondSection = (props) => {
 
     if (
       manuallyAddedCompanies.some(
-        (row) => row.company_id === updatedRow.company_id
+        (row) =>
+          row.company_id === updatedRow.company_id &&
+          row.article_id === updatedRow.article_id
       )
     ) {
       setManuallyAddedCompanies((prevCompanies) => {
         const updatedCompanies = prevCompanies.map((row) =>
-          row.company_id === updatedRow.company_id ? updatedRow : row
+          row.company_id === updatedRow.company_id &&
+          row.article_id === updatedRow.article_id
+            ? updatedRow
+            : row
         );
         return updatedCompanies;
       });
@@ -223,19 +229,20 @@ const SecondSection = (props) => {
     const requestData = modifiedRows.map((obj) => convertKeys(obj));
 
     const camelCaseData = requestData.map((i) => ({
-      articleId: i.ARTICLEID,
-      companyId: i.COMPANYID,
-      companyName: i.COMPANYNAME,
-      manualProminence: i.MANUALPROMINENCE,
-      headerSpace: i.HEADERSPACE,
-      space: i.SPACE,
-      reportingTone: i.REPORTINGTONE,
-      reportingSubject: i.REPORTINGSUBJECT,
+      articleId: i.articleId,
+      companyId: i.companyId,
+      companyName: i.companyName,
+      manualProminence: i.manualProminence,
+      headerSpace: i.headerSpace,
+      space: i.space,
+      reportingTone: i.reportingTone,
+      reportingSubject: i.reportingSubject,
       subcategory: i.subcategory,
-      keyword: i.KEYWORD,
-      qc2Remark: i.QC2REMARK,
-      detailSummary: i.DETAILSUMMARY,
-      updateType: i.UPDATETYPE,
+      keyword: i.keyword,
+      qc2Remark: i.qc2Remark,
+      detailSummary: i.detailSummary,
+      updateType: i.updatetype || "U",
+      qc3Status: i.qc3Status,
     }));
 
     const data_send = {
@@ -248,7 +255,7 @@ const SecondSection = (props) => {
       const headers = { Authorization: `Bearer ${userToken}` };
       if (requestData.length > 0) {
         const res = await axios.post(
-          `${url}updatearticletagdetails/`,
+          `${url}updateqc2articletagdetails/`,
           data_send,
           { headers }
         );
@@ -443,9 +450,6 @@ const SecondSection = (props) => {
   };
 
   // * automation changes
-  const [acceptedData, setAcceptedData] = useState([]);
-  const [acceptLoading, setAcceptLoading] = useState(false);
-
   const handleAccept = (row) => {
     setEditableTagData((prev) =>
       prev.map((item) =>
@@ -455,44 +459,10 @@ const SecondSection = (props) => {
       )
     );
 
-    setAcceptedData((prevAccepted) => [
+    setModifiedRows((prevAccepted) => [
       ...prevAccepted,
-      { ...row, qc3_status: "Z" },
+      { ...row, qc3_status: "Z", update_type: "U" },
     ]);
-  };
-
-  const handleSaveQc3 = async () => {
-    try {
-      setAcceptLoading(true);
-      const token = localStorage.getItem("user");
-      const preparedData = acceptedData.map((item) => ({
-        articleId: item.article_id,
-        companyId: item.company_id,
-        qc3Status: item.qc3_status,
-        updateType: "U",
-      }));
-      const requestData = {
-        data: preparedData,
-        qcType: "QC2",
-      };
-      const response = await axios.post(
-        `${url}updateqc2articletagdetails/`,
-        requestData,
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        }
-      );
-      if (response.data.result.success.length) {
-        toast.info(`${response.data.result.success.length} row/s updated.`);
-        setFetchTagDataAfterChange(true);
-      } else {
-        toast.info(`${response.data.result.errors.length}row/s not updated. `);
-      }
-    } catch (error) {
-      toast.warning("Something went wrong.");
-    } finally {
-      setAcceptLoading(false);
-    }
   };
 
   return (
@@ -529,15 +499,6 @@ const SecondSection = (props) => {
             style={{ fontSize: "0.8em" }}
           >
             Delete
-          </button>
-        )}
-        {!!acceptedData.length && (
-          <button
-            className="px-6 text-white uppercase rounded-md bg-primary"
-            style={{ fontSize: "0.8em" }}
-            onClick={handleSaveQc3}
-          >
-            {acceptLoading ? "Saving" : " Save QC3"}
           </button>
         )}
 

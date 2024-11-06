@@ -115,7 +115,9 @@ const ClientSection = ({ selectedArticle, selectedClient }) => {
 
     setModifiedRows((prevRows) => {
       const existingIndex = prevRows.findIndex(
-        (row) => row.company_id === updatedRow.company_id
+        (row) =>
+          row.company_id === updatedRow.company_id &&
+          row.article_id === row.article_id
       );
       if (existingIndex >= 0) {
         const newRows = [...prevRows];
@@ -275,13 +277,14 @@ const ClientSection = ({ selectedArticle, selectedClient }) => {
         keyword: obj.keyword,
         remarks: obj.remarks,
         detailSummary: obj.detailSummary,
+        qc3Status: obj.qc3_status,
         updateType: obj.update_type,
       }));
 
       const headers = { Authorization: `Bearer ${userToken}` };
       const data = { data: requestData, qcType: "QC2" };
       const response = await axios.post(
-        `${url}updatesocialfeedtagdetails/`,
+        `${url}updateqc2socialfeedtagdetails/`,
         data,
         { headers }
       );
@@ -313,9 +316,6 @@ const ClientSection = ({ selectedArticle, selectedClient }) => {
   }, [selectedCompany, companies]);
 
   // * automation changes
-  const [acceptedData, setAcceptedData] = useState([]);
-  const [acceptLoading, setAcceptLoading] = useState(false);
-
   const handleAccept = (row) => {
     setEditableTagData((prev) =>
       prev.map((item) =>
@@ -326,44 +326,10 @@ const ClientSection = ({ selectedArticle, selectedClient }) => {
       )
     );
 
-    setAcceptedData((prevAccepted) => [
+    setModifiedRows((prevAccepted) => [
       ...prevAccepted,
-      { ...row, qc3_status: "Z" },
+      { ...row, qc3_status: "Z", update_type: "U" },
     ]);
-  };
-
-  const handleSaveQc3 = async () => {
-    try {
-      setAcceptLoading(true);
-      const token = localStorage.getItem("user");
-      const preparedData = acceptedData.map((item) => ({
-        socialFeedId: item.socialfeed_id,
-        companyId: item.company_id,
-        qc3Status: item.qc3_status,
-        updateType: "U",
-      }));
-      const requestData = {
-        data: preparedData,
-        qcType: "QC2",
-      };
-      const response = await axios.post(
-        `${url}updateqc2socialfeedtagdetails/`,
-        requestData,
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        }
-      );
-      if (response.data.result.success.length) {
-        toast.info(`${response.data.result.success.length} row/s updated.`);
-        setFetchTagDataAfterChange(true);
-      } else {
-        toast.info(`${response.data.result.errors.length}row/s not updated. `);
-      }
-    } catch (error) {
-      toast.warning("Something went wrong.");
-    } finally {
-      setAcceptLoading(false);
-    }
   };
 
   return (
@@ -390,13 +356,6 @@ const ClientSection = ({ selectedArticle, selectedClient }) => {
           onClick={handleSave}
           isLoading={saveLoading}
         />
-        {!!acceptedData.length && (
-          <Button
-            btnText={acceptLoading ? "Loading" : "Save Qc3"}
-            onClick={handleSaveQc3}
-            isLoading={acceptLoading}
-          />
-        )}
       </Box>
       <Card>
         <table>
