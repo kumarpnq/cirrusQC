@@ -21,7 +21,7 @@ const FormWithLabelTextField = ({
         gap: 1,
       }}
     >
-      <FormLabel sx={{ fontSize: "0.8em" }}>{label}:</FormLabel>
+      <FormLabel sx={{ fontSize: "0.8em", width: 50 }}>{label}:</FormLabel>
       <div className={tClasses}>
         <CustomTextField
           placeholder={placeholder}

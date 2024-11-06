@@ -9,6 +9,8 @@ import {
   DialogActions,
   TextField,
   CircularProgress,
+  IconButton,
+  Tooltip,
 } from "@mui/material";
 
 // ** custom imports
@@ -16,6 +18,7 @@ import useFetchData from "../../../hooks/useFetchData";
 import { url } from "../../../constants/baseUrl";
 import CustomButton from "../../../@core/CustomButton";
 import useProtectedRequest from "../../../hooks/useProtectedRequest";
+import CheckIcon from "@mui/icons-material/Check";
 
 // ** third party imports
 import { toast } from "react-toastify";
@@ -439,8 +442,61 @@ const SecondSection = (props) => {
     setStoredData({});
   };
 
+  // * automation changes
+  const [acceptedData, setAcceptedData] = useState([]);
+  const [acceptLoading, setAcceptLoading] = useState(false);
+
+  const handleAccept = (row) => {
+    setEditableTagData((prev) =>
+      prev.map((item) =>
+        item.article_id === row.article_id && item.company_id === row.company_id
+          ? { ...item, qc3_status: "Z" }
+          : item
+      )
+    );
+
+    setAcceptedData((prevAccepted) => [
+      ...prevAccepted,
+      { ...row, qc3_status: "Z" },
+    ]);
+  };
+
+  const handleSaveQc3 = async () => {
+    try {
+      setAcceptLoading(true);
+      const token = localStorage.getItem("user");
+      const preparedData = acceptedData.map((item) => ({
+        articleId: item.article_id,
+        companyId: item.company_id,
+        qc3Status: item.qc3_status,
+        updateType: "U",
+      }));
+      const requestData = {
+        data: preparedData,
+        qcType: "QC2",
+      };
+      const response = await axios.post(
+        `${url}updateqc2articletagdetails/`,
+        requestData,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+      if (response.data.result.success.length) {
+        toast.info(`${response.data.result.success.length} row/s updated.`);
+        setFetchTagDataAfterChange(true);
+      } else {
+        toast.info(`${response.data.result.errors.length}row/s not updated. `);
+      }
+    } catch (error) {
+      toast.warning("Something went wrong.");
+    } finally {
+      setAcceptLoading(false);
+    }
+  };
+
   return (
-    <div className="px-2 mt-2 border border-black min-h-[400px]">
+    <div className="px-2 mt-2 min-h-[400px]">
       <Box
         display={"flex"}
         alignItems={"center"}
@@ -475,6 +531,16 @@ const SecondSection = (props) => {
             Delete
           </button>
         )}
+        {!!acceptedData.length && (
+          <button
+            className="px-6 text-white uppercase rounded-md bg-primary"
+            style={{ fontSize: "0.8em" }}
+            onClick={handleSaveQc3}
+          >
+            {acceptLoading ? "Saving" : " Save QC3"}
+          </button>
+        )}
+
         {saveLoading ? (
           <CircularProgress />
         ) : (
@@ -512,11 +578,12 @@ const SecondSection = (props) => {
           border: "1px solid #ccc",
         }}
       >
-        <div className="overflow-auto max-h-96">
+        <div className="overflow-auto max-h-96 min-h-40">
           <table className="w-full border border-collapse border-gray-300">
             <thead className="sticky top-0 z-10 text-white bg-primary">
               <tr className="text-sm">
                 <th className="p-2">CompanyName</th>
+                <th className="p-2">Action</th>
                 <th className="p-2 min-w-20">Subject</th>
                 <th className="p-2 ">HeaderSpace</th>
                 <th className="p-2">Prominence</th>
@@ -538,14 +605,24 @@ const SecondSection = (props) => {
                 editableTagData?.map((row, index) => (
                   <tr
                     key={row.company_id}
-                    className={`transition-colors hover:bg-blue-100 ${
+                    className={`transition-colors hover:bg-blue-100 text-[0.8em] border border-black  ${
                       "qc3-" + row.qc3_status
                     }`}
                   >
-                    <td className="p-2 border border-gray-300">
-                      {row.company_name}
+                    <td className="p-2 ">{row.company_name}</td>
+                    <td>
+                      {row.qc3_status !== "N" &&
+                        row.qc3_status !== "Y" &&
+                        row.qc3_status !== "Z" && (
+                          <Tooltip title="Accept">
+                            <IconButton onClick={() => handleAccept(row)}>
+                              <CheckIcon className="text-primary" />
+                            </IconButton>
+                          </Tooltip>
+                        )}
                     </td>
-                    <td className="p-2 border border-gray-300">
+
+                    <td className="p-2">
                       <select
                         value={row.reporting_subject}
                         onChange={(e) =>
@@ -568,7 +645,7 @@ const SecondSection = (props) => {
                         ))}
                       </select>
                     </td>
-                    <td className="p-2 border border-gray-300">
+                    <td className="p-2 ">
                       <input
                         className="w-full border border-black outline-none"
                         value={row.header_space}
@@ -580,7 +657,7 @@ const SecondSection = (props) => {
                       />
                     </td>
                     <td
-                      className="p-2 border border-gray-300"
+                      className="p-2 "
                       onClick={() => handleProminenceBlur(index)}
                     >
                       <select
@@ -605,7 +682,7 @@ const SecondSection = (props) => {
                         ))}
                       </select>
                     </td>
-                    <td className="p-2 border border-gray-300">
+                    <td className="p-2 ">
                       <input
                         type="number"
                         value={row.space}
@@ -616,7 +693,7 @@ const SecondSection = (props) => {
                         className="w-full border border-black outline-none"
                       />
                     </td>
-                    <td className="p-2 border border-gray-300">
+                    <td className="p-2">
                       <select
                         value={row.reporting_tone}
                         onChange={(e) =>
@@ -635,7 +712,7 @@ const SecondSection = (props) => {
                         ))}
                       </select>
                     </td>
-                    <td className="p-2 border border-gray-300">
+                    <td className="p-2 ">
                       <Checkbox
                         type="checkbox"
                         checked={checkedRows.some(
@@ -645,7 +722,7 @@ const SecondSection = (props) => {
                         onChange={() => handleCheckboxChange(row)}
                       />
                     </td>
-                    <td className="p-2 border border-gray-300">
+                    <td className="p-2 ">
                       <select
                         value={row.subcategory}
                         onChange={(e) =>
@@ -661,7 +738,7 @@ const SecondSection = (props) => {
                         ))}
                       </select>
                     </td>
-                    <td className="p-2 border border-gray-300">
+                    <td className="p-2">
                       <input
                         type="text"
                         className="w-full border border-black outline-none"

@@ -1,5 +1,5 @@
 import { DataGrid, GridToolbar } from "@mui/x-data-grid";
-import { Box } from "@mui/material";
+import { Box, Link } from "@mui/material";
 import PropTypes from "prop-types";
 import { makeStyles } from "@mui/styles";
 
@@ -65,7 +65,18 @@ const BulkTable = ({
         );
       },
     },
-    { field: "link", headerName: "Link", width: 400 },
+    {
+      field: "link",
+      headerName: "Link",
+      width: 400,
+      renderCell: (params) => {
+        return (
+          <Link target="_blank" rel="noopener" href={params.row.link}>
+            {params.row.link}
+          </Link>
+        );
+      },
+    },
     { field: "headline", headerName: "Headline", width: 200 },
     { field: "summary", headerName: "Summary", width: 250 },
     { field: "language", headerName: "Language", width: 100 },

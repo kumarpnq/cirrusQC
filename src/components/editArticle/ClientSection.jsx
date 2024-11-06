@@ -10,6 +10,7 @@ import {
   CircularProgress,
   Box,
   Typography,
+  IconButton,
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import axios from "axios";
@@ -21,6 +22,7 @@ import CustomButton from "../../@core/CustomButton";
 import Button from "../custom/Button";
 import PropTypes from "prop-types";
 import CustomMultiSelect from "../../@core/CustomMultiSelect";
+import CheckIcon from "@mui/icons-material/Check";
 
 const ClientSection = ({ selectedArticle, selectedClient }) => {
   const userToken = localStorage.getItem("user");
@@ -310,6 +312,60 @@ const ClientSection = ({ selectedArticle, selectedClient }) => {
     setSelectedCompanies(filtered);
   }, [selectedCompany, companies]);
 
+  // * automation changes
+  const [acceptedData, setAcceptedData] = useState([]);
+  const [acceptLoading, setAcceptLoading] = useState(false);
+
+  const handleAccept = (row) => {
+    setEditableTagData((prev) =>
+      prev.map((item) =>
+        item.article_id === row.socilfeed_id &&
+        item.company_id === row.company_id
+          ? { ...item, qc3_status: "Z" }
+          : item
+      )
+    );
+
+    setAcceptedData((prevAccepted) => [
+      ...prevAccepted,
+      { ...row, qc3_status: "Z" },
+    ]);
+  };
+
+  const handleSaveQc3 = async () => {
+    try {
+      setAcceptLoading(true);
+      const token = localStorage.getItem("user");
+      const preparedData = acceptedData.map((item) => ({
+        socialFeedId: item.socialfeed_id,
+        companyId: item.company_id,
+        qc3Status: item.qc3_status,
+        updateType: "U",
+      }));
+      const requestData = {
+        data: preparedData,
+        qcType: "QC2",
+      };
+      const response = await axios.post(
+        `${url}updateqc2socialfeedtagdetails/`,
+        requestData,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+      if (response.data.result.success.length) {
+        toast.info(`${response.data.result.success.length} row/s updated.`);
+        setFetchTagDataAfterChange(true);
+      } else {
+        toast.info(`${response.data.result.errors.length}row/s not updated. `);
+      }
+    } catch (error) {
+      toast.warning("Something went wrong.");
+    } finally {
+      setAcceptLoading(false);
+    }
+  };
+
   return (
     <>
       <Box display="flex" alignItems="center" my={1} gap={1}>
@@ -334,6 +390,13 @@ const ClientSection = ({ selectedArticle, selectedClient }) => {
           onClick={handleSave}
           isLoading={saveLoading}
         />
+        {!!acceptedData.length && (
+          <Button
+            btnText={acceptLoading ? "Loading" : "Save Qc3"}
+            onClick={handleSaveQc3}
+            isLoading={acceptLoading}
+          />
+        )}
       </Box>
       <Card>
         <table>
@@ -341,6 +404,7 @@ const ClientSection = ({ selectedArticle, selectedClient }) => {
             <tr>
               <th>Action</th>
               <th>Company</th>
+              <th>Accept</th>
               <th>Subject</th>
               <th>Prominence</th>
               <th>Tone</th>
@@ -368,6 +432,17 @@ const ClientSection = ({ selectedArticle, selectedClient }) => {
                     <CloseIcon />
                   </td>
                   <td className="text-[0.9em]">{item.company_name}</td>
+                  <td>
+                    {item.qc3_status !== "P" &&
+                      item.qc3_status !== "Y" &&
+                      item.qc3_status !== "Z" && (
+                        <Tooltip title="Accept">
+                          <IconButton onClick={() => handleAccept(item)}>
+                            <CheckIcon className="text-primary" />
+                          </IconButton>
+                        </Tooltip>
+                      )}
+                  </td>
                   <td className="px-1">
                     <select
                       value={item.reporting_subject}

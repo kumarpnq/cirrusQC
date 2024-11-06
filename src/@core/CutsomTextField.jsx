@@ -9,6 +9,7 @@ const CustomTextField = ({
   width,
   isDisabled,
   isRequired,
+  isMultiline,
 }) => {
   function handleChange(e) {
     setValue(e.target.value);
@@ -22,7 +23,7 @@ const CustomTextField = ({
       type={type}
       fullWidth
       required={isRequired}
-      multiline
+      multiline={isMultiline}
       sx={{ width: width }}
       InputProps={{
         style: {
@@ -45,6 +46,7 @@ CustomTextField.propTypes = {
   width: PropTypes.number.isRequired,
   isDisabled: PropTypes.bool,
   isRequired: PropTypes.bool,
+  isMultiline: PropTypes.bool,
 };
 
 export default CustomTextField;

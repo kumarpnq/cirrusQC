@@ -28,7 +28,7 @@ const FilterWrapper = styled(Box)({
   flexWrap: "wrap",
   alignItems: "center",
   gap: 3,
-  paddingBottom: 1,
+  padding: 10,
 });
 const StyledButton = styled(Button)({
   height: 25,

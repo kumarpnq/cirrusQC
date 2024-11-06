@@ -343,6 +343,7 @@ const Online = () => {
         if (oldRow.journalist !== newRow.journalist) {
           request_data.author = newRow.journalist;
         }
+
         return request_data;
       });
       const data = {
@@ -367,6 +368,8 @@ const Online = () => {
         toast.warning("Something wrong try again.");
       }
     } catch (error) {
+      console.log(error);
+
       toast.error("Something went wrong.");
     } finally {
       setSaveLoading(false);

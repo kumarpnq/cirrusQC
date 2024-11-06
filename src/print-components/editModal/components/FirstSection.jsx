@@ -3,7 +3,6 @@ import YesOrNo from "../../../@core/YesOrNo";
 import { yesOrNo } from "../../../constants/dataArray";
 import FormWithLabelTextField from "../../../@core/FormWithLabel";
 import { useEffect, useState } from "react";
-import Button from "../../../components/custom/Button";
 import axios from "axios";
 import { url } from "../../../constants/baseUrl";
 import { toast } from "react-toastify";
@@ -215,16 +214,19 @@ const FirstSection = (props) => {
             onChange={(e) => setArticleSummary(e.target.value)}
           />
         </div>
-        <FormWithLabelTextField
-          label="Journalist"
-          type="text"
-          value={journalist}
-          setValue={setJournalist}
-          width={200}
-          tClasses={"ml-2"}
-        />
-        <div className="flex items-center gap-1">
-          <label className="text-[0.8em]">Publication:</label>
+        <div className="h-[25]">
+          <FormWithLabelTextField
+            label="Journalist"
+            type="text"
+            value={journalist}
+            setValue={setJournalist}
+            width={200}
+            tClasses={"ml-0"}
+          />
+        </div>
+
+        <div className="flex items-center gap-1 h-[25]">
+          <label className="text-[0.8em] text-gray-500">Publication:</label>
           <CustomSingleSelect
             options={publicationData?.data?.publications || []}
             label="publication"
@@ -235,8 +237,8 @@ const FirstSection = (props) => {
         </div>
         <div className="flex flex-wrap items-center gap-2">
           <div className="flex items-center gap-2">
-            <label className="text-[0.8em]">Box:</label>
-            <div className="ml-10">
+            <label className="text-[0.8em] text-gray-500 w-[50px]">Box:</label>
+            <div className="ml-0">
               <YesOrNo
                 classes={classes}
                 placeholder="Box"
@@ -248,7 +250,9 @@ const FirstSection = (props) => {
             </div>
           </div>
           <div className="flex items-center gap-2">
-            <label className="text-[0.8em]">Photo:</label>
+            <label className="text-[0.8em] text-gray-500 w-[50px]">
+              Photo:
+            </label>
             <YesOrNo
               classes={classes}
               placeholder="Photo"
@@ -266,7 +270,7 @@ const FirstSection = (props) => {
             width={100}
           />
           <FormWithLabelTextField
-            label="PageValue"
+            label="Value"
             type="number"
             value={pageValue}
             setValue={setPageValue}
@@ -286,7 +290,6 @@ const FirstSection = (props) => {
             setValue={setQc1By}
             width={100}
             isDisabled={true}
-            tClasses={"ml-5"}
           />
           <FormWithLabelTextField
             label="Qc2 By"
@@ -296,11 +299,12 @@ const FirstSection = (props) => {
             width={100}
             isDisabled={true}
           />
-          <Button
-            btnText={updateLoading ? "Updating" : "update"}
-            isLoading={updateLoading}
+          <button
+            className="px-3 text-white uppercase rounded-[3px] outline-none bg-primary text-[0.9em]"
             onClick={updateData}
-          />
+          >
+            {updateLoading ? "Updating" : "update"}
+          </button>
         </div>
       </div>
     </form>

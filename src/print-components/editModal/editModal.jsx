@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import { Modal, Box, Typography, Button } from "@mui/material";
+import { Modal, Box, Typography, Button, Divider, Grid } from "@mui/material";
 import { makeStyles } from "@mui/styles";
 import { FaExternalLinkAlt } from "react-icons/fa";
 
@@ -77,27 +77,41 @@ export default function EditModal({
             </Typography>
             <Button onClick={handleClose}>close</Button>
           </Box>
-          <div className="flex gap-1">
-            <Box sx={{ width: "60%", overflow: "hidden" }}>
-              <FirstSection
-                classes={classes}
-                selectedArticle={selectedArticle}
-                editedSingleArticle={editedSingleArticle}
-                setEditedSingleArticle={setEditedSingleArticle}
-              />
-              <SecondSection
-                selectedClient={selectedClient}
-                selectedArticle={selectedArticle}
-              />
-            </Box>
-            <Box sx={{ width: "50%" }}>
+          <Grid container spacing={2}>
+            {/* Left Section */}
+            <Grid item xs={12} md={7}>
+              <Box
+                sx={{
+                  width: "100%",
+                  overflow: "hidden",
+                  border: "1px solid #DDD",
+                  borderRadius: "4px",
+                  p: 1,
+                }}
+              >
+                <FirstSection
+                  classes={classes}
+                  selectedArticle={selectedArticle}
+                  editedSingleArticle={editedSingleArticle}
+                  setEditedSingleArticle={setEditedSingleArticle}
+                />
+                <Divider sx={{ my: 1 }} />
+                <SecondSection
+                  selectedClient={selectedClient}
+                  selectedArticle={selectedArticle}
+                />
+              </Box>
+            </Grid>
+
+            {/* Right Section */}
+            <Grid item xs={12} md={5}>
               <Typography
                 variant="h6"
-                component={"a"}
+                component="a"
                 display="flex"
                 alignItems="center"
                 gap={1}
-                fontSize={"0.9em"}
+                fontSize="0.9em"
                 className="underline text-primary"
               >
                 <Link
@@ -109,15 +123,17 @@ export default function EditModal({
                   <FaExternalLinkAlt style={{ fontSize: "1.2em" }} />
                 </Link>
               </Typography>
+
               {selectedArticle && selectedArticle.default_link && (
                 <iframe
                   title="PDF Viewer"
                   src={`${url}${selectedArticle.default_link}`}
                   className={classes.iframe}
+                  style={{ width: "100%", height: "100vh" }}
                 />
               )}
-            </Box>
-          </div>
+            </Grid>
+          </Grid>
         </Box>
       </Modal>
     </div>

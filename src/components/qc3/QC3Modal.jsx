@@ -234,7 +234,7 @@ export const QC3Modal = ({ open, handleClose, selectedArticle, type }) => {
     automation: row.automation,
     company_name: row.company_name,
     company_id: row.company_id,
-    qc3: row.qc3,
+    qc3: row.qc3_status,
     accepted: row.accepted,
     reporting_subject: row.reporting_subject,
     prominence: row.prominence || row.manual_prominence,

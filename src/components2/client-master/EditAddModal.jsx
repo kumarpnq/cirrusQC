@@ -3,6 +3,7 @@ import { Box, IconButton, Modal, Typography } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import { styled } from "@mui/system";
 import ClientInfo from "./ClientInfo";
+import MailerConfigure from "./MailerConfigure";
 
 const StyledText = styled(Typography)({
   fontSize: "1em",
@@ -47,6 +48,7 @@ const EditAddModal = ({ open, onClose, openFromWhere }) => {
         </Box>
         <form onSubmit={handleSubmit}>
           <ClientInfo />
+          <MailerConfigure />
         </form>
       </Box>
     </Modal>

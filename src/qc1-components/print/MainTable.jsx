@@ -73,7 +73,7 @@ const MainTable = ({
         <Box>
           {!!savePermission && (
             <Button size="small" onClick={handleSave}>
-              Save
+              Save Partial
             </Button>
           )}
 
@@ -516,7 +516,7 @@ const MainTable = ({
 
   return (
     <>
-      <Box sx={{ height: 600, width: "100%", mt: 1 }}>
+      <Box sx={{ height: "90vh", width: "100%", mt: 1 }}>
         <DataGrid
           rows={rows}
           columns={columns}

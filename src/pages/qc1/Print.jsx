@@ -475,6 +475,7 @@ const Print = () => {
     const uniqueHeadlines = new Set(
       selectedItems.map((item) => item.headline.trim())
     );
+
     if (uniqueHeadlines.size > 1) {
       toast.warning("All selected articles must have the same headline.");
       return;
