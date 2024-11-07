@@ -91,9 +91,9 @@ const AcceptCompany = ({
     }
 
     const data = {
-      [accessKey]: selectedItem.articleId,
-      company_id: selectedItem.companyId,
-      company_name: selectedItem.companyName,
+      [accessKey]: selectedRow[accessKey],
+      company_id: selectedRow.company_id,
+      company_name: selectedRow.company_name,
       keyword: selectedItem.keyword,
       prominence: selectedItem.prominence,
       reporting_subject: selectedItem.reportingSubject,

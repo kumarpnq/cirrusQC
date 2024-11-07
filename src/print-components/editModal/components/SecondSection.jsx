@@ -45,6 +45,7 @@ const SecondSection = (props) => {
   const [modifiedRows, setModifiedRows] = useState([]);
   const [checkedRows, setCheckedRows] = useState([]);
   const [manuallyAddedCompanies, setManuallyAddedCompanies] = useState([]);
+  // const [selectedQc3Companies,setSelectedQc3Companies] = useState([])
 
   const [storedData, setStoredData] = useState({});
   const [openAcceptCompany, setOpenAcceptCompany] = useState(false);
@@ -59,7 +60,6 @@ const SecondSection = (props) => {
         const headers = { Authorization: `Bearer ${userToken}` };
         const params = {
           article_id: articleId,
-
           clientId: selectedClient?.clientId,
         };
         const res = await axios.get(`${url}articletagdetails/`, {
@@ -105,21 +105,6 @@ const SecondSection = (props) => {
   );
 
   const companies = companyData?.data?.companies || [];
-
-  // useEffect(() => {
-  //   if (companies.length > 0) {
-  //     const localCompany = companies.find(
-  //       (i) => i.companyid === selectedCompanyId
-  //     );
-
-  //     setSelectedCompany([
-  //       {
-  //         value: localCompany?.companyid,
-  //         label: localCompany?.companyName,
-  //       },
-  //     ]);
-  //   }
-  // }, [selectedCompanyId]);
 
   useEffect(() => {
     if (tagData.length > 0) {
@@ -493,8 +478,6 @@ const SecondSection = (props) => {
     setSelectedRowForAccept(null);
     setOpenAcceptCompany(false);
   };
-
-  console.log(editableTagData);
 
   return (
     <div className="px-2 mt-2 min-h-[400px]">
