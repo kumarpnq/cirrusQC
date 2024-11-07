@@ -218,11 +218,11 @@ const MainTable = ({
                     Edit
                   </th>
                 )}
-                {!!dataToRender.length && (
+                {/* {!!dataToRender.length && (
                   <th className="text-white text-[0.9em]  bg-primary pl-8 left-14 tracking-widest font-thin pt-2">
                     Automation
                   </th>
-                )}
+                )} */}
 
                 {tableHeaders?.map((header) => (
                   <th
@@ -231,8 +231,8 @@ const MainTable = ({
                       handleSort(header.toLowerCase().replace(/ /g, "_"))
                     }
                     className={`text-white cursor-pointer font-thin text-xs tracking-widest px-4 ${
-                      (header === "COMPANY NAME" && "pl-3") ||
-                      (header === "HEADLINE" && "pl-9") ||
+                      (header === "COMPANY NAME" && "pl-14") ||
+                      (header === "HEADLINE" && "pl-12") ||
                       (header === "PUBLICATION" && "pl-48 ml-4") ||
                       (header === "LINK" && "pl-7") ||
                       (header === "REPORTING SUBJECT" && "pl-12") ||
@@ -311,13 +311,13 @@ const MainTable = ({
               >
                 <EditAttributesOutlined className="text-primary" />
               </TableCell>
-              <Tooltip title="Coming soon...">
+              {/* <Tooltip title="Coming soon...">
                 <TableCell>
                   <IconButton onClick={() => handleOpen(rowData)} disabled>
                     <FlagIcon className="text-primary" />
                   </IconButton>
                 </TableCell>
-              </Tooltip>
+              </Tooltip> */}
 
               {tableHeaders?.map((header) => (
                 <React.Fragment key={header}>

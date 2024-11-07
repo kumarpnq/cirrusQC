@@ -26,6 +26,8 @@ import axios from "axios";
 import PropTypes from "prop-types";
 import { convertKeys } from "../../../constants/convertKeys";
 import CustomMultiSelect from "../../../@core/CustomMultiSelect";
+import StoreIcon from "@mui/icons-material/Store";
+import AcceptCompany from "../../../components/editArticle/AcceptCompany";
 
 const SecondSection = (props) => {
   const userToken = localStorage.getItem("user");
@@ -45,6 +47,8 @@ const SecondSection = (props) => {
   const [manuallyAddedCompanies, setManuallyAddedCompanies] = useState([]);
 
   const [storedData, setStoredData] = useState({});
+  const [openAcceptCompany, setOpenAcceptCompany] = useState(false);
+  const [selectedRowForAccept, setSelectedRowForAccept] = useState(null);
 
   const articleId = !!selectedArticle && selectedArticle?.article_id;
 
@@ -459,11 +463,38 @@ const SecondSection = (props) => {
       )
     );
 
-    setModifiedRows((prevAccepted) => [
-      ...prevAccepted,
-      { ...row, qc3_status: "Z", update_type: "U" },
-    ]);
+    setModifiedRows((prevAccepted) => {
+      const existingIndex = prevAccepted.findIndex(
+        (item) =>
+          item.article_id === row.article_id &&
+          item.company_id === row.company_id
+      );
+
+      if (existingIndex !== -1) {
+        const updatedModifiedRows = [...prevAccepted];
+        updatedModifiedRows[existingIndex] = {
+          ...updatedModifiedRows[existingIndex],
+          qc3_status: "Z",
+          update_type: "U",
+        };
+        return updatedModifiedRows;
+      } else {
+        return [...prevAccepted, { ...row, qc3_status: "Z", update_type: "U" }];
+      }
+    });
   };
+
+  const handleOpenAccept = (row) => {
+    setSelectedRowForAccept(row);
+    setOpenAcceptCompany((pre) => !pre);
+  };
+
+  const handleCloseAccept = () => {
+    setSelectedRowForAccept(null);
+    setOpenAcceptCompany(false);
+  };
+
+  console.log(editableTagData);
 
   return (
     <div className="px-2 mt-2 min-h-[400px]">
@@ -545,6 +576,7 @@ const SecondSection = (props) => {
               <tr className="text-sm">
                 <th className="p-2">CompanyName</th>
                 <th className="p-2">Action</th>
+                <th className="p-2">Accept Company</th>
                 <th className="p-2 min-w-20">Subject</th>
                 <th className="p-2 ">HeaderSpace</th>
                 <th className="p-2">Prominence</th>
@@ -581,6 +613,14 @@ const SecondSection = (props) => {
                             </IconButton>
                           </Tooltip>
                         )}
+                    </td>
+
+                    <td>
+                      {row.qc3_status === "N" || row.qc3_status === "E" ? (
+                        <IconButton onClick={() => handleOpenAccept(row)}>
+                          <StoreIcon className="text-primary" />
+                        </IconButton>
+                      ) : null}
                     </td>
 
                     <td className="p-2">
@@ -750,6 +790,14 @@ const SecondSection = (props) => {
           </DialogActions>
         </Dialog>
       </div>
+      <AcceptCompany
+        open={openAcceptCompany}
+        handleClose={handleCloseAccept}
+        articleType="print"
+        selectedRow={selectedRowForAccept}
+        setModifiedRows={setModifiedRows}
+        setMainTableData={setEditableTagData}
+      />
     </div>
   );
 };

@@ -323,7 +323,6 @@ const StitchModal = ({
                   disableDensitySelector
                   disableColumnSelector
                   disableRowSelectionOnClick
-                  // components={{ Toolbar: GridToolbar }}
                   slots={{ toolbar: CustomToolbar }}
                   slotProps={{
                     toolbar: {

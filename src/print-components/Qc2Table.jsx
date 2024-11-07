@@ -260,14 +260,14 @@ const Qc2Table = ({
                         Edit
                       </th>
                     )}
-                    {!!dataToRender.length && (
+                    {/* {!!dataToRender.length && (
                       <th
                         scope="col"
                         className={`px-2 py-1 text-left text-xs font-medium uppercase tracking-wider cursor-pointer whitespace-nowrap pt-2 pr-2 sticky left-14 bg-primary`}
                       >
                         Automation
                       </th>
-                    )}
+                    )} */}
 
                     {tableHeaders.map((item) => (
                       <th
@@ -354,13 +354,13 @@ const Qc2Table = ({
                     >
                       <EditAttributesOutlined className="text-primary" />
                     </td>
-                    <Tooltip title="Coming soon...">
+                    {/* <Tooltip title="Coming soon...">
                       <td className="pl-14">
                         <IconButton onClick={() => handleOpen(items)} disabled>
                           <FlagIcon className="text-primary" />
                         </IconButton>
                       </td>
-                    </Tooltip>
+                    </Tooltip> */}
                     <td className="px-1 py-2 pl-6 whitespace-nowrap">
                       <div className="truncate w-28">{items.company}</div>
                     </td>

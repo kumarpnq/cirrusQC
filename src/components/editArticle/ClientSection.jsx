@@ -23,6 +23,8 @@ import Button from "../custom/Button";
 import PropTypes from "prop-types";
 import CustomMultiSelect from "../../@core/CustomMultiSelect";
 import CheckIcon from "@mui/icons-material/Check";
+import StoreIcon from "@mui/icons-material/Store";
+import AcceptCompany from "./AcceptCompany";
 
 const ClientSection = ({ selectedArticle, selectedClient }) => {
   const userToken = localStorage.getItem("user");
@@ -35,6 +37,8 @@ const ClientSection = ({ selectedArticle, selectedClient }) => {
   const [fetchTagDataAfterChange, setFetchTagDataAfterChange] = useState(false);
   const [modifiedRows, setModifiedRows] = useState([]);
   const [selectedCompanies, setSelectedCompanies] = useState([]);
+  const [openAcceptCompany, setOpenAcceptCompany] = useState(false);
+  const [selectedRowForAccept, setSelectedRowForAccept] = useState(null);
   const { loading, error, data, makeRequest } = useProtectedRequest(
     userToken,
     "updatesocialfeedtagdetails/"
@@ -69,6 +73,7 @@ const ClientSection = ({ selectedArticle, selectedClient }) => {
 
     fetchData();
   }, [userToken, selectedArticle, fetchTagDataAfterChange]);
+
   const [subjects, setSubjects] = useState([]);
 
   const { data: subjectLists } = useFetchData(`${url}reportingsubjectlist`);
@@ -278,7 +283,7 @@ const ClientSection = ({ selectedArticle, selectedClient }) => {
         remarks: obj.remarks,
         detailSummary: obj.detailSummary,
         qc3Status: obj.qc3_status,
-        updateType: obj.update_type,
+        updateType: obj.update_type || "U",
       }));
 
       const headers = { Authorization: `Bearer ${userToken}` };
@@ -295,7 +300,7 @@ const ClientSection = ({ selectedArticle, selectedClient }) => {
         setFetchTagDataAfterChange(true);
         setSaveLoading(false);
       } else {
-        toast.error("Something went wrong");
+        toast.warning("No record updated.");
         setSaveLoading(false);
       }
     } catch (error) {
@@ -326,10 +331,35 @@ const ClientSection = ({ selectedArticle, selectedClient }) => {
       )
     );
 
-    setModifiedRows((prevAccepted) => [
-      ...prevAccepted,
-      { ...row, qc3_status: "Z", update_type: "U" },
-    ]);
+    setModifiedRows((prevAccepted) => {
+      const existingIndex = prevAccepted.findIndex(
+        (item) =>
+          item.socilfeed_id === row.socilfeed_id &&
+          item.company_id === row.company_id
+      );
+
+      if (existingIndex !== -1) {
+        const updatedModifiedRows = [...prevAccepted];
+        updatedModifiedRows[existingIndex] = {
+          ...updatedModifiedRows[existingIndex],
+          qc3_status: "Z",
+          update_type: "U",
+        };
+        return updatedModifiedRows;
+      } else {
+        return [...prevAccepted, { ...row, qc3_status: "Z", update_type: "U" }];
+      }
+    });
+  };
+
+  const handleOpenAccept = (row) => {
+    setSelectedRowForAccept(row);
+    setOpenAcceptCompany((pre) => !pre);
+  };
+
+  const handleCloseAccept = () => {
+    setSelectedRowForAccept(null);
+    setOpenAcceptCompany(false);
   };
 
   return (
@@ -364,6 +394,7 @@ const ClientSection = ({ selectedArticle, selectedClient }) => {
               <th>Action</th>
               <th>Company</th>
               <th>Accept</th>
+              <th>Company Accept</th>
               <th>Subject</th>
               <th>Prominence</th>
               <th>Tone</th>
@@ -402,6 +433,14 @@ const ClientSection = ({ selectedArticle, selectedClient }) => {
                         </Tooltip>
                       )}
                   </td>
+                  <td>
+                    {item.qc3_status === "N" || item.qc3_status === "E" ? (
+                      <IconButton onClick={() => handleOpenAccept(item)}>
+                        <StoreIcon className="text-primary" />
+                      </IconButton>
+                    ) : null}
+                  </td>
+
                   <td className="px-1">
                     <select
                       value={item.reporting_subject}
@@ -524,6 +563,14 @@ const ClientSection = ({ selectedArticle, selectedClient }) => {
           </Dialog>
         </div>
       </Card>
+      <AcceptCompany
+        open={openAcceptCompany}
+        handleClose={handleCloseAccept}
+        articleType="online"
+        selectedRow={selectedRowForAccept}
+        setModifiedRows={setModifiedRows}
+        setMainTableData={setEditableTagData}
+      />
     </>
   );
 };
