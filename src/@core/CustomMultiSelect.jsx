@@ -148,7 +148,7 @@ const CustomMultiSelect = ({
             {selectedItems.length > 0 ? (
               `${selectedItems.length} selected`
             ) : (
-              <span className="italic text-gray-500 text-[0.9em]">{title}</span>
+              <span className="italic text-gray-800 text-[0.9em]">{title}</span>
             )}
           </Typography>
           <IconButton aria-label="toggle list" sx={{ padding: 0 }}>

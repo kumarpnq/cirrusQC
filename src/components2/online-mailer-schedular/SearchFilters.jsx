@@ -1,4 +1,4 @@
-import { Box, Button, Checkbox, FormControlLabel } from "@mui/material";
+import { Box, Button, CircularProgress } from "@mui/material";
 import { useState } from "react";
 import { formattedDate, formattedNextDay } from "../../constants/dates";
 import CustomMultiSelect from "../../@core/CustomMultiSelect";
@@ -9,9 +9,12 @@ import ToDate from "../../components/research-dropdowns/ToDate";
 import YesOrNo from "../../@core/YesOrNo";
 import { makeStyles } from "@mui/styles";
 import { timeSlots } from "../../constants/dataArray";
-import CustomSingleSelect from "../../@core/CustomSingleSelect2";
-import CustomDebounceDropdown from "../../@core/CustomDebounceDropdown";
-import Publication from "../../print-components/dropdowns/Publication";
+import { format, toDate } from "date-fns";
+import axiosInstance from "../../../axiosConfig";
+import { toast } from "react-toastify";
+// import CustomSingleSelect from "../../@core/CustomSingleSelect2";
+// import CustomDebounceDropdown from "../../@core/CustomDebounceDropdown";
+// import Publication from "../../print-components/dropdowns/Publication";
 
 const useStyle = makeStyles(() => ({
   dropDowns: {
@@ -27,26 +30,75 @@ const SearchFilters = () => {
   const [fromDateTimeSlot, setFromDateTimeSlot] = useState("00:00");
   const [dateNow, setDateNow] = useState(formattedNextDay);
   const [toDateTimeSlot, setToDateTimeSlot] = useState("00:00");
-  const [dateType, setDateType] = useState("");
-  const [qc1, setQc1] = useState("");
-  const [city, setCity] = useState("");
-  const [publicationGroup, setPublicationGroup] = useState("");
-  const [publication, setPublication] = useState("");
-  const [mailType, setMailType] = useState("");
-  const [mailSent, setMailSent] = useState("");
-  const [isPrintOnlineMailer, setIsPrintOnlineMailer] = useState(false);
+  const [newsType, setNewsType] = useState([]);
+
+  // const [dateType, setDateType] = useState("");
+  // const [qc1, setQc1] = useState("");
+  // const [city, setCity] = useState("");
+  // const [publicationGroup, setPublicationGroup] = useState("");
+  // const [publication, setPublication] = useState("");
+  // const [mailType, setMailType] = useState("");
+  // const [mailSent, setMailSent] = useState("");
+  // const [isPrintOnlineMailer, setIsPrintOnlineMailer] = useState(false);
+
+  const [sendLoading, setSendLoading] = useState(false);
 
   const { data: clientData } = useFetchData(`${url}clientlist/`, clients);
-  const { data } = useFetchData(`${url}citieslist`);
+  // const { data } = useFetchData(`${url}citieslist`);
 
-  const handleFormSubmit = (event) => {
+  const handleFormSubmit = async (event) => {
     event.preventDefault();
+    if (!newsType.length || !clients.length) {
+      toast.warning("Please select clients or entity.");
+      return;
+    }
+
+    const preparedData = clients.flatMap((client) =>
+      newsType.map((screen) => ({
+        clientId: client,
+        entityType: screen,
+        fromDate:
+          screen === "online" || screen === "both"
+            ? fromDate
+            : format(fromDate, "yyyy-MM-dd"),
+        toDate:
+          screen === "online" || screen === "both"
+            ? dateNow
+            : format(dateNow, "yyyy-MM-dd"),
+      }))
+    );
+    try {
+      setSendLoading(true);
+      const requests = preparedData.map((item) => {
+        const { clientId, entityType, fromDate, toDate } = item;
+        const requestData = {
+          clientId,
+          entityType,
+          fromDate,
+          toDate,
+        };
+        return axiosInstance.post("manualArchiveLog", requestData);
+      });
+      const responses = await Promise.all(requests);
+      const resp = responses[0];
+
+      if (resp) {
+        const message = JSON.parse(resp?.data?.response?.body);
+        toast.success(message?.message);
+        setClients([]);
+        setNewsType([]);
+      }
+    } catch (error) {
+      toast.error("Something went wrong.");
+    } finally {
+      setSendLoading(false);
+    }
   };
   return (
     <form onSubmit={handleFormSubmit}>
       <Box
         sx={{ display: "flex", alignItems: "center", flexWrap: "wrap" }}
-        className="gap-1"
+        className="gap-1 mt-1"
       >
         <CustomMultiSelect
           dropdownToggleWidth={300}
@@ -81,9 +133,26 @@ const SearchFilters = () => {
             width={120}
           />
         </div>
-        <YesOrNo
+        <div className="w-[200px]">
+          <CustomMultiSelect
+            dropdownToggleWidth={200}
+            dropdownWidth={200}
+            keyId="id"
+            keyName="name"
+            options={[
+              { id: "print", name: "Print" },
+              { id: "online", name: "Online" },
+              { id: "both", name: "Combine" },
+            ]}
+            selectedItems={newsType}
+            setSelectedItems={setNewsType}
+            title="NewsType"
+          />
+        </div>
+
+        {/* <YesOrNo
           classes={classes}
-          placeholder="dateType"
+          placeholder="DateType"
           mapValue={["Article", "Upload"]}
           value={dateType}
           setValue={setDateType}
@@ -91,24 +160,24 @@ const SearchFilters = () => {
         />
         <YesOrNo
           classes={classes}
-          placeholder="qc1"
+          placeholder="QC1"
           mapValue={["No", "Yes", "All"]}
           value={qc1}
           setValue={setQc1}
           width={120}
-        />
-        <CustomSingleSelect
+        /> */}
+        {/* <CustomSingleSelect
           dropdownToggleWidth={200}
           dropdownWidth={200}
           keyId="cityid"
           keyName="cityname"
-          title="city"
+          title="City"
           options={data?.data?.cities || []}
           isIncreased
           selectedItem={city}
           setSelectedItem={setCity}
-        />
-        <CustomDebounceDropdown
+        /> */}
+        {/* <CustomDebounceDropdown
           publicationGroup={publicationGroup}
           setPublicationGroup={setPublicationGroup}
           bg="secondory"
@@ -120,10 +189,10 @@ const SearchFilters = () => {
           setPublication={setPublication}
           classes={classes}
           width={150}
-        />
-        <YesOrNo
+        /> */}
+        {/* <YesOrNo
           classes={classes}
-          placeholder="mailType"
+          placeholder="MailType"
           mapValue={["Daily", "Magazine"]}
           value={mailType}
           setValue={setMailType}
@@ -131,13 +200,13 @@ const SearchFilters = () => {
         />
         <YesOrNo
           classes={classes}
-          placeholder="mailSent"
+          placeholder="MailSent"
           mapValue={["No", "All"]}
           value={mailSent}
           setValue={setMailSent}
           width={120}
-        />
-        <FormControlLabel
+        /> */}
+        {/* <FormControlLabel
           control={
             <Checkbox
               size="small"
@@ -150,11 +219,17 @@ const SearchFilters = () => {
           label={
             <span className="font-thin text-[0.9em]">Print Online Mailer</span>
           }
-        />
-        <Button variant="outlined" size="small" type="submit">
+        /> */}
+        <Button variant="outlined" size="small">
           Search
         </Button>
-        <Button variant="outlined" size="small">
+        <Button
+          variant="outlined"
+          size="small"
+          type="submit"
+          sx={{ display: "flex", alignItems: "center", gap: 1 }}
+        >
+          {sendLoading && <CircularProgress size={"1em"} />}
           Send Mail
         </Button>
       </Box>

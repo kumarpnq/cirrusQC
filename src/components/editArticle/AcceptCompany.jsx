@@ -153,12 +153,34 @@ const AcceptCompany = ({
           checked={params.row.isSelected}
           onChange={() => handleCustomCheckboxClick(params.row.id)}
           inputProps={{ "aria-label": `select ${params.row.company}` }}
+          size="small"
         />
       ),
     },
-    { field: "keyword", headerName: "Keyword", width: 150 },
-    { field: "companyId", headerName: "Company ID", width: 150 },
-    { field: "companyName", headerName: "Company Name", width: 150 },
+    {
+      field: "keyword",
+      headerName: "Keyword",
+      width: 150,
+      renderCell: (params) => (
+        <span style={{ fontSize: "14px" }}>{params.value}</span>
+      ),
+    },
+    {
+      field: "companyId",
+      headerName: "Company ID",
+      width: 150,
+      renderCell: (params) => (
+        <span style={{ fontSize: "0.9em" }}>{params.value}</span>
+      ),
+    },
+    {
+      field: "companyName",
+      headerName: "Company Name",
+      width: 150,
+      renderCell: (params) => (
+        <span style={{ fontSize: "0.9em" }}>{params.value}</span>
+      ),
+    },
   ];
 
   return (
