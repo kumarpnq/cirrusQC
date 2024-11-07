@@ -81,44 +81,44 @@
 
 /* analytics total efforts */
 .row-high-value {
-  background-color: lightgreen; /* Example: Green background for high values */
+  background-color: lightgreen;
 }
 
 .row-low-value {
-  background-color: lightgrey; /* Example: Light background for low values */
+  background-color: lightgrey;
 }
 
 .qc3-N {
   /* No Match */
-  background-color: rgb(211, 211, 211); /* Light Gray */
+  background-color: rgb(191, 191, 191);
 }
 
 .qc3-Y {
   /* Exact Match */
-  background-color: rgb(144, 238, 144); /* Light Green */
+  background-color: rgb(169, 208, 142);
 }
 
 .qc3-Z {
   /* Accepted Match */
-  background-color: rgb(173, 216, 230);
+  background-color: rgb(169, 208, 142);
 }
 
 .qc3-P {
   /* High Match */
-  background-color: #ffeb84;
+  background-color: rgb(198, 224, 180);
 }
 
 .qc3-Q {
   /* Medium Match */
-  background-color: #ffc287;
+  background-color: rgb(226, 239, 218);
 }
 
 .qc3-R {
   /* Low Match */
-  background-color: #ffc287;
+  background-color: rgb(236, 245, 228);
 }
 
 .qc3-E {
   /* Extra */
-  background-color: #e0e0e0;
+  background-color: rgb(255, 217, 102);
 }
