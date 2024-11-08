@@ -39,6 +39,8 @@ const AcceptCompany = ({
   const [loading, setLoading] = useState(false);
   const [selectedItem, setSelectedItem] = useState(null);
   const accessKey = articleType === "print" ? "article_id" : "socialfeed_id";
+  const prominenceKey =
+    articleType === "online" ? "prominence" : "manual_prominence";
 
   useEffect(() => {
     const getDataForArticleOrSocialFeed = async () => {
@@ -95,8 +97,9 @@ const AcceptCompany = ({
       company_id: selectedRow.company_id,
       company_name: selectedRow.company_name,
       keyword: selectedItem.keyword,
-      prominence: selectedItem.prominence,
+      [prominenceKey]: selectedItem.prominence,
       reporting_subject: selectedItem.reportingSubject,
+      reporting_tone: selectedItem.sentiment,
       qc3_status: "Z",
       update_type: "U",
     };

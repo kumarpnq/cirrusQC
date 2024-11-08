@@ -73,7 +73,12 @@ const MainTable = ({
         </Box>
         <Box>
           {!!savePermission && (
-            <Button size="small" onClick={handleSave}>
+            <Button
+              size="small"
+              onClick={handleSave}
+              variant="outlined"
+              sx={{ mr: 2 }}
+            >
               Save Partial
             </Button>
           )}

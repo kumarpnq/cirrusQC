@@ -364,8 +364,6 @@ const ClientSection = ({ selectedArticle, selectedClient }) => {
     setOpenAcceptCompany(false);
   };
 
-  console.log(openMapExtra);
-
   return (
     <>
       <Box display="flex" alignItems="center" my={1} gap={1}>
