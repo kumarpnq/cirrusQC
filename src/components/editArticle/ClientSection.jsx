@@ -25,6 +25,7 @@ import CustomMultiSelect from "../../@core/CustomMultiSelect";
 import CheckIcon from "@mui/icons-material/Check";
 import StoreIcon from "@mui/icons-material/Store";
 import AcceptCompany from "./AcceptCompany";
+import MapExtraModal from "./MapExtraModal";
 
 const ClientSection = ({ selectedArticle, selectedClient }) => {
   const userToken = localStorage.getItem("user");
@@ -39,6 +40,7 @@ const ClientSection = ({ selectedArticle, selectedClient }) => {
   const [selectedCompanies, setSelectedCompanies] = useState([]);
   const [openAcceptCompany, setOpenAcceptCompany] = useState(false);
   const [selectedRowForAccept, setSelectedRowForAccept] = useState(null);
+  const [openMapExtra, setOpenMapExtra] = useState(false);
   const { loading, error, data, makeRequest } = useProtectedRequest(
     userToken,
     "updatesocialfeedtagdetails/"
@@ -362,6 +364,8 @@ const ClientSection = ({ selectedArticle, selectedClient }) => {
     setOpenAcceptCompany(false);
   };
 
+  console.log(openMapExtra);
+
   return (
     <>
       <Box display="flex" alignItems="center" my={1} gap={1}>
@@ -386,6 +390,10 @@ const ClientSection = ({ selectedArticle, selectedClient }) => {
           onClick={handleSave}
           isLoading={saveLoading}
         />
+        {/* <Button
+          btnText="Map Extra"
+          onClick={() => setOpenMapExtra((prev) => !prev)}
+        /> */}
       </Box>
       <Card>
         <table>
@@ -570,6 +578,10 @@ const ClientSection = ({ selectedArticle, selectedClient }) => {
         selectedRow={selectedRowForAccept}
         setModifiedRows={setModifiedRows}
         setMainTableData={setEditableTagData}
+      />
+      <MapExtraModal
+        open={openMapExtra}
+        handleClose={() => setOpenMapExtra(false)}
       />
     </>
   );

@@ -127,21 +127,23 @@ const Details = ({ selectedRow }) => {
   return (
     <Container className="w-full">
       <Card className="w-full">
-        <Typography variant="h2" fontSize={"0.9em"} ml={2}>
-          Edit
-        </Typography>
-
         <CardContent sx={{ mx: 1 }}>
           <FormControl>
             <Box mb={1} display="flex" alignItems="center">
               <Typography sx={{ fontSize: "0.9em" }}>RootURL:</Typography>
               <Typography
-                sx={{ fontSize: "0.9em", fontWeight: "bold", ml: 1.7 }}
+                sx={{
+                  fontSize: "0.9em",
+                  ml: 1.7,
+                  border: "1px solid #ddd",
+                  p: 1,
+                  borderRadius: "3px",
+                }}
               >
                 {selectedRow?.link?.props?.href}
               </Typography>
             </Box>
-            <Box mb={1} display="flex" alignItems="center" width={580}>
+            <Box mb={1} display="flex" alignItems="center">
               <Typography sx={{ fontSize: "0.9em" }}>Headlines:</Typography>
               <TextField
                 size="small"
@@ -157,7 +159,7 @@ const Details = ({ selectedRow }) => {
                 }}
               />
             </Box>
-            <Box mb={1} display="flex" alignItems="center" width={580}>
+            <Box mb={1} display="flex" alignItems="center">
               <Typography sx={{ fontSize: "0.9em" }}>Journalist:</Typography>
               <TextField
                 size="small"
@@ -197,7 +199,9 @@ const Details = ({ selectedRow }) => {
                 </ToggleButtonGroup>
               </Box>
               <Box mb={1} display="flex" alignItems="center">
-                <Typography sx={{ fontSize: "0.9em" }}>Video:</Typography>
+                <Typography sx={{ fontSize: "0.9em", mr: 2 }}>
+                  Video:
+                </Typography>
                 <ToggleButtonGroup
                   color="primary"
                   value={vAlignment}

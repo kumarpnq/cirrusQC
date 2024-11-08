@@ -4,6 +4,8 @@ import CloseIcon from "@mui/icons-material/Close";
 import { styled } from "@mui/system";
 import ClientInfo from "./ClientInfo";
 import MailerConfigure from "./MailerConfigure";
+import ConfigParameter from "./ConfigParameter";
+import MailerColumns from "./MailerColumns";
 
 const StyledText = styled(Typography)({
   fontSize: "1em",
@@ -48,7 +50,9 @@ const EditAddModal = ({ open, onClose, openFromWhere }) => {
         </Box>
         <form onSubmit={handleSubmit}>
           <ClientInfo />
+          <MailerColumns />
           <MailerConfigure />
+          <ConfigParameter />
         </form>
       </Box>
     </Modal>

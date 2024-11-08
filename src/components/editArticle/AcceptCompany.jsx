@@ -62,7 +62,7 @@ const AcceptCompany = ({
 
         setRows(apiData);
       } catch (error) {
-        console.log(error);
+        console.log(error.message);
       } finally {
         setLoading(false);
       }
@@ -152,31 +152,31 @@ const AcceptCompany = ({
         <Checkbox
           checked={params.row.isSelected}
           onChange={() => handleCustomCheckboxClick(params.row.id)}
-          inputProps={{ "aria-label": `select ${params.row.company}` }}
+          inputProps={{ "aria-label": `select ${params.row.companyName}` }}
           size="small"
         />
       ),
     },
-    {
-      field: "keyword",
-      headerName: "Keyword",
-      width: 150,
-      renderCell: (params) => (
-        <span style={{ fontSize: "14px" }}>{params.value}</span>
-      ),
-    },
-    {
-      field: "companyId",
-      headerName: "Company ID",
-      width: 150,
-      renderCell: (params) => (
-        <span style={{ fontSize: "0.9em" }}>{params.value}</span>
-      ),
-    },
+    // {
+    //   field: "keyword",
+    //   headerName: "Keyword",
+    //   width: 150,
+    //   renderCell: (params) => (
+    //     <span style={{ fontSize: "14px" }}>{params.value}</span>
+    //   ),
+    // },
+    // {
+    //   field: "companyId",
+    //   headerName: "Company ID",
+    //   width: 150,
+    //   renderCell: (params) => (
+    //     <span style={{ fontSize: "0.9em" }}>{params.value}</span>
+    //   ),
+    // },
     {
       field: "companyName",
       headerName: "Company Name",
-      width: 150,
+      width: 250,
       renderCell: (params) => (
         <span style={{ fontSize: "0.9em" }}>{params.value}</span>
       ),
