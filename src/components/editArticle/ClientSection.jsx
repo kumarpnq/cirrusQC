@@ -65,7 +65,21 @@ const ClientSection = ({ selectedArticle, selectedClient }) => {
           headers: headers,
           params,
         });
-        setTableDataList(response.data.socialfeed_details);
+        const order = ["Y", "P", "Q", "R", "Z", "N", "E"];
+        let apiData = response.data.socialfeed_details || [];
+        const sortedData = apiData.sort((a, b) => {
+          const statusA = a.qc3_status;
+          const statusB = b.qc3_status;
+
+          const indexA = order.indexOf(statusA);
+          const indexB = order.indexOf(statusB);
+
+          if (indexA === -1) return 1;
+          if (indexB === -1) return -1;
+
+          return indexA - indexB;
+        });
+        setTableDataList(sortedData);
         setTableDataLoading(false);
         setFetchTagDataAfterChange(false);
       } catch (error) {
@@ -388,10 +402,10 @@ const ClientSection = ({ selectedArticle, selectedClient }) => {
           onClick={handleSave}
           isLoading={saveLoading}
         />
-        {/* <Button
+        <Button
           btnText="Map Extra"
           onClick={() => setOpenMapExtra((prev) => !prev)}
-        /> */}
+        />
       </Box>
       <Card>
         <table>

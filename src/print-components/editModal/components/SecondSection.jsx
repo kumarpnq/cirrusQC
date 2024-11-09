@@ -66,7 +66,22 @@ const SecondSection = (props) => {
           headers,
           params,
         });
-        setTagData(res.data.article_details);
+
+        const order = ["Y", "P", "Q", "R", "Z", "N", "E"];
+        let apiData = res.data.article_details || [];
+        const sortedData = apiData.sort((a, b) => {
+          const statusA = a.qc3_status;
+          const statusB = b.qc3_status;
+
+          const indexA = order.indexOf(statusA);
+          const indexB = order.indexOf(statusB);
+
+          if (indexA === -1) return 1;
+          if (indexB === -1) return -1;
+
+          return indexA - indexB;
+        });
+        setTagData(sortedData);
         setTagDataLoading(false);
       } catch (error) {
         console.log(error.message);
@@ -560,13 +575,13 @@ const SecondSection = (props) => {
                 <th className="p-2">CompanyName</th>
                 <th className="p-2">Action</th>
                 <th className="p-2">Accept Company</th>
-                <th className="p-2 min-w-20">Subject</th>
+                <th className="p-2 min-w-28">Subject</th>
                 <th className="p-2 ">HeaderSpace</th>
-                <th className="p-2">Prominence</th>
-                <th className="p-2 ">Space</th>
-                <th className="p-2 min-w-20">Tone</th>
+                <th className="p-2 min-w-28">Prominence</th>
+                <th className="p-2 min-w-20">Space</th>
+                <th className="p-2 min-w-28">Tone</th>
                 <th className="p-2 ">Delete</th>
-                <th className="p-2 ">SubCategory</th>
+                <th className="p-2 min-w-28">SubCategory</th>
                 <th className="p-2">Remarks</th>
               </tr>
             </thead>

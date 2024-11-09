@@ -4,7 +4,6 @@ import PropTypes from "prop-types";
 import { useState } from "react";
 import { url } from "../../constants/baseUrl";
 import { toast } from "react-toastify";
-import { arrayToString } from "../../utils/arrayToString";
 
 const UploadControl = ({
   onParse,
@@ -26,37 +25,11 @@ const UploadControl = ({
       return;
     }
 
-    const updatedGridData = gridData.map((row) => {
-      const selectedRow = selectedRows.find(
-        (selected) => selected.Link === row.Link
-      );
-
-      if (selectedRow && !selectedRow.CompanyID) {
-        return {
-          ...row,
-          status: "Invalid Company ID(s)",
-        };
-      }
-
-      return row;
-    });
-
-    setGridData(updatedGridData);
-
-    const validRecords = selectedRows.filter((record) => record.CompanyID);
-    const updatedSelectedArticles = selectedRows.filter((article) => {
-      return validRecords.some(
-        (validRecord) => validRecord.Link === article.Link
-      );
-    });
-
-    setSelectedRows(updatedSelectedArticles);
-
     setCheckLoading(true);
     try {
       const userToken = localStorage.getItem("user");
 
-      const requests = validRecords.map((row) => {
+      const requests = selectedRows.map((row) => {
         const { Link, Date: dateStr, CompanyID } = row;
 
         return axios.get(`${url}checkSocialFeedExist/`, {
@@ -91,7 +64,7 @@ const UploadControl = ({
         };
       });
 
-      const finalUpdatedGridData = updatedGridData.map((row) => {
+      const finalUpdatedGridData = gridData.map((row) => {
         const responseEntry = responseMap.find(
           (entry) => entry.link === row.Link
         );
@@ -149,7 +122,7 @@ const UploadControl = ({
         const request_data = {
           url: Link,
           date: dateStr,
-          company_ids: arrayToString([CompanyID]),
+          company_ids: CompanyID,
         };
         return axios.post(`${url}processBulkUpload/`, request_data, {
           headers: { Authorization: `Bearer ${userToken}` },
