@@ -114,7 +114,8 @@ const Online = () => {
   const [sortedFilteredRows, setSortedFilteredRows] = useState([]);
   const [tableDataLoading, setTableDataLoading] = useState(false);
   const fetchTableData = useCallback(async () => {
-    if (!selectedDateType || !selectedClient) {
+    const clientFlag = Boolean(headOrSummary || link || socialFeedId);
+    if (!selectedDateType || !clientFlag) {
       toast.warning("Please select a client or date type.");
       return;
     }
@@ -134,7 +135,7 @@ const Online = () => {
       setSortedFilteredRows([]);
 
       const params = {
-        client_id: selectedClient,
+        // client_id: selectedClient,
         from_date: fromDate,
         to_date: dateNow,
         date_type: selectedDateType,
@@ -153,6 +154,9 @@ const Online = () => {
         // socialfeed_id: "",
         // count: "",
       };
+      if (!clientFlag) {
+        params.client_id = selectedClient;
+      }
 
       // eslint-disable-next-line no-inner-declarations
       function addPropertyIfConditionIsTrue(condition, property, value) {

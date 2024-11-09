@@ -17,6 +17,7 @@ const StyledWrapper = styled(Box)({
   display: "flex",
   alignItems: "center",
   gap: 1,
+  padding: 1.5,
 });
 const StyledText = styled(Typography)({
   fontSize: "1em",
@@ -97,7 +98,7 @@ const ClientInfo = () => {
   }, []);
 
   return (
-    <Box sx={{ border: "1px solid #DDD" }}>
+    <Box sx={{ border: "1px solid #DDD" }} className="rounded-md shadow-md">
       <StyledWrapper>
         <StyledText>Client Id : </StyledText>
         <CustomTextField
@@ -377,6 +378,7 @@ const ClientInfo = () => {
               width={150}
             />
           </StyledWrapper>
+          <Divider />
           <StyledWrapper>
             <StyledText>Summary : </StyledText>
             <YesOrNo
@@ -388,6 +390,7 @@ const ClientInfo = () => {
               width={150}
             />
           </StyledWrapper>
+          <Divider />
           <StyledWrapper>
             <StyledText>Allow Tagging : </StyledText>
             <YesOrNo
@@ -399,6 +402,7 @@ const ClientInfo = () => {
               width={150}
             />
           </StyledWrapper>
+          <Divider />
           <StyledWrapper>
             <StyledText>Allow Tonality : </StyledText>
             <YesOrNo
@@ -410,6 +414,7 @@ const ClientInfo = () => {
               width={150}
             />
           </StyledWrapper>
+          <Divider />
           <StyledWrapper>
             <StyledText>Online Refresh : </StyledText>
             <YesOrNo
@@ -421,6 +426,7 @@ const ClientInfo = () => {
               width={150}
             />
           </StyledWrapper>
+          <Divider />
           <StyledWrapper>
             <StyledText>All Permission Online :</StyledText>
             <YesOrNo
@@ -432,6 +438,7 @@ const ClientInfo = () => {
               width={150}
             />
           </StyledWrapper>
+          <Divider />
           <StyledWrapper>
             <StyledText>Mailer Missing Alert :</StyledText>
             <YesOrNo
@@ -443,17 +450,19 @@ const ClientInfo = () => {
               width={150}
             />
           </StyledWrapper>
+          <Divider />
           <StyledWrapper>
             <StyledText>Allow Searchable PDF :</StyledText>
             <YesOrNo
               classes={classes}
               mapValue={["Yes", "No"]}
-              placeholder="Alert"
+              placeholder="PDF"
               value={AllowSearchablePDF}
               setValue={setAllowSearchablePDF}
               width={150}
             />
           </StyledWrapper>
+          <Divider />
           <StyledWrapper>
             <StyledText>Excel Export :</StyledText>
             <YesOrNo
@@ -465,6 +474,7 @@ const ClientInfo = () => {
               width={150}
             />
           </StyledWrapper>
+          <Divider />
           <StyledWrapper>
             <StyledText>Active :</StyledText>
             <YesOrNo

@@ -163,6 +163,7 @@ const MapExtraModal = ({
         prominence: aiRow.prominence,
         // summary: aiRow.detail_summary,
         // qc2Remark: aiRow.remarks,
+        qc3_status: "Z",
       }));
 
       const preparedOnlineData = { data: dataForOnline, qcType: "QC2" };
@@ -179,6 +180,7 @@ const MapExtraModal = ({
         keyword: aiRow.keyword,
         // qc2Remark: aiRow.qc2_remark,
         // detailSummary: aiRow.detail_summary,
+        qc3_status: "Z",
       }));
       const requestData =
         articleType === "online" ? preparedOnlineData : dataForPrint;

@@ -535,12 +535,12 @@ const SecondSection = (props) => {
             Save
           </button>
         )}
-        <button
+        {/* <button
           onClick={() => setOpenMapExtra((prev) => !prev)}
           className="px-6 text-white uppercase rounded-md bg-primary text-[0.9em]"
         >
           Map Extra
-        </button>
+        </button> */}
         <button
           className="px-6 text-white uppercase rounded-md bg-primary text-[0.9em]"
           onClick={handleCopy}
@@ -566,7 +566,7 @@ const SecondSection = (props) => {
               <tr className="text-sm">
                 <th className="p-2">CompanyName</th>
                 <th className="p-2">Action</th>
-                <th className="p-2">Accept Company</th>
+                {/* <th className="p-2">Accept Company</th> */}
                 <th className="p-2 min-w-28">Subject</th>
                 <th className="p-2 ">HeaderSpace</th>
                 <th className="p-2 min-w-28">Prominence</th>
@@ -605,13 +605,13 @@ const SecondSection = (props) => {
                         )}
                     </td>
 
-                    <td>
+                    {/* <td>
                       {row.qc3_status === "N" || row.qc3_status === "E" ? (
                         <IconButton onClick={() => handleOpenAccept(row)}>
                           <StoreIcon className="text-primary" />
                         </IconButton>
                       ) : null}
-                    </td>
+                    </td> */}
 
                     <td className="p-2">
                       <select
