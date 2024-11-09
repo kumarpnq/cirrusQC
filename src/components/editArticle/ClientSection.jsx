@@ -65,7 +65,7 @@ const ClientSection = ({ selectedArticle, selectedClient }) => {
           headers: headers,
           params,
         });
-        const order = ["Y", "P", "Q", "R", "Z", "N", "E"];
+        const order = ["Y", "Z", "P", "Q", "R", "N", "E"];
         let apiData = response.data.socialfeed_details || [];
         const sortedData = apiData.sort((a, b) => {
           const statusA = a.qc3_status;

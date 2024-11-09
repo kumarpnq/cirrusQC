@@ -67,7 +67,7 @@ const SecondSection = (props) => {
           params,
         });
 
-        const order = ["Y", "P", "Q", "R", "Z", "N", "E"];
+        const order = ["Y", "Z", "P", "Q", "R", "N", "E"];
         let apiData = res.data.article_details || [];
         const sortedData = apiData.sort((a, b) => {
           const statusA = a.qc3_status;
