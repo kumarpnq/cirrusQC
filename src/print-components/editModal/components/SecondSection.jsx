@@ -28,11 +28,11 @@ import { convertKeys } from "../../../constants/convertKeys";
 import CustomMultiSelect from "../../../@core/CustomMultiSelect";
 import StoreIcon from "@mui/icons-material/Store";
 import AcceptCompany from "../../../components/editArticle/AcceptCompany";
+import MapExtraModal from "../../../components/editArticle/MapExtraModal";
 
 const SecondSection = (props) => {
   const userToken = localStorage.getItem("user");
   const { selectedClient, selectedArticle } = props;
-
   const [selectedCompany, setSelectedCompany] = useState([]);
   const [selectedCompanies, setSelectedCompanies] = useState([]);
   const [selectedCompanyId, setSelectedCompanyId] = useState("");
@@ -46,6 +46,7 @@ const SecondSection = (props) => {
   const [checkedRows, setCheckedRows] = useState([]);
   const [manuallyAddedCompanies, setManuallyAddedCompanies] = useState([]);
   // const [selectedQc3Companies,setSelectedQc3Companies] = useState([])
+  const [openMapExtra, setOpenMapExtra] = useState(false);
 
   const [storedData, setStoredData] = useState({});
   const [openAcceptCompany, setOpenAcceptCompany] = useState(false);
@@ -495,14 +496,9 @@ const SecondSection = (props) => {
   };
 
   return (
-    <div className="px-2 mt-2 min-h-[400px]">
-      <Box
-        display={"flex"}
-        alignItems={"center"}
-        justifyContent={"space-between"}
-        flexWrap={"wrap"}
-      >
-        <div className="z-50 mt-3">
+    <div className="px-1 mt-2 min-h-[400px]">
+      <Box display={"flex"} alignItems={"center"} gap={1} flexWrap={"wrap"}>
+        <div>
           <CustomMultiSelect
             dropdownToggleWidth={300}
             dropdownWidth={300}
@@ -516,16 +512,14 @@ const SecondSection = (props) => {
         </div>
         <button
           onClick={handleAddCompanies}
-          className="px-6 text-white uppercase rounded-md bg-primary"
-          style={{ fontSize: "0.8em" }}
+          className="px-6 text-white uppercase rounded-md bg-primary text-[0.9em]"
         >
           Add
         </button>
         {!!checkedRows.length && (
           <button
             onClick={handleClickOpen}
-            className="px-6 text-white uppercase bg-red-500 rounded-md"
-            style={{ fontSize: "0.8em" }}
+            className="px-6 text-white uppercase bg-red-500 rounded-md text-[0.9em]"
           >
             Delete
           </button>
@@ -536,30 +530,28 @@ const SecondSection = (props) => {
         ) : (
           <button
             onClick={handleSaveClick}
-            className="px-6 text-white uppercase rounded-md bg-primary"
-            style={{ fontSize: "0.8em" }}
+            className="px-6 text-white uppercase rounded-md bg-primary text-[0.9em]"
           >
             Save
           </button>
         )}
-      </Box>
-      <Box
-        display={"flex"}
-        alignItems={"center"}
-        justifyContent={"space-between"}
-        component={"div"}
-      >
-        <Typography sx={{ fontSize: "0.9em", my: 1 }}>
-          Client: {selectedClient?.clientName || "No client selected"}
-        </Typography>
         <button
-          className="px-6 text-white uppercase rounded-md bg-primary"
-          style={{ fontSize: "0.8em" }}
+          onClick={() => setOpenMapExtra((prev) => !prev)}
+          className="px-6 text-white uppercase rounded-md bg-primary text-[0.9em]"
+        >
+          Map Extra
+        </button>
+        <button
+          className="px-6 text-white uppercase rounded-md bg-primary text-[0.9em]"
           onClick={handleCopy}
         >
           Copy
         </button>
       </Box>
+
+      <Typography sx={{ fontSize: "0.9em", my: 1 }}>
+        Client: {selectedClient?.clientName || "No client selected"}
+      </Typography>
       <div
         style={{
           maxHeight: 400,
@@ -795,6 +787,16 @@ const SecondSection = (props) => {
         selectedRow={selectedRowForAccept}
         setModifiedRows={setModifiedRows}
         setMainTableData={setEditableTagData}
+      />
+      <MapExtraModal
+        open={openMapExtra}
+        handleClose={() => setOpenMapExtra(false)}
+        clientId={selectedClient?.clientId || ""}
+        articleId={articleId}
+        articleType={"print"}
+        setMainTableData={setEditableTagData}
+        setFetchTableDataAfterInsert={setFetchTagDataAfterChange}
+        tableData={editableTagData}
       />
     </div>
   );

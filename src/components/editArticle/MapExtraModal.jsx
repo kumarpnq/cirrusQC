@@ -1,5 +1,13 @@
 import PropTypes from "prop-types";
-import { Modal, Box, Typography, Button, Paper, Divider } from "@mui/material";
+import {
+  Modal,
+  Box,
+  Typography,
+  Button,
+  Paper,
+  Divider,
+  CircularProgress,
+} from "@mui/material";
 import { useEffect, useState } from "react";
 import {
   DataGrid,
@@ -8,6 +16,7 @@ import {
 } from "@mui/x-data-grid";
 import axios from "axios";
 import { url } from "../../constants/baseUrl";
+import { toast } from "react-toastify";
 
 const style = {
   position: "absolute",
@@ -20,31 +29,60 @@ const style = {
   p: 1,
 };
 
-const CustomToolbar = () => {
+const CustomToolbarAI = () => {
   return (
     <GridToolbarContainer
-      sx={{ display: "flex", alignItems: "center", justifyContent: "end" }}
+      sx={{
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "space-between",
+      }}
     >
+      <Typography variant="body2">AI Company</Typography>
       <GridToolbarQuickFilter />
     </GridToolbarContainer>
   );
 };
 
-const MapExtraModal = ({ open, handleClose, selectedRow, articleType }) => {
-  const accessKey = articleType === "print" ? "article_id" : "socialfeed_id";
-  const [data, setData] = useState();
+const CustomToolbarDB = () => {
+  return (
+    <GridToolbarContainer
+      sx={{
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "space-between",
+      }}
+    >
+      <Typography variant="body2">DB Company</Typography>
+      <GridToolbarQuickFilter />
+    </GridToolbarContainer>
+  );
+};
+
+const MapExtraModal = ({
+  open,
+  handleClose,
+  clientId,
+  articleId,
+  articleType,
+  setFetchTableDataAfterInsert,
+  tableData,
+}) => {
+  const [data, setData] = useState([]);
+  const [dbData, setDbData] = useState([]);
   const [loading, setLoading] = useState(false);
   const [aiSelectionModal, setAiSelectionModal] = useState([]);
   const [aiSelectedRows, setAiSelectedRows] = useState([]);
   const [dbSelectionModal, setDbSelectionModal] = useState([]);
   const [dbSelectedRows, setDbSelectedRows] = useState([]);
 
+  // * ai company
   useEffect(() => {
     const getDataForArticleOrSocialFeed = async () => {
       try {
         setLoading(true);
         const params = {
-          articleId: selectedRow[accessKey],
+          articleId,
           articleType,
         };
         const token = localStorage.getItem("user");
@@ -61,49 +99,141 @@ const MapExtraModal = ({ open, handleClose, selectedRow, articleType }) => {
         setLoading(false);
       }
     };
+    const getDatabaseCompanyForArticleOrSocialFeed = async () => {
+      try {
+        setLoading(true);
+        const params = {
+          client_id: clientId,
+          article_id: articleId,
+          article_type: articleType,
+        };
+        const token = localStorage.getItem("user");
+        const response = await axios.get(`${url}qc3CompanyList/`, {
+          headers: { Authorization: `Bearer ${token}` },
+          params,
+        });
+        setDbData(response.data.companies);
+      } catch (error) {
+        console.log(error.message);
+      } finally {
+        setLoading(false);
+      }
+    };
     if (open) {
       getDataForArticleOrSocialFeed();
+      getDatabaseCompanyForArticleOrSocialFeed();
     }
-  }, [selectedRow, articleType, open]);
+  }, [articleId, articleType, open, clientId]);
 
-  const aiRows = [
-    {
-      id: 1,
-      companyName: "EDELWEISS TOKIO LIFE",
-      qc3_status: "E",
-    },
-    {
-      id: 2,
-      companyName: "TATA CONSULTANCY SERVICES",
-      qc3_status: "P",
-    },
-    {
-      id: 3,
-      companyName: "RELIANCE INDUSTRIES",
-      qc3_status: "Q",
-    },
-    {
-      id: 4,
-      companyName: "INFOSYS",
-      qc3_status: "R",
-    },
-    {
-      id: 5,
-      companyName: "MAHINDRA & MAHINDRA",
-      qc3_status: "Z",
-    },
-  ];
+  const [insertLoading, setInsertLoading] = useState(false);
+
+  const handleInsert = async () => {
+    try {
+      setInsertLoading(true);
+      const token = localStorage.getItem("user");
+      const uniqueDbSelectedRows = dbSelectedRows.filter((row) => {
+        return !tableData.some(
+          (tableRow) =>
+            tableRow.company_id === row.companyId &&
+            tableRow.articleType === articleType
+        );
+      });
+
+      const duplicatesRemoved =
+        dbSelectedRows.length - uniqueDbSelectedRows.length;
+
+      if (duplicatesRemoved > 0) {
+        toast.warning(`${duplicatesRemoved} duplicate records removed.`);
+      }
+
+      if (uniqueDbSelectedRows.length === 0) {
+        toast.info("No new records to insert after removing duplicates.");
+        return;
+      }
+      const aiRow = aiSelectedRows[0];
+      const dataForOnline = dbSelectedRows.map((item) => ({
+        updateType: "I",
+        socialFeedId: articleId,
+        companyId: item.companyId,
+        companyName: item.companyName,
+        keyword: aiRow.keyword,
+        reportingTone: aiRow.reportingTone,
+        reportingSubject: aiRow.reportingSubject,
+        // subCategory: aiRow.subcategory,
+        prominence: aiRow.prominence,
+        // summary: aiRow.detail_summary,
+        // qc2Remark: aiRow.remarks,
+      }));
+
+      const preparedOnlineData = { data: dataForOnline, qcType: "QC2" };
+      const dataForPrint = dbSelectedRows.map((item) => ({
+        articleId: articleId,
+        companyId: item.companyId,
+        companyName: item.companyName,
+        manualProminence: aiRow.prominence,
+        // headerSpace: aiRow.headerSpace,
+        // space: aiRow.space,
+        reportingTone: aiRow.reportingTone,
+        reportingSubject: aiRow.reportingSubject,
+        // subcategory: aiRow.subcategory,
+        keyword: aiRow.keyword,
+        // qc2Remark: aiRow.qc2_remark,
+        // detailSummary: aiRow.detail_summary,
+      }));
+      const requestData =
+        articleType === "online" ? preparedOnlineData : dataForPrint;
+
+      const endpoint =
+        articleType === "online"
+          ? "updatesocialfeedtagdetails/"
+          : "insertarticledetails/";
+      const response = await axios.post(`${url + endpoint}`, requestData, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+
+      if (response.data.result.success.length) {
+        toast.info(
+          `${response.data.result.success.length} records inserted successfully.`
+        );
+        setFetchTableDataAfterInsert((prev) => !prev);
+        setAiSelectionModal([]);
+        setDbSelectionModal([]);
+        setAiSelectedRows([]);
+        setDbSelectedRows([]);
+      } else {
+        toast.info(
+          `${response.data.result.errors.length}  records not inserted.`
+        );
+      }
+    } catch (error) {
+      toast.error("Something went wrong.");
+    } finally {
+      setInsertLoading(false);
+    }
+  };
+
+  const aiRows = data.map((item, index) => ({
+    id: index + 1,
+    companyId: item.companyId,
+    companyName: item.companyName,
+    keyword: item.keyword,
+    reportingTone: item.sentiment,
+    prominence: item.prominence,
+    reportingSubject: item.reportingSubject,
+    qc3Status: item.qc3_status,
+  }));
+
+  const dbRows = dbData.map((item, index) => ({
+    id: index,
+    companyId: item.companyid,
+    companyName: item.companyname,
+  }));
 
   const aiColumns = [
     {
       field: "companyName",
       title: "Company Name",
       width: 200,
-    },
-    {
-      field: "qc3_status",
-      title: "QC3 Status",
-      width: 150,
     },
   ];
 
@@ -132,6 +262,7 @@ const MapExtraModal = ({ open, handleClose, selectedRow, articleType }) => {
             display: "flex",
             alignItems: "center",
             gap: 1,
+            // flexWrap: "wrap",
           }}
         >
           <Paper
@@ -144,12 +275,21 @@ const MapExtraModal = ({ open, handleClose, selectedRow, articleType }) => {
                 columns={aiColumns}
                 pageSize={5}
                 checkboxSelection
-                slots={{ toolbar: CustomToolbar }}
+                loading={loading}
+                slots={{ toolbar: CustomToolbarAI }}
                 rowSelectionModel={aiSelectionModal}
                 onRowSelectionModelChange={(selection) => {
-                  setAiSelectionModal(selection);
-                  const selectedRows = getSelectedRows(selection, aiRows);
-                  setAiSelectedRows(selectedRows);
+                  if (selection.length > 1) {
+                    const selectionSet = new Set(aiSelectionModal);
+                    const result = selection.filter(
+                      (s) => !selectionSet.has(s)
+                    );
+                    setAiSelectionModal(result);
+                    setAiSelectedRows(getSelectedRows(result, aiRows));
+                  } else {
+                    setAiSelectionModal(selection);
+                    setAiSelectedRows(getSelectedRows(selection, aiRows));
+                  }
                 }}
                 density="compact"
                 hideFooterSelectedRowCount
@@ -163,15 +303,16 @@ const MapExtraModal = ({ open, handleClose, selectedRow, articleType }) => {
           >
             <div style={{ height: 400, width: "100%" }}>
               <DataGrid
-                rows={aiRows}
+                rows={dbRows}
                 columns={aiColumns}
                 pageSize={5}
                 checkboxSelection
-                slots={{ toolbar: CustomToolbar }}
+                loading={loading}
+                slots={{ toolbar: CustomToolbarDB }}
                 rowSelectionModel={dbSelectionModal}
                 onRowSelectionModelChange={(selection) => {
                   setDbSelectionModal(selection);
-                  const selectedRows = getSelectedRows(selection, aiRows);
+                  const selectedRows = getSelectedRows(selection, dbRows);
                   setDbSelectedRows(selectedRows);
                 }}
                 density="compact"
@@ -181,18 +322,30 @@ const MapExtraModal = ({ open, handleClose, selectedRow, articleType }) => {
           </Paper>
         </Box>
         <Divider sx={{ my: 1 }} />
-        <Box textAlign={"end"}>
+        <Box
+          sx={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "flex-end",
+            gap: 1,
+          }}
+        >
           <Button
             onClick={handleClose}
             variant="outlined"
             color="primary"
             size="small"
-            sx={{ mr: 1 }}
           >
             Close
           </Button>
-          <Button variant="outlined" color="primary" size="small">
-            Save
+          <Button
+            variant="outlined"
+            color="primary"
+            size="small"
+            onClick={handleInsert}
+            sx={{ display: "flex", alignItems: "center", gap: 1 }}
+          >
+            {insertLoading && <CircularProgress size={"1em"} />} Insert
           </Button>
         </Box>
       </Box>
@@ -203,6 +356,11 @@ const MapExtraModal = ({ open, handleClose, selectedRow, articleType }) => {
 MapExtraModal.propTypes = {
   open: PropTypes.bool.isRequired,
   handleClose: PropTypes.func.isRequired,
+  clientId: PropTypes.string.isRequired,
+  articleId: PropTypes.number.isRequired,
+  articleType: PropTypes.string.isRequired,
+  setFetchTableDataAfterInsert: PropTypes.func.isRequired,
+  tableData: PropTypes.array.isRequired,
 };
 
 export default MapExtraModal;

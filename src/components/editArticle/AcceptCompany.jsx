@@ -225,7 +225,7 @@ const AcceptCompany = ({
               Cancel
             </Button>
             <Button size="small" variant="outlined" onClick={handleSaveRecord}>
-              Save
+              Update
             </Button>
           </Box>
           <Divider sx={{ my: 1 }} />

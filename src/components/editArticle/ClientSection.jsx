@@ -594,8 +594,11 @@ const ClientSection = ({ selectedArticle, selectedClient }) => {
       <MapExtraModal
         open={openMapExtra}
         handleClose={() => setOpenMapExtra(false)}
-        selectedRow={selectedRowForAccept}
-        articleType={"print"}
+        clientId={selectedClient}
+        articleId={selectedArticle?.social_feed_id}
+        articleType={"online"}
+        setFetchTableDataAfterInsert={setFetchTagDataAfterChange}
+        tableData={editableTagData}
       />
     </>
   );
