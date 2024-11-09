@@ -115,6 +115,10 @@ const Details = ({
 
   const handleSave = async (event) => {
     event.preventDefault();
+    if (helperText) {
+      toast.warning("Please use valid url.");
+      return;
+    }
     const isBothUrlSame = isDomainIncluded(articleURL, publication);
     const emptyFields = [];
 
@@ -125,6 +129,7 @@ const Details = ({
     if (!summary) emptyFields.push("Summary");
     if (!content) emptyFields.push("Content");
     if (!selectedLanguages) emptyFields.push("Language");
+    if (!publication) emptyFields.push("Publication");
 
     if (emptyFields.length > 0) {
       return toast.warning(
