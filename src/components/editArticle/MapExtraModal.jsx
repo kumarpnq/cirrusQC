@@ -1,11 +1,13 @@
 import PropTypes from "prop-types";
 import { Modal, Box, Typography, Button, Paper, Divider } from "@mui/material";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   DataGrid,
   GridToolbarContainer,
   GridToolbarQuickFilter,
 } from "@mui/x-data-grid";
+import axios from "axios";
+import { url } from "../../constants/baseUrl";
 
 const style = {
   position: "absolute",
@@ -27,9 +29,42 @@ const CustomToolbar = () => {
     </GridToolbarContainer>
   );
 };
-const MapExtraModal = ({ open, handleClose }) => {
-  const [aiSelectionModalChange, setAiSelectionModalChange] = useState([]);
+
+const MapExtraModal = ({ open, handleClose, selectedRow, articleType }) => {
+  const accessKey = articleType === "print" ? "article_id" : "socialfeed_id";
+  const [data, setData] = useState();
+  const [loading, setLoading] = useState(false);
+  const [aiSelectionModal, setAiSelectionModal] = useState([]);
+  const [aiSelectedRows, setAiSelectedRows] = useState([]);
   const [dbSelectionModal, setDbSelectionModal] = useState([]);
+  const [dbSelectedRows, setDbSelectedRows] = useState([]);
+
+  useEffect(() => {
+    const getDataForArticleOrSocialFeed = async () => {
+      try {
+        setLoading(true);
+        const params = {
+          articleId: selectedRow[accessKey],
+          articleType,
+        };
+        const token = localStorage.getItem("user");
+        const response = await axios.get(`${url}getcompaniesforarticle/`, {
+          headers: { Authorization: `Bearer ${token}` },
+          params,
+        });
+        const respData = response.data.socialfeed_details;
+
+        setData(respData);
+      } catch (error) {
+        console.log(error.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+    if (open) {
+      getDataForArticleOrSocialFeed();
+    }
+  }, [selectedRow, articleType, open]);
 
   const aiRows = [
     {
@@ -58,13 +93,23 @@ const MapExtraModal = ({ open, handleClose }) => {
       qc3_status: "Z",
     },
   ];
+
   const aiColumns = [
     {
       field: "companyName",
       title: "Company Name",
       width: 200,
     },
+    {
+      field: "qc3_status",
+      title: "QC3 Status",
+      width: 150,
+    },
   ];
+
+  const getSelectedRows = (selection, rows) => {
+    return rows.filter((row) => selection.includes(row.id));
+  };
 
   return (
     <Modal
@@ -100,18 +145,11 @@ const MapExtraModal = ({ open, handleClose }) => {
                 pageSize={5}
                 checkboxSelection
                 slots={{ toolbar: CustomToolbar }}
-                rowSelectionModel={aiSelectionModalChange}
+                rowSelectionModel={aiSelectionModal}
                 onRowSelectionModelChange={(selection) => {
-                  if (selection.length > 1) {
-                    const selectionSet = new Set(aiSelectionModalChange);
-                    const result = selection.filter(
-                      (s) => !selectionSet.has(s)
-                    );
-
-                    setAiSelectionModalChange(result);
-                  } else {
-                    setAiSelectionModalChange(selection);
-                  }
+                  setAiSelectionModal(selection);
+                  const selectedRows = getSelectedRows(selection, aiRows);
+                  setAiSelectedRows(selectedRows);
                 }}
                 density="compact"
                 hideFooterSelectedRowCount
@@ -130,18 +168,11 @@ const MapExtraModal = ({ open, handleClose }) => {
                 pageSize={5}
                 checkboxSelection
                 slots={{ toolbar: CustomToolbar }}
-                rowSelectionModel={aiSelectionModalChange}
+                rowSelectionModel={dbSelectionModal}
                 onRowSelectionModelChange={(selection) => {
-                  if (selection.length > 1) {
-                    const selectionSet = new Set(aiSelectionModalChange);
-                    const result = selection.filter(
-                      (s) => !selectionSet.has(s)
-                    );
-
-                    setAiSelectionModalChange(result);
-                  } else {
-                    setAiSelectionModalChange(selection);
-                  }
+                  setDbSelectionModal(selection);
+                  const selectedRows = getSelectedRows(selection, aiRows);
+                  setDbSelectedRows(selectedRows);
                 }}
                 density="compact"
                 hideFooterSelectedRowCount

@@ -125,7 +125,7 @@ const UploadControl = ({
           // company_ids: CompanyID,
         };
         if (CompanyID) {
-          request_data.company_id = CompanyID;
+          request_data.company_ids = CompanyID;
         }
         return axios.post(`${url}processBulkUpload/`, request_data, {
           headers: { Authorization: `Bearer ${userToken}` },

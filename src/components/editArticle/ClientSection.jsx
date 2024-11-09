@@ -594,6 +594,8 @@ const ClientSection = ({ selectedArticle, selectedClient }) => {
       <MapExtraModal
         open={openMapExtra}
         handleClose={() => setOpenMapExtra(false)}
+        selectedRow={selectedRowForAccept}
+        articleType={"print"}
       />
     </>
   );
