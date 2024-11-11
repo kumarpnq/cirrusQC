@@ -32,6 +32,7 @@ import OnlineCompanySlicing from "./pages/OnlineCompanySlicing";
 import WhatsAppContact from "./components2/Whatsapp-contact/WhatsAppContact";
 import ClientMaster from "./pages/ClientMaster";
 import BooleanKeyword from "./pages/BooleanKeyword";
+import DeletePrintArticles from "./pages/DeletePrintArticles";
 
 // Lazy load the components
 const Home = lazy(() => import("./pages/Home"));
@@ -64,6 +65,7 @@ function App() {
     whatsappContact: false,
     clientMaster: false,
     booleanKeyword: false,
+    deletePrintArticles: false,
   });
   const [loading, setLoading] = useState(false);
 
@@ -122,6 +124,7 @@ function App() {
       whatsappContact: screenPermissions.WhatsappContact,
       clientMaster: screenPermissions.ClientMaster,
       booleanKeyword: screenPermissions.BooleanKeyword,
+      deletePrintArticles: screenPermissions.DeletePrintArticles,
     });
   }, [screenPermissions]);
 
@@ -343,12 +346,23 @@ function App() {
                   )
                 }
               />
+              <Route
+                path="/delete-print-articles"
+                element={
+                  permissions.deletePrintArticles ? (
+                    <DeletePrintArticles />
+                  ) : loading ? (
+                    <div>Loading...</div>
+                  ) : (
+                    <NotFound />
+                  )
+                }
+              />
             </>
           ) : (
             <Route path="login" element={<Login />} />
           )}
           <Route path="*" element={userToken ? <NotFound /> : <Login />} />
-          <Route path="/boolean-keyword" element={<BooleanKeyword />} />
 
           <Route
             path="/articleview/download-file/:id"

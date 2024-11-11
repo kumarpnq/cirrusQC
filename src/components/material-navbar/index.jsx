@@ -21,6 +21,7 @@ import BarChartIcon from "@mui/icons-material/BarChart";
 import ShoppingBasketIcon from "@mui/icons-material/ShoppingBasket";
 import FolderCopyIcon from "@mui/icons-material/FolderCopy";
 import WhatsAppIcon from "@mui/icons-material/WhatsApp";
+import DeleteIcon from "@mui/icons-material/Delete";
 
 import MoreIcon from "@mui/icons-material/MoreVert";
 import Drawer from "@mui/material/Drawer";
@@ -207,6 +208,16 @@ export default function MainNav() {
             title: "Boolean Keyword",
             path: "/boolean-keyword",
             icon: <RiKeyboardLine />,
+          },
+        ]
+      : []),
+    ...(screenPermissions.DeletePrintArticles
+      ? [
+          {
+            id: 17,
+            title: "Delete Print Articles",
+            path: "/delete-print-articles",
+            icon: <DeleteIcon />,
           },
         ]
       : []),

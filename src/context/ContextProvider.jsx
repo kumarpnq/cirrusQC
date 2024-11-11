@@ -28,6 +28,7 @@ const ContextProvider = ({ children }) => {
     whatsappContact: false,
     clientMaster: false,
     booleanKeyword: false,
+    deletePrintArticles: false,
   });
   const [permissionLoading, setPermissionLoading] = useState(false);
 
