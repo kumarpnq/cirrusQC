@@ -4,7 +4,6 @@ import {
   Divider,
   FormControlLabel,
   styled,
-  TextField,
   Typography,
 } from "@mui/material";
 import CustomTextField from "../../@core/CutsomTextField";
@@ -12,6 +11,7 @@ import { useEffect, useState } from "react";
 import { format, addYears } from "date-fns";
 import YesOrNo from "../../@core/YesOrNo";
 import { makeStyles } from "@mui/styles";
+import ComponentsHeader from "./ComponentsHeader";
 
 const StyledWrapper = styled(Box)({
   display: "flex",
@@ -31,15 +31,6 @@ const useStyle = makeStyles(() => ({
     fontSize: "0.8em",
   },
 }));
-const sectionArray = [
-  { name: "Ikea", value: 0 },
-  { name: "Industry", value: 0 },
-  { name: "Industry2", value: 0 },
-  { name: "Competition", value: 0 },
-  { name: "Category", value: 0 },
-  { name: "Industry3", value: 0 },
-  { name: "Others", value: 0 },
-];
 
 const ClientInfo = () => {
   const classes = useStyle();
@@ -78,17 +69,6 @@ const ClientInfo = () => {
     articles: true,
   });
 
-  // * section
-  const [section, setSection] = useState({
-    Ikea: 0,
-    Industry: 0,
-    Industry2: 0,
-    Competition: 0,
-    Category: 0,
-    Industry3: 0,
-    Others: 0,
-  });
-
   useEffect(() => {
     const today = new Date();
     const nextYear = addYears(today, 1);
@@ -99,6 +79,11 @@ const ClientInfo = () => {
 
   return (
     <Box sx={{ border: "1px solid #DDD" }} className="rounded-md shadow-md">
+      <ComponentsHeader
+        title="Mailer Settings"
+        loading={false}
+        onSave={() => {}}
+      />
       <StyledWrapper>
         <StyledText>Client Id : </StyledText>
         <CustomTextField
@@ -486,26 +471,6 @@ const ClientInfo = () => {
               width={150}
             />
           </StyledWrapper>
-        </Box>
-        <Box sx={{ border: "1px solid #DDD" }}>
-          {sectionArray.map((item) => (
-            <StyledWrapper
-              key={item.name}
-              sx={{ border: "1px solid #DDD", margin: 0.5 }}
-            >
-              <TextField
-                value={item.name}
-                fullWidth
-                InputProps={{
-                  style: {
-                    fontSize: "0.8rem",
-                    height: 25,
-                  },
-                }}
-              />
-              <StyledText>{item.value}</StyledText>
-            </StyledWrapper>
-          ))}
         </Box>
       </Box>
       <Divider />

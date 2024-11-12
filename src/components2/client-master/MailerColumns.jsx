@@ -1,23 +1,17 @@
 import { useState } from "react";
-import {
-  Checkbox,
-  FormControlLabel,
-  Box,
-  Typography,
-  FormGroup,
-} from "@mui/material";
+import { Checkbox, FormControlLabel, Box, FormGroup } from "@mui/material";
 import { styled } from "@mui/system";
+import ComponentsHeader from "./ComponentsHeader";
 
-// Styled component for each checkbox item
-const StyledFormControlLabel = styled(FormControlLabel)(({ theme }) => ({
+const StyledFormControlLabel = styled(FormControlLabel)({
   width: "100%",
   margin: 0,
-  padding: "8px 0",
+  padding: "3px 0",
   borderBottom: "1px solid #ddd",
   "&:last-child": {
     borderBottom: "none",
   },
-}));
+});
 
 // Sample data for Mailer Columns
 const mailerColumnsData = [
@@ -36,7 +30,6 @@ const mailerColumnsData = [
 const MailerColumns = () => {
   const [mailerColumns, setMailerColumns] = useState(mailerColumnsData);
 
-  // Handle checkbox changes
   const handleCheckboxChange = (id) => {
     setMailerColumns((prevColumns) =>
       prevColumns.map((col) =>
@@ -47,9 +40,11 @@ const MailerColumns = () => {
 
   return (
     <Box p={2} border="1px solid #ddd" borderRadius="4px">
-      <Typography variant="h6" gutterBottom color="#0a4f7d">
-        Mailer Columns:
-      </Typography>
+      <ComponentsHeader
+        title="Mailers Column"
+        loading={false}
+        onSave={() => {}}
+      />
       <FormGroup>
         {mailerColumns.map((column) => (
           <StyledFormControlLabel

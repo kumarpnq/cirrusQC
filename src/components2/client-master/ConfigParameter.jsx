@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import {
   Table,
   TableBody,
@@ -14,6 +14,7 @@ import {
   Typography,
 } from "@mui/material";
 import { styled } from "@mui/system";
+import ComponentsHeader from "./ComponentsHeader";
 
 // Sample data from the image
 const configParameters = [
@@ -33,7 +34,6 @@ const configParameters = [
   { id: 14, name: "Show Unsubscribe", type: "select", value: "YES" },
 ];
 
-// Styled table cells
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
   fontWeight: "bold",
 }));
@@ -47,7 +47,6 @@ const StyledTableRow = styled(TableRow)(({ theme }) => ({
 const ConfigParameter = () => {
   const [configData, setConfigData] = useState(configParameters);
 
-  // Handle change for select and text input
   const handleChange = (id, value) => {
     setConfigData((prevData) =>
       prevData.map((item) => (item.id === id ? { ...item, value } : item))
@@ -56,9 +55,11 @@ const ConfigParameter = () => {
 
   return (
     <Box p={2}>
-      <Typography variant="h6" gutterBottom color="#0a4f7d">
-        ConfigParameter
-      </Typography>
+      <ComponentsHeader
+        title="Config Parameter"
+        loading={false}
+        onSave={() => {}}
+      />
       <TableContainer component={Paper}>
         <Table size="small" aria-label="config parameter table">
           <TableHead>
@@ -79,6 +80,7 @@ const ConfigParameter = () => {
                       fullWidth
                       size="small"
                       variant="outlined"
+                      style={{ height: 25 }}
                     >
                       <MenuItem value="YES">YES</MenuItem>
                       <MenuItem value="NO">NO</MenuItem>
@@ -90,6 +92,11 @@ const ConfigParameter = () => {
                       fullWidth
                       size="small"
                       variant="outlined"
+                      inputProps={{
+                        style: {
+                          height: 25,
+                        },
+                      }}
                     />
                   )}
                 </TableCell>

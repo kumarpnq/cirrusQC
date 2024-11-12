@@ -10,9 +10,10 @@ import {
   Checkbox,
   TextField,
   MenuItem,
-  Typography,
+  Select,
 } from "@mui/material";
 import { styled } from "@mui/system";
+import ComponentsHeader from "./ComponentsHeader";
 
 const StyledTableContainer = styled(TableContainer)({
   borderRadius: "8px",
@@ -263,12 +264,11 @@ const MailerConfigure = () => {
 
   return (
     <Box sx={{ p: 4 }}>
-      <Typography
-        variant="h5"
-        sx={{ mb: 2, fontWeight: "bold", fontSize: "1em" }}
-      >
-        Mailer Configuration Table
-      </Typography>
+      <ComponentsHeader
+        title="Mailer Configuration"
+        loading={false}
+        onSave={() => {}}
+      />
       <StyledTableContainer>
         <Table>
           <TableHead>
@@ -292,7 +292,7 @@ const MailerConfigure = () => {
                 </StyledTableCell>
                 <StyledTableCell>{row.fieldName}</StyledTableCell>
                 <StyledTableCell>
-                  <TextField
+                  <Select
                     select
                     value={row.fontName}
                     onChange={(e) => handleFontChange(row.id, e.target.value)}
@@ -301,6 +301,7 @@ const MailerConfigure = () => {
                     fullWidth
                     inputProps={{
                       style: {
+                        height: 25,
                         fontSize: "0.875rem",
                       },
                     }}
@@ -310,7 +311,7 @@ const MailerConfigure = () => {
                         {font}
                       </MenuItem>
                     ))}
-                  </TextField>
+                  </Select>
                 </StyledTableCell>
                 <StyledTableCell>
                   <TextField
@@ -321,7 +322,7 @@ const MailerConfigure = () => {
                     }
                     variant="outlined"
                     size="small"
-                    inputProps={{ min: 8, max: 72 }}
+                    inputProps={{ min: 8, max: 72, style: { height: 25 } }}
                     fullWidth
                   />
                 </StyledTableCell>
