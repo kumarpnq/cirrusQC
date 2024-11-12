@@ -114,7 +114,9 @@ const Online = () => {
   const [sortedFilteredRows, setSortedFilteredRows] = useState([]);
   const [tableDataLoading, setTableDataLoading] = useState(false);
   const fetchTableData = useCallback(async () => {
-    const clientFlag = Boolean(headOrSummary || link || socialFeedId);
+    const clientFlag = Boolean(
+      headOrSummary || link || socialFeedId || selectedClient
+    );
     if (!selectedDateType || !clientFlag) {
       toast.warning("Please select a client or date type.");
       return;

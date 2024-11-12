@@ -37,7 +37,7 @@ CustomToolbar.propTypes = {
 
 const columns = [
   { field: "scanId", headerName: "Scan ID", width: 150 },
-  { field: "uploadId", headerName: "Upload ID", width: 150 },
+  { field: "uploadId", headerName: "Upload ID", width: 250 },
   { field: "articleDate", headerName: "Article Date", width: 150 },
   { field: "uploadDate", headerName: "Upload Date", width: 150 },
   { field: "publication", headerName: "Publication", width: 200 },
@@ -69,9 +69,6 @@ const DeleteGrid = ({ data = [], setData, loading }) => {
   };
 
   const onDelete = async () => {
-    if (!selectedRows.length) {
-      toast.error("No rows to delete.");
-    }
     try {
       setDeleteLoading(true);
       const articleIds = selectedRows.map((i) => i.scanId);
@@ -100,7 +97,13 @@ const DeleteGrid = ({ data = [], setData, loading }) => {
     }
   };
 
-  const handleDeleteOpen = () => setDeleteOpen((prev) => !prev);
+  const handleDeleteOpen = () => {
+    if (!selectedRows.length) {
+      toast.error("No rows to delete.");
+      return;
+    }
+    setDeleteOpen((prev) => !prev);
+  };
 
   return (
     <Box>
