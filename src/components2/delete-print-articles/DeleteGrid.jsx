@@ -6,10 +6,9 @@ import {
   GridToolbarContainer,
   GridToolbarQuickFilter,
 } from "@mui/x-data-grid";
-import axios from "axios";
 import toast from "react-hot-toast";
-import { url } from "../../constants/baseUrl";
 import DeleteConfirmationDialog from "../../@core/DeleteConfirmationDialog";
+import axiosInstance from "../../../axiosConfigOra";
 
 const CustomToolbar = ({ onDelete, loading }) => {
   return (
@@ -72,14 +71,11 @@ const DeleteGrid = ({ data = [], setData, loading }) => {
     try {
       setDeleteLoading(true);
       const articleIds = selectedRows.map((i) => i.scanId);
-      //   const testURL = "http://127.0.0.1:8000/";
-      const token = localStorage.getItem("user");
 
       const requestData = {
         article_ids: articleIds,
       };
-      const response = await axios.delete(`${url}deleteprintarticles/`, {
-        headers: { Authorization: `Bearer ${token}` },
+      const response = await axiosInstance.delete(`deleteprintarticles/`, {
         data: requestData,
       });
       toast.success(response.data.message);

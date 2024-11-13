@@ -145,7 +145,7 @@ export default function MainNav() {
       ? [
           {
             id: 10,
-            title: "ClientBasketCity",
+            title: "Master",
             path: "/client-basket-city-publication",
             icon: <ShoppingBasketIcon />,
           },
@@ -304,7 +304,7 @@ export default function MainNav() {
   );
 
   const DrawerList = (
-    <Box sx={{ width: 300 }} role="presentation" onClick={toggleDrawer(false)}>
+    <Box sx={{ width: 320 }} role="presentation" onClick={toggleDrawer(false)}>
       <List>
         {navList.map((item) => (
           <ListItem key={item.id} disablePadding sx={{ width: 160 }}>

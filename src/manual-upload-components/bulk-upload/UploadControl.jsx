@@ -1,9 +1,8 @@
 import { Box, Button, CircularProgress } from "@mui/material";
-import axios from "axios";
 import PropTypes from "prop-types";
 import { useState } from "react";
-import { url } from "../../constants/baseUrl";
 import { toast } from "react-toastify";
+import axiosInstance from "../../../axiosConfigOra";
 
 const UploadControl = ({
   onParse,
@@ -27,14 +26,11 @@ const UploadControl = ({
 
     setCheckLoading(true);
     try {
-      const userToken = localStorage.getItem("user");
-
       const requests = selectedRows.map((row) => {
         const { Link, Date: dateStr, CompanyID } = row;
 
-        return axios.get(`${url}checkSocialFeedExist/`, {
+        return axiosInstance.get(`checkSocialFeedExist/`, {
           params: { url: Link, date: dateStr, companyIds: CompanyID },
-          headers: { Authorization: `Bearer ${userToken}` },
         });
       });
 
@@ -98,7 +94,7 @@ const UploadControl = ({
         toast.info(`${failedRecords.length} record are getting error.`);
       }
     } catch (error) {
-      console.error("Error checking records:", error.message);
+      toast.error("Error checking records:", error.message);
     } finally {
       setCheckLoading(false);
     }
@@ -115,7 +111,7 @@ const UploadControl = ({
         toast.warning("No rows found for process.");
         return;
       }
-      const userToken = localStorage.getItem("user");
+
       const requests = validRowsForProcess.map((row) => {
         const { Link, Date: dateStr, CompanyID } = row;
 
@@ -127,9 +123,7 @@ const UploadControl = ({
         if (CompanyID) {
           request_data.company_ids = CompanyID;
         }
-        return axios.post(`${url}processBulkUpload/`, request_data, {
-          headers: { Authorization: `Bearer ${userToken}` },
-        });
+        return axiosInstance.post(`processBulkUpload/`, request_data);
       });
       const responses = await Promise.all(requests);
       const processResponseData = responses.map((i) => i.data.response);
@@ -165,7 +159,7 @@ const UploadControl = ({
         setSelectionModal([]);
       }
     } catch (error) {
-      console.log(error.message);
+      toast.error("Error Processing records:", error.message);
     } finally {
       setProcessLoading(false);
     }
@@ -198,15 +192,10 @@ const UploadControl = ({
           language: Language,
           companyId: CompanyID,
         };
-        const userToken = localStorage.getItem("user");
-        const result = axios.post(
-          `${url}insertUnscrappedSocialFeed/`,
-          requestData,
-          {
-            headers: {
-              Authorization: `Bearer ${userToken}`,
-            },
-          }
+
+        const result = axiosInstance.post(
+          `insertUnscrappedSocialFeed/`,
+          requestData
         );
         return result;
       });
@@ -243,7 +232,7 @@ const UploadControl = ({
         setSelectionModal([]);
       }
     } catch (error) {
-      console.log(error.message);
+      toast.error("Error bypassing records:", error.message);
     } finally {
       setBypassScrapLoading(false);
     }

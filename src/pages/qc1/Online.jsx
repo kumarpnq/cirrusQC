@@ -117,20 +117,11 @@ const Online = () => {
     const clientFlag = Boolean(
       headOrSummary || link || socialFeedId || selectedClient
     );
+
     if (!selectedDateType || !clientFlag) {
       toast.warning("Please select a client or date type.");
       return;
     }
-    // const dateDifferenceInHours = differenceInHours(
-    //   new Date(dateNow),
-    //   new Date(fromDate)
-    // );
-    // if (!selectedClient && dateDifferenceInHours > 24) {
-    //   toast.warning(
-    //     "Date range should not exceed 24 hours if no client is selected."
-    //   );
-    //   return;
-    // }
 
     try {
       setTableDataLoading(true);
@@ -156,7 +147,7 @@ const Online = () => {
         // socialfeed_id: "",
         // count: "",
       };
-      if (!clientFlag) {
+      if (selectedClient) {
         params.client_id = selectedClient;
       }
 

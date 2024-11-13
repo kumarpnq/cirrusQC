@@ -1,15 +1,14 @@
 import PropTypes from "prop-types";
-import axios from "axios";
 import toast from "react-hot-toast";
 import { useState } from "react";
 import { Button, Paper, Box, Tooltip, CircularProgress } from "@mui/material";
 import { makeStyles } from "@mui/styles";
 import { format } from "date-fns";
 import { formattedNextDay } from "../../constants/dates";
-import { url } from "../../constants/baseUrl";
 import ToDate from "../../components/research-dropdowns/ToDate";
 import CustomDebounceDropdown from "../../@core/CustomDebounceDropdown";
 import Publication from "../../print-components/dropdowns/Publication";
+import axiosInstance from "../../../axiosConfigOra";
 
 const useStyle = makeStyles(() => ({
   dropDowns: {
@@ -42,7 +41,6 @@ const SearchFilters = ({ setData, loading, setLoading }) => {
     event.preventDefault();
     try {
       setLoading(true);
-      const token = localStorage.getItem("user");
       const params = {
         article_date: format(articleDate, "yyyy-MM-dd"),
         upload_date: format(uploadDate, "yyyy-MM-dd"),
@@ -54,8 +52,7 @@ const SearchFilters = ({ setData, loading, setLoading }) => {
         params.publication_id = publication;
       }
       //   const testURL = "http://127.0.0.1:8000/";
-      const response = await axios.get(`${url}articlesfordelete/`, {
-        headers: { Authorization: `Bearer ${token}` },
+      const response = await axiosInstance.get(`articlesfordelete/`, {
         params,
       });
       const responseData = response.data.articles;

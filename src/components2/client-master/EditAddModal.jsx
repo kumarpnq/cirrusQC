@@ -27,6 +27,7 @@ import { styled } from "@mui/system";
 import EmailDetails from "./EmailDetails";
 import CompanyBasket from "./CompanyBasket";
 import KeywordDetails from "./KeywordDetails";
+import BasketCityPubPage from "../../basketCityPub-components/BasketCityPubPage";
 
 const StyledMenuItem = styled(MenuItem)(({ theme }) => ({
   position: "relative",
@@ -38,17 +39,17 @@ const StyledMenuItem = styled(MenuItem)(({ theme }) => ({
     "&:hover": {
       backgroundColor: theme.palette.primary.main,
       color: theme.palette.primary.contrastText,
-      transform: "scale(1.05)", // Zoom-in effect on hover for selected item
+      transform: "scale(1.05)",
     },
   },
   "&:hover": {
     backgroundColor: theme.palette.action.hover,
-    transform: "scale(1.05)", // Zoom-in effect on hover
-    boxShadow: `0 4px 12px rgba(0, 0, 0, 0.1)`, // Add subtle shadow on hover
+    transform: "scale(1.05)",
+    boxShadow: `0 4px 12px rgba(0, 0, 0, 0.1)`,
   },
-  margin: theme.spacing(0.5), // Adding some margin between items for better spacing
-  borderRadius: theme.shape.borderRadius, // Make the corners smooth
-  padding: theme.spacing(1.5), // Adjust padding for a more comfortable size
+  margin: theme.spacing(0.5),
+  borderRadius: theme.shape.borderRadius,
+  padding: theme.spacing(1.5),
 }));
 
 const StyledListItemIcon = styled(ListItemIcon)(({ theme }) => ({
@@ -67,11 +68,11 @@ const StyledTypography = styled(Typography)(({ theme }) => ({
   textDecoration: "underline",
   textTransform: "uppercase",
   letterSpacing: "1px",
-  textShadow: "1px 1px gray", // Adding x and y offsets for shadow
+  textShadow: "1px 1px gray",
   fontStyle: "italic",
-  transition: "transform 0.3s ease", // Smooth zoom-in effect on hover
+  transition: "transform 0.3s ease",
   "&:hover": {
-    transform: "scale(1.05)", // Zoom-in effect on hover
+    transform: "scale(1.05)",
   },
 }));
 
@@ -89,6 +90,8 @@ const EditAddModal = ({ open, onClose, openFromWhere }) => {
         return <CompanyBasket />;
       case "Keyword Details":
         return <KeywordDetails />;
+      case "Basket City Pub":
+        return <BasketCityPubPage />;
       default:
         return <p>No record found.</p>;
     }
