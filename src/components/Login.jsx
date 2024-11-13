@@ -25,7 +25,8 @@ const useStyles = makeStyles(() => ({
     display: "flex",
     justifyContent: "center",
     alignItems: "center",
-    minHeight: "100vh",
+    minHeight: "80vh",
+    flexDirection: "column",
   },
   form: {
     width: "300px",
@@ -128,45 +129,48 @@ const Login = () => {
   return (
     <ThemeProvider theme={theme}>
       <Box className={classes.container}>
-        <form onSubmit={handleSubmit} className={classes.form}>
-          <TextField
-            id="name"
-            label="Name"
-            variant="outlined"
-            margin="normal"
-            fullWidth
-            required
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-          />
-          <TextField
-            id="password"
-            label="Password"
-            type="password"
-            variant="outlined"
-            margin="normal"
-            fullWidth
-            required
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-          />
-          <Button
-            type="submit"
-            variant={loading ? "outlined" : "contained"}
-            color="primary"
-            fullWidth
-            className={classes.button}
-            sx={{
-              display: "flex",
-              alignItems: "center",
-              gap: 2,
-              color: loading ? "#0a4f7d" : "white",
-            }}
-          >
-            {loading && <CircularProgress size={"1em"} />}
-            Login
-          </Button>
-        </form>
+        <Box>
+          <img src="./Research.png" alt="logo" height={100} width={100} />
+          <form onSubmit={handleSubmit} className={classes.form}>
+            <TextField
+              id="name"
+              label="Name"
+              variant="outlined"
+              margin="normal"
+              fullWidth
+              required
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+            />
+            <TextField
+              id="password"
+              label="Password"
+              type="password"
+              variant="outlined"
+              margin="normal"
+              fullWidth
+              required
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+            />
+            <Button
+              type="submit"
+              variant={loading ? "outlined" : "contained"}
+              color="primary"
+              fullWidth
+              className={classes.button}
+              sx={{
+                display: "flex",
+                alignItems: "center",
+                gap: 2,
+                color: loading ? "#0a4f7d" : "white",
+              }}
+            >
+              {loading && <CircularProgress size={"1em"} />}
+              Login
+            </Button>
+          </form>
+        </Box>
       </Box>
     </ThemeProvider>
   );

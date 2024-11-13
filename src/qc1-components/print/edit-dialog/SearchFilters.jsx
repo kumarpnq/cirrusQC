@@ -63,6 +63,7 @@ const CustomAccordionDetails = ({
   setTableData,
   setSelectionModal,
 }) => {
+  const isDisabled = !selectedClient && (headOrSummary || link || socialFeedId);
   const handleClear = () => {
     setSelectedClient("");
     setSelectedCompanies([]);
@@ -99,6 +100,7 @@ const CustomAccordionDetails = ({
             setTestClient={setSelectedClient}
             label="Clients"
             width={300}
+            isDisabled={isDisabled}
           />
         </div>
         <div className="mt-3 w-[200px]">
@@ -106,6 +108,7 @@ const CustomAccordionDetails = ({
             selectedCompanies={selectedCompanies}
             setSelectedCompanies={setSelectedCompanies}
             selectedClient={selectedClient}
+            isDisabled={isDisabled}
           />
         </div>
         <Datetype
@@ -122,6 +125,7 @@ const CustomAccordionDetails = ({
           classes={classes}
           // qc1Array={qc1Array}
           qc1Array={qc1ArrayWithPartially}
+          isDisabled={isDisabled}
         />
         <Qc1By
           qcUsersData={userList || []}
@@ -129,11 +133,13 @@ const CustomAccordionDetails = ({
           setQc1by={setQc1By}
           classes={classes}
           pageType={"print"}
+          isDisabled={isDisabled}
         />
         <Languages
           language={selectedLanguages}
           setLanguage={setSelectedLanguages}
           classes={classes}
+          isDisabled={isDisabled}
         />
         <Continents
           continent={selectedContinents}
@@ -142,16 +148,28 @@ const CustomAccordionDetails = ({
           setFilteredCountries={setFilteredCountries}
           continents={continents}
           classes={classes}
+          isDisabled={isDisabled}
         />
         <Countries
           country={selectedCountries}
           setCountry={setSelectedCountries}
           classes={classes}
           filteredCountries={filteredCountries}
+          isDisabled={isDisabled}
         />
         <div className="flex flex-wrap items-center" style={{ height: 25 }}>
-          <CheckboxComp value={isImage} setValue={setIsImage} label={"Image"} />
-          <CheckboxComp value={isVideo} setValue={setIsVideo} label={"Video"} />
+          <CheckboxComp
+            value={isImage}
+            setValue={setIsImage}
+            label={"Image"}
+            isDisabled={isDisabled}
+          />
+          <CheckboxComp
+            value={isVideo}
+            setValue={setIsVideo}
+            label={"Video"}
+            isDisabled={isDisabled}
+          />
         </div>
         <div
           className="flex flex-wrap items-center gap-2 pt-2"

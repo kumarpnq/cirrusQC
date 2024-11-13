@@ -1,7 +1,7 @@
 import { FormControl, Select, OutlinedInput, MenuItem } from "@mui/material";
 import PropTypes from "prop-types";
 
-const Qc1All = ({ qc1done, setQc1done, classes, qc1Array }) => {
+const Qc1All = ({ qc1done, setQc1done, classes, qc1Array, isDisabled }) => {
   const handleQc1done = (event) => {
     setQc1done(event.target.value);
   };
@@ -15,6 +15,7 @@ const Qc1All = ({ qc1done, setQc1done, classes, qc1Array }) => {
           input={<OutlinedInput label="tag" />}
           className={classes.dropDowns}
           displayEmpty
+          disabled={isDisabled}
           inputProps={{ "aria-label": "Without label" }}
           sx={{ fontSize: "0.8em" }}
         >
@@ -46,5 +47,6 @@ Qc1All.propTypes = {
       option: PropTypes.string.isRequired,
     })
   ).isRequired,
+  isDisabled: PropTypes.bool,
 };
 export default Qc1All;

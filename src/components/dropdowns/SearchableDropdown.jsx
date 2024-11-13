@@ -45,6 +45,7 @@ const SearchableDropdown = ({
   setTestClient,
   testclient,
   width,
+  isDisabled,
 }) => {
   const classes = useStyles();
 
@@ -67,7 +68,6 @@ const SearchableDropdown = ({
         options={options || []}
         getOptionLabel={(option) => option.clientname}
         renderValue={(selected) => selected.join(", ")}
-        // disableClearable
         ListboxProps={{ style: { maxHeight: 200 } }}
         renderInput={(params) => (
           <TextField
@@ -96,6 +96,7 @@ const SearchableDropdown = ({
         )}
         value={selectedOption}
         onChange={handleSelectChange}
+        disabled={isDisabled}
       />
     </ThemeProvider>
   );
@@ -109,4 +110,5 @@ SearchableDropdown.propTypes = {
   setTestClient: PropTypes.func.isRequired,
   testclient: PropTypes.string,
   width: PropTypes.number,
+  isDisabled: PropTypes.bool,
 };

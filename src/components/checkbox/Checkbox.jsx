@@ -7,11 +7,12 @@ import {
 } from "@mui/material";
 import PropTypes from "prop-types";
 
-export default function CheckboxComp({ value, setValue, label }) {
+export default function CheckboxComp({ value, setValue, label, isDisabled }) {
   return (
     <FormControl>
       <FormGroup>
         <FormControlLabel
+          disabled={isDisabled}
           control={
             <Checkbox
               size="small"
@@ -40,4 +41,5 @@ CheckboxComp.propTypes = {
   value: PropTypes.number.isRequired,
   setValue: PropTypes.func.isRequired,
   label: PropTypes.string.isRequired,
+  isDisabled: PropTypes.bool,
 };

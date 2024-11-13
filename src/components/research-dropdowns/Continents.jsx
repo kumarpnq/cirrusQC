@@ -8,6 +8,7 @@ const Continents = ({
   setFilteredCountries,
   continents,
   classes,
+  isDisabled,
 }) => {
   const handleContinentChange = (event) => {
     const {
@@ -33,6 +34,7 @@ const Continents = ({
           displayEmpty
           value={continent}
           onChange={handleContinentChange}
+          disabled={isDisabled}
           input={<OutlinedInput label="Name" />}
           inputProps={{ "aria-label": "Without label" }}
           sx={{ fontSize: "0.8em" }}
@@ -74,5 +76,6 @@ Continents.propTypes = {
   setFilteredCountries: PropTypes.func.isRequired,
   continents: PropTypes.arrayOf(PropTypes.string).isRequired,
   classes: PropTypes.object.isRequired,
+  isDisabled: PropTypes.bool,
 };
 export default Continents;

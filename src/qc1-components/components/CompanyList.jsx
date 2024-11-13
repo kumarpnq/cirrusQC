@@ -8,6 +8,7 @@ const CompanyList = ({
   selectedClient,
   selectedCompanies,
   setSelectedCompanies,
+  isDisabled,
 }) => {
   // Fetch logic
   const [companies, setCompanies] = useState([]);
@@ -73,6 +74,7 @@ const CompanyList = ({
         selectedItems={selectedCompanies}
         setSelectedItems={setSelectedCompanies}
         title="Companies"
+        isDisabled={isDisabled}
       />
     </div>
   );
@@ -87,6 +89,7 @@ CompanyList.propTypes = {
     })
   ).isRequired,
   setSelectedCompanies: PropTypes.func.isRequired,
+  isDisabled: PropTypes.bool,
 };
 
 export default CompanyList;

@@ -1,7 +1,15 @@
 import { FormControl, Select, MenuItem, OutlinedInput } from "@mui/material";
 import PropTypes from "prop-types";
 
-const Qc1By = ({ qcUsersData, qc1by, setQc1by, classes, isId, title }) => {
+const Qc1By = ({
+  qcUsersData,
+  qc1by,
+  setQc1by,
+  classes,
+  isId,
+  title,
+  isDisabled,
+}) => {
   return (
     <div style={{ height: 25 }} className="flex items-center">
       <FormControl className="w-32">
@@ -12,6 +20,7 @@ const Qc1By = ({ qcUsersData, qc1by, setQc1by, classes, isId, title }) => {
           onChange={(e) => setQc1by(e.target.value)}
           MenuProps={{ PaperProps: { style: { height: 200 } } }}
           displayEmpty
+          disabled={isDisabled}
           variant="outlined"
           sx={{ fontSize: "0.8em" }}
           inputProps={{ "aria-label": "Without label" }}
@@ -50,5 +59,6 @@ Qc1By.propTypes = {
   classes: PropTypes.object.isRequired,
   isId: PropTypes.bool,
   title: PropTypes.string,
+  isDisabled: PropTypes.bool,
 };
 export default Qc1By;

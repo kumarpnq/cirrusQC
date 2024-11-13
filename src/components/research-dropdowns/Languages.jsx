@@ -4,7 +4,7 @@ import useFetchData from "../../hooks/useFetchData";
 import { useEffect, useState } from "react";
 import { url } from "../../constants/baseUrl";
 
-const Languages = ({ language, setLanguage, classes }) => {
+const Languages = ({ language, setLanguage, classes, isDisabled }) => {
   const [languages, setLanguages] = useState([]);
 
   const selectedLanguages = Object.entries(languages)
@@ -36,6 +36,7 @@ const Languages = ({ language, setLanguage, classes }) => {
           value={language}
           onChange={handleLanguageChange}
           className={classes.dropDowns}
+          disabled={isDisabled}
           input={<OutlinedInput />}
           MenuProps={{ PaperProps: { style: { height: 200 } } }}
           inputProps={{ "aria-label": "Without label" }}
@@ -69,5 +70,6 @@ Languages.propTypes = {
   language: PropTypes.arrayOf(PropTypes.string).isRequired,
   setLanguage: PropTypes.func.isRequired,
   classes: PropTypes.object.isRequired,
+  isDisabled: PropTypes.bool,
 };
 export default Languages;

@@ -1,7 +1,13 @@
 import { FormControl, Select, MenuItem, OutlinedInput } from "@mui/material";
 import PropTypes from "prop-types";
 
-const Countries = ({ country, setCountry, classes, filteredCountries }) => {
+const Countries = ({
+  country,
+  setCountry,
+  classes,
+  filteredCountries,
+  isDisabled,
+}) => {
   return (
     <div style={{ height: 25 }} className="flex items-center">
       <FormControl className="w-28">
@@ -10,6 +16,7 @@ const Countries = ({ country, setCountry, classes, filteredCountries }) => {
           displayEmpty
           value={country}
           onChange={(e) => setCountry(e.target.value)}
+          disabled={isDisabled}
           input={<OutlinedInput label="Name" />}
           className={classes.dropDowns}
           MenuProps={{ PaperProps: { style: { height: 200 } } }}
@@ -45,5 +52,6 @@ Countries.propTypes = {
   setCountry: PropTypes.func.isRequired,
   classes: PropTypes.object.isRequired,
   filteredCountries: PropTypes.arrayOf(PropTypes.string).isRequired,
+  isDisabled: PropTypes.bool,
 };
 export default Countries;

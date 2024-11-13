@@ -71,6 +71,7 @@ const CustomMultiSelect = ({
   dropdownWidth,
   dropdownToggleWidth,
   isIncreased,
+  isDisabled,
 }) => {
   const classes = useStyles();
   const [searchTerm, setSearchTerm] = useState("");
@@ -142,13 +143,22 @@ const CustomMultiSelect = ({
             display: "flex",
             justifyContent: "space-between",
             alignItems: "center",
+            cursor: isDisabled ? "cell" : "",
           }}
+          component={"button"}
+          disabled={isDisabled}
         >
           <Typography component={"span"}>
             {selectedItems.length > 0 ? (
               `${selectedItems.length} selected`
             ) : (
-              <span className="italic text-gray-800 text-[0.9em]">{title}</span>
+              <span
+                className={`italic text-[0.9em] ${
+                  isDisabled ? "text-gray-300" : "text-gray-800"
+                }`}
+              >
+                {title}
+              </span>
             )}
           </Typography>
           <IconButton aria-label="toggle list" sx={{ padding: 0 }}>
@@ -221,6 +231,7 @@ CustomMultiSelect.propTypes = {
   dropdownWidth: PropTypes.number.isRequired,
   dropdownToggleWidth: PropTypes.number.isRequired,
   isIncreased: PropTypes.bool,
+  isDisabled: PropTypes.bool,
 };
 
 export default CustomMultiSelect;
