@@ -42,13 +42,15 @@ const UploadControl = ({
       );
 
       const responseMap = responseData.map((item) => {
-        const socialFeedId = item.articleExist.processStatus.socialFeedId;
-        const message = item.articleExist.processStatus.message;
+        const socialFeedId = item.articleExist.processStatus?.socialFeedId;
+        const message = item.articleExist.processStatus?.message || "";
         const link = item.link;
-        const statusFlag = item.articleExist.processStatus.processStatusCode;
+        const statusFlag =
+          item.articleExist?.processStatus?.processStatusCode || "";
         const otherCompanies =
-          item.articleExist.processStatus.otherCompanies || [];
-        const newCompanies = item.articleExist.processStatus.newCompanies || [];
+          item.articleExist?.processStatus?.otherCompanies || [];
+        const newCompanies =
+          item.articleExist?.processStatus?.newCompanies || [];
 
         return {
           link,
@@ -190,7 +192,7 @@ const UploadControl = ({
           headline: Headline,
           summary: summary,
           language: Language,
-          companyId: CompanyID,
+          companyIds: CompanyID,
         };
 
         const result = axiosInstance.post(

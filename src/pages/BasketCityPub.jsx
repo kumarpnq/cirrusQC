@@ -23,6 +23,8 @@ import PublicIcon from "@mui/icons-material/Public";
 import PriorityHighIcon from "@mui/icons-material/PriorityHigh";
 import { styled } from "@mui/system";
 import CityMaster from "../components2/master/city-master/CityMaster";
+import StateMaster from "../components2/master/state-master/StateMaster";
+import CountryMaster from "../components2/master/country-master/CountryMaster";
 
 const StyledMenuItem = styled(MenuItem)(({ theme }) => ({
   position: "relative",
@@ -81,6 +83,10 @@ const RenderComponent = ({ value }) => {
       return <PublicationMaster />;
     case "Publication Master Online":
       return <PublicationMasterOnline />;
+    case "State Master":
+      return <StateMaster />;
+    case "Country Master":
+      return <CountryMaster />;
     default:
       return <>No page.</>;
   }

@@ -1,12 +1,12 @@
+import { Box, Button, Divider, Modal, Typography } from "@mui/material";
 import PropTypes from "prop-types";
-import { Box, Modal, Typography, Button, Divider } from "@mui/material";
-import CustomTextField from "../../../@core/CutsomTextField";
 import { useState } from "react";
 import { style, StyledText, StyledWrapper } from "../common";
+import CustomTextField from "../../../@core/CutsomTextField";
 
-const AddEditModal = ({ open, handleClose }) => {
-  const [city, setCity] = useState("");
-
+const CountryAddEdit = ({ open, handleClose }) => {
+  const [country, setCountry] = useState("");
+  const [active, setActive] = useState("");
   return (
     <Modal
       open={open}
@@ -28,42 +28,23 @@ const AddEditModal = ({ open, handleClose }) => {
         </Typography>
         <Box sx={{ border: "1px solid #DDD", borderRadius: "3px", padding: 1 }}>
           <StyledWrapper>
-            <StyledText>City Name : </StyledText>
+            <StyledText>Country : </StyledText>
             <CustomTextField
               width={"100%"}
               type={"text"}
-              value={city}
-              setValue={setCity}
-              placeholder={"City"}
-            />
-          </StyledWrapper>
-          <StyledWrapper>
-            <StyledText>State Name : </StyledText>
-            <CustomTextField
-              width={"100%"}
-              type={"text"}
-              value={city}
-              setValue={setCity}
-              placeholder={"State"}
-            />
-          </StyledWrapper>
-          <StyledWrapper>
-            <StyledText>Country Name : </StyledText>
-            <CustomTextField
-              width={"100%"}
-              type={"text"}
-              value={city}
-              setValue={setCity}
+              value={country}
+              setValue={setCountry}
               placeholder={"Country"}
             />
           </StyledWrapper>
+
           <StyledWrapper>
             <StyledText>Active : </StyledText>
             <CustomTextField
               width={"100%"}
               type={"text"}
-              value={city}
-              setValue={setCity}
+              value={active}
+              setValue={setActive}
               placeholder={"Active"}
             />
           </StyledWrapper>
@@ -100,10 +81,9 @@ const AddEditModal = ({ open, handleClose }) => {
   );
 };
 
-// PropTypes validation
-AddEditModal.propTypes = {
+CountryAddEdit.propTypes = {
   open: PropTypes.bool.isRequired,
   handleClose: PropTypes.func.isRequired,
 };
 
-export default AddEditModal;
+export default CountryAddEdit;

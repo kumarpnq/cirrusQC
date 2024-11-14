@@ -1,158 +1,162 @@
-import { Fragment, useState } from "react";
-import { DataGrid } from "@mui/x-data-grid";
-import { Box, IconButton } from "@mui/material";
 import EditNoteIcon from "@mui/icons-material/EditNote";
-import DeleteIcon from "@mui/icons-material/Delete";
-import AddEditModal from "./AddEditModal";
+import { Box, IconButton } from "@mui/material";
+import { DataGrid } from "@mui/x-data-grid";
 import { CustomToolbar } from "../../../@core/CustomGridToolExportAndFilter";
+import { Fragment, useState } from "react";
+import DeleteIcon from "@mui/icons-material/Delete";
+import StateEditModal from "./StateEditModal";
 
-const CityGrid = () => {
+const StateGrid = () => {
   const [open, setOpen] = useState(false);
-
-  const handleOpen = () => setOpen(true);
-  const handleClose = () => setOpen(false);
   const [rows, setRows] = useState([
     {
       id: 1,
-      cityName: "New York",
       stateName: "New York",
-      countryName: "USA",
+      Zone: "New York",
       active: true,
     },
     {
       id: 2,
-      cityName: "Los Angeles",
       stateName: "California",
-      countryName: "USA",
+      Zone: "California",
       active: false,
     },
     {
       id: 3,
-      cityName: "Mumbai",
       stateName: "Maharashtra",
-      countryName: "India",
+      Zone: "Maharashtra",
       active: true,
     },
     {
       id: 4,
-      cityName: "Chicago",
       stateName: "Illinois",
-      countryName: "USA",
+      Zone: "Illinois",
       active: true,
     },
     {
       id: 5,
-      cityName: "Houston",
       stateName: "Texas",
-      countryName: "USA",
+      Zone: "Texas",
       active: false,
     },
     {
       id: 6,
-      cityName: "London",
       stateName: "England",
-      countryName: "UK",
+      Zone: "England",
       active: true,
     },
     {
       id: 7,
-      cityName: "Berlin",
       stateName: "Berlin",
-      countryName: "Germany",
+      Zone: "Berlin",
       active: true,
     },
     {
       id: 8,
-      cityName: "Paris",
       stateName: "Île-de-France",
-      countryName: "France",
+      Zone: "Île-de-France",
       active: false,
     },
     {
       id: 9,
-      cityName: "Tokyo",
       stateName: "Tokyo",
-      countryName: "Japan",
+      Zone: "Tokyo",
       active: true,
     },
     {
       id: 10,
-      cityName: "Sydney",
       stateName: "New South Wales",
-      countryName: "Australia",
+      Zone: "New South Wales",
       active: true,
     },
     {
       id: 11,
-      cityName: "Beijing",
       stateName: "Beijing",
-      countryName: "China",
+      Zone: "Beijing",
       active: false,
     },
     {
       id: 12,
-      cityName: "Moscow",
       stateName: "Moscow",
-      countryName: "Russia",
+      Zone: "Moscow",
       active: true,
     },
     {
       id: 13,
-      cityName: "Dubai",
       stateName: "Dubai",
-      countryName: "UAE",
+      Zone: "Dubai",
       active: true,
     },
     {
       id: 14,
-      cityName: "São Paulo",
       stateName: "São Paulo",
-      countryName: "Brazil",
+      Zone: "São Paulo",
       active: false,
     },
     {
       id: 15,
-      cityName: "Mexico City",
       stateName: "Mexico City",
-      countryName: "Mexico",
+      Zone: "Mexico City",
       active: true,
     },
     {
       id: 16,
-      cityName: "Buenos Aires",
       stateName: "Buenos Aires",
-      countryName: "Argentina",
+      Zone: "Buenos Aires",
       active: true,
     },
     {
       id: 17,
-      cityName: "Toronto",
       stateName: "Ontario",
-      countryName: "Canada",
+      Zone: "Ontario",
       active: false,
     },
     {
       id: 18,
-      cityName: "Vancouver",
       stateName: "British Columbia",
-      countryName: "Canada",
+      Zone: "British Columbia",
       active: true,
     },
     {
       id: 19,
-      cityName: "Seoul",
       stateName: "Seoul",
-      countryName: "South Korea",
+      Zone: "Seoul",
       active: true,
     },
     {
       id: 20,
-      cityName: "Singapore",
       stateName: "Central Region",
-      countryName: "Singapore",
+      Zone: "Central Region",
       active: true,
     },
+    // Dummy records
+    {
+      id: 21,
+      stateName: "Dummy State 1",
+      Zone: "Dummy Zone 1",
+      active: true,
+    },
+    {
+      id: 22,
+      stateName: "Dummy State 2",
+      Zone: "Dummy Zone 2",
+      active: false,
+    },
+    {
+      id: 23,
+      stateName: "Dummy State 3",
+      Zone: "Dummy Zone 3",
+      active: true,
+    },
+    {
+      id: 24,
+      stateName: "Dummy State 4",
+      Zone: "Dummy Zone 4",
+      active: false,
+    },
   ]);
+
+  const handleOpen = () => setOpen((prev) => !prev);
 
   const columns = [
     {
@@ -194,9 +198,8 @@ const CityGrid = () => {
       ),
       width: 100,
     },
-    { field: "cityName", headerName: "City Name", width: 150 },
     { field: "stateName", headerName: "State Name", width: 150 },
-    { field: "countryName", headerName: "Country Name", width: 150 },
+    { field: "Zone", headerName: "Zone", width: 150 },
   ];
 
   return (
@@ -214,9 +217,9 @@ const CityGrid = () => {
           hideFooterSelectedRowCount
         />
       </Box>
-      <AddEditModal open={open} handleClose={handleClose} />
+      <StateEditModal open={open} handleClose={() => setOpen(false)} />
     </Fragment>
   );
 };
 
-export default CityGrid;
+export default StateGrid;
