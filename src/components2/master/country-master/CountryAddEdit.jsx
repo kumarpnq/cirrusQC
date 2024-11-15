@@ -21,11 +21,9 @@ const CountryAddEdit = ({ open, handleClose }) => {
           component="h2"
           fontSize={"1em"}
         >
-          Add / Edit City
+          Add / Edit Country
         </Typography>
-        <Typography id="modal-modal-description" sx={{ mt: 2 }}>
-          Add or edit the city details here.
-        </Typography>
+
         <Box sx={{ border: "1px solid #DDD", borderRadius: "3px", padding: 1 }}>
           <StyledWrapper>
             <StyledText>Country : </StyledText>

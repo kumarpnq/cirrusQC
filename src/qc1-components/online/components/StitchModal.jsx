@@ -137,14 +137,20 @@ const StitchModal = ({
       const response = await axios.post(`${url + endpoint}`, request_data, {
         headers: { Authorization: `Bearer ${userToken}` },
       });
-      if (response) {
+      if (response.data.status.success.length) {
         toast.success(
-          `${selectedRows.length} rows ${
+          `${response.data?.status?.success?.length} rows ${
             isStitch ? "stitched" : "un-stitched"
           }.`
         );
         fetchStitchedArticles();
         setSelectedRows([]);
+      }
+
+      if (response.data.status.error.length) {
+        toast.error(
+          `${response.data.status.error.length} rows ${"are getting error"}.`
+        );
       }
     } catch (error) {
       toast.error("Something went wrong.");

@@ -1,14 +1,14 @@
 import { Box, Button, Divider, Modal, Typography } from "@mui/material";
 import PropTypes from "prop-types";
+import { style, StyledText, StyledWrapper } from "../common";
 import CustomTextField from "../../../@core/CutsomTextField";
 import { useState } from "react";
-import { style, StyledText, StyledWrapper } from "../common";
 
-const StateEditModal = ({ open, handleClose }) => {
-  const [state, setState] = useState("");
-  const [zone, setZone] = useState("");
-  const [active, setActive] = useState("");
-
+const UserAddEditModal = ({ open, handleClose }) => {
+  const [userType, setUserType] = useState("");
+  const [userName, setUserName] = useState("");
+  const [loginName, setLoginName] = useState("");
+  const [password, setPassword] = useState("");
   return (
     <Modal
       open={open}
@@ -23,39 +23,49 @@ const StateEditModal = ({ open, handleClose }) => {
           component="h2"
           fontSize={"1em"}
         >
-          Add / Edit State
+          Add / Edit User
         </Typography>
 
         <Box sx={{ border: "1px solid #DDD", borderRadius: "3px", padding: 1 }}>
           <StyledWrapper>
-            <StyledText>State Name : </StyledText>
+            <StyledText>User Type : </StyledText>
             <CustomTextField
               width={"100%"}
               type={"text"}
-              value={state}
-              setValue={setState}
-              placeholder={"State"}
+              value={userType}
+              setValue={setUserType}
+              placeholder={"User Type"}
             />
           </StyledWrapper>
           <StyledWrapper>
-            <StyledText>Zone : </StyledText>
+            <StyledText>User Name : </StyledText>
             <CustomTextField
               width={"100%"}
               type={"text"}
-              value={zone}
-              setValue={setZone}
-              placeholder={"Zone"}
+              value={userName}
+              setValue={setUserName}
+              placeholder={"User Name"}
             />
           </StyledWrapper>
 
           <StyledWrapper>
-            <StyledText>Active : </StyledText>
+            <StyledText>Login Name : </StyledText>
             <CustomTextField
               width={"100%"}
               type={"text"}
-              value={active}
-              setValue={setActive}
-              placeholder={"Active"}
+              value={loginName}
+              setValue={setLoginName}
+              placeholder={"Login Name"}
+            />
+          </StyledWrapper>
+          <StyledWrapper>
+            <StyledText>Password : </StyledText>
+            <CustomTextField
+              width={"100%"}
+              type={"text"}
+              value={password}
+              setValue={setPassword}
+              placeholder={"Password"}
             />
           </StyledWrapper>
         </Box>
@@ -91,9 +101,8 @@ const StateEditModal = ({ open, handleClose }) => {
   );
 };
 
-StateEditModal.propTypes = {
+UserAddEditModal.propTypes = {
   open: PropTypes.bool.isRequired,
   handleClose: PropTypes.func.isRequired,
 };
-
-export default StateEditModal;
+export default UserAddEditModal;

@@ -25,6 +25,7 @@ import { styled } from "@mui/system";
 import CityMaster from "../components2/master/city-master/CityMaster";
 import StateMaster from "../components2/master/state-master/StateMaster";
 import CountryMaster from "../components2/master/country-master/CountryMaster";
+import UserMaster from "../components2/master/user-master/UserMaster";
 
 const StyledMenuItem = styled(MenuItem)(({ theme }) => ({
   position: "relative",
@@ -87,6 +88,8 @@ const RenderComponent = ({ value }) => {
       return <StateMaster />;
     case "Country Master":
       return <CountryMaster />;
+    case "User Master":
+      return <UserMaster />;
     default:
       return <>No page.</>;
   }

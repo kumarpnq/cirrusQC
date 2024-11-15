@@ -4,6 +4,7 @@ import {
   Divider,
   FormControlLabel,
   styled,
+  TextField,
   Typography,
 } from "@mui/material";
 import CustomTextField from "../../@core/CutsomTextField";
@@ -17,7 +18,7 @@ const StyledWrapper = styled(Box)({
   display: "flex",
   alignItems: "center",
   gap: 1,
-  padding: 1.5,
+  padding: 3,
 });
 const StyledText = styled(Typography)({
   fontSize: "1em",
@@ -78,7 +79,10 @@ const ClientInfo = () => {
   }, []);
 
   return (
-    <Box sx={{ border: "1px solid #DDD" }} className="rounded-md shadow-md">
+    <Box
+      sx={{ border: "1px solid #DDD" }}
+      className="p-1 mt-1 rounded-md shadow-md"
+    >
       <ComponentsHeader
         title="Mailer Settings"
         loading={false}
@@ -191,22 +195,32 @@ const ClientInfo = () => {
         <StyledText>Subscription : </StyledText>
         <StyledWrapper>
           <span className="mr-2 text-gray-500">From : </span>
-          <input
+          <TextField
             type="date"
-            width={200}
+            width={250}
             value={subFromDate}
             onChange={(e) => setSubFromDate(e.target.value)}
-            className="border border-gray-300 rounded-sm hover:border-black"
+            InputProps={{
+              style: {
+                fontSize: "0.8rem",
+                height: 25,
+              },
+            }}
           />
         </StyledWrapper>
         <StyledWrapper>
           <span className="mx-2 text-gray-500">End : </span>
-          <input
+          <TextField
             type="date"
             width={200}
             value={subToDate}
             onChange={(e) => setSubToDate(e.target.value)}
-            className="border border-gray-300 rounded-sm hover:border-black"
+            InputProps={{
+              style: {
+                fontSize: "0.8rem",
+                height: 25,
+              },
+            }}
           />
         </StyledWrapper>
       </StyledWrapper>

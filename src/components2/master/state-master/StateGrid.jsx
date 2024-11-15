@@ -1,9 +1,9 @@
 import EditNoteIcon from "@mui/icons-material/EditNote";
+import DeleteIcon from "@mui/icons-material/Delete";
 import { Box, IconButton } from "@mui/material";
 import { DataGrid } from "@mui/x-data-grid";
 import { CustomToolbar } from "../../../@core/CustomGridToolExportAndFilter";
 import { Fragment, useState } from "react";
-import DeleteIcon from "@mui/icons-material/Delete";
 import StateEditModal from "./StateEditModal";
 
 const StateGrid = () => {

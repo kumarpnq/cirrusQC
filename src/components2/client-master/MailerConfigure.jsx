@@ -14,6 +14,13 @@ import {
 } from "@mui/material";
 import { styled } from "@mui/system";
 import ComponentsHeader from "./ComponentsHeader";
+import { makeStyles } from "@mui/styles";
+
+const useStyle = makeStyles(() => ({
+  dropDowns: {
+    height: 25,
+  },
+}));
 
 const StyledTableContainer = styled(TableContainer)({
   borderRadius: "8px",
@@ -45,6 +52,7 @@ const StyledTableHeadCell = styled(TableCell)(({ theme }) => ({
 }));
 
 const MailerConfigure = () => {
+  const classes = useStyle();
   const initialData = [
     {
       id: 1,
@@ -299,12 +307,7 @@ const MailerConfigure = () => {
                     variant="outlined"
                     size="small"
                     fullWidth
-                    inputProps={{
-                      style: {
-                        height: 25,
-                        fontSize: "0.875rem",
-                      },
-                    }}
+                    className={classes.dropDowns}
                   >
                     {fontOptions.map((font) => (
                       <MenuItem key={font} value={font}>
@@ -322,7 +325,7 @@ const MailerConfigure = () => {
                     }
                     variant="outlined"
                     size="small"
-                    inputProps={{ min: 8, max: 72, style: { height: 25 } }}
+                    InputProps={{ min: 8, max: 72, style: { height: 25 } }}
                     fullWidth
                   />
                 </StyledTableCell>
