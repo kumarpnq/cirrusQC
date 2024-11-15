@@ -38,19 +38,31 @@ const UploadControl = ({
       const responseData = responses.map((i) => i.data);
 
       const failedRecords = responseData.filter(
-        (item) => item.articleExist.status.statusCode === -1
+        (item) => item.articleExist?.status?.statusCode === -1
       );
 
       const responseMap = responseData.map((item) => {
-        const socialFeedId = item.articleExist.processStatus?.socialFeedId;
-        const message = item.articleExist.processStatus?.message || "";
+        const socialFeedId =
+          item.articleExist?.status?.statusCode === -1
+            ? ""
+            : item.articleExist?.processStatus?.socialFeedId;
+        const message =
+          item.articleExist?.status?.statusCode === -1
+            ? item.articleExist?.status?.message
+            : item.articleExist?.processStatus?.message || "";
         const link = item.link;
         const statusFlag =
-          item.articleExist?.processStatus?.processStatusCode || "";
+          item.articleExist?.status?.statusCode === -1
+            ? ""
+            : item.articleExist?.processStatus?.processStatusCode || "";
         const otherCompanies =
-          item.articleExist?.processStatus?.otherCompanies || [];
+          item.articleExist?.status?.statusCode === -1
+            ? []
+            : item.articleExist?.processStatus?.otherCompanies || [];
         const newCompanies =
-          item.articleExist?.processStatus?.newCompanies || [];
+          item.articleExist?.status?.statusCode === -1
+            ? []
+            : item.articleExist?.processStatus?.newCompanies || [];
 
         return {
           link,
@@ -67,7 +79,7 @@ const UploadControl = ({
           (entry) => entry.link === row.Link
         );
 
-        const status = responseEntry ? responseEntry.message : row.status;
+        const status = responseEntry ? responseEntry.message : row?.status;
         const statusFlag =
           (responseEntry && responseEntry.statusFlag) || row.statusFlag;
         const otherCompanies =
@@ -93,7 +105,7 @@ const UploadControl = ({
       setSelectedRows([]);
       setSelectionModal([]);
       if (failedRecords.length) {
-        toast.info(`${failedRecords.length} record are getting error.`);
+        toast.error(`${failedRecords[0]?.articleExist?.status?.message}`);
       }
     } catch (error) {
       toast.error("Error checking records:", error.message);

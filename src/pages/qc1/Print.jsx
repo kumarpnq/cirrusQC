@@ -797,6 +797,7 @@ const Print = () => {
         setSortedFilteredRows={setSortedFilteredRows}
         handleSave={handleSaveManualEditedCells}
         savePermission={buttonsPermission?.save === "Yes" && hasUnsavedRows}
+        deletePermission={buttonsPermission?.add_and_remove_company === "Yes"}
       />
 
       <EditDialog

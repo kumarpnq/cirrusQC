@@ -532,6 +532,7 @@ const Online = () => {
         setSortedFilteredRows={setSortedFilteredRows}
         handleSave={handleSaveManualEditedCells}
         savePermission={buttonsPermission?.save === "Yes" && hasUnsavedRows}
+        deletePermission={buttonsPermission?.add_and_remove_company === "Yes"}
         // childArticles={child}
       />
       <EditDialog

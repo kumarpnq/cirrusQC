@@ -59,6 +59,7 @@ const MainTable = ({
   setSortedFilteredRows,
   handleSave,
   savePermission,
+  deletePermission,
 }) => {
   // * custom toolbar
   function CustomToolbar() {
@@ -237,9 +238,12 @@ const MainTable = ({
                         <TableHead className="bg-primary">
                           <TableRow>
                             <TableCell sx={{ color: "#ffff" }}>Edit</TableCell>
-                            <TableCell sx={{ color: "#ffff" }}>
-                              Action
-                            </TableCell>
+                            {!!deletePermission && (
+                              <TableCell sx={{ color: "#ffff" }}>
+                                Action
+                              </TableCell>
+                            )}
+
                             <TableCell sx={{ color: "#ffff" }}>ID</TableCell>
                             <TableCell sx={{ color: "#ffff" }}>
                               Publication
@@ -276,20 +280,23 @@ const MainTable = ({
                                         <EditAttributesOutlined className="text-primary" />
                                       </IconButton>
                                     </TableCell>
-                                    <TableCell>
-                                      {" "}
-                                      <IconButton
-                                        sx={{ color: "red" }}
-                                        onClick={() =>
-                                          handleDeleteSimilarArticle(
-                                            row.article,
-                                            params.row
-                                          )
-                                        }
-                                      >
-                                        <GridCloseIcon />
-                                      </IconButton>
-                                    </TableCell>
+                                    {!!deletePermission && (
+                                      <TableCell>
+                                        {" "}
+                                        <IconButton
+                                          sx={{ color: "red" }}
+                                          onClick={() =>
+                                            handleDeleteSimilarArticle(
+                                              row.article,
+                                              params.row
+                                            )
+                                          }
+                                        >
+                                          <GridCloseIcon />
+                                        </IconButton>
+                                      </TableCell>
+                                    )}
+
                                     <TableCell>{row.article}</TableCell>
                                     <TableCell>
                                       {row.publication_name}
@@ -605,6 +612,7 @@ MainTable.propTypes = {
   setSortedFilteredRows: PropTypes.func,
   handleSave: PropTypes.func,
   savePermission: PropTypes.bool,
+  deletePermission: PropTypes.bool,
 };
 
 export default MainTable;
