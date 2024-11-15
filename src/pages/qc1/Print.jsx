@@ -141,6 +141,7 @@ const Print = () => {
   const [anchorEls, setAnchorEls] = useState({});
   const [similarLoading, setSimilarLoading] = useState(false);
   const [childArticles, setChildArticles] = useState([]);
+
   const handleSimilarClick = async (event, params) => {
     const articleId = params.row.main_id;
     const index = params.id;

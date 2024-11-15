@@ -27,6 +27,8 @@ import { Link } from "react-router-dom";
 import { EditAttributesOutlined } from "@mui/icons-material";
 import AttachmentIcon from "@mui/icons-material/Attachment";
 import { debounce } from "lodash";
+import { IoDocumentAttachOutline } from "react-icons/io5";
+import { GrView } from "react-icons/gr";
 
 // * icons
 import PictureAsPdfIcon from "@mui/icons-material/PictureAsPdf";
@@ -38,12 +40,14 @@ import { url } from "../../constants/baseUrl";
 import useUserSettings from "../../hooks/useUserSettings";
 import { saveTableSettings } from "../../constants/saveTableSetting";
 import EditTextarea from "../../@core/EditTextarea";
+import ArticleView from "./ArticleView";
 
 const iconCellStyle = {
   display: "flex",
   justifyContent: "left",
   alignItems: "center",
   height: "100%",
+  // position: "relative",
 };
 
 // * custom toolbar
@@ -101,6 +105,36 @@ const MainTable = ({
 
   const [openEditSimilarArticle, setOpenEditSimilarArticle] = useState(false);
   const [selectedSimilarArticle, setSelectedSimilarArticle] = useState({});
+  const [anchorEls2, setAnchorEls2] = useState({});
+  const [openArticleView, setOpenArticleView] = useState(false);
+  const [idForView, setIdForView] = useState(null);
+
+  const handleOpenArticleView = (id) => {
+    setIdForView(id);
+    setOpenArticleView(true);
+  };
+
+  const handleCloseArticleView = () => {
+    setIdForView(null);
+    setOpenArticleView(false);
+  };
+
+  const handleStitchClick = async (event, params) => {
+    const articleId = params.row.main_id;
+    const index = params.id;
+    setAnchorEls2((prev) => ({
+      ...prev,
+      [index]: prev[index] ? null : event.currentTarget,
+    }));
+  };
+
+  const handleClickAwayStitch = (index) => {
+    setAnchorEls2(null);
+    setAnchorEls2((prev) => ({
+      ...prev,
+      [index]: null,
+    }));
+  };
 
   const handleDeleteSimilarArticle = async (id, row) => {
     try {
@@ -302,6 +336,71 @@ const MainTable = ({
               </ClickAwayListener>
             </>
           )}
+          <Tooltip title="View Stitched articles">
+            <IconButton
+              onClick={(event) => handleStitchClick(event, params)}
+              aria-describedby={params.id}
+            >
+              <IoDocumentAttachOutline className="text-primary" />
+            </IconButton>
+          </Tooltip>
+          <ClickAwayListener
+            onClickAway={() => handleClickAwayStitch(params.id)}
+          >
+            <Popper
+              id={params.id}
+              open={Boolean(anchorEls2[params.id])}
+              anchorEl={anchorEls2[params.id]}
+              popperOptions={{
+                placement: "right-end",
+                strategy: "absolute",
+              }}
+            >
+              <Box
+                sx={{
+                  p: 1,
+                  bgcolor: "background.paper",
+                  // height: 400,
+                  maxWidth: 700,
+                  maxHeight: 400,
+                  overflow: "scroll",
+                }}
+              >
+                <TableContainer component={Paper}>
+                  <Table
+                    sx={{
+                      color: "white",
+                    }}
+                    className="border"
+                    aria-label="simple table"
+                  >
+                    <TableHead className="bg-primary">
+                      <TableCell sx={{ color: "#fff" }}>View</TableCell>
+                      <TableCell sx={{ color: "#fff" }}>Article Id</TableCell>
+                      <TableCell sx={{ color: "#fff" }}>Article Date</TableCell>
+                      <TableCell sx={{ color: "#fff" }}>
+                        Publication Name
+                      </TableCell>
+                      <TableCell sx={{ color: "#fff" }}>Headline</TableCell>
+                      <TableCell sx={{ color: "#fff" }}>Page</TableCell>
+                    </TableHead>
+                    <TableBody>
+                      <TableCell>
+                        <IconButton onClick={handleOpenArticleView}>
+                          <GrView className="text-primary" />
+                        </IconButton>
+                      </TableCell>
+                      <TableCell>12345</TableCell>
+                      <TableCell>15-11-2024</TableCell>
+                      <TableCell>Economics Time</TableCell>
+                      <TableCell>Test Headline</TableCell>
+                      <TableCell>10</TableCell>
+                    </TableBody>
+                  </Table>
+                </TableContainer>
+              </Box>
+            </Popper>
+          </ClickAwayListener>
         </div>
       ),
     },
@@ -326,7 +425,6 @@ const MainTable = ({
               src={params.row.thumbnail}
               alt="thumbnail"
               style={{ width: "80", height: "100" }}
-              title="PDF"
               className="p-1 border rounded-lg shadow-md"
             />
           </Tooltip>
@@ -627,6 +725,12 @@ const MainTable = ({
         isMultiple={false}
         setSelectedItems={() => {}}
         setSelectionModal={setSelectionModal}
+      />
+      <ArticleView
+        open={openArticleView}
+        setOpen={setOpenArticleView}
+        handleClose={handleCloseArticleView}
+        id={idForView}
       />
     </>
   );
