@@ -1,14 +1,16 @@
-import { useEffect, useState } from "react";
-import { Box, RadioGroup, FormControlLabel, Radio } from "@mui/material";
-import { DataGrid } from "@mui/x-data-grid";
+import { useCallback, useEffect, useState, useRef } from "react";
+import { Box } from "@mui/material";
+import { DataGrid, useGridApiRef } from "@mui/x-data-grid";
 // import axiosInstance from "../../../axiosConfigOra";
 import axios from "axios";
 import toast from "react-hot-toast";
+import { format } from "date-fns";
 
 const EmailDetails = () => {
   const [data, setData] = useState([]);
   const [modifiedRows, setModifiedRows] = useState({});
   const [loading, setLoading] = useState(false);
+  const apiRef = useGridApiRef();
 
   // * GET DATA
   useEffect(() => {
@@ -43,24 +45,6 @@ const EmailDetails = () => {
     active: item.is_active,
   }));
 
-  const handleEditCellChange = (params) => {
-    console.log(params);
-
-    const { id, field, value } = params;
-    setData((prevRows) =>
-      prevRows.map((row) =>
-        row.serial_number === id ? { ...row, [field]: value } : row
-      )
-    );
-    setModifiedRows((prevModifiedRows) => ({
-      ...prevModifiedRows,
-      [id]: {
-        ...prevModifiedRows[id],
-        [field]: value,
-      },
-    }));
-  };
-
   const columns = [
     {
       field: "email",
@@ -87,17 +71,13 @@ const EmailDetails = () => {
       field: "startDate",
       headerName: "Start Date",
       editable: true,
-      type: "date",
-      valueGetter: (params) => new Date(params?.row?.startDate),
+      renderCell: (params) => <span>{format(params.value, "yyyy-MM-dd")}</span>,
     },
     {
       field: "endDate",
       headerName: "End Date",
       editable: true,
-      type: "date",
-      valueFormatter: (params) => {
-        return params?.value ? new Date(params?.value) : "";
-      },
+      renderCell: (params) => <span>{format(params.value, "yyyy-MM-dd")}</span>,
     },
     {
       field: "sortOrder",
@@ -107,45 +87,50 @@ const EmailDetails = () => {
     {
       field: "active",
       headerName: "Active",
-      editable: true,
       width: 200,
-      renderCell: (params) => (
-        <RadioGroup
-          value={params.value}
-          onChange={(e) => handleRadioChange(e, params)}
-          row
-        >
-          <FormControlLabel
-            value="Yes"
-            control={<Radio checked={params.row.active} size="small" />}
-            label="Yes"
-          />
-          <FormControlLabel
-            value="No"
-            control={<Radio checked={!params.row.active} size="small" />}
-            label="No"
-          />
-        </RadioGroup>
-      ),
+      editable: true,
     },
   ];
 
-  const handleRadioChange = (e, params) => {
-    const updatedRow = { ...params.row, active: e.target.value };
-    console.log(updatedRow);
-  };
+  const [hasUnsavedRows, setHasUnsavedRows] = useState(false);
+  const unsavedChangesRef = useRef({
+    unsavedRows: {},
+    rowsBeforeChange: {},
+  });
+
+  const processRowUpdate = useCallback((newRow, oldRow) => {
+    const rowId = newRow.socialFeedId;
+
+    // Update unsaved rows
+    unsavedChangesRef.current.unsavedRows[rowId] = newRow;
+
+    // Store initial state before any changes are made
+    if (!unsavedChangesRef.current.rowsBeforeChange[rowId]) {
+      unsavedChangesRef.current.rowsBeforeChange[rowId] = oldRow;
+    }
+
+    setHasUnsavedRows(true);
+
+    return newRow;
+  }, []);
+
+  const changedRows = unsavedChangesRef.current.unsavedRows;
+  const rowsBeforeChange = unsavedChangesRef.current.rowsBeforeChange;
+
+  console.log(changedRows);
 
   return (
     <Box sx={{ height: "80vh", width: "100%" }}>
       <DataGrid
+        apiRef={apiRef}
         rows={rows}
         columns={columns}
         pageSize={5}
-        disableSelectionOnClick
         loading={loading}
         density="compact"
-        onCellEditCommit={handleEditCellChange}
+        processRowUpdate={processRowUpdate}
         hideFooterSelectedRowCount
+        disableRowSelectionOnClick
       />
     </Box>
   );

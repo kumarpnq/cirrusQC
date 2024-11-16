@@ -55,6 +55,7 @@ const StitchModal = ({
   isUnStitch,
   pageNumber,
   setPageNumber,
+  fetchTagDetails,
 }) => {
   // * user settings
   const userColumnSettings = useUserSettings("print", "StitchMain");
@@ -145,6 +146,7 @@ const StitchModal = ({
         );
         fetchStitchedArticles();
         setSelectedRows([]);
+        fetchTagDetails();
       }
 
       if (response.data.status.error.length) {
@@ -311,7 +313,10 @@ const StitchModal = ({
             <CardContent>
               <Box display="flex" justifyContent={"flex-end"} my={1}>
                 <Typography component={"div"}>
-                  <Button onClick={handleSave} btnText="save" />
+                  <Button
+                    onClick={handleSave}
+                    btnText={isStitch ? "Stitch" : "unStitch"}
+                  />
                 </Typography>
               </Box>
               <Box sx={{ height: 400, width: "100%" }}>
@@ -361,5 +366,6 @@ StitchModal.propTypes = {
   isUnStitch: PropTypes.bool,
   pageNumber: PropTypes.any,
   setPageNumber: PropTypes.func,
+  fetchTagDetails: PropTypes.func,
 };
 export default StitchModal;

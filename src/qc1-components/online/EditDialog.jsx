@@ -688,6 +688,7 @@ const EditDialog = ({
         isUnStitch={stitchUnStitch.unStitch}
         pageNumber={pageNumber}
         setPageNumber={setPageNumber}
+        fetchTagDetails={fetchTagDetails}
       />
     </Fragment>
   );

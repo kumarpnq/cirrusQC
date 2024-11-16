@@ -1,10 +1,10 @@
 import { Box, Button, Divider, Tab, Tabs, Typography } from "@mui/material";
-import MailerSchedularGrid from "../components2/online-mailer-schedular/MailerSchedularGrid";
+import { toast } from "react-toastify";
 import { useEffect, useState } from "react";
+import MailerSchedularGrid from "../components2/online-mailer-schedular/MailerSchedularGrid";
 import EditDialog from "../components2/online-mailer-schedular/EditDialog";
 import SearchFilters from "../components2/online-mailer-schedular/SearchFilters";
 import SendMailGrid from "../components2/online-mailer-schedular/SendMailGrid";
-import { toast } from "react-toastify";
 import axiosInstance from "../../axiosConfig";
 
 function a11yProps(index) {
@@ -33,7 +33,7 @@ const OnlineMailSchedular = () => {
     setClientIds([]);
     try {
       setLoading(true);
-      const response = await axiosInstance.get(`mailerSchedulerData/`, {});
+      const response = await axiosInstance.get(`mailerSchedulerData/`);
       const activeClients =
         response.data.scheduleData.filter((i) => i.active) || [];
       const filteredIds = activeClients.map((item) => item.clientId);

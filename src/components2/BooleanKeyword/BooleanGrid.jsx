@@ -83,6 +83,7 @@ const BooleanGrid = () => {
               </div>
             ),
           }}
+          hideFooterSelectedRowCount
         />
       </div>
       <KeywordView

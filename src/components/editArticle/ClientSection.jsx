@@ -402,10 +402,10 @@ const ClientSection = ({ selectedArticle, selectedClient }) => {
           onClick={handleSave}
           isLoading={saveLoading}
         />
-        {/* <Button
+        <Button
           btnText="Map Extra"
           onClick={() => setOpenMapExtra((prev) => !prev)}
-        /> */}
+        />
       </Box>
       <Card>
         <table>
@@ -414,7 +414,7 @@ const ClientSection = ({ selectedArticle, selectedClient }) => {
               <th>Action</th>
               <th>Company</th>
               <th>Accept</th>
-              {/* <th>Company Accept</th> */}
+              <th>Company Accept</th>
               <th>Subject</th>
               <th>Prominence</th>
               <th>Tone</th>
@@ -453,13 +453,13 @@ const ClientSection = ({ selectedArticle, selectedClient }) => {
                         </Tooltip>
                       )}
                   </td>
-                  {/* <td>
+                  <td>
                     {item.qc3_status === "N" || item.qc3_status === "E" ? (
                       <IconButton onClick={() => handleOpenAccept(item)}>
                         <StoreIcon className="text-primary" />
                       </IconButton>
                     ) : null}
-                  </td> */}
+                  </td>
 
                   <td className="px-1">
                     <select

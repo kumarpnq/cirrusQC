@@ -9,7 +9,7 @@ import ToDate from "../../components/research-dropdowns/ToDate";
 import YesOrNo from "../../@core/YesOrNo";
 import { makeStyles } from "@mui/styles";
 import { timeSlots } from "../../constants/dataArray";
-import { format, toDate } from "date-fns";
+import { format } from "date-fns";
 import axiosInstance from "../../../axiosConfig";
 import { toast } from "react-toastify";
 // import CustomSingleSelect from "../../@core/CustomSingleSelect2";
@@ -46,28 +46,27 @@ const SearchFilters = () => {
   const { data: clientData } = useFetchData(`${url}clientlist/`, clients);
   // const { data } = useFetchData(`${url}citieslist`);
 
-  const handleFormSubmit = async (event) => {
-    event.preventDefault();
-    if (!newsType.length || !clients.length) {
-      toast.warning("Please select clients or entity.");
-      return;
-    }
-
-    const preparedData = clients.flatMap((client) =>
-      newsType.map((screen) => ({
-        clientId: client,
-        entityType: screen,
-        fromDate:
-          screen === "online" || screen === "both"
-            ? fromDate
-            : format(fromDate, "yyyy-MM-dd"),
-        toDate:
-          screen === "online" || screen === "both"
-            ? dateNow
-            : format(dateNow, "yyyy-MM-dd"),
-      }))
-    );
+  const handleFormSubmit = async () => {
     try {
+      if (!newsType.length || !clients.length) {
+        toast.warning("Please select clients or entity.");
+        return;
+      }
+
+      const preparedData = clients.flatMap((client) =>
+        newsType.map((screen) => ({
+          clientId: client,
+          entityType: screen,
+          fromDate:
+            screen === "online" || screen === "both"
+              ? fromDate
+              : format(fromDate, "yyyy-MM-dd"),
+          toDate:
+            screen === "online" || screen === "both"
+              ? dateNow
+              : format(dateNow, "yyyy-MM-dd"),
+        }))
+      );
       setSendLoading(true);
       const requests = preparedData.map((item) => {
         const { clientId, entityType, fromDate, toDate } = item;
@@ -95,62 +94,62 @@ const SearchFilters = () => {
     }
   };
   return (
-    <form onSubmit={handleFormSubmit}>
-      <Box
-        sx={{ display: "flex", alignItems: "center", flexWrap: "wrap" }}
-        className="gap-1 mt-1"
-      >
-        <CustomMultiSelect
-          dropdownToggleWidth={300}
-          dropdownWidth={300}
-          keyId="clientid"
-          keyName="clientname"
-          options={clientData?.data?.clients || []}
-          title="clients"
-          selectedItems={clients}
-          setSelectedItems={setClients}
-          isIncreased
+    // <form onSubmit={handleFormSubmit}>
+    <Box
+      sx={{ display: "flex", alignItems: "center", flexWrap: "wrap" }}
+      className="gap-1 mt-1"
+    >
+      <CustomMultiSelect
+        dropdownToggleWidth={300}
+        dropdownWidth={300}
+        keyId="clientid"
+        keyName="clientname"
+        options={clientData?.data?.clients || []}
+        title="clients"
+        selectedItems={clients}
+        setSelectedItems={setClients}
+        isIncreased
+      />
+      <div className="flex items-center gap-1 border border-gray-300 rounded-sm p-[1px]">
+        <FromDate fromDate={fromDate} setFromDate={setFromDate} isNoMargin />
+        <YesOrNo
+          classes={classes}
+          placeholder="00:00"
+          mapValue={timeSlots}
+          value={fromDateTimeSlot}
+          setValue={setFromDateTimeSlot}
+          width={120}
         />
-        <div className="flex items-center gap-1 border border-gray-300 rounded-sm p-[1px]">
-          <FromDate fromDate={fromDate} setFromDate={setFromDate} isNoMargin />
-          <YesOrNo
-            classes={classes}
-            placeholder="00:00"
-            mapValue={timeSlots}
-            value={fromDateTimeSlot}
-            setValue={setFromDateTimeSlot}
-            width={120}
-          />
-        </div>
-        <div className="flex items-center gap-1 border border-gray-300 rounded-sm p-[1px]">
-          <ToDate dateNow={dateNow} setDateNow={setDateNow} />
-          <YesOrNo
-            classes={classes}
-            placeholder="00:00"
-            mapValue={timeSlots}
-            value={toDateTimeSlot}
-            setValue={setToDateTimeSlot}
-            width={120}
-          />
-        </div>
-        <div className="w-[200px]">
-          <CustomMultiSelect
-            dropdownToggleWidth={200}
-            dropdownWidth={200}
-            keyId="id"
-            keyName="name"
-            options={[
-              { id: "print", name: "Print" },
-              { id: "online", name: "Online" },
-              { id: "both", name: "Combine" },
-            ]}
-            selectedItems={newsType}
-            setSelectedItems={setNewsType}
-            title="NewsType"
-          />
-        </div>
+      </div>
+      <div className="flex items-center gap-1 border border-gray-300 rounded-sm p-[1px]">
+        <ToDate dateNow={dateNow} setDateNow={setDateNow} />
+        <YesOrNo
+          classes={classes}
+          placeholder="00:00"
+          mapValue={timeSlots}
+          value={toDateTimeSlot}
+          setValue={setToDateTimeSlot}
+          width={120}
+        />
+      </div>
+      <div className="w-[200px]">
+        <CustomMultiSelect
+          dropdownToggleWidth={200}
+          dropdownWidth={200}
+          keyId="id"
+          keyName="name"
+          options={[
+            { id: "print", name: "Print" },
+            { id: "online", name: "Online" },
+            { id: "both", name: "Combine" },
+          ]}
+          selectedItems={newsType}
+          setSelectedItems={setNewsType}
+          title="NewsType"
+        />
+      </div>
 
-        {/* <YesOrNo
+      {/* <YesOrNo
           classes={classes}
           placeholder="DateType"
           mapValue={["Article", "Upload"]}
@@ -166,7 +165,7 @@ const SearchFilters = () => {
           setValue={setQc1}
           width={120}
         /> */}
-        {/* <CustomSingleSelect
+      {/* <CustomSingleSelect
           dropdownToggleWidth={200}
           dropdownWidth={200}
           keyId="cityid"
@@ -177,7 +176,7 @@ const SearchFilters = () => {
           selectedItem={city}
           setSelectedItem={setCity}
         /> */}
-        {/* <CustomDebounceDropdown
+      {/* <CustomDebounceDropdown
           publicationGroup={publicationGroup}
           setPublicationGroup={setPublicationGroup}
           bg="secondory"
@@ -190,7 +189,7 @@ const SearchFilters = () => {
           classes={classes}
           width={150}
         /> */}
-        {/* <YesOrNo
+      {/* <YesOrNo
           classes={classes}
           placeholder="MailType"
           mapValue={["Daily", "Magazine"]}
@@ -206,7 +205,7 @@ const SearchFilters = () => {
           setValue={setMailSent}
           width={120}
         /> */}
-        {/* <FormControlLabel
+      {/* <FormControlLabel
           control={
             <Checkbox
               size="small"
@@ -220,20 +219,20 @@ const SearchFilters = () => {
             <span className="font-thin text-[0.9em]">Print Online Mailer</span>
           }
         /> */}
-        <Button variant="outlined" size="small">
-          Search
-        </Button>
-        <Button
-          variant="outlined"
-          size="small"
-          type="submit"
-          sx={{ display: "flex", alignItems: "center", gap: 1 }}
-        >
-          {sendLoading && <CircularProgress size={"1em"} />}
-          Send Mail
-        </Button>
-      </Box>
-    </form>
+      <Button variant="outlined" size="small">
+        Search
+      </Button>
+      <Button
+        variant="outlined"
+        size="small"
+        onClick={handleFormSubmit}
+        sx={{ display: "flex", alignItems: "center", gap: 1 }}
+      >
+        {sendLoading && <CircularProgress size={"1em"} />}
+        Send Mail
+      </Button>
+    </Box>
+    // </form>
   );
 };
 

@@ -12,11 +12,13 @@ const SearchFilters = () => {
   const [selectedValidity, setSelectedValidity] = useState("");
   const [open, setOpen] = useState(false);
 
-  console.log(testCompanies);
+  const handleFormSubmit = (event) => {
+    event.preventDefault();
+  };
 
   return (
     <Fragment>
-      <form>
+      <form onSubmit={handleFormSubmit}>
         <Box sx={{ display: "flex", alignItems: "center" }} className="gap-1">
           <div className="mb-2">
             <Client

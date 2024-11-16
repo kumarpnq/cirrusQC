@@ -336,7 +336,7 @@ const EditDialog = ({
         setModifiedData((prevData) => ({
           ...prevData,
           [screenTypeDD]: {
-            ...prevData[screenTypeDD], // Retain any existing data for this screen
+            ...prevData[screenTypeDD],
             companyUpdates: hasCompanyChanges
               ? companyUpdates
               : prevData[screenTypeDD]?.companyUpdates || [],
@@ -686,8 +686,6 @@ const EditDialog = ({
         toast.info(`${response.data.scheduleData?.error?.[0]?.status}`);
       }
     } catch (error) {
-      console.log(error);
-
       toast.error("Something went wrong.");
     } finally {
       setInsertLoading(false);
