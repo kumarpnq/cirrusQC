@@ -7,6 +7,7 @@ import YesOrNo from "../../@core/YesOrNo";
 import { makeStyles } from "@mui/styles";
 import { styled } from "@mui/system";
 import EditAddModal from "./EditAddModal";
+import AddClientModal from "./AddClientModal";
 
 const useStyle = makeStyles(() => ({
   dropDowns: {
@@ -95,7 +96,7 @@ const SearchFilters = () => {
           </Button>
         </StyledWrapper>
       </form>
-      <EditAddModal open={open} onClose={handleClose} openFromWhere="add" />
+      <AddClientModal open={open} onClose={handleClose} />
     </>
   );
 };

@@ -281,7 +281,9 @@ const MainTable = ({
               key={index}
               className={`${
                 selectedRowData.includes(rowData) ? "selected-row" : ""
-              } ${highlightUpdatedRows.includes(rowData) ? "updated-row" : ""}`}
+              } ${
+                highlightUpdatedRows.includes(rowData) ? "updated-row" : ""
+              } ${"qc3-" + rowData.qc3_status}`}
             >
               <TableCell
                 size="small"

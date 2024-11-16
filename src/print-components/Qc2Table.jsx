@@ -339,7 +339,9 @@ const Qc2Table = ({
                     key={index}
                     className={`border borer-black ${
                       selectedItems.includes(items) ? "selected-row" : ""
-                    } ${highlightRows.includes(items) ? "updated-row" : ""}`}
+                    } ${highlightRows.includes(items) ? "updated-row" : ""} ${
+                      "qc3-" + items.qc3_status
+                    }`}
                   >
                     <td className="sticky left-0 px-6 py-2 bg-white top-10 whitespace-nowrap">
                       <input
