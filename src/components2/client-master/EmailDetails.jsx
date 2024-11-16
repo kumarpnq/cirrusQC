@@ -8,7 +8,7 @@ import { format } from "date-fns";
 
 const EmailDetails = () => {
   const [data, setData] = useState([]);
-  const [modifiedRows, setModifiedRows] = useState({});
+
   const [loading, setLoading] = useState(false);
   const apiRef = useGridApiRef();
 

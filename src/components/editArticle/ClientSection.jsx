@@ -61,7 +61,7 @@ const ClientSection = ({ selectedArticle, selectedClient }) => {
           socialfeed_id: selectedArticle.social_feed_id,
           clientId: selectedClient,
         };
-        const response = await axios.get(`${url}socialfeedtagdetails/`, {
+        const response = await axios.get(`${url}getSocialFeedAutoTagDetails/`, {
           headers: headers,
           params,
         });

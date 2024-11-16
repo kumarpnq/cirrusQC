@@ -63,7 +63,7 @@ const SecondSection = (props) => {
           article_id: articleId,
           clientId: selectedClient?.clientId,
         };
-        const res = await axios.get(`${url}articletagdetails/`, {
+        const res = await axios.get(`${url}getArticleAutoTagDetails/`, {
           headers,
           params,
         });
