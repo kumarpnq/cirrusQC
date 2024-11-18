@@ -141,7 +141,7 @@ export default function MainNav() {
           },
         ]
       : []),
-    ...(screenPermissions.clientBasketCityPublication
+    ...(screenPermissions.ClientBasketCityPublication
       ? [
           {
             id: 10,

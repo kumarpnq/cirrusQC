@@ -116,7 +116,7 @@ function App() {
       onlineQC1: screenPermissions["QC1-Online"],
       printQc1: screenPermissions["QC1-Print"],
       clientBasketCityPublication:
-        screenPermissions.clientBasketCityPublication,
+        screenPermissions.ClientBasketCityPublication,
       PrintSimilarArticles: screenPermissions["PrintSimilarArticles"],
       copyArticles: screenPermissions.CopyArticles,
       mailerSchedular: screenPermissions["MailerScheduler"],

@@ -29,6 +29,7 @@ import AttachmentIcon from "@mui/icons-material/Attachment";
 import { debounce } from "lodash";
 import { IoDocumentAttachOutline } from "react-icons/io5";
 import { GrView } from "react-icons/gr";
+import { format } from "date-fns";
 
 // * icons
 import PictureAsPdfIcon from "@mui/icons-material/PictureAsPdf";
@@ -41,13 +42,14 @@ import useUserSettings from "../../hooks/useUserSettings";
 import { saveTableSettings } from "../../constants/saveTableSetting";
 import EditTextarea from "../../@core/EditTextarea";
 import ArticleView from "./ArticleView";
+import axiosInstance from "../../../axiosConfigOra";
 
 const iconCellStyle = {
   display: "flex",
-  justifyContent: "left",
+
   alignItems: "center",
   height: "100%",
-  // position: "relative",
+  flexDirection: "Column",
 };
 
 // * custom toolbar
@@ -108,6 +110,8 @@ const MainTable = ({
   const [anchorEls2, setAnchorEls2] = useState({});
   const [openArticleView, setOpenArticleView] = useState(false);
   const [idForView, setIdForView] = useState(null);
+  const [stitchLoading, setStitchLoading] = useState(false);
+  const [stitchedArticles, setStitchedArticles] = useState([]);
 
   const handleOpenArticleView = (id) => {
     setIdForView(id);
@@ -121,14 +125,30 @@ const MainTable = ({
 
   const handleStitchClick = async (event, params) => {
     const articleId = params.row.main_id;
+
     const index = params.id;
     setAnchorEls2((prev) => ({
       ...prev,
       [index]: prev[index] ? null : event.currentTarget,
     }));
+
+    try {
+      setStitchLoading(false);
+
+      const response = await axiosInstance.get(
+        `${url}getsticharticles/?parent_id=${articleId}`
+      );
+
+      setStitchedArticles(response.data.articles.stiched_articles || []);
+    } catch (error) {
+      console.log(error.message);
+    } finally {
+      setStitchLoading(false);
+    }
   };
 
   const handleClickAwayStitch = (index) => {
+    setStitchedArticles([]);
     setAnchorEls2(null);
     setAnchorEls2((prev) => ({
       ...prev,
@@ -180,7 +200,7 @@ const MainTable = ({
     {
       field: "Action",
       headerName: "Action",
-      width: userColumnSettings?.Action || 160,
+      width: userColumnSettings?.Action || 87,
       renderCell: (params) => (
         <div style={iconCellStyle}>
           <Box
@@ -208,199 +228,245 @@ const MainTable = ({
               </IconButton>
             </Tooltip>
           </Box>
-          {params.row.similar_articles === "Yes" && (
-            <>
-              <Tooltip title="View similar articles">
-                <IconButton
-                  onClick={(event) => handleSimilarClick(event, params)}
-                  aria-describedby={params.id}
+          <Box>
+            {params.row.similar_articles === "Yes" && (
+              <>
+                <Tooltip title="View similar articles">
+                  <IconButton
+                    onClick={(event) => handleSimilarClick(event, params)}
+                    aria-describedby={params.id}
+                  >
+                    <AttachmentIcon className="text-primary" />
+                  </IconButton>
+                </Tooltip>
+                <ClickAwayListener
+                  onClickAway={() => handleClickAway(params.id)}
                 >
-                  <AttachmentIcon className="text-primary" />
-                </IconButton>
-              </Tooltip>
-              <ClickAwayListener onClickAway={() => handleClickAway(params.id)}>
-                <Popper
-                  id={params.id}
-                  open={Boolean(anchorEls[params.id])}
-                  anchorEl={anchorEls[params.id]}
-                  popperOptions={{
-                    placement: "right-end",
-                    strategy: "absolute",
-                  }}
-                >
-                  <Box
-                    sx={{
-                      p: 1,
-                      bgcolor: "background.paper",
-                      // height: 400,
-                      maxWidth: 700,
-                      maxHeight: 400,
-                      overflow: "scroll",
+                  <Popper
+                    id={params.id}
+                    open={Boolean(anchorEls[params.id])}
+                    anchorEl={anchorEls[params.id]}
+                    popperOptions={{
+                      placement: "right-end",
+                      strategy: "absolute",
                     }}
                   >
-                    <TableContainer component={Paper}>
-                      <Table
-                        sx={{
-                          color: "white",
-                        }}
-                        className="border"
-                        aria-label="simple table"
-                      >
-                        <TableHead className="bg-primary">
-                          <TableRow>
-                            <TableCell sx={{ color: "#ffff" }}>Edit</TableCell>
-                            {!!deletePermission && (
+                    <Box
+                      sx={{
+                        p: 1,
+                        bgcolor: "background.paper",
+                        // height: 400,
+                        maxWidth: 700,
+                        maxHeight: 400,
+                        overflow: "scroll",
+                      }}
+                    >
+                      <TableContainer component={Paper}>
+                        <Table
+                          sx={{
+                            color: "white",
+                          }}
+                          className="border"
+                          aria-label="simple table"
+                        >
+                          <TableHead className="bg-primary">
+                            <TableRow>
                               <TableCell sx={{ color: "#ffff" }}>
-                                Action
+                                Edit
                               </TableCell>
-                            )}
-
-                            <TableCell sx={{ color: "#ffff" }}>ID</TableCell>
-                            <TableCell sx={{ color: "#ffff" }}>
-                              Publication
-                            </TableCell>
-                            <TableCell sx={{ color: "#ffff" }}>
-                              Headline
-                            </TableCell>
-                            <TableCell sx={{ color: "#ffff" }}>Page</TableCell>
-                            <TableCell sx={{ color: "#ffff" }}>City</TableCell>
-                          </TableRow>
-                        </TableHead>
-                        <TableBody>
-                          {similarLoading ? (
-                            <Box
-                              sx={{
-                                display: "flex",
-                                justifyContent: "center",
-                              }}
-                            >
-                              <CircularProgress />
-                            </Box>
-                          ) : (
-                            <>
-                              {" "}
-                              {childArticles.length ? (
-                                childArticles.map((row, index) => (
-                                  <TableRow key={index}>
-                                    <TableCell>
-                                      <IconButton
-                                        onClick={() =>
-                                          handleOpenEditSimilarArticle(row)
-                                        }
-                                      >
-                                        <EditAttributesOutlined className="text-primary" />
-                                      </IconButton>
-                                    </TableCell>
-                                    {!!deletePermission && (
-                                      <TableCell>
-                                        {" "}
-                                        <IconButton
-                                          sx={{ color: "red" }}
-                                          onClick={() =>
-                                            handleDeleteSimilarArticle(
-                                              row.article,
-                                              params.row
-                                            )
-                                          }
-                                        >
-                                          <GridCloseIcon />
-                                        </IconButton>
-                                      </TableCell>
-                                    )}
-
-                                    <TableCell>{row.article}</TableCell>
-                                    <TableCell>
-                                      {row.publication_name}
-                                    </TableCell>
-                                    <TableCell>
-                                      <Tooltip title={row.headline}>
-                                        {row.headline.substring(0, 30) + "..."}
-                                      </Tooltip>
-                                    </TableCell>
-                                    <TableCell>{row.page_number}</TableCell>
-                                    <TableCell>{row.city}</TableCell>
-                                  </TableRow>
-                                ))
-                              ) : (
+                              {!!deletePermission && (
                                 <TableCell sx={{ color: "#ffff" }}>
-                                  No Data found
+                                  Action
                                 </TableCell>
                               )}
-                            </>
-                          )}
-                        </TableBody>
-                      </Table>
-                    </TableContainer>
-                  </Box>
-                </Popper>
-              </ClickAwayListener>
-            </>
-          )}
-          <Tooltip title="View Stitched articles">
-            <IconButton
-              onClick={(event) => handleStitchClick(event, params)}
-              aria-describedby={params.id}
+
+                              <TableCell sx={{ color: "#ffff" }}>ID</TableCell>
+                              <TableCell sx={{ color: "#ffff" }}>
+                                Publication
+                              </TableCell>
+                              <TableCell sx={{ color: "#ffff" }}>
+                                Headline
+                              </TableCell>
+                              <TableCell sx={{ color: "#ffff" }}>
+                                Page
+                              </TableCell>
+                              <TableCell sx={{ color: "#ffff" }}>
+                                City
+                              </TableCell>
+                            </TableRow>
+                          </TableHead>
+                          <TableBody>
+                            {similarLoading ? (
+                              <Box
+                                sx={{
+                                  display: "flex",
+                                  justifyContent: "center",
+                                }}
+                              >
+                                <CircularProgress />
+                              </Box>
+                            ) : (
+                              <>
+                                {" "}
+                                {childArticles.length ? (
+                                  childArticles.map((row, index) => (
+                                    <TableRow key={index}>
+                                      <TableCell>
+                                        <IconButton
+                                          onClick={() =>
+                                            handleOpenEditSimilarArticle(row)
+                                          }
+                                        >
+                                          <EditAttributesOutlined className="text-primary" />
+                                        </IconButton>
+                                      </TableCell>
+                                      {!!deletePermission && (
+                                        <TableCell>
+                                          {" "}
+                                          <IconButton
+                                            sx={{ color: "red" }}
+                                            onClick={() =>
+                                              handleDeleteSimilarArticle(
+                                                row.article,
+                                                params.row
+                                              )
+                                            }
+                                          >
+                                            <GridCloseIcon />
+                                          </IconButton>
+                                        </TableCell>
+                                      )}
+
+                                      <TableCell>{row.article}</TableCell>
+                                      <TableCell>
+                                        {row.publication_name}
+                                      </TableCell>
+                                      <TableCell>
+                                        <Tooltip title={row.headline}>
+                                          {row.headline.substring(0, 30) +
+                                            "..."}
+                                        </Tooltip>
+                                      </TableCell>
+                                      <TableCell>{row.page_number}</TableCell>
+                                      <TableCell>{row.city}</TableCell>
+                                    </TableRow>
+                                  ))
+                                ) : (
+                                  <TableCell sx={{ color: "#ffff" }}>
+                                    No Data found
+                                  </TableCell>
+                                )}
+                              </>
+                            )}
+                          </TableBody>
+                        </Table>
+                      </TableContainer>
+                    </Box>
+                  </Popper>
+                </ClickAwayListener>
+              </>
+            )}
+            {params.row.stitch_articles === "Yes" && (
+              <Tooltip title="View Stitched articles">
+                <IconButton
+                  onClick={(event) => handleStitchClick(event, params)}
+                  aria-describedby={params.id}
+                >
+                  <IoDocumentAttachOutline className="text-primary" />
+                </IconButton>
+              </Tooltip>
+            )}
+
+            <ClickAwayListener
+              onClickAway={() => handleClickAwayStitch(params.id)}
             >
-              <IoDocumentAttachOutline className="text-primary" />
-            </IconButton>
-          </Tooltip>
-          <ClickAwayListener
-            onClickAway={() => handleClickAwayStitch(params.id)}
-          >
-            <Popper
-              id={params.id}
-              open={Boolean(anchorEls2[params.id])}
-              anchorEl={anchorEls2[params.id]}
-              popperOptions={{
-                placement: "right-end",
-                strategy: "absolute",
-              }}
-            >
-              <Box
-                sx={{
-                  p: 1,
-                  bgcolor: "background.paper",
-                  // height: 400,
-                  maxWidth: 700,
-                  maxHeight: 400,
-                  overflow: "scroll",
+              <Popper
+                id={params.id}
+                open={Boolean(anchorEls2[params.id])}
+                anchorEl={anchorEls2[params.id]}
+                popperOptions={{
+                  placement: "right-end",
+                  strategy: "absolute",
                 }}
               >
-                <TableContainer component={Paper}>
-                  <Table
-                    sx={{
-                      color: "white",
-                    }}
-                    className="border"
-                    aria-label="simple table"
-                  >
-                    <TableHead className="bg-primary">
-                      <TableCell sx={{ color: "#fff" }}>View</TableCell>
-                      <TableCell sx={{ color: "#fff" }}>Article Id</TableCell>
-                      <TableCell sx={{ color: "#fff" }}>Article Date</TableCell>
-                      <TableCell sx={{ color: "#fff" }}>
-                        Publication Name
-                      </TableCell>
-                      <TableCell sx={{ color: "#fff" }}>Headline</TableCell>
-                      <TableCell sx={{ color: "#fff" }}>Page</TableCell>
-                    </TableHead>
-                    <TableBody>
-                      <TableCell>
-                        <IconButton onClick={handleOpenArticleView}>
-                          <GrView className="text-primary" />
-                        </IconButton>
-                      </TableCell>
-                      <TableCell>12345</TableCell>
-                      <TableCell>15-11-2024</TableCell>
-                      <TableCell>Economics Time</TableCell>
-                      <TableCell>Test Headline</TableCell>
-                      <TableCell>10</TableCell>
-                    </TableBody>
-                  </Table>
-                </TableContainer>
-              </Box>
-            </Popper>
-          </ClickAwayListener>
+                <Box
+                  sx={{
+                    p: 1,
+                    bgcolor: "background.paper",
+                    // height: 400,
+                    maxWidth: 700,
+                    maxHeight: 400,
+                    overflow: "scroll",
+                  }}
+                >
+                  <TableContainer component={Paper}>
+                    <Table
+                      sx={{
+                        color: "white",
+                      }}
+                      className="border"
+                      aria-label="simple table"
+                    >
+                      <TableHead className="bg-primary">
+                        <TableCell sx={{ color: "#fff" }}>View</TableCell>
+                        <TableCell sx={{ color: "#fff" }}>Article Id</TableCell>
+                        <TableCell sx={{ color: "#fff" }}>
+                          Article Date
+                        </TableCell>
+                        <TableCell sx={{ color: "#fff" }}>
+                          Publication Name
+                        </TableCell>
+                        <TableCell sx={{ color: "#fff" }}>Headline</TableCell>
+                        <TableCell sx={{ color: "#fff" }}>Page</TableCell>
+                      </TableHead>
+                      {stitchedArticles.length === 0 ? (
+                        <TableBody>
+                          <TableRow>
+                            <TableCell colSpan={6} align="center">
+                              <Box
+                                sx={{
+                                  display: "flex",
+                                  justifyContent: "center",
+                                }}
+                              >
+                                <CircularProgress />
+                              </Box>
+                            </TableCell>
+                          </TableRow>
+                        </TableBody>
+                      ) : (
+                        stitchedArticles.map((item, index) => (
+                          <TableBody key={index}>
+                            <TableRow>
+                              <TableCell>
+                                <IconButton
+                                  onClick={() =>
+                                    handleOpenArticleView(item.article_id)
+                                  }
+                                >
+                                  <GrView className="text-primary" />
+                                </IconButton>
+                              </TableCell>
+                              <TableCell>{item.article_id}</TableCell>
+                              <TableCell>
+                                {format(
+                                  new Date(item.article_date),
+                                  "yyyy-MM-dd"
+                                )}
+                              </TableCell>
+                              <TableCell>{item.publication_name}</TableCell>
+                              <TableCell>{item.headlines}</TableCell>
+                              <TableCell>{item.page_number}</TableCell>
+                            </TableRow>
+                          </TableBody>
+                        ))
+                      )}
+                    </Table>
+                  </TableContainer>
+                </Box>
+              </Popper>
+            </ClickAwayListener>
+          </Box>
         </div>
       ),
     },
@@ -542,6 +608,7 @@ const MainTable = ({
     qc1by: item.qc1by || "",
     qcpartial_on: item.qcpartial_on || "",
     qcpartial_by: item.qcpartial_by || "",
+    stitch_articles: item.stitch_articles,
   }));
 
   const applyFilteringToRows = (rows, filterModel) => {
