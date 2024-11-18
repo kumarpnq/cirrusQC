@@ -28,6 +28,8 @@ import EmailDetails from "./EmailDetails";
 import CompanyBasket from "./CompanyBasket";
 import KeywordDetails from "./KeywordDetails";
 import BasketCityPubPage from "../../basketCityPub-components/BasketCityPubPage";
+import UserDetails from "./UserDetails";
+import CityBasket from "./CityBasket";
 
 const StyledMenuItem = styled(MenuItem)(({ theme }) => ({
   position: "relative",
@@ -92,6 +94,10 @@ const EditAddModal = ({ open, onClose, openFromWhere }) => {
         return <KeywordDetails />;
       case "Basket City Pub":
         return <BasketCityPubPage />;
+      case "User Detail":
+        return <UserDetails />;
+      case "City Basket":
+        return <CityBasket />;
       default:
         return <p>No record found.</p>;
     }

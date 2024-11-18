@@ -8,11 +8,7 @@ import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 
 // ** constantss
 import { formattedDate, formattedNextDay } from "../constants/dates";
-import {
-  qc1ArrayWithPartially,
-  qc2Array,
-  qc2ArrayWithPartially,
-} from "../constants/dataArray";
+import { qc1ArrayWithPartially, qc2Array } from "../constants/dataArray";
 import { url } from "../constants/baseUrl";
 // **component imports
 import Client from "./dropdowns/Client";

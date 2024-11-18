@@ -21,7 +21,7 @@ import { styled } from "@mui/system";
 import PropTypes from "prop-types";
 import useFetchData from "../../hooks/useFetchData";
 import { url } from "../../constants/baseUrl";
-import { useEffect, useState } from "react";
+import { useEffect, useLayoutEffect, useState } from "react";
 import CustomMultiSelect from "../../@core/CustomMultiSelect";
 import YesOrNo from "../../@core/YesOrNo";
 import { makeStyles } from "@mui/styles";
@@ -146,10 +146,11 @@ const EditDialog = ({
   const [every, setEvery] = useState("Daily");
   const [timeStamps, setTimeStamps] = useState([]);
   const [report, setReport] = useState({
-    sendReport: false,
-    lastReport: false,
+    sendReport: "",
+    lastReport: "",
   });
-  const [active, setActive] = useState(true);
+
+  const [active, setActive] = useState("");
   const [initialState, setInitialState] = useState(null);
   const [login, setLogin] = useState("");
   const [loginNames, setLoginNames] = useState([]);
@@ -187,14 +188,7 @@ const EditDialog = ({
     },
   ]);
 
-  function boolToYesNo(value) {
-    return value ? "Yes" : "No";
-  }
-  function yesNoToBool(value) {
-    return value === "Yes";
-  }
-
-  useEffect(() => {
+  useLayoutEffect(() => {
     const fetchLoginDetail = async () => {
       try {
         const response = await axiosInstance.get(
@@ -240,13 +234,13 @@ const EditDialog = ({
               (company) => company.companyId
             )
           : filteredCompanies,
-        active: yesNoToBool(row?.active),
+        active: row.active,
         every: row.schedule[0]?.isDayOrMonth || "Daily",
         loginName: login || row?.schedule[0]?.loginName,
         timeStamps: timeStamps,
         report: {
-          sendReport: yesNoToBool(row?.sendReport),
-          lastReport: yesNoToBool(row?.lastReport),
+          sendReport: report.sendReport ? report.sendReport : row?.sendReport,
+          lastReport: report.lastReport ? report.lastReport : row?.lastReport,
         },
       };
 
@@ -267,15 +261,15 @@ const EditDialog = ({
         if (initialState) {
           setSelectedClient(initialState.selectedClient || row?.id);
           setSelectedCompany(initialState.selectedCompany || filteredCompanies);
-          setActive(initialState.active || yesNoToBool(row?.active));
+          setActive(initialState.active || row?.active);
           setEvery(
             initialState.every || row.schedule[0]?.isDayOrMonth || "Daily"
           );
           setTimeStamps(initialState.timeStamps || timeStamps);
           setReport(
             initialState.report || {
-              sendReport: yesNoToBool(row?.sendReport),
-              lastReport: yesNoToBool(row?.lastReport),
+              sendReport: row?.sendReport || report.sendReport,
+              lastReport: row?.lastReport || report.lastReport,
             }
           );
         }
@@ -348,7 +342,7 @@ const EditDialog = ({
       }
     };
     detectChanges();
-  }, [selectedCompany, timeStamps, screenTypeDD, initialState]);
+  }, [selectedCompany, timeStamps, screenTypeDD, initialState, report]);
 
   // * insert status
   useEffect(() => {
@@ -453,7 +447,7 @@ const EditDialog = ({
   }, [screenTypeDD]);
 
   const handleCheckboxChange = (event) => {
-    setActive(event.target.checked);
+    setActive(event.target.checked ? "Yes" : "No");
   };
 
   const handleChange = (event, newValue) => {
@@ -497,6 +491,8 @@ const EditDialog = ({
         // slots: [{ time: "", isActive: "" }],
         // frequency: "",
         updateType: "U",
+
+        loginName: login,
       };
       // if (hasCompanyChanges) {
       //   requestData.companyIds = companyUpdates;
@@ -504,53 +500,56 @@ const EditDialog = ({
       // if (hasSlotChanges) {
       //   requestData.slots = slotUpdates;
       // }
-      if (initialState?.report?.sendReport !== report.sendReport) {
-        requestData.isSendReport = boolToYesNo(report.sendReport);
+
+      if (row?.sendReport !== report.sendReport) {
+        requestData.isSendReport = report.sendReport;
       }
-      if (initialState?.report?.lastReport !== report.lastReport) {
-        requestData.isIncludeReport = boolToYesNo(report.sendReport);
+      if (row?.lastReport !== report.lastReport) {
+        requestData.isIncludeReport = report.sendReport;
       }
-      if (initialState.active !== active) {
-        requestData.isActive = boolToYesNo(active);
+      if (row?.active !== active) {
+        requestData.isActive = active;
       }
 
-      // if (screenTypeDD) {
-      //   requestData.entityType = screenTypeDD;
-      // }
+      if (screenTypeDD) {
+        requestData.entityType = screenTypeDD;
+      }
       if (initialState.every !== every || hasSlotChanges) {
         requestData.frequency = every;
       }
 
       const data = Object.keys(modifiedData)
         .map((item) => {
-          const slotUpdates = modifiedData[item]?.slotUpdates;
-          const companyUpdates = modifiedData[item]?.companyUpdates;
+          const { slotUpdates, companyUpdates } = modifiedData[item];
+
+          let update = {
+            //  ...requestData,
+            entityType: item,
+          };
 
           if (slotUpdates && slotUpdates.length > 0) {
-            return {
-              ...requestData,
-              entityType: item,
-              loginName: login,
-              slots: slotUpdates,
-              ...(companyUpdates &&
-                companyUpdates.length > 0 && { companyIds: companyUpdates }),
-            };
-          } else if (companyUpdates && companyUpdates.length > 0) {
-            return {
-              ...requestData,
-              entityType: item,
-              loginName: login,
-              ...(companyUpdates &&
-                companyUpdates.length > 0 && { companyIds: companyUpdates }),
-            };
+            update.slots = slotUpdates;
           }
 
-          return null;
+          if (companyUpdates && companyUpdates.length > 0) {
+            update.companyIds = companyUpdates;
+          }
+
+          return Object.keys(update).length > 0 ? update : null;
         })
         .filter(Boolean);
 
+      const SlotOrCompanyObj = data.length ? data[0] : {};
+
+      const dataToSave = [
+        {
+          ...requestData,
+          ...SlotOrCompanyObj,
+        },
+      ];
+
       const requestDataInDict = {
-        data,
+        data: dataToSave,
       };
 
       const response = await axiosInstance.post(
@@ -576,6 +575,8 @@ const EditDialog = ({
       setUpdateLoading(false);
     }
   };
+
+  console.log();
 
   const handleInsert = async () => {
     try {
@@ -772,9 +773,12 @@ const EditDialog = ({
           <YesNoSwitchWrapper>
             {/* Yes/No labels */}
             <CustomSwitch
-              checked={report.sendReport}
+              checked={report.sendReport === "Yes"}
               onChange={(e) =>
-                setReport((prev) => ({ ...prev, sendReport: e.target.checked }))
+                setReport((prev) => ({
+                  ...prev,
+                  sendReport: e.target.checked ? "Yes" : "No",
+                }))
               }
             />
           </YesNoSwitchWrapper>
@@ -785,9 +789,12 @@ const EditDialog = ({
           </Typography>
           <YesNoSwitchWrapper>
             <CustomSwitch
-              checked={report.lastReport}
+              checked={report.lastReport === "Yes"}
               onChange={(e) =>
-                setReport((prev) => ({ ...prev, lastReport: e.target.checked }))
+                setReport((prev) => ({
+                  ...prev,
+                  lastReport: e.target.checked ? "Yes" : "No",
+                }))
               }
             />
           </YesNoSwitchWrapper>
@@ -867,7 +874,7 @@ const EditDialog = ({
               <FormControlLabel
                 control={
                   <Checkbox
-                    checked={active}
+                    checked={active === "Yes"}
                     onChange={handleCheckboxChange}
                     color="primary"
                   />
