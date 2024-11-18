@@ -1,13 +1,13 @@
 import { Fragment, useState } from "react";
 import { DataGrid } from "@mui/x-data-grid";
-import { Box, Divider } from "@mui/material";
+import { Box, Button, Divider } from "@mui/material";
 import CustomMultiSelect from "../../@core/CustomMultiSelect";
 
 const CommonGrid = () => {
   const [selectedRows, setSelectedRows] = useState([]);
   const [data, setData] = useState([
     {
-      id: 1,
+      id: "NYK",
       name: "Newyork Times",
     },
   ]);
@@ -32,17 +32,24 @@ const CommonGrid = () => {
 
   return (
     <Fragment>
-      <Box>
+      <Divider sx={{ my: 1 }} />
+      <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
         <CustomMultiSelect
           options={data}
           dropdownToggleWidth={300}
           dropdownWidth={300}
           keyId="id"
-          keyName="title"
-          title=""
+          keyName="name"
+          title="Select"
           selectedItems={selectedItems}
           setSelectedItems={setSelectedItems}
         />
+        <Button variant="outlined" size="small">
+          Save
+        </Button>
+        <Button variant="outlined" size="small" color="error">
+          Delete
+        </Button>
       </Box>
       <Divider sx={{ my: 1 }} />
       <Box sx={{ height: 400, width: "100%" }}>

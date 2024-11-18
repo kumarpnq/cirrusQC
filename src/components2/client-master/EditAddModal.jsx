@@ -30,6 +30,8 @@ import KeywordDetails from "./KeywordDetails";
 import BasketCityPubPage from "../../basketCityPub-components/BasketCityPubPage";
 import UserDetails from "./UserDetails";
 import CityBasket from "./CityBasket";
+import PrintPublication from "./PrintPublication";
+import OnlinePublicationNew from "./OnlinePublicationNew";
 
 const StyledMenuItem = styled(MenuItem)(({ theme }) => ({
   position: "relative",
@@ -67,11 +69,11 @@ const StyledListItemText = styled(ListItemText)(({ theme }) => ({
 const StyledTypography = styled(Typography)(({ theme }) => ({
   color: theme.palette.primary.main,
   fontSize: "1em",
-  textDecoration: "underline",
+  // textDecoration: "underline",
   textTransform: "uppercase",
   letterSpacing: "1px",
   textShadow: "1px 1px gray",
-  fontStyle: "italic",
+  // fontStyle: "italic",
   transition: "transform 0.3s ease",
   "&:hover": {
     transform: "scale(1.05)",
@@ -98,6 +100,12 @@ const EditAddModal = ({ open, onClose, openFromWhere }) => {
         return <UserDetails />;
       case "City Basket":
         return <CityBasket />;
+      case "Print Publication":
+        return <PrintPublication />;
+      case "Online Publication New":
+        return <OnlinePublicationNew />;
+      case "Publication Priority":
+        return <OnlinePublicationNew />;
       default:
         return <p>No record found.</p>;
     }
