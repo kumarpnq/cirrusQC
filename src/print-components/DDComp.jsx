@@ -341,6 +341,7 @@ const DDComp = () => {
     setFetchAfterSave,
     isInitialMount,
     searchArticleID,
+    qc3,
   ]);
 
   // separation of company list logic
