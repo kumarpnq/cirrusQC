@@ -16,7 +16,7 @@ const style = {
 };
 
 const IndustryMasterAddEdit = ({ open, handleClose, openFromWHere }) => {
-  const [industryName, setIndustryName] = useState("");
+  const [industryName, setIndustryName] = useState("Finance");
   const [active, setActive] = useState("Yes");
   return (
     <Modal
@@ -37,7 +37,23 @@ const IndustryMasterAddEdit = ({ open, handleClose, openFromWHere }) => {
         <Box id="modal-description" mt={2}>
           <StyledWrapper>
             <StyledText>Industry Name : </StyledText>
-            <CustomTextField width={"100%"} />
+            <CustomTextField
+              width={"100%"}
+              value={industryName}
+              setValue={setIndustryName}
+              type={"text"}
+              placeholder={"Industry"}
+            />
+          </StyledWrapper>
+          <StyledWrapper>
+            <StyledText>Active : </StyledText>
+            <CustomTextField
+              width={"100%"}
+              value={active}
+              setValue={setActive}
+              type={"text"}
+              placeholder={"Active"}
+            />
           </StyledWrapper>
         </Box>
         <Divider sx={{ my: 1 }} />

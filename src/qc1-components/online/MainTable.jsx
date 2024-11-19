@@ -441,7 +441,7 @@ const MainTable = ({
                               <TableCell>
                                 <IconButton
                                   onClick={() =>
-                                    handleOpenArticleView(item.article_id)
+                                    handleOpenArticleView(item.link)
                                   }
                                 >
                                   <GrView className="text-primary" />
