@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Box,
   MenuItem,
@@ -11,6 +11,7 @@ import {
 } from "@mui/material";
 import { DataGrid } from "@mui/x-data-grid";
 import { Work, Send } from "@mui/icons-material";
+import axiosInstance from "../../../axiosConfigOra";
 
 const CompanyBasket = () => {
   const [rows, setRows] = useState([
@@ -195,6 +196,23 @@ const CompanyBasket = () => {
       active: "no",
     },
   ]);
+
+  const [clientBasketData, setClientBasketData] = useState([]);
+  const [clientBasketLoading, setClientBasketLoading] = useState(false);
+
+  useEffect(() => {
+    const fetchClientBasketData = async () => {
+      try {
+        const response = await axiosInstance.get("getCompanyBasketData/");
+        console.log(response);
+      } catch (error) {
+        console.log(error);
+      } finally {
+        setClientBasketLoading(false);
+      }
+    };
+    fetchClientBasketData();
+  }, []);
 
   const handleRowEdit = (updatedRow) => {
     const updatedRows = rows.map((row) =>

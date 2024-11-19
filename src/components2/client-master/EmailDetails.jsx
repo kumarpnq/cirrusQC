@@ -1,12 +1,12 @@
 import { useCallback, useEffect, useState, useRef, Fragment } from "react";
 import { Box, Button, Divider, Typography } from "@mui/material";
 import { DataGrid, useGridApiRef } from "@mui/x-data-grid";
-// import axiosInstance from "../../../axiosConfigOra";
-import axios from "axios";
+
 import toast from "react-hot-toast";
 import { format } from "date-fns";
-import axiosInstance from "../../../axiosConfigOra";
+
 import EmailDetailsAddModal from "./EmailDetailsAddModal";
+import axiosInstance from "../../../axiosConfig";
 
 const EmailDetails = () => {
   const [data, setData] = useState([]);
@@ -20,13 +20,12 @@ const EmailDetails = () => {
     const fetchEmailDetails = async () => {
       try {
         setLoading(true);
-        const token = localStorage.getItem("user");
-        const response = await axios.get(
-          "http://127.0.0.1:8000/getemaildetails/?client_id=DEMC",
-          { headers: { Authorization: `Bearer ${token}` } }
+
+        const response = await axiosInstance.get(
+          "clientmailerdetails/?clientId=DEMC"
         );
 
-        setData(response.data.email_details || []);
+        setData(response.data.data || []);
       } catch (error) {
         toast.error(error.message);
       } finally {
@@ -38,15 +37,15 @@ const EmailDetails = () => {
 
   const rows = data.map((item, index) => ({
     id: index,
-    serialNumber: item.serial_number,
-    email: item.email_id,
-    name: item.name,
-    phone: item.phone,
-    designation: item.designation,
-    startDate: item.email_start_date,
-    endDate: item.email_end_date,
-    sortOrder: item.sort_order,
-    active: item.is_active,
+    serialNumber: item.serialNumber,
+    email: item.emailId,
+    name: item.name || "",
+    phone: item.phone || "",
+    designation: item.designation || "",
+    startDate: item.emailStartDate,
+    endDate: item.emailEndDate,
+    sortOrder: item.sortOrder,
+    active: item.isActive,
   }));
 
   const columns = [
@@ -119,8 +118,6 @@ const EmailDetails = () => {
 
   const changedRows = unsavedChangesRef.current.unsavedRows;
   const rowsBeforeChange = unsavedChangesRef.current.rowsBeforeChange;
-
-  console.log(changedRows);
 
   const handleSave = async () => {
     try {

@@ -26,6 +26,7 @@ import CityMaster from "../components2/master/city-master/CityMaster";
 import StateMaster from "../components2/master/state-master/StateMaster";
 import CountryMaster from "../components2/master/country-master/CountryMaster";
 import UserMaster from "../components2/master/user-master/UserMaster";
+import IndustryMaster from "../components2/master/industry-master/IndustryMaster";
 
 const StyledMenuItem = styled(MenuItem)(({ theme }) => ({
   position: "relative",
@@ -90,6 +91,8 @@ const RenderComponent = ({ value }) => {
       return <CountryMaster />;
     case "User Master":
       return <UserMaster />;
+    case "Industry Master":
+      return <IndustryMaster />;
     default:
       return <>No page.</>;
   }
@@ -123,6 +126,7 @@ const BasketCityPub = () => {
     { label: "User Master", icon: <PrintIcon /> },
     { label: "Publication Master", icon: <PublicIcon /> },
     { label: "Publication Master Online", icon: <PriorityHighIcon /> },
+    { label: "Industry Master", icon: <PriorityHighIcon /> },
   ];
 
   return (

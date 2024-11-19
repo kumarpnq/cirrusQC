@@ -22,10 +22,14 @@ import {
 } from "@mui/material";
 import MailIcon from "@mui/icons-material/Mail";
 import * as XLSX from "xlsx";
+import { format, addYears } from "date-fns";
 
 const AddClientModal = ({ open, onClose }) => {
   const [clientName, setClientName] = useState("");
-  const [sub, setSub] = useState("");
+  const [subscriptionDate, setSubscriptionDate] = useState({
+    startDate: format(new Date(), "yyyy-MM-dd"),
+    endDate: format(addYears(new Date(), 2), "yyyy-MM-dd"),
+  });
   const [companyId, setCompanyId] = useState("");
   const [emailId, setEmailId] = useState("");
   const [mailerFormat, setMailerFormat] = useState("");
@@ -56,7 +60,7 @@ const AddClientModal = ({ open, onClose }) => {
   const handleSave = () => {
     console.log({
       clientName,
-      sub,
+
       companyId,
       emailId,
       mailerFormat,
@@ -91,11 +95,13 @@ const AddClientModal = ({ open, onClose }) => {
   return (
     <Dialog open={open} onClose={onClose} maxWidth="md" fullWidth>
       <DialogTitle>Add Client</DialogTitle>
-      <DialogContent>
+      <DialogContent
+        sx={{ border: "1px solid #DDD", borderRadius: "3px", p: 1, m: 1 }}
+      >
         <Grid container spacing={3}>
           <Grid item xs={12}>
             <Typography variant="body2" color="textSecondary">
-              Or, you can upload data via Excel
+              upload data via Excel
             </Typography>
 
             <TextField
@@ -105,7 +111,6 @@ const AddClientModal = ({ open, onClose }) => {
               onChange={handleFileUpload}
               size="small"
             />
-
             {excelError && (
               <Typography color="error" variant="body2">
                 {excelError}
@@ -129,19 +134,43 @@ const AddClientModal = ({ open, onClose }) => {
             />
           </Grid>
           <Grid item xs={12}>
-            <TextField
-              label="Sub"
-              fullWidth
-              variant="outlined"
-              value={sub}
-              onChange={(e) => setSub(e.target.value)}
-              required
-              size="small"
-            />
+            <Box sx={{ display: "flex", gap: 1 }}>
+              <TextField
+                fullWidth
+                variant="outlined"
+                type="date"
+                label="Start Date"
+                value={subscriptionDate.startDate}
+                onChange={(e) =>
+                  setSubscriptionDate((prev) => ({
+                    ...prev,
+                    startDate: e.target.value,
+                  }))
+                }
+                required
+                size="small"
+              />
+              <TextField
+                fullWidth
+                variant="outlined"
+                type="date"
+                label="End Date"
+                value={subscriptionDate.endDate}
+                onChange={(e) =>
+                  setSubscriptionDate((prev) => ({
+                    ...prev,
+                    endDate: e.target.value,
+                  }))
+                }
+                required
+                size="small"
+              />
+            </Box>
           </Grid>
+
           <Grid item xs={12}>
             <TextField
-              label="Company ID"
+              label="Company"
               fullWidth
               variant="outlined"
               value={companyId}
@@ -213,8 +242,9 @@ const AddClientModal = ({ open, onClose }) => {
                 required
                 size="small"
               >
-                <MenuItem value="html">HTML</MenuItem>
-                <MenuItem value="text">Text</MenuItem>
+                <MenuItem value="S1">BB Big font</MenuItem>
+                <MenuItem value="TAB20">New Mailer 2018 Custom</MenuItem>
+                <MenuItem value="SECO">Section CompanyWise</MenuItem>
               </Select>
             </FormControl>
           </Grid>
