@@ -127,7 +127,6 @@ const EmailDetails = () => {
         const newRow = changedRows[rowId];
         const oldRow = rowsBeforeChange[rowId];
         const request_data = {
-          clientId: "DEMC",
           serialNumber: newRow.serialNumber,
         };
 
@@ -161,9 +160,13 @@ const EmailDetails = () => {
 
         return request_data;
       });
+      const data = {
+        clientId: "DEMC",
+        data: requestData,
+      };
       const response = await axiosInstance.post(
-        "updateclientmasteremaildetails/",
-        requestData
+        "/updateclientmailerdetails",
+        data
       );
       console.log(response);
     } catch (error) {

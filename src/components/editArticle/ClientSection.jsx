@@ -59,7 +59,7 @@ const ClientSection = ({ selectedArticle, selectedClient }) => {
         };
         const params = {
           socialfeed_id: selectedArticle.social_feed_id,
-          clientId: selectedClient,
+          client_id: selectedClient,
         };
         const response = await axios.get(`${url}getSocialFeedAutoTagDetails/`, {
           headers: headers,
