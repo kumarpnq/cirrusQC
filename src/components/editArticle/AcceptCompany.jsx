@@ -3,9 +3,10 @@ import {
   Box,
   Modal,
   Typography,
-  Checkbox,
   Button,
   Divider,
+  CircularProgress,
+  IconButton,
 } from "@mui/material";
 import {
   DataGrid,
@@ -16,6 +17,8 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import { url } from "../../constants/baseUrl";
 import { toast } from "react-toastify";
+import axiosInstance from "../../../axiosConfigOra";
+import CloseIcon from "@mui/icons-material/Close";
 
 const CustomToolbar = () => {
   return (
@@ -32,12 +35,15 @@ const AcceptCompany = ({
   handleClose,
   selectedRow,
   articleType,
-  setModifiedRows,
-  setMainTableData,
+  // setModifiedRows,
+  // setMainTableData,
+  setFetchTagDataAfterChange,
 }) => {
   const [rows, setRows] = useState([]);
   const [loading, setLoading] = useState(false);
-  const [selectedItem, setSelectedItem] = useState(null);
+  const [selectedRows, setSelectedRows] = useState([]);
+  const [rowSelectionModel, setRowSelectionModel] = useState([]);
+  const [insertLoading, setInsertLoading] = useState(false);
   const accessKey = articleType === "print" ? "article_id" : "socialfeed_id";
   const prominenceKey =
     articleType === "online" ? "prominence" : "manual_prominence";
@@ -74,108 +80,99 @@ const AcceptCompany = ({
     }
   }, [selectedRow, articleType, open]);
 
-  const handleCustomCheckboxClick = (id) => {
-    const updatedRows = rows.map((row) =>
-      row.id === id
-        ? { ...row, isSelected: true }
-        : { ...row, isSelected: false }
-    );
+  // const handleSaveRecord = () => {
+  //   if (!selectedItem || !selectedRow) {
+  //     toast.warning("Please select a row.");
+  //     return;
+  //   }
 
-    const selectedRow = updatedRows.find((row) => row.isSelected);
-    setRows(updatedRows);
-    setSelectedItem(selectedRow || null);
-  };
+  //   const data = {
+  //     [accessKey]: selectedRow[accessKey],
+  //     company_id: selectedRow.company_id,
+  //     company_name: selectedRow.company_name,
+  //     keyword: selectedItem.keyword,
+  //     [prominenceKey]: selectedItem.prominence,
+  //     reporting_subject: selectedItem.reportingSubject,
+  //     reporting_tone: selectedItem.sentiment,
+  //     qc3_status: "Z",
+  //     update_type: "U",
+  //   };
 
-  const handleSaveRecord = () => {
-    if (!selectedItem || !selectedRow) {
-      toast.warning("Please select a row.");
-      return;
+  //   setModifiedRows((prevModifiedRows) => {
+  //     const existingRecordIndex = prevModifiedRows.findIndex(
+  //       (row) =>
+  //         row[accessKey] === selectedRow[accessKey] &&
+  //         row.company_id === selectedRow.company_id
+  //     );
+
+  //     if (existingRecordIndex !== -1) {
+  //       const updatedModifiedRows = [...prevModifiedRows];
+  //       updatedModifiedRows[existingRecordIndex] = {
+  //         ...updatedModifiedRows[existingRecordIndex],
+  //         ...data,
+  //       };
+  //       return updatedModifiedRows;
+  //     } else {
+  //       return [...prevModifiedRows, data];
+  //     }
+  //   });
+
+  //   setMainTableData((prevMainTableData) => {
+  //     const existingMainTableIndex = prevMainTableData.findIndex(
+  //       (row) =>
+  //         row[accessKey] === selectedRow[accessKey] &&
+  //         row.company_id === selectedRow.company_id
+  //     );
+
+  //     if (existingMainTableIndex !== -1) {
+  //       const updatedMainTableData = [...prevMainTableData];
+  //       updatedMainTableData[existingMainTableIndex] = {
+  //         ...updatedMainTableData[existingMainTableIndex],
+  //         ...data,
+  //       };
+  //       return updatedMainTableData;
+  //     } else {
+  //       return [...prevMainTableData, data];
+  //     }
+  //   });
+
+  //   handleClose();
+  // };
+
+  const handleInsertRecords = async () => {
+    try {
+      setInsertLoading(true);
+      const preparedCombineData = selectedRows.map((item) => ({
+        [accessKey]: selectedRow[accessKey],
+        company_id: selectedRow.company_id,
+        company_name: selectedRow.company_name,
+        keyword: item.keyword,
+        [prominenceKey]: item.prominence,
+        reporting_subject: item.reportingSubject,
+        reporting_tone: item.sentiment,
+        qc3_status: "Z",
+        update_type: "I",
+      }));
+      const endpoint =
+        articleType === "online"
+          ? "updatesocialfeedtagdetails/"
+          : "insertarticledetails/";
+      const response = await axiosInstance.post(endpoint, preparedCombineData);
+      if (response.data.result.success.length) {
+        toast.success(response.data.result.success[0]?.message);
+        setFetchTagDataAfterChange((prev) => !prev);
+      } else {
+        toast.warning(response.data.result.errors[0]?.error);
+      }
+      console.log(response);
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setInsertLoading(false);
     }
-
-    const data = {
-      [accessKey]: selectedRow[accessKey],
-      company_id: selectedRow.company_id,
-      company_name: selectedRow.company_name,
-      keyword: selectedItem.keyword,
-      [prominenceKey]: selectedItem.prominence,
-      reporting_subject: selectedItem.reportingSubject,
-      reporting_tone: selectedItem.sentiment,
-      qc3_status: "Z",
-      update_type: "U",
-    };
-
-    setModifiedRows((prevModifiedRows) => {
-      const existingRecordIndex = prevModifiedRows.findIndex(
-        (row) =>
-          row[accessKey] === selectedRow[accessKey] &&
-          row.company_id === selectedRow.company_id
-      );
-
-      if (existingRecordIndex !== -1) {
-        const updatedModifiedRows = [...prevModifiedRows];
-        updatedModifiedRows[existingRecordIndex] = {
-          ...updatedModifiedRows[existingRecordIndex],
-          ...data,
-        };
-        return updatedModifiedRows;
-      } else {
-        return [...prevModifiedRows, data];
-      }
-    });
-
-    setMainTableData((prevMainTableData) => {
-      const existingMainTableIndex = prevMainTableData.findIndex(
-        (row) =>
-          row[accessKey] === selectedRow[accessKey] &&
-          row.company_id === selectedRow.company_id
-      );
-
-      if (existingMainTableIndex !== -1) {
-        const updatedMainTableData = [...prevMainTableData];
-        updatedMainTableData[existingMainTableIndex] = {
-          ...updatedMainTableData[existingMainTableIndex],
-          ...data,
-        };
-        return updatedMainTableData;
-      } else {
-        return [...prevMainTableData, data];
-      }
-    });
-
-    handleClose();
   };
 
   const columns = [
-    {
-      field: "customCheckbox",
-      headerName: "Select",
-      width: 50,
-      sortable: false,
-      renderCell: (params) => (
-        <Checkbox
-          checked={params.row.isSelected}
-          onChange={() => handleCustomCheckboxClick(params.row.id)}
-          inputProps={{ "aria-label": `select ${params.row.companyName}` }}
-          size="small"
-        />
-      ),
-    },
-    // {
-    //   field: "keyword",
-    //   headerName: "Keyword",
-    //   width: 150,
-    //   renderCell: (params) => (
-    //     <span style={{ fontSize: "14px" }}>{params.value}</span>
-    //   ),
-    // },
-    // {
-    //   field: "companyId",
-    //   headerName: "Company ID",
-    //   width: 150,
-    //   renderCell: (params) => (
-    //     <span style={{ fontSize: "0.9em" }}>{params.value}</span>
-    //   ),
-    // },
     {
       field: "companyName",
       headerName: "Company Name",
@@ -185,6 +182,14 @@ const AcceptCompany = ({
       ),
     },
   ];
+
+  const handleRowSelectionChange = (newSelection) => {
+    setRowSelectionModel(newSelection);
+    const selectedData = newSelection.map((id) =>
+      rows.find((row) => row.id === id)
+    );
+    setSelectedRows(selectedData);
+  };
 
   return (
     <div>
@@ -207,27 +212,36 @@ const AcceptCompany = ({
             p: 1,
           }}
         >
-          <Typography
-            id="modal-title"
-            variant="h6"
-            component="h2"
-            fontSize={"1em"}
+          <Box
+            sx={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "space-between",
+            }}
           >
-            Company Data
-          </Typography>
-          <Box sx={{ textAlign: "end" }}>
+            <Typography
+              id="modal-title"
+              variant="h6"
+              component="h2"
+              fontSize={"1em"}
+            >
+              Company Data
+            </Typography>
+            <IconButton onClick={handleClose}>
+              <CloseIcon />
+            </IconButton>
+          </Box>
+          {!!selectedRows.length && (
             <Button
               size="small"
               variant="outlined"
-              onClick={handleClose}
-              sx={{ mr: 1 }}
+              onClick={handleInsertRecords}
+              sx={{ display: "flex", alignItems: "center", gap: 1 }}
             >
-              Cancel
+              {insertLoading && <CircularProgress size={"1em"} />}
+              Insert
             </Button>
-            <Button size="small" variant="outlined" onClick={handleSaveRecord}>
-              Update
-            </Button>
-          </Box>
+          )}
           <Divider sx={{ my: 1 }} />
           <div style={{ height: 400, width: "100%" }}>
             <DataGrid
@@ -237,6 +251,9 @@ const AcceptCompany = ({
               loading={loading}
               slots={{ toolbar: CustomToolbar }}
               density="compact"
+              checkboxSelection
+              rowSelectionModel={rowSelectionModel}
+              onRowSelectionModelChange={handleRowSelectionChange}
               hideFooterSelectedRowCount
             />
           </div>
@@ -250,9 +267,8 @@ AcceptCompany.propTypes = {
   open: PropTypes.bool.isRequired,
   handleClose: PropTypes.func.isRequired,
   articleType: PropTypes.string.isRequired,
-  setModifiedRows: PropTypes.func.isRequired,
-  setMainTableData: PropTypes.func.isRequired,
   selectedRow: PropTypes.object,
+  setFetchTagDataAfterChange: PropTypes.func,
 };
 
 export default AcceptCompany;

@@ -33,6 +33,7 @@ import WhatsAppContact from "./components2/Whatsapp-contact/WhatsAppContact";
 import ClientMaster from "./pages/ClientMaster";
 import BooleanKeyword from "./pages/BooleanKeyword";
 import DeletePrintArticles from "./pages/DeletePrintArticles";
+import MagazineStitch from "./pages/MagazineStitch";
 
 // Lazy load the components
 const Home = lazy(() => import("./pages/Home"));
@@ -66,6 +67,7 @@ function App() {
     clientMaster: false,
     booleanKeyword: false,
     deletePrintArticles: false,
+    magazineStitch: false,
   });
   const [loading, setLoading] = useState(false);
 
@@ -125,6 +127,7 @@ function App() {
       clientMaster: screenPermissions.ClientMaster,
       booleanKeyword: screenPermissions.BooleanKeyword,
       deletePrintArticles: screenPermissions.DeletePrintArticles,
+      magazineStitch: screenPermissions.MagazineStitch,
     });
   }, [screenPermissions]);
 
@@ -351,6 +354,18 @@ function App() {
                 element={
                   permissions.deletePrintArticles ? (
                     <DeletePrintArticles />
+                  ) : loading ? (
+                    <div>Loading...</div>
+                  ) : (
+                    <NotFound />
+                  )
+                }
+              />
+              <Route
+                path="/magazine-stitch"
+                element={
+                  permissions.magazineStitch ? (
+                    <MagazineStitch />
                   ) : loading ? (
                     <div>Loading...</div>
                   ) : (

@@ -26,6 +26,7 @@ import CheckIcon from "@mui/icons-material/Check";
 import StoreIcon from "@mui/icons-material/Store";
 import AcceptCompany from "./AcceptCompany";
 import MapExtraModal from "./MapExtraModal";
+import axiosInstance from "../../../axiosConfigOra";
 
 const ClientSection = ({ selectedArticle, selectedClient }) => {
   const userToken = localStorage.getItem("user");
@@ -337,35 +338,74 @@ const ClientSection = ({ selectedArticle, selectedClient }) => {
   }, [selectedCompany, companies]);
 
   // * automation changes
-  const handleAccept = (row) => {
-    setEditableTagData((prev) =>
-      prev.map((item) =>
-        item.article_id === row.socilfeed_id &&
-        item.company_id === row.company_id
-          ? { ...item, qc3_status: "Z" }
-          : item
-      )
-    );
+  // const handleAccept = (row) => {
+  //   setEditableTagData((prev) =>
+  //     prev.map((item) =>
+  //       item.article_id === row.socilfeed_id &&
+  //       item.company_id === row.company_id
+  //         ? { ...item, qc3_status: "Z" }
+  //         : item
+  //     )
+  //   );
 
-    setModifiedRows((prevAccepted) => {
-      const existingIndex = prevAccepted.findIndex(
-        (item) =>
-          item.socilfeed_id === row.socilfeed_id &&
-          item.company_id === row.company_id
-      );
+  //   setModifiedRows((prevAccepted) => {
+  //     const existingIndex = prevAccepted.findIndex(
+  //       (item) =>
+  //         item.socilfeed_id === row.socilfeed_id &&
+  //         item.company_id === row.company_id
+  //     );
 
-      if (existingIndex !== -1) {
-        const updatedModifiedRows = [...prevAccepted];
-        updatedModifiedRows[existingIndex] = {
-          ...updatedModifiedRows[existingIndex],
+  //     if (existingIndex !== -1) {
+  //       const updatedModifiedRows = [...prevAccepted];
+  //       updatedModifiedRows[existingIndex] = {
+  //         ...updatedModifiedRows[existingIndex],
+  //         qc3_status: "Z",
+  //         update_type: "U",
+  //       };
+  //       return updatedModifiedRows;
+  //     } else {
+  //       return [...prevAccepted, { ...row, qc3_status: "Z", update_type: "U" }];
+  //     }
+  //   });
+  // };
+
+  const [loadingRowId, setLoadingRowId] = useState(null);
+  const handleAccept = async (row) => {
+    setLoadingRowId(row.company_id);
+    try {
+      const requestData = [
+        {
+          updateType: "I",
+          socialFeedId: row.socialfeed_id,
+          companyId: row.company_id,
+          companyName: row.company_id,
+          keyword: row.keyword,
+          // AUTHOR: rowData.author,
+          reportingTone: row.reporting_tone,
+          reportingSubject: row.reporting_subject,
+          subCategory: row.subcategory,
+          prominence: row.prominence,
+          summary: row.detail_summary,
+          qc2Remark: row.remarks,
           qc3_status: "Z",
-          update_type: "U",
-        };
-        return updatedModifiedRows;
+        },
+      ];
+      const data = { data: requestData, qcType: "QC2" };
+      const response = await axiosInstance.post(
+        "updatesocialfeedtagdetails/",
+        data
+      );
+      if (response.data.result.success.length > 0) {
+        toast.success(response.data.result.success[0]?.message);
+        setFetchTagDataAfterChange((prev) => !prev);
       } else {
-        return [...prevAccepted, { ...row, qc3_status: "Z", update_type: "U" }];
+        toast.warning(toast.success(response.data.result.errors[0]?.error));
       }
-    });
+    } catch (error) {
+      toast.error("Something went wrong");
+    } finally {
+      setLoadingRowId(null);
+    }
   };
 
   const handleOpenAccept = (row) => {
@@ -447,8 +487,15 @@ const ClientSection = ({ selectedArticle, selectedClient }) => {
                       item.qc3_status !== "Y" &&
                       item.qc3_status !== "Z" && (
                         <Tooltip title="Accept">
-                          <IconButton onClick={() => handleAccept(item)}>
-                            <CheckIcon className="text-primary" />
+                          <IconButton
+                            onClick={() => handleAccept(item)}
+                            disabled={loadingRowId === item.company_id}
+                          >
+                            {loadingRowId === item.company_id ? (
+                              <CircularProgress size={"1em"} />
+                            ) : (
+                              <CheckIcon className="text-primary" />
+                            )}
                           </IconButton>
                         </Tooltip>
                       )}
@@ -588,8 +635,9 @@ const ClientSection = ({ selectedArticle, selectedClient }) => {
         handleClose={handleCloseAccept}
         articleType="online"
         selectedRow={selectedRowForAccept}
-        setModifiedRows={setModifiedRows}
-        setMainTableData={setEditableTagData}
+        // setModifiedRows={setModifiedRows}
+        // setMainTableData={setEditableTagData}
+        setFetchTagDataAfterChange={setFetchTagDataAfterChange}
       />
       <MapExtraModal
         open={openMapExtra}

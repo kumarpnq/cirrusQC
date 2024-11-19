@@ -93,6 +93,11 @@
   background-color: rgb(191, 191, 191);
 }
 
+.qc3-null {
+  /* No Match */
+  background-color: rgb(191, 191, 191);
+}
+
 .qc3-Y {
   /* Exact Match */
   background-color: rgb(169, 208, 142);

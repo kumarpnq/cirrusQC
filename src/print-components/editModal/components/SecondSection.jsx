@@ -29,6 +29,7 @@ import CustomMultiSelect from "../../../@core/CustomMultiSelect";
 import StoreIcon from "@mui/icons-material/Store";
 import AcceptCompany from "../../../components/editArticle/AcceptCompany";
 import MapExtraModal from "../../../components/editArticle/MapExtraModal";
+import axiosInstance from "../../../../axiosConfigOra";
 
 const SecondSection = (props) => {
   const userToken = localStorage.getItem("user");
@@ -455,34 +456,72 @@ const SecondSection = (props) => {
   };
 
   // * automation changes
-  const handleAccept = (row) => {
-    setEditableTagData((prev) =>
-      prev.map((item) =>
-        item.article_id === row.article_id && item.company_id === row.company_id
-          ? { ...item, qc3_status: "Z" }
-          : item
-      )
-    );
+  // const handleAccept = (row) => {
+  //   setEditableTagData((prev) =>
+  //     prev.map((item) =>
+  //       item.article_id === row.article_id && item.company_id === row.company_id
+  //         ? { ...item, qc3_status: "Z" }
+  //         : item
+  //     )
+  //   );
 
-    setModifiedRows((prevAccepted) => {
-      const existingIndex = prevAccepted.findIndex(
-        (item) =>
-          item.article_id === row.article_id &&
-          item.company_id === row.company_id
-      );
+  //   setModifiedRows((prevAccepted) => {
+  //     const existingIndex = prevAccepted.findIndex(
+  //       (item) =>
+  //         item.article_id === row.article_id &&
+  //         item.company_id === row.company_id
+  //     );
 
-      if (existingIndex !== -1) {
-        const updatedModifiedRows = [...prevAccepted];
-        updatedModifiedRows[existingIndex] = {
-          ...updatedModifiedRows[existingIndex],
+  //     if (existingIndex !== -1) {
+  //       const updatedModifiedRows = [...prevAccepted];
+  //       updatedModifiedRows[existingIndex] = {
+  //         ...updatedModifiedRows[existingIndex],
+  //         qc3_status: "Z",
+  //         update_type: "U",
+  //       };
+  //       return updatedModifiedRows;
+  //     } else {
+  //       return [...prevAccepted, { ...row, qc3_status: "Z", update_type: "U" }];
+  //     }
+  //   });
+  // };
+
+  const [acceptRowId, setAcceptRowId] = useState(null);
+  const handleAccept = async (row) => {
+    try {
+      setAcceptRowId(row.company_id);
+      const requestData = [
+        {
+          articleId: row.article_id,
+          companyId: row.company_id,
+          companyName: row.company_name,
+          manualProminence: row.manual_prominence,
+          headerSpace: row.header_space,
+          space: row.space,
+          reportingTone: row.reporting_tone,
+          reportingSubject: row.reporting_subject,
+          subcategory: row.subcategory,
+          keyword: row.keyword,
+          qc2Remark: row.qc2_remark,
+          detailSummary: row.detail_summary,
           qc3_status: "Z",
-          update_type: "U",
-        };
-        return updatedModifiedRows;
+        },
+      ];
+      const response = await axiosInstance.post(
+        "insertarticledetails/",
+        requestData
+      );
+      if (response.data.result.success.length) {
+        toast.success(response.data.result.success[0]?.message);
+        setFetchTagDataAfterChange((prev) => !prev);
       } else {
-        return [...prevAccepted, { ...row, qc3_status: "Z", update_type: "U" }];
+        toast.warning(response.data.result.errors[0]?.error);
       }
-    });
+    } catch (error) {
+      toast.error("Something went wrong");
+    } finally {
+      setAcceptRowId(false);
+    }
   };
 
   const handleOpenAccept = (row) => {
@@ -598,8 +637,15 @@ const SecondSection = (props) => {
                         row.qc3_status !== "Y" &&
                         row.qc3_status !== "Z" && (
                           <Tooltip title="Accept">
-                            <IconButton onClick={() => handleAccept(row)}>
-                              <CheckIcon className="text-primary" />
+                            <IconButton
+                              onClick={() => handleAccept(row)}
+                              disabled={acceptRowId === row.company_id}
+                            >
+                              {acceptRowId === row.company_id ? (
+                                <CircularProgress size={"1em"} />
+                              ) : (
+                                <CheckIcon className="text-primary" />
+                              )}
                             </IconButton>
                           </Tooltip>
                         )}
@@ -785,8 +831,9 @@ const SecondSection = (props) => {
         handleClose={handleCloseAccept}
         articleType="print"
         selectedRow={selectedRowForAccept}
-        setModifiedRows={setModifiedRows}
-        setMainTableData={setEditableTagData}
+        // setModifiedRows={setModifiedRows}
+        // setMainTableData={setEditableTagData}
+        setFetchTagDataAfterChange={setFetchTagDataAfterChange}
       />
       <MapExtraModal
         open={openMapExtra}

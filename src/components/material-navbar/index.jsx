@@ -40,6 +40,7 @@ import { IoMail } from "react-icons/io5";
 import { LuBookCopy } from "react-icons/lu";
 import { IoPeopleOutline } from "react-icons/io5";
 import { RiKeyboardLine } from "react-icons/ri";
+import { IoNewspaperOutline } from "react-icons/io5";
 
 //**  context
 import { ResearchContext } from "../../context/ContextProvider";
@@ -218,6 +219,16 @@ export default function MainNav() {
             title: "Delete Print Articles",
             path: "/delete-print-articles",
             icon: <DeleteIcon />,
+          },
+        ]
+      : []),
+    ...(screenPermissions.MagazineStitch
+      ? [
+          {
+            id: 18,
+            title: "Magazine Stitch",
+            path: "/magazine-stitch",
+            icon: <IoNewspaperOutline />,
           },
         ]
       : []),

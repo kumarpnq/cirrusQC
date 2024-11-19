@@ -1,7 +1,13 @@
 import { useCallback, useEffect, useState, useRef, Fragment } from "react";
-import { Box, Button, Divider, Typography } from "@mui/material";
+import {
+  Box,
+  Button,
+  CircularProgress,
+  Divider,
+  Typography,
+} from "@mui/material";
 import { DataGrid, useGridApiRef } from "@mui/x-data-grid";
-
+import { green, orange } from "@mui/material/colors";
 import toast from "react-hot-toast";
 import { format } from "date-fns";
 
@@ -14,24 +20,25 @@ const EmailDetails = () => {
   const [loading, setLoading] = useState(false);
   const apiRef = useGridApiRef();
   const [addOpen, setAddOpen] = useState(false);
+  const [updateLoading, setUpdateLoading] = useState(false);
 
   // * GET DATA
+  const fetchEmailDetails = async () => {
+    try {
+      setLoading(true);
+
+      const response = await axiosInstance.get(
+        "clientmailerdetails/?clientId=DEMC"
+      );
+
+      setData(response.data.data || []);
+    } catch (error) {
+      toast.error(error.message);
+    } finally {
+      setLoading(false);
+    }
+  };
   useEffect(() => {
-    const fetchEmailDetails = async () => {
-      try {
-        setLoading(true);
-
-        const response = await axiosInstance.get(
-          "clientmailerdetails/?clientId=DEMC"
-        );
-
-        setData(response.data.data || []);
-      } catch (error) {
-        toast.error(error.message);
-      } finally {
-        setLoading(false);
-      }
-    };
     fetchEmailDetails();
   }, []);
 
@@ -45,7 +52,7 @@ const EmailDetails = () => {
     startDate: item.emailStartDate,
     endDate: item.emailEndDate,
     sortOrder: item.sortOrder,
-    active: item.isActive,
+    active: item.isActive === "Y" ? "Yes" : "No",
   }));
 
   const columns = [
@@ -93,6 +100,14 @@ const EmailDetails = () => {
       headerName: "Active",
       width: 200,
       editable: true,
+      renderCell: (params) => (
+        <span
+          style={{ color: params.value === "Yes" ? green[500] : orange[500] }}
+        >
+          {" "}
+          {params.value}{" "}
+        </span>
+      ),
     },
   ];
 
@@ -121,8 +136,7 @@ const EmailDetails = () => {
 
   const handleSave = async () => {
     try {
-      console.log(changedRows);
-      console.log(rowsBeforeChange);
+      setUpdateLoading(true);
       const requestData = Object.keys(changedRows).map((rowId) => {
         const newRow = changedRows[rowId];
         const oldRow = rowsBeforeChange[rowId];
@@ -155,7 +169,9 @@ const EmailDetails = () => {
           request_data.sortOrder = newRow.sortOrder;
         }
         if (oldRow.active !== newRow.active) {
-          request_data.isActive = newRow.active;
+          request_data.isActive =
+            (newRow.active.toLowerCase() === "yes" && "Y") ||
+            (newRow.active.toLowerCase() === "no" && "N");
         }
 
         return request_data;
@@ -168,12 +184,27 @@ const EmailDetails = () => {
         "/updateclientmailerdetails",
         data
       );
-      console.log(response);
+      if (response.data.data.success.length) {
+        unsavedChangesRef.current.unsavedRows = {};
+        unsavedChangesRef.current.rowsBeforeChange = {};
+        const success = response.data.data.success[0]?.updateStatus;
+        toast.success(success);
+        fetchEmailDetails();
+      } else {
+        toast.error(response.data?.error[0]?.message);
+      }
     } catch (error) {
-      console.log(error);
+      toast.error("Something went wrong.");
     } finally {
-      console.log("test");
+      setUpdateLoading(false);
     }
+  };
+
+  // * highlight edit rows
+  const getRowClassName = (params) => {
+    return unsavedChangesRef.current.unsavedRows[params.row.id]
+      ? "highlight-row"
+      : "";
   };
 
   return (
@@ -190,6 +221,7 @@ const EmailDetails = () => {
         <span className="text-primary">Edit Email Details.</span>
         <Box sx={{ display: "flex", alignItems: "center" }} className="gap-1">
           <Button size="small" variant="outlined" onClick={handleSave}>
+            {updateLoading && <CircularProgress size={"1em"} />}
             Save
           </Button>
           <Button
@@ -211,6 +243,7 @@ const EmailDetails = () => {
           loading={loading}
           density="compact"
           processRowUpdate={processRowUpdate}
+          getRowClassName={getRowClassName}
           hideFooterSelectedRowCount
           disableRowSelectionOnClick
         />

@@ -47,7 +47,6 @@ const YesOrNo = ({ value, setValue, width, mapValue, placeholder }) => {
 YesOrNo.propTypes = {
   value: PropTypes.number.isRequired,
   setValue: PropTypes.func.isRequired,
-  classes: PropTypes.object.isRequired,
   mapValue: PropTypes.arrayOf(
     PropTypes.shape({
       value: PropTypes.number.isRequired,
