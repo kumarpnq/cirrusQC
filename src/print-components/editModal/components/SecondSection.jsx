@@ -61,7 +61,7 @@ const SecondSection = (props) => {
         const headers = { Authorization: `Bearer ${userToken}` };
         const params = {
           article_id: articleId,
-          client_Id: selectedClient?.clientId,
+          client_id: selectedClient?.clientId,
         };
         const res = await axios.get(`${url}getArticleAutoTagDetails/`, {
           headers,
