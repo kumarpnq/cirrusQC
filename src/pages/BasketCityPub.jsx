@@ -27,6 +27,7 @@ import StateMaster from "../components2/master/state-master/StateMaster";
 import CountryMaster from "../components2/master/country-master/CountryMaster";
 import UserMaster from "../components2/master/user-master/UserMaster";
 import IndustryMaster from "../components2/master/industry-master/IndustryMaster";
+import PublicationGroupMaster from "../components2/master/publication-group-master/PublicationGroupMaster";
 
 const StyledMenuItem = styled(MenuItem)(({ theme }) => ({
   position: "relative",
@@ -64,11 +65,11 @@ const StyledListItemText = styled(ListItemText)(({ theme }) => ({
 const StyledTypography = styled(Typography)(({ theme }) => ({
   color: theme.palette.primary.main,
   fontSize: "1em",
-  textDecoration: "underline",
+  // textDecoration: "underline",
   textTransform: "uppercase",
   letterSpacing: "1px",
   textShadow: "1px 1px gray",
-  fontStyle: "italic",
+  // fontStyle: "italic",
   transition: "transform 0.3s ease",
   "&:hover": {
     transform: "scale(1.05)",
@@ -81,10 +82,13 @@ const RenderComponent = ({ value }) => {
       return <CityMaster />;
     case "Company Master":
       return <CompanyMaster />;
+    case "Publication Group Master":
+      return <PublicationGroupMaster />;
     case "Publication Master":
       return <PublicationMaster />;
     case "Publication Master Online":
       return <PublicationMasterOnline />;
+
     case "State Master":
       return <StateMaster />;
     case "Country Master":
@@ -93,6 +97,7 @@ const RenderComponent = ({ value }) => {
       return <UserMaster />;
     case "Industry Master":
       return <IndustryMaster />;
+
     default:
       return <>No page.</>;
   }
@@ -124,6 +129,7 @@ const BasketCityPub = () => {
     { label: "State Master", icon: <BusinessIcon /> },
     { label: "Country Master", icon: <LocationCityIcon /> },
     { label: "User Master", icon: <PrintIcon /> },
+    { label: "Publication Group Master", icon: <PublicIcon /> },
     { label: "Publication Master", icon: <PublicIcon /> },
     { label: "Publication Master Online", icon: <PriorityHighIcon /> },
     { label: "Industry Master", icon: <PriorityHighIcon /> },

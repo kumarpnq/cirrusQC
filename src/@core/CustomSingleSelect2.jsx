@@ -24,8 +24,8 @@ import { isInaccessible } from "@testing-library/react";
 
 const useStyles = makeStyles((theme) => ({
   formControl: {
-    minWidth: 240,
-    maxWidth: 360,
+    // minWidth: 240,
+    // maxWidth: 360,
   },
   paperBox: {
     // height: 250,
@@ -48,7 +48,7 @@ const useStyles = makeStyles((theme) => ({
   },
   dropdownToggle: {
     border: "1px solid lightgray",
-    height: 25,
+    // height: 25,
     display: "flex",
     justifyContent: "space-between",
     alignItems: "center",
@@ -71,6 +71,7 @@ const CustomSingleSelect = ({
   dropdownWidth,
   dropdownToggleWidth,
   isIncreased,
+  height,
 }) => {
   const classes = useStyles();
   const [searchTerm, setSearchTerm] = useState("");
@@ -78,13 +79,12 @@ const CustomSingleSelect = ({
   const anchorRef = useRef(null);
 
   const handleSelectChange = (option) => {
-    // Deselect if the selected item is clicked again
     if (selectedItem === option[keyId]) {
       setSelectedItem(null);
     } else {
       setSelectedItem(option[keyId]);
     }
-    setListOpen(false); // Close dropdown after selection
+    setListOpen(false);
   };
 
   const handleSearchChange = (event) => {
@@ -123,17 +123,18 @@ const CustomSingleSelect = ({
   };
 
   return (
-    <Box>
-      <FormControl className={classes.formControl}>
+    <Box sx={{ width: "100%" }}>
+      <FormControl className={classes.formControl} fullWidth>
         <Box
           ref={anchorRef}
           className={classes.dropdownToggle}
           onClick={handleToggle}
           sx={{
-            width: dropdownToggleWidth,
+            width: dropdownToggleWidth || "100%",
             display: "flex",
             justifyContent: "space-between",
             alignItems: "center",
+            height: height || 25,
           }}
         >
           <Typography
@@ -141,7 +142,7 @@ const CustomSingleSelect = ({
             sx={{
               textWrap: "nowrap",
               textOverflow: "ellipsis",
-              fontSize: "0.8em",
+              fontSize: !height ? "0.8em" : "",
             }}
           >
             {selectedItem ? (
@@ -158,12 +159,20 @@ const CustomSingleSelect = ({
                   ]
                 )
               ) : (
-                <span className="italic text-gray-500 text-[0.9em]">
+                <span
+                  className={`italic text-gray-400 ${
+                    !height && "text-[0.8em]"
+                  }`}
+                >
                   {title}
                 </span>
               )
             ) : (
-              <span className="italic text-gray-500 text-[0.9em]">{title}</span>
+              <span
+                className={`italic text-gray-500  ${!height && "text-[0.8em]"}`}
+              >
+                {title}
+              </span>
             )}
           </Typography>
           <IconButton aria-label="toggle list" sx={{ padding: 0 }}>
@@ -179,7 +188,10 @@ const CustomSingleSelect = ({
         >
           <ClickAwayListener onClickAway={handleClickAway}>
             <Paper
-              sx={{ width: dropdownWidth, height: isIncreased ? 400 : 250 }}
+              sx={{
+                width: dropdownWidth || "100%",
+                height: isIncreased ? 400 : 250,
+              }}
               className={classes.paperBox}
             >
               <List>
@@ -192,6 +204,7 @@ const CustomSingleSelect = ({
                     startAdornment={<SearchIcon />}
                     size="small"
                     autoFocus
+                    fullWidth
                   />
                 </ListItem>
                 <Divider />
@@ -227,6 +240,7 @@ CustomSingleSelect.propTypes = {
   dropdownWidth: PropTypes.number.isRequired,
   dropdownToggleWidth: PropTypes.number.isRequired,
   isIncreased: PropTypes.bool,
+  height: PropTypes.number,
 };
 
 export default CustomSingleSelect;

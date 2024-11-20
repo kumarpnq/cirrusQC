@@ -1,5 +1,12 @@
+import PropTypes from "prop-types";
 import { useState } from "react";
-import { Box, Button, Typography } from "@mui/material";
+import {
+  Box,
+  Button,
+  CircularProgress,
+  Tooltip,
+  Typography,
+} from "@mui/material";
 import Accordion from "@mui/material/Accordion";
 import AccordionSummary from "@mui/material/AccordionSummary";
 import AccordionDetails from "@mui/material/AccordionDetails";
@@ -7,13 +14,17 @@ import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import CustomTextField from "../../@core/CutsomTextField";
 import FromDate from "../../components/research-dropdowns/FromDate";
 import ToDate from "../../components/research-dropdowns/ToDate";
-import { formattedDate, formattedNextDay } from "../../constants/dates";
 import YesOrNo from "../../@core/YesOrNo";
 import { makeStyles } from "@mui/styles";
-import CustomMultiSelect from "../../@core/CustomMultiSelect";
 import useFetchData from "../../hooks/useFetchData";
 import { styled } from "@mui/system";
 import { url } from "../../constants/baseUrl";
+import PublicationAddModal from "./PublicationAddModal";
+import axiosInstance from "../../../axiosConfig";
+import { pubTypesAll } from "../../constants/dataArray";
+import { toast } from "react-toastify";
+import CustomSingleSelect from "../../@core/CustomSingleSelect2";
+import { format } from "date-fns";
 
 const useStyle = makeStyles(() => ({
   dropDowns: {
@@ -29,19 +40,26 @@ const FilterWrapper = styled(Box)({
   flexWrap: "wrap",
 });
 
-const SearchFilters = () => {
+const SearchFilters = ({
+  setPublicationData,
+  fetchLoading,
+  setFetchLoading,
+}) => {
   const classes = useStyle();
-  const [fromDate, setFromDate] = useState(formattedDate);
-  const [dateNow, setDateNow] = useState(formattedNextDay);
-  const [display, setDisplay] = useState(null);
+  const [fromDate, setFromDate] = useState("");
+  const [dateNow, setDateNow] = useState("");
   const [searchText, setSearchText] = useState("");
-  const [publicationType, setPublicationType] = useState("");
   const [pubType, setPubType] = useState("");
   const [temporary, setTemporary] = useState("");
   const [type, setType] = useState("");
   const [populate, setPopulate] = useState("");
   const [edition, setEdition] = useState("");
-  const [selectedCity, setSelectedCity] = useState([]);
+  const [selectedCity, setSelectedCity] = useState("");
+  const [subscription, setSubscription] = useState("");
+
+  const [openAddPublication, setOpenAddPublication] = useState(false);
+  const handleOpen = () => setOpenAddPublication(true);
+  const handleClose = () => setOpenAddPublication(false);
 
   // * city data fetch
   const { data } = useFetchData(`${url}citieslist`);
@@ -49,6 +67,54 @@ const SearchFilters = () => {
 
   const handleSubmit = async (event) => {
     event.preventDefault();
+    try {
+      setFetchLoading(true);
+      const params = {
+        // searchText: (Optional[str] = None),
+        // fromDate: (Optional[str] = None),
+        // toDate: (Optional[str] = None),
+        // publicationType: (Optional[str] = None),
+        // editionType: (Optional[str] = None),
+        // newsType: (Optional[str] = None),
+        // subscriptionType: (Optional[str] = None),
+      };
+      if (searchText) {
+        params.searchText = searchText;
+      }
+      if (fromDate) {
+        params.fromDate = format(fromDate, "yyyy-MM-dd");
+      }
+      if (dateNow) {
+        params.toDate = format(dateNow, "yyyy-MM-dd");
+      }
+      if (pubType) {
+        params.publicationType = pubType;
+      }
+      if (edition) {
+        params.editionType = edition;
+      }
+      if (type) {
+        params.newsType = type;
+      }
+      if (subscription) {
+        params.subscriptionType = subscription;
+      }
+      if (selectedCity) {
+        params.cityEdition = selectedCity;
+      }
+      if (populate) {
+        params.populate = populate;
+      }
+      if (temporary) {
+        params.temporary = temporary;
+      }
+      const response = await axiosInstance.get("publicationMaster", { params });
+      setPublicationData(response.data.data.data || []);
+    } catch (error) {
+      toast.error("Something went wrong.");
+    } finally {
+      setFetchLoading(false);
+    }
   };
   return (
     <Accordion>
@@ -62,11 +128,16 @@ const SearchFilters = () => {
       <AccordionDetails>
         <form action="" onSubmit={handleSubmit}>
           <FilterWrapper>
-            <div className="mb-3">
-              <FromDate fromDate={fromDate} setFromDate={setFromDate} />
-            </div>
-            <ToDate dateNow={dateNow} setDateNow={setDateNow} />
-
+            <Tooltip title="Start Date" arrow>
+              <div className="mb-3">
+                <FromDate fromDate={fromDate} setFromDate={setFromDate} />
+              </div>
+            </Tooltip>
+            <Tooltip title="End Date" arrow>
+              <div>
+                <ToDate dateNow={dateNow} setDateNow={setDateNow} />
+              </div>
+            </Tooltip>
             <CustomTextField
               value={searchText}
               setValue={setSearchText}
@@ -75,36 +146,22 @@ const SearchFilters = () => {
               type={"text"}
             />
             <Typography component={"div"} width={200}>
-              <CustomMultiSelect
+              <CustomSingleSelect
                 dropdownToggleWidth={200}
                 dropdownWidth={250}
                 keyId="cityid"
                 keyName="cityname"
                 options={cityData}
-                selectedItems={selectedCity}
-                setSelectedItems={setSelectedCity}
-                title="Cities"
+                selectedItem={selectedCity}
+                setSelectedItem={setSelectedCity}
+                title="City"
               />
             </Typography>
-            <CustomTextField
-              value={display}
-              setValue={setDisplay}
-              width={120}
-              placeholder={"Display"}
-              type={"number"}
-            />
-            <YesOrNo
-              classes={classes}
-              placeholder="Publication Type"
-              mapValue={["Print", "All", "Internet"]}
-              value={publicationType}
-              setValue={setPublicationType}
-              width={120}
-            />
+
             <YesOrNo
               classes={classes}
               placeholder="Pub Type"
-              mapValue={["Daily", "Weekly", "Fortnightly", "Monthly", "Others"]}
+              mapValue={pubTypesAll}
               value={pubType}
               setValue={setPubType}
               width={120}
@@ -129,8 +186,8 @@ const SearchFilters = () => {
               classes={classes}
               placeholder="Subscription"
               mapValue={["Vendor", "Courier", "Post"]}
-              value={type}
-              setValue={setType}
+              value={subscription}
+              setValue={setSubscription}
               width={120}
             />
             <YesOrNo
@@ -149,10 +206,34 @@ const SearchFilters = () => {
               setValue={setEdition}
               width={120}
             />
-            <Button variant="outlined" size="small" type="submit">
+            <Button
+              variant="outlined"
+              size="small"
+              type="submit"
+              sx={{ display: "flex", alignItems: "center", gap: 1 }}
+            >
+              {fetchLoading && <CircularProgress size={"1em"} />}
               Search
             </Button>
-            <Button variant="outlined" size="small">
+            <Button
+              variant="outlined"
+              size="small"
+              onClick={() => {
+                setFromDate("");
+                setDateNow("");
+                setSearchText("");
+                setPubType("");
+                setTemporary("");
+                setType("");
+                setPopulate("");
+                setEdition("");
+                setSelectedCity("");
+                setSubscription("");
+              }}
+            >
+              Clear
+            </Button>
+            <Button variant="outlined" size="small" onClick={handleOpen}>
               Add
             </Button>
             <Button variant="outlined" color="error" size="small">
@@ -161,8 +242,18 @@ const SearchFilters = () => {
           </FilterWrapper>
         </form>
       </AccordionDetails>
+      <PublicationAddModal
+        open={openAddPublication}
+        handleClose={handleClose}
+      />
     </Accordion>
   );
+};
+
+SearchFilters.propTypes = {
+  setPublicationData: PropTypes.func.isRequired,
+  fetchLoading: PropTypes.bool.isRequired,
+  setFetchLoading: PropTypes.func.isRequired,
 };
 
 export default SearchFilters;

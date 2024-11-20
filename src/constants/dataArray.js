@@ -625,3 +625,13 @@ export const qc3Values = [
     value: 4,
   },
 ];
+
+export const pubTypesAll = [
+  "ALL",
+  "DAILY",
+  "FORTNIGHTLY",
+  "MONTHLY",
+  "MONTHLY",
+  "OTHERS",
+  "MAGAZINE",
+];

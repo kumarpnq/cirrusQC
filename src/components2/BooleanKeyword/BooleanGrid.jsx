@@ -38,9 +38,6 @@ const BooleanGrid = () => {
           </IconButton>
         </>
       ),
-      sortable: false,
-      filterable: false,
-      disableColumnMenu: true,
     },
     {
       field: "keyword",
@@ -53,15 +50,10 @@ const BooleanGrid = () => {
           <VisibilityIcon className="text-primary" />
         </IconButton>
       ),
-      sortable: false,
-      filterable: false,
-      disableColumnMenu: true,
-      flex: 1,
     },
     {
       field: "company",
       headerName: "Company",
-      flex: 1,
     },
   ];
 

@@ -6,7 +6,7 @@ const BooleanKeyword = () => {
   return (
     <Box sx={{ px: 2 }}>
       <SearchFilters />
-      <Divider />
+      <Divider sx={{ my: 1 }} />
       <BooleanGrid />
     </Box>
   );

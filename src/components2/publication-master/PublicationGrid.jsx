@@ -1,10 +1,11 @@
+import PropTypes from "prop-types";
 import { Box, IconButton } from "@mui/material";
 import { DataGrid } from "@mui/x-data-grid";
 import EditNoteIcon from "@mui/icons-material/EditNote";
 import { Fragment, useState } from "react";
 import AddModal from "./AddModal";
 
-const PublicationGrid = () => {
+const PublicationGrid = ({ publicationData = [], fetchLoading }) => {
   const [open, setOpen] = useState(false);
   const [rowId, setRowId] = useState(null);
 
@@ -12,107 +13,54 @@ const PublicationGrid = () => {
     setRowId(rowId);
     setOpen(true);
   };
-  const handleClose = () => setOpen(false);
+  const handleClose = () => {
+    setOpen(false);
+    setRowId(null);
+  };
   const columns = [
     {
       field: "_",
       headerName: "Edit",
       width: 60,
       renderCell: (params) => (
-        <IconButton onClick={() => handleOpen(params.row?.id)}>
+        <IconButton onClick={() => handleOpen(params.row)}>
           <EditNoteIcon className="text-primary" />
         </IconButton>
       ),
     },
-    { field: "pubid", headerName: "Publication ID", width: 150 },
-    { field: "publicationname", headerName: "Publication Name", width: 200 },
-    { field: "pubgroupid", headerName: "Publication Group ID", width: 180 },
-    { field: "pubscore", headerName: "Publication Score", width: 180 },
-    { field: "isactive", headerName: "Active", width: 100 },
+    { field: "publicationId", headerName: "Publication ID", width: 150 },
+    { field: "publicationName", headerName: "Publication Name", width: 200 },
+    {
+      field: "publicationGroupId",
+      headerName: "Publication Group ID",
+      width: 180,
+    },
+    { field: "publicationScore", headerName: "Publication Score", width: 180 },
+    {
+      field: "isActive",
+      headerName: "Active",
+      width: 100,
+      renderCell: (params) => (
+        <span
+          style={{
+            fontWeight: "bold",
+            color: params?.value === "Y" ? "green" : "orange",
+          }}
+        >
+          {params?.value === "Y" ? "Yes" : "No"}
+        </span>
+      ),
+    },
   ];
 
-  const rows = [
-    {
-      id: 1,
-      pubid: "001",
-      publicationname: "Daily News",
-      pubgroupid: "G1",
-      pubscore: 85,
-      isactive: "Yes",
-    },
-    {
-      id: 2,
-      pubid: "002",
-      publicationname: "Global Times",
-      pubgroupid: "G2",
-      pubscore: 90,
-      isactive: "No",
-    },
-    {
-      id: 3,
-      pubid: "003",
-      publicationname: "Tech Weekly",
-      pubgroupid: "G1",
-      pubscore: 78,
-      isactive: "Yes",
-    },
-    {
-      id: 4,
-      pubid: "004",
-      publicationname: "Health Journal",
-      pubgroupid: "G3",
-      pubscore: 88,
-      isactive: "Yes",
-    },
-    {
-      id: 5,
-      pubid: "005",
-      publicationname: "Finance Daily",
-      pubgroupid: "G2",
-      pubscore: 92,
-      isactive: "No",
-    },
-    {
-      id: 6,
-      pubid: "006",
-      publicationname: "Fashion Trends",
-      pubgroupid: "G4",
-      pubscore: 80,
-      isactive: "Yes",
-    },
-    {
-      id: 7,
-      pubid: "007",
-      publicationname: "Sports World",
-      pubgroupid: "G1",
-      pubscore: 75,
-      isactive: "No",
-    },
-    {
-      id: 8,
-      pubid: "008",
-      publicationname: "Education Digest",
-      pubgroupid: "G3",
-      pubscore: 84,
-      isactive: "Yes",
-    },
-    {
-      id: 9,
-      pubid: "009",
-      publicationname: "Travel Magazine",
-      pubgroupid: "G4",
-      pubscore: 79,
-      isactive: "Yes",
-    },
-    {
-      id: 10,
-      pubid: "010",
-      publicationname: "Cooking Delight",
-      pubgroupid: "G1",
-      pubscore: 77,
-      isactive: "No",
-    },
-  ];
+  const rows = publicationData.map((publication, index) => ({
+    id: index,
+    publicationId: publication.publicationId,
+    publicationName: publication.publicationName,
+    publicationGroupId: publication.publicationGroupId,
+    publicationScore: publication.publicationScore,
+    isActive: publication.isActive,
+  }));
 
   return (
     <Fragment>
@@ -125,11 +73,16 @@ const PublicationGrid = () => {
           rowsPerPageOptions={[5, 10, 20]}
           checkboxSelection
           disableRowSelectionOnClick
+          loading={fetchLoading}
         />
       </Box>
-      <AddModal open={open} handleClose={handleClose} />
+      <AddModal open={open} handleClose={handleClose} row={rowId} />
     </Fragment>
   );
 };
 
+PublicationGrid.propTypes = {
+  publicationData: PropTypes.array.isRequired,
+  fetchLoading: PropTypes.bool.isRequired,
+};
 export default PublicationGrid;
