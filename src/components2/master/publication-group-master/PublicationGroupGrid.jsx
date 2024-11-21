@@ -1,6 +1,8 @@
 import { Box } from "@mui/material";
 import { DataGrid, GridActionsCellItem } from "@mui/x-data-grid";
 import EditNoteIcon from "@mui/icons-material/EditNote";
+import { Fragment, useState } from "react";
+import PublicationGroupAddEditModal from "./PublicationGroupAddEditModal";
 
 const rows = [
   {
@@ -17,12 +19,74 @@ const rows = [
     country: "Canada",
     active: "No",
   },
-  // Add more rows as needed
+  {
+    id: 3,
+    publicationgroupname: "Group C",
+    publicationgroupid: "PG003",
+    country: "UK",
+    active: "Yes",
+  },
+  {
+    id: 4,
+    publicationgroupname: "Group D",
+    publicationgroupid: "PG004",
+    country: "Australia",
+    active: "No",
+  },
+  {
+    id: 5,
+    publicationgroupname: "Group E",
+    publicationgroupid: "PG005",
+    country: "India",
+    active: "Yes",
+  },
+  {
+    id: 6,
+    publicationgroupname: "Group F",
+    publicationgroupid: "PG006",
+    country: "Germany",
+    active: "No",
+  },
+  {
+    id: 7,
+    publicationgroupname: "Group G",
+    publicationgroupid: "PG007",
+    country: "France",
+    active: "Yes",
+  },
+  {
+    id: 8,
+    publicationgroupname: "Group H",
+    publicationgroupid: "PG008",
+    country: "Japan",
+    active: "No",
+  },
+  {
+    id: 9,
+    publicationgroupname: "Group I",
+    publicationgroupid: "PG009",
+    country: "Brazil",
+    active: "Yes",
+  },
+  {
+    id: 10,
+    publicationgroupname: "Group J",
+    publicationgroupid: "PG010",
+    country: "South Africa",
+    active: "No",
+  },
 ];
 
 const PublicationGroupGrid = () => {
-  const handleEdit = (id) => {
-    console.log(`Edit note for row with id: ${id}`);
+  const [open, setOpen] = useState(false);
+  const [selectedRow, setSelectedRow] = useState(null);
+  const handleOpen = (row) => {
+    setSelectedRow(row);
+    setOpen(true);
+  };
+  const handleClose = () => {
+    setSelectedRow(null);
+    setOpen(false);
   };
 
   const columns = [
@@ -36,7 +100,7 @@ const PublicationGroupGrid = () => {
           icon={<EditNoteIcon />}
           label="Edit"
           sx={{ color: "primary.main" }}
-          onClick={() => handleEdit(params.id)}
+          onClick={() => handleOpen(params.row)}
         />
       ),
     },
@@ -73,17 +137,25 @@ const PublicationGroupGrid = () => {
   ];
 
   return (
-    <Box sx={{ height: "80vh", width: "100%" }}>
-      <DataGrid
-        rows={rows}
-        columns={columns}
-        pageSize={5}
-        density="compact"
-        checkboxSelection
-        disableRowSelectionOnClick
-        hideFooterSelectedRowCount
+    <Fragment>
+      <Box sx={{ height: "80vh", width: "100%" }}>
+        <DataGrid
+          rows={rows}
+          columns={columns}
+          pageSize={5}
+          density="compact"
+          checkboxSelection
+          disableRowSelectionOnClick
+          hideFooterSelectedRowCount
+        />
+      </Box>
+      <PublicationGroupAddEditModal
+        open={open}
+        handleClose={handleClose}
+        row={selectedRow}
+        fromWhere="Edit"
       />
-    </Box>
+    </Fragment>
   );
 };
 

@@ -7,6 +7,13 @@ import {
   Tooltip,
   Typography,
 } from "@mui/material";
+import { makeStyles } from "@mui/styles";
+import { styled } from "@mui/system";
+import { toast } from "react-toastify";
+import { format } from "date-fns";
+import { url } from "../../constants/baseUrl";
+import { pubTypesAll } from "../../constants/dataArray";
+import axiosInstance from "../../../axiosConfig";
 import Accordion from "@mui/material/Accordion";
 import AccordionSummary from "@mui/material/AccordionSummary";
 import AccordionDetails from "@mui/material/AccordionDetails";
@@ -15,16 +22,10 @@ import CustomTextField from "../../@core/CutsomTextField";
 import FromDate from "../../components/research-dropdowns/FromDate";
 import ToDate from "../../components/research-dropdowns/ToDate";
 import YesOrNo from "../../@core/YesOrNo";
-import { makeStyles } from "@mui/styles";
 import useFetchData from "../../hooks/useFetchData";
-import { styled } from "@mui/system";
-import { url } from "../../constants/baseUrl";
 import PublicationAddModal from "./PublicationAddModal";
-import axiosInstance from "../../../axiosConfig";
-import { pubTypesAll } from "../../constants/dataArray";
-import { toast } from "react-toastify";
 import CustomSingleSelect from "../../@core/CustomSingleSelect2";
-import { format } from "date-fns";
+import DeleteConfirmationDialog from "../../@core/DeleteConfirmationDialog";
 
 const useStyle = makeStyles(() => ({
   dropDowns: {
@@ -44,6 +45,11 @@ const SearchFilters = ({
   setPublicationData,
   fetchLoading,
   setFetchLoading,
+  selectedItems,
+  setSelectedItems,
+  setSelectionModal,
+  mainFetchAPi,
+  mainDeleteApi,
 }) => {
   const classes = useStyle();
   const [fromDate, setFromDate] = useState("");
@@ -60,6 +66,8 @@ const SearchFilters = ({
   const [openAddPublication, setOpenAddPublication] = useState(false);
   const handleOpen = () => setOpenAddPublication(true);
   const handleClose = () => setOpenAddPublication(false);
+
+  const [openDeleteConfirmation, setOpenDeleteConfirmation] = useState(false);
 
   // * city data fetch
   const { data } = useFetchData(`${url}citieslist`);
@@ -108,12 +116,36 @@ const SearchFilters = ({
       if (temporary) {
         params.temporary = temporary;
       }
-      const response = await axiosInstance.get("publicationMaster", { params });
+      const response = await axiosInstance.get(mainFetchAPi, { params });
       setPublicationData(response.data.data.data || []);
     } catch (error) {
       toast.error("Something went wrong.");
     } finally {
       setFetchLoading(false);
+    }
+  };
+
+  const handleDelete = async () => {
+    try {
+      const publicationIds = selectedItems.map((item) => item.publicationId);
+
+      const response = await axiosInstance.delete(
+        `${mainDeleteApi}/?publicationIds=${publicationIds.join(",")}`
+      );
+
+      if (response.status === 200) {
+        toast.success(response.data.data.message);
+        setPublicationData((prevData) =>
+          prevData.filter(
+            (publication) => !publicationIds.includes(publication.publicationId)
+          )
+        );
+        setSelectedItems([]);
+        setSelectionModal([]);
+        setOpenDeleteConfirmation(false);
+      }
+    } catch (error) {
+      toast.error("Something went wrong.");
     }
   };
   return (
@@ -236,7 +268,13 @@ const SearchFilters = ({
             <Button variant="outlined" size="small" onClick={handleOpen}>
               Add
             </Button>
-            <Button variant="outlined" color="error" size="small">
+            <Button
+              variant="outlined"
+              color="error"
+              size="small"
+              onClick={() => setOpenDeleteConfirmation(true)}
+              disabled={!selectedItems.length}
+            >
               Delete
             </Button>
           </FilterWrapper>
@@ -245,6 +283,12 @@ const SearchFilters = ({
       <PublicationAddModal
         open={openAddPublication}
         handleClose={handleClose}
+        screen={screen}
+      />
+      <DeleteConfirmationDialog
+        open={openDeleteConfirmation}
+        onDelete={handleDelete}
+        onClose={() => setOpenDeleteConfirmation(false)}
       />
     </Accordion>
   );
@@ -254,6 +298,11 @@ SearchFilters.propTypes = {
   setPublicationData: PropTypes.func.isRequired,
   fetchLoading: PropTypes.bool.isRequired,
   setFetchLoading: PropTypes.func.isRequired,
+  selectedItems: PropTypes.array.isRequired,
+  setSelectedItems: PropTypes.func.isRequired,
+  setSelectionModal: PropTypes.func.isRequired,
+  mainFetchAPi: PropTypes.string,
+  mainDeleteApi: PropTypes.string,
 };
 
 export default SearchFilters;

@@ -635,3 +635,21 @@ export const pubTypesAll = [
   "OTHERS",
   "MAGAZINE",
 ];
+
+export const zones = [
+  "International",
+  "Central",
+  "North",
+  "East",
+  "All India",
+  "South",
+  "West",
+];
+
+export const publicationCategories = [
+  { id: "N", title: "News" },
+  { id: "M", title: "Magazine" },
+  { id: "S", title: "Supplement" },
+  { id: "B", title: "Blog" },
+  { id: "S", title: "Special News" },
+];

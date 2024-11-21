@@ -5,7 +5,14 @@ import EditNoteIcon from "@mui/icons-material/EditNote";
 import { Fragment, useState } from "react";
 import AddModal from "./AddModal";
 
-const PublicationGrid = ({ publicationData = [], fetchLoading }) => {
+const PublicationGrid = ({
+  publicationData = [],
+  fetchLoading,
+  setSelectedItems,
+  selectionModal,
+  setSelectionModal,
+  screen,
+}) => {
   const [open, setOpen] = useState(false);
   const [rowId, setRowId] = useState(null);
 
@@ -13,10 +20,20 @@ const PublicationGrid = ({ publicationData = [], fetchLoading }) => {
     setRowId(rowId);
     setOpen(true);
   };
+
   const handleClose = () => {
     setOpen(false);
     setRowId(null);
   };
+  const handleSelectionChange = (newSelectionIds) => {
+    const selectedRows = publicationData.filter((row, index) =>
+      newSelectionIds.includes(index)
+    );
+
+    setSelectedItems(selectedRows);
+    setSelectionModal(newSelectionIds);
+  };
+
   const columns = [
     {
       field: "_",
@@ -28,7 +45,11 @@ const PublicationGrid = ({ publicationData = [], fetchLoading }) => {
         </IconButton>
       ),
     },
-    { field: "publicationId", headerName: "Publication ID", width: 150 },
+    {
+      field: "publicationId",
+      headerName: "Publication ID",
+      width: screen === "print" ? 150 : 300,
+    },
     { field: "publicationName", headerName: "Publication Name", width: 200 },
     {
       field: "publicationGroupId",
@@ -74,9 +95,19 @@ const PublicationGrid = ({ publicationData = [], fetchLoading }) => {
           checkboxSelection
           disableRowSelectionOnClick
           loading={fetchLoading}
+          rowSelectionModel={selectionModal}
+          onRowSelectionModelChange={handleSelectionChange}
+          columnVisibilityModel={{
+            publicationGroupId: screen === "print",
+          }}
         />
       </Box>
-      <AddModal open={open} handleClose={handleClose} row={rowId} />
+      <AddModal
+        open={open}
+        handleClose={handleClose}
+        row={rowId}
+        screen={screen}
+      />
     </Fragment>
   );
 };
@@ -84,5 +115,10 @@ const PublicationGrid = ({ publicationData = [], fetchLoading }) => {
 PublicationGrid.propTypes = {
   publicationData: PropTypes.array.isRequired,
   fetchLoading: PropTypes.bool.isRequired,
+  setSelectedItems: PropTypes.func.isRequired,
+  selectionModal: PropTypes.bool.isRequired,
+  setSelectionModal: PropTypes.func.isRequired,
+  screen: PropTypes.string,
 };
+
 export default PublicationGrid;

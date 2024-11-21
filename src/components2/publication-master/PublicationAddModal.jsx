@@ -16,7 +16,7 @@ import axiosInstance from "../../../axiosConfig";
 import useFetchMongoData from "../../hooks/useFetchMongoData";
 import { toast } from "react-toastify";
 
-const PublicationAddModal = ({ open, handleClose }) => {
+const PublicationAddModal = ({ open, handleClose, screen }) => {
   const [formData, setFormData] = useState({
     publicationName: "",
     shortPublication: "",
@@ -57,8 +57,7 @@ const PublicationAddModal = ({ open, handleClose }) => {
       formData.shortPublication &&
       formData.actualPublication &&
       publicationGroup &&
-      city &&
-      state
+      city
     ) {
       setIsAllSatisfied(true);
     }
@@ -68,7 +67,6 @@ const PublicationAddModal = ({ open, handleClose }) => {
     formData.publicationName,
     formData.shortPublication,
     publicationGroup,
-    state,
   ]);
 
   const handleSubmit = async (e) => {
@@ -85,9 +83,15 @@ const PublicationAddModal = ({ open, handleClose }) => {
         shortPub: formData.shortPublication,
         pubGroupId: publicationGroup,
         cityId: city,
-        stateId: Number(state),
+        // stateId: Number(state),
       };
-      const response = await axiosInstance.post("addPublication/", requestData);
+
+      if (screen === "print") {
+        requestData.stateId = Number(state);
+      }
+      const endpoint =
+        screen === "print" ? "addPublication/" : "addOnlinePublication/";
+      const response = await axiosInstance.post(endpoint, requestData);
 
       if (response.status === 200) {
         toast.success(response.data.response.status);
@@ -185,17 +189,19 @@ const PublicationAddModal = ({ open, handleClose }) => {
             setSelectedItem={setCity}
             height={40}
           />
-          <CustomSingleSelect
-            dropdownWidth={378}
-            keyId="stateId"
-            keyName="stateName"
-            options={states}
-            dropdownToggleWidth={"100%"}
-            title="State"
-            selectedItem={state}
-            setSelectedItem={setState}
-            height={40}
-          />
+          {screen === "print" && (
+            <CustomSingleSelect
+              dropdownWidth={378}
+              keyId="stateId"
+              keyName="stateName"
+              options={states}
+              dropdownToggleWidth={"100%"}
+              title="State"
+              selectedItem={state}
+              setSelectedItem={setState}
+              height={40}
+            />
+          )}
           <Divider sx={{ my: 1 }} />
           <Box sx={{ display: "flex", justifyContent: "flex-end", gap: 1 }}>
             <Button onClick={handleClose} variant="outlined" size="small">
@@ -220,5 +226,6 @@ const PublicationAddModal = ({ open, handleClose }) => {
 PublicationAddModal.propTypes = {
   open: PropTypes.bool.isRequired,
   handleClose: PropTypes.func.isRequired,
+  screen: PropTypes.string,
 };
 export default PublicationAddModal;

@@ -159,18 +159,12 @@ const CustomSingleSelect = ({
                   ]
                 )
               ) : (
-                <span
-                  className={`italic text-gray-400 ${
-                    !height && "text-[0.8em]"
-                  }`}
-                >
+                <span className={`italic ${!height && "text-[0.8]"}`}>
                   {title}
                 </span>
               )
             ) : (
-              <span
-                className={`italic text-gray-500  ${!height && "text-[0.8em]"}`}
-              >
+              <span className={`italic  ${!height && "text-[0.8]"}`}>
                 {title}
               </span>
             )}

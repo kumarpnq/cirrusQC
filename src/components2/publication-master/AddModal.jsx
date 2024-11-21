@@ -6,7 +6,6 @@ import {
   Divider,
   Tabs,
   Tab,
-  TextField,
   CircularProgress,
 } from "@mui/material";
 import { styled } from "@mui/system";
@@ -21,28 +20,50 @@ import OtherInfo from "./OtherInfo";
 import FormAction from "./FormAction";
 import axiosInstance from "../../../axiosConfig";
 import { toast } from "react-toastify";
+import {
+  publicationCategories,
+  pubTypesAll,
+  zones,
+} from "../../constants/dataArray";
 
-const FieldWrapper = styled(Box)({
+const FieldWrapper = styled(Box)(({ theme }) => ({
   display: "flex",
   alignItems: "center",
-  gap: 2,
-  margin: 1,
-  padding: 5,
-});
+  gap: theme.spacing(1),
+  margin: theme.spacing(0.2),
+  padding: theme.spacing(1),
+  border: `1px solid ${theme.palette.primary.main}`,
+  borderRadius: theme.shape.borderRadius,
+  boxShadow: `0 4px 8px rgba(0, 0, 0, 0.1)`,
+  transition: "all 0.5s ease-in-out",
+  "&:hover": {
+    boxShadow: `0 6px 12px rgba(0, 0, 0, 0.2)`,
+    transform: "scale(1.01)",
+  },
+  backgroundColor: theme.palette.background.default,
+}));
 const FieldLabel = styled(Typography)(({ theme }) => ({
-  fontSize: "1em", // Default size
-  color: "gray",
-  textWrap: "nowrap",
+  fontSize: "1em",
+  color: theme.palette.text.secondary,
+  fontWeight: "500",
+  whiteSpace: "nowrap",
   width: 250,
+  overflow: "hidden",
+  textOverflow: "ellipsis",
   [theme.breakpoints.down("sm")]: {
-    fontSize: "0.500em",
+    fontSize: "0.75em",
+    width: "auto",
   },
   [theme.breakpoints.up("md")]: {
-    fontSize: "0.500em",
+    fontSize: "0.875em",
+    width: "auto",
   },
   [theme.breakpoints.up("lg")]: {
     fontSize: "1em",
+    width: 250,
   },
+  textAlign: "left",
+  padding: theme.spacing(0.5),
 }));
 const useStyle = makeStyles(() => ({
   dropDowns: {
@@ -50,32 +71,29 @@ const useStyle = makeStyles(() => ({
     fontSize: "0.8em",
   },
 }));
-const AddModal = ({ open, handleClose, row }) => {
+const AddModal = ({ open, handleClose, row, screen }) => {
   const classes = useStyle();
   const [publicationID, setPublicationID] = useState("");
   const [publicationName, setPublicationName] = useState("");
-  const [fullCoverage, setFullCoverage] = useState("");
   const [publicationCategory, setPublicationCategory] = useState("");
   const [publicationType, setPublicationType] = useState("");
   const [type, setType] = useState("");
   const [actualPublication, setActualPublication] = useState("");
-  const [publicationInDropDown, setPublicationInDropDown] = useState("");
   const [city, setCity] = useState("");
   const [language, setLanguage] = useState("");
-  const [subscriptionType, setSubscriptionType] = useState("");
-  const [tier, setTier] = useState("");
-  const [subscriptionFromDate, setSubscriptionFromDate] = useState(null);
-  const [subscriptionToDate, setSubscriptionToDate] = useState(null);
   const [editionType, setEditionType] = useState("");
-  const [publicationPriority, setPublicationPriority] = useState("");
-  const [publicationScore, setPublicationScore] = useState("");
-  const [adRates, setAdRates] = useState("");
-  const [shortPublicationId, setShortPublicationId] = useState("");
+  const [shortPublication, setShortPublication] = useState("");
   const [groupPublication, setGroupPublication] = useState("");
-  const [publicationGroupName, setPublicationGroupName] = useState("");
   const [temporary, setTemporary] = useState("");
-  const [circulation, setCirculation] = useState("");
   const [active, setActive] = useState("");
+  const [zone, setZone] = useState("");
+  const [populate, setPopulate] = useState("");
+
+  // * special for online
+  const [fullCoverage, setFullCoverage] = useState("");
+  const [sortOrder, setSortOrder] = useState("");
+
+  const [publicationData, setPublicationData] = useState(null);
 
   const { data } = useFetchData(`${url}citieslist`, city);
   const citiesArray = data?.data?.cities || [];
@@ -88,24 +106,56 @@ const AddModal = ({ open, handleClose, row }) => {
     })
   );
 
+  const { data: publicationGroupsData } = useFetchData(
+    `${url}publicationgroupsall`
+  );
+
+  const publicationGroups =
+    publicationGroupsData?.data?.publication_groups || [];
+
   const [selectedTab, setSelectedTab] = useState(0);
   const [fetchLoading, setFetchLoading] = useState(false);
   const [updateLoading, setUpdateLoading] = useState(false);
 
-  useEffect(() => {
-    const fetchPublicationData = async () => {
-      try {
-        setFetchLoading(true);
-        const response = await axiosInstance.get(
-          `getPublicationInfo/?publicationId="49"`
-        );
-        console.log(response.data.data);
-      } catch (error) {
-        console.log(error);
-      } finally {
-        setFetchLoading(false);
+  const fetchPublicationData = async () => {
+    try {
+      setFetchLoading(true);
+      const endpoint =
+        screen === "print" ? "publicationInfo" : "publicationInfoOnline";
+      const response = await axiosInstance.get(
+        `${endpoint}/?publicationId=${row?.publicationId}`
+      );
+      const publicationDataLocal = response.data?.data?.data;
+
+      setPublicationData(publicationDataLocal);
+      setPublicationID(publicationDataLocal?.publicationId);
+      setPublicationName(publicationDataLocal?.publicationName);
+      setShortPublication(publicationDataLocal?.shortPublication);
+      setActualPublication(publicationDataLocal?.actualPublication);
+      setPublicationType(publicationDataLocal?.publicationType);
+      setPublicationCategory(publicationDataLocal?.publicationCategory);
+      setGroupPublication(publicationDataLocal?.publicationGroupID);
+      setEditionType(publicationDataLocal?.editionType);
+      setCity(publicationDataLocal?.cityId);
+      setZone(publicationDataLocal?.zone);
+      setLanguage(publicationDataLocal?.languageCode);
+      setType(publicationDataLocal?.newsType || publicationDataLocal?.newType);
+      setPopulate(publicationDataLocal?.isPopulate === "Y" ? "Yes" : "No");
+      setActive(publicationDataLocal?.isActive === "Y" ? "Yes" : "No");
+      setTemporary(publicationDataLocal?.isTemporary === "Y" ? "Yes" : "No");
+
+      // * for online only
+      if (screen === "online") {
+        setFullCoverage(publicationDataLocal?.fullCoverage ? "Yes" : "No");
+        setSortOrder(publicationDataLocal?.sortOrder);
       }
-    };
+    } catch (error) {
+      toast.error(error.message);
+    } finally {
+      setFetchLoading(false);
+    }
+  };
+  useEffect(() => {
     if (open && row) {
       fetchPublicationData();
     }
@@ -121,34 +171,108 @@ const AddModal = ({ open, handleClose, row }) => {
       toast.warning("Publication ID is required.");
     }
     try {
+      // * function which returns a yes no to y n
+      const getYN = (value) => {
+        if (value === "Yes") return "Y";
+        else if (value === "No") return "N";
+      };
       setUpdateLoading(true);
       const requestData = {
-        publicationId: "",
-        publicationName: "",
-        shortPublication: "",
-        actualPublication: "",
-        publicationType: "",
-        publicationCategory: "",
-        publicationLogo: "",
-        publicationGroupID: "",
-        publicationGroupName: "",
-        editionType: "",
-        cityId: "",
-        cityName: "",
-        zone: "",
-        language: "",
-        newsType: "",
-        isPopulate: "",
-        isActive: "",
-        isTemporary: "",
+        publicationId: row?.publicationId,
+        // publicationName: "",
+        // shortPublication: "",
+        // actualPublication: "",
+        // publicationType: "",
+        // publicationCategory: "",
+        // * publicationLogo: "",
+        // publicationGroupID: "",
+        // * publicationGroupName: "",
+        // editionType: "",
+        // cityId: "",
+        // cityName: "",
+        // zone: "",
+        // language: "",
+        // newsType: "",
+        // isPopulate: "",
+        // isActive: "",
+        // isTemporary: "",
       };
-      const response = await axiosInstance.post(
-        "updatePublicationInfo/",
-        requestData
-      );
-      console.log(response.data);
+      if (publicationName !== publicationData?.publicationName) {
+        requestData.publicationName = publicationName;
+      }
+      if (shortPublication !== publicationData?.shortPublication) {
+        requestData.shortPublication = shortPublication;
+      }
+      if (actualPublication !== publicationData?.actualPublication) {
+        requestData.actualPublication = actualPublication;
+      }
+      if (publicationType !== publicationData?.publicationType) {
+        requestData.publicationType = publicationType.toLowerCase();
+      }
+      if (publicationCategory !== publicationData?.publicationCategory) {
+        requestData.publicationCategory = publicationCategory;
+      }
+      if (groupPublication !== publicationData?.publicationGroupID) {
+        requestData.publicationGroupID = groupPublication;
+      }
+      if (editionType !== publicationData?.editionType) {
+        requestData.editionType = editionType;
+      }
+      if (city !== publicationData?.cityId) {
+        requestData.cityId = city;
+      }
+      if (zone !== publicationData?.zone) {
+        requestData.zone = zone;
+      }
+      const newsTypeKey = screen === "online" ? "newType" : "newsType";
+      if (type !== publicationData?.[newsTypeKey]) {
+        requestData[newsTypeKey] = newsTypeKey;
+      }
+
+      if (language !== publicationData?.languageCode) {
+        requestData.languageCode = language;
+      }
+
+      if (getYN(populate) !== publicationData?.isPopulate) {
+        requestData.isPopulate = populate;
+      }
+      if (getYN(active) !== publicationData?.isActive) {
+        requestData.isActive = getYN(active);
+      }
+      if (getYN(populate) !== publicationData?.isPopulate) {
+        requestData.isPopulate = getYN(populate);
+      }
+
+      // * only print related
+      if (screen === "print") {
+        if (getYN(temporary) !== publicationData?.isTemporary) {
+          requestData.isTemporary = getYN(temporary);
+        }
+      }
+
+      // * only online related
+      if (screen === "online") {
+        if ((fullCoverage === "Yes") !== publicationData?.fullCoverage) {
+          requestData.fullCoverage = Boolean(fullCoverage === "Yes");
+        }
+        if (sortOrder !== publicationData?.sortOrder) {
+          requestData.sortOrder = Number(sortOrder);
+        }
+      }
+      const endpoint =
+        screen === "print"
+          ? "updatePublicationInfo"
+          : "updateOnlinePublicationInfo";
+      const response = await axiosInstance.post(`${endpoint}/`, requestData);
+      if (response.status === 200) {
+        toast.success(response.data.message);
+        setFullCoverage("");
+        setSortOrder("");
+        setPublicationData(null);
+        fetchPublicationData();
+      }
     } catch (error) {
-      console.log(error);
+      toast.error("Something went wrong.");
     } finally {
       setUpdateLoading(false);
     }
@@ -168,10 +292,11 @@ const AddModal = ({ open, handleClose, row }) => {
             left: "50%",
             transform: "translate(-50%, -50%)",
             width: "35vw",
+            minWidth: 600,
             bgcolor: "background.paper",
             border: "1px solid #000",
             boxShadow: 24,
-            height: 600,
+            height: "99vh",
             overflow: "scroll",
             p: 1,
           }}
@@ -209,12 +334,28 @@ const AddModal = ({ open, handleClose, row }) => {
                 className="p-1 mt-1 border rounded-md"
               >
                 <FieldWrapper>
+                  <FieldLabel>Publication Group :</FieldLabel>
+                  {/* <div className="ml-8"> */}
+                  <CustomSingleSelect
+                    dropdownToggleWidth={`100%`}
+                    dropdownWidth={"100%"}
+                    keyId="publicationgroupid"
+                    keyName="publicationgroupname"
+                    options={publicationGroups}
+                    selectedItem={groupPublication}
+                    setSelectedItem={setGroupPublication}
+                    title="Publication Group ID"
+                  />
+                  {/* </div> */}
+                </FieldWrapper>
+                <FieldWrapper>
                   <FieldLabel>Publication ID :</FieldLabel>
                   <CustomTextField
                     value={publicationID}
                     setValue={setPublicationID}
                     placeholder={"Publication ID"}
                     type={"text"}
+                    isDisabled
                   />
                 </FieldWrapper>
                 <FieldWrapper>
@@ -229,8 +370,8 @@ const AddModal = ({ open, handleClose, row }) => {
                 <FieldWrapper>
                   <FieldLabel>Short Publication ID :</FieldLabel>
                   <CustomTextField
-                    value={shortPublicationId}
-                    setValue={setShortPublicationId}
+                    value={shortPublication}
+                    setValue={setShortPublication}
                     placeholder={"Short Pub ID"}
                     type={"text"}
                   />
@@ -244,42 +385,25 @@ const AddModal = ({ open, handleClose, row }) => {
                     type={"text"}
                   />
                 </FieldWrapper>
-                <FieldWrapper>
-                  <FieldLabel>Full Coverage :</FieldLabel>
-                  <YesOrNo
-                    mapValue={["1", "0"]}
-                    placeholder="Coverage"
-                    classes={classes}
-                    value={fullCoverage}
-                    setValue={setFullCoverage}
-                  />
-                </FieldWrapper>
+
                 <FieldWrapper>
                   <FieldLabel>Publication Category :</FieldLabel>
-                  <YesOrNo
-                    mapValue={[
-                      "News",
-                      "Magazine",
-                      "Supplement",
-                      "Blog",
-                      "Special News",
-                    ]}
-                    placeholder="Pub Category"
-                    classes={classes}
-                    value={publicationCategory}
-                    setValue={setPublicationCategory}
+
+                  <CustomSingleSelect
+                    dropdownToggleWidth={`100%`}
+                    dropdownWidth={"100%"}
+                    keyId="id"
+                    keyName="title"
+                    options={publicationCategories}
+                    selectedItem={publicationCategory}
+                    setSelectedItem={setPublicationCategory}
+                    title="Pub Category"
                   />
                 </FieldWrapper>
                 <FieldWrapper>
                   <FieldLabel>Publication Type :</FieldLabel>
                   <YesOrNo
-                    mapValue={[
-                      "Daily",
-                      "Weekly",
-                      "Monthly",
-                      "FortNightly",
-                      "Others",
-                    ]}
+                    mapValue={pubTypesAll}
                     placeholder="Pub Type"
                     classes={classes}
                     value={publicationType}
@@ -298,16 +422,6 @@ const AddModal = ({ open, handleClose, row }) => {
                 </FieldWrapper>
 
                 <FieldWrapper>
-                  <FieldLabel>Publish in Dropdown :</FieldLabel>
-                  <YesOrNo
-                    mapValue={["No", "Yes"]}
-                    placeholder="Publish Dropdown"
-                    classes={classes}
-                    value={publicationInDropDown}
-                    setValue={setPublicationInDropDown}
-                  />
-                </FieldWrapper>
-                <FieldWrapper>
                   <FieldLabel>City Edition :</FieldLabel>
                   {/* <div className="ml-20"> */}
                   <CustomSingleSelect
@@ -322,6 +436,19 @@ const AddModal = ({ open, handleClose, row }) => {
                   />
                   {/* </div> */}
                 </FieldWrapper>
+                {screen === "print" && (
+                  <FieldWrapper>
+                    <FieldLabel>Zone :</FieldLabel>
+                    <YesOrNo
+                      mapValue={zones}
+                      placeholder="Zone"
+                      classes={classes}
+                      value={zone}
+                      setValue={setZone}
+                    />
+                  </FieldWrapper>
+                )}
+
                 <FieldWrapper>
                   <FieldLabel>Language :</FieldLabel>
                   {/* <div className="ml-24"> */}
@@ -336,47 +463,6 @@ const AddModal = ({ open, handleClose, row }) => {
                     title="Language"
                   />
                   {/* </div> */}
-                </FieldWrapper>
-                <FieldWrapper>
-                  <FieldLabel>Subscription Type :</FieldLabel>
-                  <YesOrNo
-                    mapValue={["Vendor", "Courier", "Post"]}
-                    placeholder="Subscription Type"
-                    classes={classes}
-                    value={subscriptionType}
-                    setValue={setSubscriptionType}
-                  />
-                </FieldWrapper>
-                <FieldWrapper>
-                  <FieldLabel>Tier :</FieldLabel>
-                  <YesOrNo
-                    mapValue={["Other", "1", "2"]}
-                    placeholder="Tier"
-                    classes={classes}
-                    value={tier}
-                    setValue={setTier}
-                  />
-                </FieldWrapper>
-                <FieldWrapper>
-                  <FieldLabel>Subscription Date :</FieldLabel>
-
-                  <TextField
-                    InputProps={{ style: { height: 25 } }}
-                    type="date"
-                    value={subscriptionFromDate}
-                    onChange={(e) => setSubscriptionFromDate(e.target.value)}
-                    fullWidth
-                  />
-                </FieldWrapper>
-                <FieldWrapper>
-                  <FieldLabel>Subscription Date :</FieldLabel>
-                  <TextField
-                    type="date"
-                    fullWidth
-                    InputProps={{ style: { height: 25 } }}
-                    value={subscriptionToDate}
-                    onChange={(e) => setSubscriptionToDate(e.target.value)}
-                  />
                 </FieldWrapper>
                 <FieldWrapper>
                   <FieldLabel>Type Of Edition :</FieldLabel>
@@ -397,77 +483,53 @@ const AddModal = ({ open, handleClose, row }) => {
                     setValue={setEditionType}
                   />
                 </FieldWrapper>
-                <FieldWrapper>
-                  <FieldLabel>Publication Priority :</FieldLabel>
-                  <CustomTextField
-                    value={publicationPriority}
-                    setValue={setPublicationPriority}
-                    placeholder={"Publication Priority"}
-                    type={"text"}
-                  />
-                </FieldWrapper>
-                <FieldWrapper>
-                  <FieldLabel>Publication Score :</FieldLabel>
-                  <CustomTextField
-                    value={publicationScore}
-                    setValue={setPublicationScore}
-                    placeholder={"Publication Score"}
-                    type={"number"}
-                  />
-                </FieldWrapper>
-                <FieldWrapper>
-                  <FieldLabel>Ad Rates :</FieldLabel>
-                  <CustomTextField
-                    value={adRates}
-                    setValue={setAdRates}
-                    placeholder={"Ad Rates"}
-                    type={"text"}
-                  />
-                </FieldWrapper>
+                {screen === "print" && (
+                  <FieldWrapper>
+                    <FieldLabel>Temporary :</FieldLabel>
+                    <YesOrNo
+                      mapValue={["Yes", "No"]}
+                      placeholder="Temporary"
+                      classes={classes}
+                      value={temporary}
+                      setValue={setTemporary}
+                    />
+                  </FieldWrapper>
+                )}
 
                 <FieldWrapper>
-                  <FieldLabel>Group Publication :</FieldLabel>
-                  {/* <div className="ml-8"> */}
-                  <CustomSingleSelect
-                    dropdownToggleWidth={`100%`}
-                    dropdownWidth={"100%"}
-                    keyId="cityid"
-                    keyName="cityname"
-                    options={citiesArray}
-                    selectedItem={groupPublication}
-                    setSelectedItem={setGroupPublication}
-                    title="Publication Group"
-                  />
-                  {/* </div> */}
-                </FieldWrapper>
-                <FieldWrapper>
-                  <FieldLabel>Publication Group:</FieldLabel>
-                  <CustomTextField
-                    value={publicationGroupName}
-                    setValue={setPublicationGroupName}
-                    placeholder={"Publication Group Name"}
-                    type={"text"}
-                  />
-                </FieldWrapper>
-                <FieldWrapper>
-                  <FieldLabel>Temporary :</FieldLabel>
+                  <FieldLabel>Populate :</FieldLabel>
                   <YesOrNo
                     mapValue={["Yes", "No"]}
-                    placeholder="Temporary"
+                    placeholder="Populate"
                     classes={classes}
-                    value={temporary}
-                    setValue={setTemporary}
+                    value={populate}
+                    setValue={setPopulate}
                   />
                 </FieldWrapper>
-                <FieldWrapper>
-                  <FieldLabel>Circulation :</FieldLabel>
-                  <CustomTextField
-                    value={circulation}
-                    setValue={setCirculation}
-                    placeholder={"Circulation"}
-                    type={"text"}
-                  />
-                </FieldWrapper>
+                {screen === "online" && (
+                  <>
+                    <FieldWrapper>
+                      <FieldLabel>Full Coverage :</FieldLabel>
+                      <YesOrNo
+                        mapValue={["Yes", "No"]}
+                        placeholder="Active"
+                        classes={classes}
+                        value={fullCoverage}
+                        setValue={setFullCoverage}
+                      />
+                    </FieldWrapper>
+                    <FieldWrapper>
+                      <FieldLabel>Sort Order :</FieldLabel>
+                      <CustomTextField
+                        value={sortOrder}
+                        setValue={setSortOrder}
+                        placeholder={"Sort Order"}
+                        type={"number"}
+                      />
+                    </FieldWrapper>
+                  </>
+                )}
+
                 <FieldWrapper>
                   <FieldLabel>Active :</FieldLabel>
                   <YesOrNo
@@ -478,6 +540,7 @@ const AddModal = ({ open, handleClose, row }) => {
                     setValue={setActive}
                   />
                 </FieldWrapper>
+
                 <Divider sx={{ my: 1 }} />
                 <FormAction
                   handleClose={handleClose}
@@ -490,6 +553,9 @@ const AddModal = ({ open, handleClose, row }) => {
               FieldWrapper={FieldWrapper}
               FieldLabel={FieldLabel}
               handleClose={handleClose}
+              publicationId={row?.publicationId}
+              tabValue={selectedTab}
+              screen={screen}
             />
           )}
         </Box>
@@ -499,13 +565,13 @@ const AddModal = ({ open, handleClose, row }) => {
 };
 
 AddModal.propTypes = {
-  open: PropTypes.bool.isRequired, // Boolean to control the modal visibility
-  handleClose: PropTypes.func.isRequired, // Function to handle closing the modal
+  open: PropTypes.bool.isRequired,
+  handleClose: PropTypes.func.isRequired,
   row: PropTypes.shape({
-    // Object representing the row
-    id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]), // Example key, replace as per your data
-    name: PropTypes.string, // Example key, replace as per your data
-    // Add other row-specific keys here based on your structure
+    publicationId: PropTypes.string,
+    id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+    name: PropTypes.string,
   }).isRequired,
+  screen: PropTypes.string,
 };
 export default AddModal;

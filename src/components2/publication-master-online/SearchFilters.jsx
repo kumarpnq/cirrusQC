@@ -1,14 +1,21 @@
-import { Box, Button, Paper, Typography } from "@mui/material";
-import CustomTextField from "../../@core/CutsomTextField";
+import {
+  Accordion,
+  AccordionDetails,
+  AccordionSummary,
+  Button,
+  Tooltip,
+  Typography,
+} from "@mui/material";
 import { useState } from "react";
-import { formattedDate, formattedNextDay } from "../../constants/dates";
+import { makeStyles } from "@mui/styles";
+import { url } from "../../constants/baseUrl";
+import CustomTextField from "../../@core/CutsomTextField";
 import FromDate from "../../components/research-dropdowns/FromDate";
 import ToDate from "../../components/research-dropdowns/ToDate";
 import YesOrNo from "../../@core/YesOrNo";
-import { makeStyles } from "@mui/styles";
-import CustomMultiSelect from "../../@core/CustomMultiSelect";
 import useFetchData from "../../hooks/useFetchData";
-import { url } from "../../constants/baseUrl";
+import CustomSingleSelect from "../../@core/CustomSingleSelect2";
+import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 
 const useStyle = makeStyles(() => ({
   dropDowns: {
@@ -19,9 +26,8 @@ const useStyle = makeStyles(() => ({
 
 const SearchFilters = () => {
   const classes = useStyle();
-  const [fromDate, setFromDate] = useState(formattedDate);
-  const [dateNow, setDateNow] = useState(formattedNextDay);
-  const [display, setDisplay] = useState(null);
+  const [fromDate, setFromDate] = useState("");
+  const [dateNow, setDateNow] = useState("");
   const [searchText, setSearchText] = useState("");
   const [pubType, setPubType] = useState("");
   const [type, setType] = useState("");
@@ -51,86 +57,95 @@ const SearchFilters = () => {
   // 	"PAGE_VIEWS" NUMBER(14,10),
 
   return (
-    <Box component={Paper}>
-      <form
-        onSubmit={handleSubmit}
-        className="flex flex-wrap items-center gap-1"
+    <Accordion>
+      <AccordionSummary
+        expandIcon={<ExpandMoreIcon />}
+        aria-controls="panel1-content"
+        id="panel1-header"
       >
-        <div className="mb-3">
-          <FromDate fromDate={fromDate} setFromDate={setFromDate} />
-        </div>
-        <ToDate dateNow={dateNow} setDateNow={setDateNow} />
-        <CustomTextField
-          value={display}
-          setValue={setDisplay}
-          width={100}
-          type={"number"}
-          placeholder={"display"}
-        />
-        <CustomTextField
-          value={searchText}
-          setValue={setSearchText}
-          width={100}
-          type={"number"}
-          placeholder={"search text"}
-        />
-        <YesOrNo
-          classes={classes}
-          placeholder="Pub Type"
-          mapValue={["Daily", "Weekly", "Fortnightly", "Monthly", "Others"]}
-          value={pubType}
-          setValue={setPubType}
-          width={120}
-        />
-        <YesOrNo
-          classes={classes}
-          placeholder="Type"
-          mapValue={["YPT", "TPT", "POST"]}
-          value={type}
-          setValue={setType}
-          width={120}
-        />
-        <Typography component={"div"} width={200}>
-          <CustomMultiSelect
-            dropdownToggleWidth={200}
-            dropdownWidth={250}
-            keyId="cityid"
-            keyName="cityname"
-            options={cityData}
-            selectedItems={selectedCity}
-            setSelectedItems={setSelectedCity}
-            title="Cities"
+        Search
+      </AccordionSummary>
+      <AccordionDetails>
+        <form
+          onSubmit={handleSubmit}
+          className="flex flex-wrap items-center gap-1 px-1"
+        >
+          <Tooltip title="Start date">
+            <div className="mb-3">
+              <FromDate fromDate={fromDate} setFromDate={setFromDate} />
+            </div>
+          </Tooltip>
+          <Tooltip title="End date">
+            <div>
+              <ToDate dateNow={dateNow} setDateNow={setDateNow} />
+            </div>
+          </Tooltip>
+
+          <CustomTextField
+            value={searchText}
+            setValue={setSearchText}
+            width={200}
+            type={"number"}
+            placeholder={"search text"}
           />
-        </Typography>
-        <YesOrNo
-          classes={classes}
-          placeholder="Subscription"
-          mapValue={["Vendor", "Courier", "Post"]}
-          value={subscriptionType}
-          setValue={setSubscriptionType}
-          width={120}
-        />
-        <YesOrNo
-          classes={classes}
-          placeholder="Populate"
-          mapValue={["Yes", "No"]}
-          value={populate}
-          setValue={setPopulate}
-          width={120}
-        />
-        <YesOrNo
-          classes={classes}
-          placeholder="Edition"
-          mapValue={["BD", "ND", "RD", "TAB", "PIM", "BIM", "TM", "WP"]}
-          value={edition}
-          setValue={setEdition}
-          width={120}
-        />
-        <Button size="small" variant="outlined" type="submit">
-          Search
-        </Button>
-      </form>
-    </Box>
+          <YesOrNo
+            classes={classes}
+            placeholder="Pub Type"
+            mapValue={["Daily", "Weekly", "Fortnightly", "Monthly", "Others"]}
+            value={pubType}
+            setValue={setPubType}
+            width={120}
+          />
+          <YesOrNo
+            classes={classes}
+            placeholder="Type"
+            mapValue={["YPT", "TPT", "POST"]}
+            value={type}
+            setValue={setType}
+            width={120}
+          />
+          <Typography component={"div"} width={200}>
+            <CustomSingleSelect
+              dropdownToggleWidth={200}
+              dropdownWidth={250}
+              keyId="cityid"
+              keyName="cityname"
+              options={cityData}
+              selectedItem={selectedCity}
+              setSelectedItem={setSelectedCity}
+              title="City"
+            />
+          </Typography>
+          <YesOrNo
+            classes={classes}
+            placeholder="Subscription"
+            mapValue={["Vendor", "Courier", "Post"]}
+            value={subscriptionType}
+            setValue={setSubscriptionType}
+            width={120}
+          />
+          <YesOrNo
+            classes={classes}
+            placeholder="Populate"
+            mapValue={["Yes", "No"]}
+            value={populate}
+            setValue={setPopulate}
+            width={120}
+          />
+          <YesOrNo
+            classes={classes}
+            placeholder="Edition"
+            mapValue={["BD", "ND", "RD", "TAB", "PIM", "BIM", "TM", "WP"]}
+            value={edition}
+            setValue={setEdition}
+            width={120}
+          />
+          <Button size="small" variant="outlined" type="submit">
+            Search
+          </Button>
+        </form>
+      </AccordionDetails>
+    </Accordion>
   );
 };
 
