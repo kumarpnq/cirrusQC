@@ -3,7 +3,7 @@ import YesOrNo from "../../@core/YesOrNo";
 import CustomTextField from "../../@core/CutsomTextField";
 import { makeStyles } from "@mui/styles";
 import PropTypes from "prop-types";
-import { Fragment, useState } from "react";
+import { Fragment, useEffect, useState } from "react";
 import axiosInstance from "../../../axiosConfig";
 import toast from "react-hot-toast";
 import DeleteConfirmationDialog from "../../@core/DeleteConfirmationDialog";
@@ -22,6 +22,8 @@ const SearchFilters = ({
   endpoint,
   deleteEndPoint,
   selectedItems = [],
+  fetchAfterSave,
+  setFetchAfterSave,
 }) => {
   const classes = useStyle();
   const [isActive, setIsActive] = useState("All");
@@ -48,6 +50,7 @@ const SearchFilters = ({
       const response = await axiosInstance.get(endpoint, { params });
       if (response.status === 200) {
         setData(response.data.data?.data || []);
+        setFetchAfterSave(false);
       }
     } catch (error) {
       toast.error("Something went wrong.");
@@ -55,6 +58,12 @@ const SearchFilters = ({
       setLoading(false);
     }
   };
+
+  // useEffect(() => {
+  //   if (fetchAfterSave) {
+  //     handleFormSubmit();
+  //   }
+  // }, [fetchAfterSave]);
 
   const handleDelete = async () => {
     try {
@@ -141,6 +150,8 @@ SearchFilters.propTypes = {
   endpoint: PropTypes.string,
   deleteEndPoint: PropTypes.string,
   selectedItems: PropTypes.array,
+  fetchAfterSave: PropTypes.bool,
+  setFetchAfterSave: PropTypes.func,
 };
 
 export default SearchFilters;

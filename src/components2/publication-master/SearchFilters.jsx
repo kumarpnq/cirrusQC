@@ -50,6 +50,7 @@ const SearchFilters = ({
   setSelectionModal,
   mainFetchAPi,
   mainDeleteApi,
+  screen,
 }) => {
   const classes = useStyle();
   const [fromDate, setFromDate] = useState("");
@@ -305,6 +306,7 @@ SearchFilters.propTypes = {
   setSelectionModal: PropTypes.func.isRequired,
   mainFetchAPi: PropTypes.string,
   mainDeleteApi: PropTypes.string,
+  screen: PropTypes.string,
 };
 
 export default SearchFilters;

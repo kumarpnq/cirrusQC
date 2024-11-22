@@ -21,6 +21,7 @@ const PublicationGroupAddEditModal = ({
   handleClose,
   row,
   fromWhere,
+  setFetchAfterSave,
 }) => {
   const [publicationGroupId, setPublicationGroupId] = useState("");
   const [publicationGroupName, setPublicationGroupName] = useState("");
@@ -106,6 +107,7 @@ const PublicationGroupAddEditModal = ({
         setCountry("");
         setActive("");
         handleClose();
+        setFetchAfterSave(true);
       }
     } catch (error) {
       toast.error(error.message);
@@ -248,6 +250,7 @@ PublicationGroupAddEditModal.propTypes = {
   handleClose: PropTypes.func.isRequired,
   row: PropTypes.object,
   fromWhere: PropTypes.string.isRequired,
+  setFetchAfterSave: PropTypes.func,
 };
 
 export default PublicationGroupAddEditModal;

@@ -9,6 +9,7 @@ const PublicationGroupGrid = ({
   publicationData = [],
   loading,
   setSelectedItems,
+  setFetchAfterSave = () => {},
 }) => {
   const [open, setOpen] = useState(false);
   const [selectedRow, setSelectedRow] = useState(null);
@@ -104,6 +105,7 @@ const PublicationGroupGrid = ({
         handleClose={handleClose}
         row={selectedRow}
         fromWhere="Edit"
+        setFetchAfterSave={setFetchAfterSave}
       />
     </Fragment>
   );
@@ -113,5 +115,6 @@ PublicationGroupGrid.propTypes = {
   publicationData: PropTypes.array.isRequired,
   loading: PropTypes.bool.isRequired,
   setSelectedItems: PropTypes.func.isRequired,
+  setFetchAfterSave: PropTypes.func,
 };
 export default PublicationGroupGrid;

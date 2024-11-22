@@ -49,9 +49,9 @@ const FieldLabel = styled(Typography)(({ theme }) => ({
   color: theme.palette.text.secondary,
   fontWeight: "500",
   whiteSpace: "nowrap",
-  width: 250,
+  minWidth: 150,
   overflow: "hidden",
-  textOverflow: "ellipsis",
+  // textOverflow: "ellipsis",
   [theme.breakpoints.down("sm")]: {
     fontSize: "0.75em",
     width: "auto",
@@ -62,7 +62,7 @@ const FieldLabel = styled(Typography)(({ theme }) => ({
   },
   [theme.breakpoints.up("lg")]: {
     fontSize: "1em",
-    width: 250,
+    minWidth: 170,
   },
   textAlign: "left",
   padding: theme.spacing(0.5),
@@ -233,6 +233,10 @@ const AddModal = ({ open, handleClose, row, screen }) => {
       if (zone !== publicationData?.zone) {
         requestData.zone = zone;
       }
+
+      //  if (JSON.stringify(clusters) !== JSON.stringify(publicationData?.clusterIds)) {
+      //    requestData.clusterIds = clusters;
+      //  }
 
       const newsTypeKey = screen === "online" ? "newType" : "newsType";
       if (type !== publicationData?.[newsTypeKey]) {

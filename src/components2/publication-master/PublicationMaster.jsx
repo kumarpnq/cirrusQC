@@ -26,6 +26,7 @@ const PublicationMaster = () => {
         setSelectionModal={setSelectionModal}
         mainFetchAPi={mainFetchApi}
         mainDeleteApi={mainDeleteApi}
+        screen={screen}
       />
       <Divider sx={{ my: 1 }} />
       <PublicationGrid
