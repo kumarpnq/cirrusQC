@@ -261,6 +261,8 @@ const SearchFilters = ({
                 setEdition("");
                 setSelectedCity("");
                 setSubscription("");
+                setSelectedItems([]);
+                setPublicationData([]);
               }}
             >
               Clear

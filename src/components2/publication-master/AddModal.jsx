@@ -38,7 +38,7 @@ const FieldWrapper = styled(Box)(({ theme }) => ({
   transition: "all 0.5s ease-in-out",
   "&:hover": {
     boxShadow: `0 6px 12px rgba(0, 0, 0, 0.2)`,
-    transform: "scale(1.01)",
+    // transform: "scale(1.001)",
   },
   backgroundColor: theme.palette.background.default,
 }));
