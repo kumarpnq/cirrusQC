@@ -653,3 +653,15 @@ export const publicationCategories = [
   { id: "B", title: "Blog" },
   { id: "S", title: "Special News" },
 ];
+
+export const countriesWithCode = [
+  { id: "91", name: "INDIA" },
+  { id: "92", name: "UNITED STATES OF AMERICA" },
+  { id: "93", name: "Switzerland" },
+  { id: "94", name: "France" },
+  { id: "95", name: "Spain" },
+  { id: "44", name: "UNITED KINGDOM" },
+
+  { id: "96", name: "Nigeria" },
+  { id: "65", name: "Singapore" },
+];

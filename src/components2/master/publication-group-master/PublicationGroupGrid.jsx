@@ -1,85 +1,18 @@
+import PropTypes from "prop-types";
 import { Box } from "@mui/material";
 import { DataGrid, GridActionsCellItem } from "@mui/x-data-grid";
 import EditNoteIcon from "@mui/icons-material/EditNote";
 import { Fragment, useState } from "react";
 import PublicationGroupAddEditModal from "./PublicationGroupAddEditModal";
 
-const rows = [
-  {
-    id: 1,
-    publicationgroupname: "Group A",
-    publicationgroupid: "PG001",
-    country: "USA",
-    active: "Yes",
-  },
-  {
-    id: 2,
-    publicationgroupname: "Group B",
-    publicationgroupid: "PG002",
-    country: "Canada",
-    active: "No",
-  },
-  {
-    id: 3,
-    publicationgroupname: "Group C",
-    publicationgroupid: "PG003",
-    country: "UK",
-    active: "Yes",
-  },
-  {
-    id: 4,
-    publicationgroupname: "Group D",
-    publicationgroupid: "PG004",
-    country: "Australia",
-    active: "No",
-  },
-  {
-    id: 5,
-    publicationgroupname: "Group E",
-    publicationgroupid: "PG005",
-    country: "India",
-    active: "Yes",
-  },
-  {
-    id: 6,
-    publicationgroupname: "Group F",
-    publicationgroupid: "PG006",
-    country: "Germany",
-    active: "No",
-  },
-  {
-    id: 7,
-    publicationgroupname: "Group G",
-    publicationgroupid: "PG007",
-    country: "France",
-    active: "Yes",
-  },
-  {
-    id: 8,
-    publicationgroupname: "Group H",
-    publicationgroupid: "PG008",
-    country: "Japan",
-    active: "No",
-  },
-  {
-    id: 9,
-    publicationgroupname: "Group I",
-    publicationgroupid: "PG009",
-    country: "Brazil",
-    active: "Yes",
-  },
-  {
-    id: 10,
-    publicationgroupname: "Group J",
-    publicationgroupid: "PG010",
-    country: "South Africa",
-    active: "No",
-  },
-];
-
-const PublicationGroupGrid = () => {
+const PublicationGroupGrid = ({
+  publicationData = [],
+  loading,
+  setSelectedItems,
+}) => {
   const [open, setOpen] = useState(false);
   const [selectedRow, setSelectedRow] = useState(null);
+  const [selectionModal, setSelectionModal] = useState([]);
   const handleOpen = (row) => {
     setSelectedRow(row);
     setOpen(true);
@@ -105,36 +38,50 @@ const PublicationGroupGrid = () => {
       ),
     },
     {
-      field: "publicationgroupname",
-      headerName: "Publication Group Name",
-      flex: 1,
+      field: "pubGroupId",
+      headerName: "Group ID",
     },
     {
-      field: "publicationgroupid",
-      headerName: "Publication Group ID",
-      flex: 1,
+      field: "pubGroupName",
+      headerName: "Group Name",
+      width: 300,
     },
+
     {
-      field: "country",
+      field: "countryName",
       headerName: "Country",
-      flex: 1,
+      width: 200,
     },
     {
-      field: "active",
+      field: "isActive",
       headerName: "Active",
-      flex: 1,
+
       renderCell: (params) => (
         <span
           style={{
-            color: params.value === "Yes" ? "green" : "orange",
+            color: params.value === "Y" ? "green" : "orange",
             fontWeight: "bold",
           }}
         >
-          {params.value}
+          {params.value === "Y" ? "Yes" : "No"}
         </span>
       ),
     },
   ];
+
+  const rows = publicationData.map((item, index) => ({
+    id: index,
+    ...item,
+  }));
+
+  const handleSelectionChange = (newSelectionIds) => {
+    const selectedRows = publicationData.filter((row, index) =>
+      newSelectionIds.includes(index)
+    );
+
+    setSelectedItems(selectedRows);
+    setSelectionModal(newSelectionIds);
+  };
 
   return (
     <Fragment>
@@ -147,6 +94,9 @@ const PublicationGroupGrid = () => {
           checkboxSelection
           disableRowSelectionOnClick
           hideFooterSelectedRowCount
+          loading={loading}
+          rowSelectionModel={selectionModal}
+          onRowSelectionModelChange={handleSelectionChange}
         />
       </Box>
       <PublicationGroupAddEditModal
@@ -159,4 +109,9 @@ const PublicationGroupGrid = () => {
   );
 };
 
+PublicationGroupGrid.propTypes = {
+  publicationData: PropTypes.array.isRequired,
+  loading: PropTypes.bool.isRequired,
+  setSelectedItems: PropTypes.func.isRequired,
+};
 export default PublicationGroupGrid;

@@ -8,11 +8,31 @@ const PublicationGroupMaster = () => {
   const [open, setOpen] = useState(false);
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
+
+  const [publicationData, setPublicationData] = useState([]);
+  const [selectedItems, setSelectedItems] = useState([]);
+  const [loading, setLoading] = useState(false);
+
+  // * endpoints
+  let mainFetchAPI = "publicationGroupMaster";
+  let mainDeleteAPI = "removePublicationGroup";
   return (
     <Box>
-      <SearchFilters handleOpen={handleOpen} />
+      <SearchFilters
+        handleOpen={handleOpen}
+        setData={setPublicationData}
+        loading={loading}
+        setLoading={setLoading}
+        endpoint={mainFetchAPI}
+        deleteEndPoint={mainDeleteAPI}
+        selectedItems={selectedItems}
+      />
       <Divider sx={{ my: 1 }} />
-      <PublicationGroupGrid />
+      <PublicationGroupGrid
+        publicationData={publicationData}
+        loading={loading}
+        setSelectedItems={setSelectedItems}
+      />
       <PublicationGroupAddEditModal
         fromWhere="Add"
         handleClose={handleClose}

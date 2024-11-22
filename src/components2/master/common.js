@@ -12,15 +12,43 @@ export const style = {
   p: 1,
 };
 
-export const StyledWrapper = styled(Box)({
+export const StyledWrapper = styled(Box)(({ theme }) => ({
   display: "flex",
-  alignItems: "Center",
-  padding: 2,
-});
+  alignItems: "center",
+  gap: theme.spacing(1),
+  margin: theme.spacing(0.2),
+  padding: theme.spacing(1),
+  border: `1px solid ${theme.palette.primary.main}`,
+  borderRadius: theme.shape.borderRadius,
+  boxShadow: `0 4px 8px rgba(0, 0, 0, 0.1)`,
+  transition: "all 0.5s ease-in-out",
+  "&:hover": {
+    boxShadow: `0 6px 12px rgba(0, 0, 0, 0.2)`,
+    // transform: "scale(1.001)",
+  },
+  backgroundColor: theme.palette.background.default,
+}));
 
-export const StyledText = styled(Typography)({
-  color: "GrayText",
+export const StyledText = styled(Typography)(({ theme }) => ({
   fontSize: "1em",
-  textWrap: "nowrap",
-  width: 157,
-});
+  color: theme.palette.text.secondary,
+  fontWeight: "500",
+  whiteSpace: "nowrap",
+  width: 150,
+  overflow: "hidden",
+  textOverflow: "ellipsis",
+  [theme.breakpoints.down("sm")]: {
+    fontSize: "0.75em",
+    width: "auto",
+  },
+  [theme.breakpoints.up("md")]: {
+    fontSize: "0.875em",
+    width: "auto",
+  },
+  [theme.breakpoints.up("lg")]: {
+    fontSize: "1em",
+    width: 150,
+  },
+  textAlign: "left",
+  padding: theme.spacing(0.5),
+}));

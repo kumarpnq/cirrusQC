@@ -28,13 +28,13 @@ const useStyles = makeStyles((theme) => ({
     // maxWidth: 360,
   },
   paperBox: {
-    // height: 250,
+    height: 250,
     background: "#fff",
     overflow: "hidden",
   },
   select: {
     minHeight: 40,
-    maxHeight: 160,
+    maxHeight: 250,
     display: "flex",
     flexDirection: "column",
     justifyContent: "flex-start",

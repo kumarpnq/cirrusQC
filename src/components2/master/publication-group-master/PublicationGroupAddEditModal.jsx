@@ -1,8 +1,20 @@
 import PropTypes from "prop-types";
-import { Box, Modal, Button, Typography, Divider } from "@mui/material";
+import {
+  Box,
+  Modal,
+  Button,
+  Typography,
+  Divider,
+  CircularProgress,
+} from "@mui/material";
 import { useEffect, useState } from "react";
 import { StyledText, StyledWrapper } from "../common";
 import CustomTextField from "../../../@core/CutsomTextField";
+import YesOrNo from "../../../@core/YesOrNo";
+import CustomSingleSelect from "../../../@core/CustomSingleSelect2";
+import { countriesWithCode } from "../../../constants/dataArray";
+import axiosInstance from "../../../../axiosConfig";
+import toast from "react-hot-toast";
 
 const PublicationGroupAddEditModal = ({
   open,
@@ -17,19 +29,89 @@ const PublicationGroupAddEditModal = ({
   const [country, setCountry] = useState("");
   const [active, setActive] = useState("");
 
+  const [updateLoading, setUpdateLoading] = useState(false);
+
   useEffect(() => {
     if (open && row && fromWhere === "Edit") {
-      setPublicationGroupId(row?.publicationGroupId || row?.id);
-      setPublicationGroupName(row?.publicationGroupName);
-      setQc3(row?.qc3 || "");
+      setPublicationGroupId(row?.pubGroupId);
+      setPublicationGroupName(row?.pubGroupName);
+      setQc3((row?.qc3 === "Y" && "Yes") || (row?.qc3 === "N" && "No"));
       setCopyright(row?.copyright || "");
-      setCountry(row?.country || "");
-      setActive(row?.active || "");
+      setCountry(String(row?.countryId) || "");
+      setActive(
+        (row?.isActive === "Y" && "Yes") || (row?.isActive === "N" && "No")
+      );
     }
   }, [fromWhere, row, open]);
-  const handleSubmit = (event) => {
+
+  const handleSubmit = async (event) => {
     event.preventDefault();
-    console.log(row);
+    try {
+      setUpdateLoading(true);
+      const requestData = {
+        pubGroupId: publicationGroupId,
+      };
+      if (fromWhere === "Edit") {
+        if (publicationGroupName !== row?.pubGroupName) {
+          requestData.pubGroupName = publicationGroupName;
+        }
+        if ((qc3 === "Yes" ? "Y" : "N") !== row?.qc3) {
+          requestData.qc3 = qc3 === "Yes" ? "Y" : "N";
+        }
+        if (copyright !== row?.copyright) {
+          requestData.copyright = copyright;
+        }
+        if (country !== String(row?.countryId)) {
+          requestData.countryId = Number(country);
+        }
+        if (active !== (row?.isActive === "Y" ? "Yes" : "No")) {
+          requestData.isActive = active === "Yes" ? "Y" : "N";
+        }
+      }
+
+      const data = {
+        pubGroupName: publicationGroupName,
+        qc3: qc3 === "Yes" ? "Y" : "N",
+        copyright: copyright,
+        countryId: Number(country),
+      };
+
+      if (fromWhere === "Edit" && Object.keys(requestData).length === 1) {
+        return;
+      }
+
+      if (fromWhere === "Add" && Object.keys(data).length !== 4) {
+        return;
+      }
+
+      const endpoint =
+        fromWhere === "Add"
+          ? "addPublicationGroup/"
+          : "updatePublicationGroup/";
+
+      const response = await axiosInstance.post(
+        endpoint,
+        fromWhere === "Edit" ? requestData : data
+      );
+      if (response.status === 200) {
+        toast.success(
+          fromWhere === "Edit"
+            ? response.data?.data?.message
+            : response.data?.response?.message
+        );
+        setPublicationGroupId("");
+        setPublicationGroupName("");
+        setQc3("");
+        setCopyright("");
+        setCountry("");
+        setActive("");
+        handleClose();
+      }
+    } catch (error) {
+      toast.error(error.message);
+    } finally {
+      setUpdateLoading(false);
+    }
   };
   return (
     <Modal open={open} onClose={handleClose}>
@@ -39,7 +121,7 @@ const PublicationGroupAddEditModal = ({
           top: "50%",
           left: "50%",
           transform: "translate(-50%, -50%)",
-          width: 400,
+          width: 500,
           bgcolor: "background.paper",
           boxShadow: 24,
           p: 1,
@@ -47,21 +129,31 @@ const PublicationGroupAddEditModal = ({
         }}
       >
         <Typography fontSize={"1em"}>{fromWhere} Publication Group</Typography>
+
         <form
-          action=""
-          onClick={handleSubmit}
+          onSubmit={handleSubmit}
           className="p-1 border rounded-md shadow-md"
         >
-          <StyledWrapper>
-            <StyledText>ID : </StyledText>
-            <CustomTextField
-              width={"100%"}
-              placeholder={"Publication Group ID"}
-              type={"text"}
-              value={publicationGroupId}
-              setValue={setPublicationGroupId}
-            />
-          </StyledWrapper>
+          {fromWhere === "Add" && (
+            <p className="text-end text-[0.7em] text-gray-500">
+              * All fields are required.
+            </p>
+          )}
+
+          {fromWhere === "Edit" && (
+            <StyledWrapper>
+              <StyledText>ID : </StyledText>
+              <CustomTextField
+                width={"100%"}
+                placeholder={"Publication Group ID"}
+                type={"text"}
+                value={publicationGroupId}
+                setValue={setPublicationGroupId}
+                isDisabled
+              />
+            </StyledWrapper>
+          )}
+
           <StyledWrapper>
             <StyledText>Name : </StyledText>
             <CustomTextField
@@ -74,10 +166,10 @@ const PublicationGroupAddEditModal = ({
           </StyledWrapper>
           <StyledWrapper>
             <StyledText>QC3 : </StyledText>
-            <CustomTextField
-              width={"100%"}
-              placeholder={"QC3"}
-              type={"text"}
+            <YesOrNo
+              mapValue={["Yes", "No"]}
+              placeholder="QC3"
+              // width={"100%"}
               value={qc3}
               setValue={setQc3}
             />
@@ -94,31 +186,55 @@ const PublicationGroupAddEditModal = ({
           </StyledWrapper>
           <StyledWrapper>
             <StyledText>Country : </StyledText>
-            <CustomTextField
-              width={"100%"}
-              placeholder={"Country"}
-              type={"text"}
-              value={country}
-              setValue={setCountry}
+            <CustomSingleSelect
+              dropdownToggleWidth={"100%"}
+              dropdownWidth={"100%"}
+              keyId="id"
+              keyName="name"
+              options={countriesWithCode}
+              title="Country"
+              selectedItem={country}
+              setSelectedItem={setCountry}
             />
           </StyledWrapper>
-          <StyledWrapper>
-            <StyledText>Active : </StyledText>
-            <CustomTextField
-              width={"100%"}
-              placeholder={"Active"}
-              type={"text"}
-              value={active}
-              setValue={setActive}
-            />
-          </StyledWrapper>
+          {screen === "Edit" && (
+            <StyledWrapper>
+              <StyledText>Active : </StyledText>
+              <YesOrNo
+                mapValue={["Yes", "No"]}
+                placeholder="Is Active"
+                // width={"100%"}
+                value={active}
+                setValue={setActive}
+              />
+            </StyledWrapper>
+          )}
+
           <Divider sx={{ my: 1 }} />
           <Box sx={{ display: "flex", justifyContent: "flex-end", gap: 2 }}>
-            <Button onClick={handleClose} variant="outlined" size="small">
+            <Button
+              onClick={() => {
+                setPublicationGroupId("");
+                setPublicationGroupName("");
+                setQc3("");
+                setCopyright("");
+                setCountry("");
+                setActive("");
+                handleClose();
+              }}
+              variant="outlined"
+              size="small"
+            >
               Cancel
             </Button>
-            <Button type="submit" variant="contained" size="small">
-              Save
+            <Button
+              type="submit"
+              variant={updateLoading ? "outlined" : "contained"}
+              size="small"
+              sx={{ display: "flex", alignItems: "center", gap: 1 }}
+            >
+              {updateLoading && <CircularProgress size={"1em"} />}
+              {fromWhere === "Edit" ? "Update" : "Add"}
             </Button>
           </Box>
         </form>
