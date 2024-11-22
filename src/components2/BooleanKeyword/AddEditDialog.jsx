@@ -1,204 +1,99 @@
-import { useState } from "react";
 import {
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
   Button,
   Divider,
   Tabs,
   Tab,
-  Tooltip,
   Typography,
-  TextField,
   Box,
-  FormControlLabel,
-  Checkbox,
+  Modal,
+  IconButton,
+  Paper,
 } from "@mui/material";
 import PropTypes from "prop-types";
-import AddBoxIcon from "@mui/icons-material/AddBox";
-import DisabledByDefaultIcon from "@mui/icons-material/DisabledByDefault";
-import useFetchData from "../../hooks/useFetchData";
-import { url } from "../../constants/baseUrl";
-import CustomSingleSelect from "../../@core/CustomSingleSelect2";
+import CloseIcon from "@mui/icons-material/Close";
 import QueryBox from "./QueryBox";
+import { useState } from "react";
+import { EditModalActions } from "./EditModalActions";
 
 const AddEditDialog = ({ open, handleClose, fromWhere }) => {
-  const [isSplit, setIsSplit] = useState(true);
   const [tabValue, setTabValue] = useState(0);
-  const [includeExcludeTab, setIncludeExcludeTab] = useState(0);
-  const [company, setCompany] = useState("CIRRUS DEMO");
-  const [language, setLanguage] = useState("");
-
-  const { data: languageData } = useFetchData(`${url}languagelist/`);
-  const languageArray = Object.entries(languageData?.data?.languages || {}).map(
-    ([language, code]) => ({
-      language,
-      code,
-    })
-  );
-
   const handleTabChange = (event, newValue) => {
     setTabValue(newValue);
   };
-  const handleIncludeExcludeTabChange = (event, newValue) => {
-    setIncludeExcludeTab(newValue);
-  };
   return (
-    <Dialog
-      open={open}
-      onClose={handleClose}
-      fullWidth
-      maxWidth="xxl"
-      PaperProps={{
-        style: {
-          height: "99vh",
-          width: "99vw",
-        },
-      }}
-    >
+    <Modal open={open} onClose={handleClose}>
       <Box
         sx={{
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "space-between",
+          position: "absolute",
+          top: "50%",
+          left: "50%",
+          transform: "translate(-50%, -50%)",
+          width: "99vw",
+          bgcolor: "background.paper",
+          border: "1px solid #000",
+          boxShadow: 24,
+          height: "99vh",
+          overflow: "scroll",
+          p: 1,
         }}
       >
-        <DialogTitle fontSize={"1em"}>{fromWhere} Item</DialogTitle>
-        <FormControlLabel
-          label="Split"
-          control={
-            <Checkbox
-              size="small"
-              checked={isSplit}
-              onChange={(e) => {
-                setIsSplit(e.target.checked);
-              }}
-            />
-          }
-        />
-      </Box>
-      <DialogContent>
-        <Tabs
-          value={tabValue}
-          onChange={handleTabChange}
-          aria-label="language tabs"
-        >
-          <Tab label="English" />
-          <Tab label="Other" />
-        </Tabs>
-        <Divider />
-        {isSplit && (
-          <Tabs
-            value={includeExcludeTab}
-            onChange={handleIncludeExcludeTabChange}
-            aria-label="keyword tabs"
-          >
-            <Tab
-              label={
-                <Tooltip title="Include Query">
-                  <AddBoxIcon />
-                </Tooltip>
-              }
-            />
-            <Tab
-              label={
-                <Tooltip title="Exclude Query">
-                  <DisabledByDefaultIcon />
-                </Tooltip>
-              }
-            />
-          </Tabs>
-        )}
-
-        {/* company & language filter */}
-        <form
-          onSubmit={(event) => {
-            event.preventDefault();
+        <Box
+          sx={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
           }}
-          className="flex items-center gap-1 p-2 mt-1 border border-gray-300 rounded-md shadow-lg"
         >
-          <Typography
-            component={"div"}
-            sx={{ display: "flex", alignItems: "center", gap: 1 }}
+          <Typography fontSize={"1em"}>{fromWhere} Item</Typography>
+          <IconButton onClick={handleClose}>
+            <CloseIcon />
+          </IconButton>
+        </Box>
+        <Box>
+          <Tabs
+            value={tabValue}
+            onChange={handleTabChange}
+            aria-label="language tabs"
           >
-            <p>Company : </p>
-            <TextField
-              type="text"
-              aria-readonly
-              value={company}
-              InputProps={{
-                style: {
-                  fontSize: "0.8rem",
-                  height: 25,
-                  width: 250,
-                },
-              }}
-            />
-          </Typography>
-
-          {!!tabValue && (
-            <>
-              {" "}
-              <Typography
-                component={"div"}
-                sx={{ display: "flex", alignItems: "center", gap: 1 }}
-              >
-                <span>Language : </span>
-                <CustomSingleSelect
-                  options={languageArray}
-                  dropdownToggleWidth={250}
-                  dropdownWidth={250}
-                  keyId="code"
-                  keyName="language"
-                  setSelectedItem={setLanguage}
-                  selectedItem={language}
-                  title="Language"
-                />
-              </Typography>
-              <Button variant="outlined" size="small" type="submit">
-                Search
-              </Button>
-            </>
-          )}
-        </form>
-        {isSplit ? (
-          <>
-            {includeExcludeTab ? (
-              <QueryBox isSplit={isSplit} />
-            ) : (
-              <QueryBox isSplit={isSplit} />
-            )}
-          </>
-        ) : (
-          <>
-            {/* include query*/}
-            <QueryBox isSplit={isSplit} type={"Include Query"} />
-            {/* exclude query */}
-            <QueryBox isSplit={isSplit} type={"Exclude Query"} />
-          </>
-        )}
-      </DialogContent>
-      <Divider />
-      <DialogActions>
-        <Button
-          onClick={handleClose}
-          color="primary"
-          size="small"
-          variant="outlined"
+            <Tab label="English" />
+            <Tab label="Other" />
+          </Tabs>
+          <Divider />
+          <EditModalActions tabValue={tabValue} />
+          <QueryBox type={"Include Query"} />
+          {/* exclude query */}
+          <QueryBox type={"Exclude Query"} />
+        </Box>
+        <Divider />
+        <Box
+          component={Paper}
+          sx={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "end",
+            py: 1,
+            gap: 1,
+          }}
         >
-          Cancel
-        </Button>
-        <Button
-          onClick={handleClose}
-          color="primary"
-          size="small"
-          variant="outlined"
-        >
-          Save
-        </Button>
-      </DialogActions>
-    </Dialog>
+          <Button
+            onClick={handleClose}
+            color="primary"
+            size="small"
+            variant="outlined"
+          >
+            Cancel
+          </Button>
+          <Button
+            onClick={handleClose}
+            color="primary"
+            size="small"
+            variant="outlined"
+          >
+            Save
+          </Button>
+        </Box>
+      </Box>
+    </Modal>
   );
 };
 

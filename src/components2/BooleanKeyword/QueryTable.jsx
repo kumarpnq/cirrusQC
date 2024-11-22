@@ -1,53 +1,63 @@
 import React from "react";
 import {
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
+  List,
+  ListItem,
   IconButton,
-  Button,
-  Menu,
   MenuItem,
   Select,
   FormControl,
-  InputLabel,
-  Paper,
+  Box,
+  Tooltip,
 } from "@mui/material";
+import { styled } from "@mui/system";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditNoteIcon from "@mui/icons-material/EditNote";
-import { makeStyles } from "@mui/styles";
+import TranslateIcon from "@mui/icons-material/Translate";
 
-const useStyles = makeStyles(() => ({
-  dropDowns: {
-    height: 25,
-    fontSize: "0.8em",
+// Styled Components
+const StyledList = styled(List)({
+  borderRadius: "8px",
+  boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
+  backgroundColor: "#fff",
+  width: "100%",
+});
+
+const StyledListItem = styled(ListItem)({
+  display: "flex",
+  alignItems: "center",
+  justifyContent: "space-between",
+  padding: 1,
+  border: "1px solid #e0e0e0",
+  borderRadius: "8px",
+  marginBottom: "8px",
+  backgroundColor: "#fff",
+  transition: "transform 0.6s, box-shadow 0.2s, background-color 0.2s",
+
+  "&:hover": {
+    backgroundColor: "#f5f5f5",
+    boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
+    transform: "scale(1.01)",
   },
-  tableHeader: {
-    backgroundColor: "rgb(10 79 125)",
-    color: "white",
+
+  "&:active": {
+    backgroundColor: "#e0e0e0",
+    transform: "scale(1)",
   },
-  tableRow: {
-    "&:hover": {
-      backgroundColor: "#f5f5f5",
-    },
+
+  "&:last-child": {
+    borderBottom: "none",
   },
-  translateButton: {
-    borderColor: "#1976d2",
-    color: "#1976d2",
-    "&:hover": {
-      borderColor: "#0d47a1",
-      color: "#0d47a1",
-    },
-  },
-  queryCell: {
-    padding: 2,
-    whiteSpace: "nowrap",
-    overflow: "hidden",
-    textOverflow: "ellipsis",
-  },
-}));
+});
+
+const QueryBox = styled(Box)({
+  flexGrow: 1,
+  overflow: "hidden",
+  whiteSpace: "nowrap",
+  textOverflow: "ellipsis",
+  fontWeight: 500,
+  color: "#333",
+  marginLeft: 2,
+});
 
 const languages = [
   { label: "English", value: "en" },
@@ -59,20 +69,11 @@ const languages = [
 const data = [
   {
     id: 1,
-    query: "Sample Query 1",
-  },
-  {
-    id: 2,
-    query: "Sample Query 2",
-  },
-  {
-    id: 3,
-    query: "Sample Query 3",
+    query: `"Aditya birla power composites" OR ABPCL`,
   },
 ];
 
-const QueryTable = () => {
-  const classes = useStyles();
+const QueryList = () => {
   const [anchorEl, setAnchorEl] = React.useState(null);
   const [selectedLanguage, setSelectedLanguage] = React.useState("");
 
@@ -84,115 +85,59 @@ const QueryTable = () => {
     setAnchorEl(event.currentTarget);
   };
 
-  const handleClose = () => {
-    setAnchorEl(null);
-  };
-
   return (
-    <TableContainer
-      component={Paper}
-      sx={{ mt: 0.5, borderRadius: 2, boxShadow: 3 }}
-    >
-      <Table>
-        <TableHead>
-          <TableRow className={classes.tableHeader}>
-            <TableCell
+    <StyledList>
+      {data.map((row) => (
+        <StyledListItem key={row.id}>
+          {/* Action Buttons */}
+          <Tooltip title="Delete">
+            <IconButton size="small">
+              <DeleteIcon />
+            </IconButton>
+          </Tooltip>
+          <Tooltip title="Edit">
+            <IconButton color="primary" size="small">
+              <EditNoteIcon />
+            </IconButton>
+          </Tooltip>
+          <Tooltip title="Translate">
+            <IconButton color="primary" size="small" onClick={handleTranslate}>
+              <TranslateIcon />
+            </IconButton>
+          </Tooltip>
+
+          {/* Language Selector */}
+          <FormControl sx={{ minWidth: 120, mx: 1, height: 25 }}>
+            <Select
+              value={selectedLanguage}
+              onChange={handleLanguageChange}
+              displayEmpty
               sx={{
-                width: "15%",
-                fontWeight: "bold",
-                color: "white",
-                letterSpacing: "1px",
+                height: 25,
+                lineHeight: "25px",
+                "& .MuiSelect-select": {
+                  padding: "0px 8px",
+                  height: "25px",
+                },
               }}
             >
-              Action
-            </TableCell>
-            <TableCell
-              sx={{
-                width: "15%",
-                fontWeight: "bold",
-                color: "white",
-                letterSpacing: "1px",
-              }}
-            >
-              Translate
-            </TableCell>
-            <TableCell
-              sx={{
-                width: "15%",
-                fontWeight: "bold",
-                color: "white",
-                letterSpacing: "1px",
-              }}
-            >
-              Language
-            </TableCell>
-            <TableCell
-              sx={{
-                width: "55%",
-                fontWeight: "bold",
-                color: "white",
-                letterSpacing: "1px",
-              }}
-            >
-              Query
-            </TableCell>
-          </TableRow>
-        </TableHead>
-        <TableBody>
-          {data.map((row) => (
-            <TableRow key={row.id} className={classes.tableRow}>
-              <TableCell>
-                <IconButton color="primary">
-                  <EditNoteIcon />
-                </IconButton>
-                <IconButton color="error">
-                  <DeleteIcon />
-                </IconButton>
-              </TableCell>
-              <TableCell>
-                <Button
-                  variant="outlined"
-                  onClick={handleTranslate}
-                  size="small"
-                  className={classes.translateButton}
-                >
-                  Translate
-                </Button>
-                <Menu
-                  anchorEl={anchorEl}
-                  open={Boolean(anchorEl)}
-                  onClose={handleClose}
-                >
-                  <MenuItem onClick={handleClose}>Translate Option 1</MenuItem>
-                  <MenuItem onClick={handleClose}>Translate Option 2</MenuItem>
-                </Menu>
-              </TableCell>
-              <TableCell>
-                <FormControl fullWidth>
-                  <Select
-                    value={selectedLanguage}
-                    onChange={handleLanguageChange}
-                    displayEmpty
-                    className={`${classes.dropDowns}`}
-                  >
-                    <MenuItem value="">
-                      <em>None</em>
-                    </MenuItem>
-                    {languages.map((lang) => (
-                      <MenuItem key={lang.value} value={lang.value}>
-                        {lang.label}
-                      </MenuItem>
-                    ))}
-                  </Select>
-                </FormControl>
-              </TableCell>
-              <TableCell className={classes.queryCell}>{row.query}</TableCell>
-            </TableRow>
-          ))}
-        </TableBody>
-      </Table>
-    </TableContainer>
+              <MenuItem value="">
+                <em>Language</em>
+              </MenuItem>
+              {languages.map((lang) => (
+                <MenuItem key={lang.value} value={lang.value}>
+                  {lang.label}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+
+          {/* Query Text */}
+          <QueryBox>{row.query}</QueryBox>
+        </StyledListItem>
+      ))}
+    </StyledList>
   );
 };
 
-export default QueryTable;
+export default QueryList;

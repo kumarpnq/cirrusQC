@@ -3,21 +3,21 @@ import { useState } from "react";
 import PropTypes from "prop-types";
 import QueryTable from "./QueryTable";
 
-const QueryBox = ({ isSplit, type }) => {
+const QueryBox = ({ type }) => {
   const [query, setQuery] = useState("");
 
   return (
-    <Box>
+    <Box sx={{ border: "1px solid #ddd", mt: 1, p: 0.5 }}>
       <Box
         sx={{
-          display: !isSplit ? "flex" : "block",
+          display: "flex",
           justifyContent: "space-between",
           alignItems: "center",
-          textAlign: !isSplit ? "start" : "end",
+          textAlign: "start",
           my: 0.5,
         }}
       >
-        {!isSplit && <Typography variant="body2">{type}</Typography>}
+        {<Typography variant="body2">{type}</Typography>}
         <Button size="small" variant="outlined">
           Validate & Add
         </Button>
@@ -28,7 +28,7 @@ const QueryBox = ({ isSplit, type }) => {
         onChange={(e) => setQuery(e.target.value)}
         fullWidth
         multiline
-        rows={5}
+        rows={4}
         placeholder="Query"
       />
       <QueryTable />
