@@ -24,8 +24,8 @@ import { FixedSizeList as ListWindow } from "react-window";
 
 const useStyles = makeStyles((theme) => ({
   formControl: {
-    minWidth: 240,
-    maxWidth: 360,
+    // minWidth: 240,
+    // maxWidth: 360,
   },
   paperBox: {
     // height: 250,
@@ -100,7 +100,8 @@ const CustomMultiSelect = ({
     setSearchTerm(event.target.value);
   };
 
-  const handleToggle = () => {
+  const handleToggle = (event) => {
+    event?.preventDefault();
     setListOpen((prev) => !prev);
   };
 
@@ -132,14 +133,14 @@ const CustomMultiSelect = ({
   };
 
   return (
-    <Box>
+    <Box sx={{ width: "100%" }}>
       <FormControl className={classes.formControl}>
         <Box
           ref={anchorRef}
           className={classes.dropdownToggle}
           onClick={handleToggle}
           sx={{
-            width: dropdownToggleWidth,
+            width: dropdownToggleWidth || "100%",
             display: "flex",
             justifyContent: "space-between",
             alignItems: "center",
@@ -174,7 +175,10 @@ const CustomMultiSelect = ({
         >
           <ClickAwayListener onClickAway={handleClickAway}>
             <Paper
-              sx={{ width: dropdownWidth, height: isIncreased ? 400 : 250 }}
+              sx={{
+                width: dropdownWidth || "100%",
+                height: isIncreased ? 400 : 250,
+              }}
               className={classes.paperBox}
             >
               <List>

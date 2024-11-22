@@ -25,6 +25,8 @@ import {
   pubTypesAll,
   zones,
 } from "../../constants/dataArray";
+import useFetchMongoData from "../../hooks/useFetchMongoData";
+import CustomMultiSelect from "../../@core/CustomMultiSelect";
 
 const FieldWrapper = styled(Box)(({ theme }) => ({
   display: "flex",
@@ -88,6 +90,7 @@ const AddModal = ({ open, handleClose, row, screen }) => {
   const [active, setActive] = useState("");
   const [zone, setZone] = useState("");
   const [populate, setPopulate] = useState("");
+  const [clusters, setClusters] = useState([]);
 
   // * special for online
   const [fullCoverage, setFullCoverage] = useState("");
@@ -112,6 +115,11 @@ const AddModal = ({ open, handleClose, row, screen }) => {
 
   const publicationGroups =
     publicationGroupsData?.data?.publication_groups || [];
+
+  const { data: clusterData } = useFetchMongoData(
+    `clusterMaster/?clusterType=${screen}`
+  );
+  const clusterArrayToMap = clusterData?.data?.data || [];
 
   const [selectedTab, setSelectedTab] = useState(0);
   const [fetchLoading, setFetchLoading] = useState(false);
@@ -143,6 +151,7 @@ const AddModal = ({ open, handleClose, row, screen }) => {
       setPopulate(publicationDataLocal?.isPopulate === "Y" ? "Yes" : "No");
       setActive(publicationDataLocal?.isActive === "Y" ? "Yes" : "No");
       setTemporary(publicationDataLocal?.isTemporary === "Y" ? "Yes" : "No");
+      setClusters(publicationDataLocal?.clusterIds || []);
 
       // * for online only
       if (screen === "online") {
@@ -224,6 +233,7 @@ const AddModal = ({ open, handleClose, row, screen }) => {
       if (zone !== publicationData?.zone) {
         requestData.zone = zone;
       }
+
       const newsTypeKey = screen === "online" ? "newType" : "newsType";
       if (type !== publicationData?.[newsTypeKey]) {
         requestData[newsTypeKey] = newsTypeKey;
@@ -461,6 +471,21 @@ const AddModal = ({ open, handleClose, row, screen }) => {
                     selectedItem={language}
                     setSelectedItem={setLanguage}
                     title="Language"
+                  />
+                  {/* </div> */}
+                </FieldWrapper>
+                <FieldWrapper>
+                  <FieldLabel>Cluster :</FieldLabel>
+                  {/* <div className="ml-24"> */}
+                  <CustomMultiSelect
+                    dropdownToggleWidth={355}
+                    dropdownWidth={355}
+                    keyId="clusterId"
+                    keyName="clusterName"
+                    options={clusterArrayToMap}
+                    selectedItems={clusters}
+                    setSelectedItems={setClusters}
+                    title="Cluster"
                   />
                   {/* </div> */}
                 </FieldWrapper>

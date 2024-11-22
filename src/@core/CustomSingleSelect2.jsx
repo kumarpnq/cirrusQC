@@ -91,7 +91,8 @@ const CustomSingleSelect = ({
     setSearchTerm(event.target.value);
   };
 
-  const handleToggle = () => {
+  const handleToggle = (event) => {
+    event?.preventDefault();
     setListOpen((prev) => !prev);
   };
 
