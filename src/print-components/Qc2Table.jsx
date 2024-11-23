@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { Box, IconButton, Tooltip } from "@mui/material";
+import { Box, Tooltip } from "@mui/material";
 import PropTypes from "prop-types";
 import { FindSection } from "./find-section/FindSection";
 import EditSection from "./edit-section/EditSection";
@@ -12,7 +12,6 @@ import { EditAttributesOutlined } from "@mui/icons-material";
 import { TableVirtuoso } from "react-virtuoso";
 import TotalRecordsCard from "../@core/TotalRecords";
 import RadialMenu from "../@core/RadialMenu";
-import FlagIcon from "@mui/icons-material/Flag";
 import QC3Modal from "../components/qc3/QC3Modal";
 
 const Qc2Table = ({
@@ -49,7 +48,11 @@ const Qc2Table = ({
   useEffect(() => {
     if (qc2PrintTableData && qc2PrintTableData?.length > 0) {
       const header = Object.keys(qc2PrintTableData[0]);
-      setTableHeaders(header);
+
+      let unwantedHeaders = ["default_link", "qc3_status"];
+      let filteredHeaders = header.filter((i) => !unwantedHeaders.includes(i));
+
+      setTableHeaders(filteredHeaders);
     }
   }, [qc2PrintTableData]);
 
@@ -298,8 +301,8 @@ const Qc2Table = ({
                           (item === "qc2_by" && "pl-28") ||
                           (item === "qc2_on" && "pl-32 pr-20") ||
                           (item === "partial_qc_by" && "pl-24") ||
-                          (item === "partial_qc_on" && "pl-28") ||
-                          (item === "default_link" && "pl-28 pr-44")
+                          (item === "partial_qc_on" && "pl-28 pr-28")
+                          // (item === "default_link" && "pl-28 pr-44")
                         }`}
                         onClick={() => sortTableData(item)}
                       >
@@ -585,9 +588,9 @@ const Qc2Table = ({
                         {items.partial_qc_on}
                       </div>
                     </td>
-                    <td className="px-3 py-2 whitespace-nowrap">
+                    {/* <td className="px-3 py-2 whitespace-nowrap">
                       <div style={{ width: "300px" }}>{items.default_link}</div>
-                    </td>
+                    </td> */}
                   </tr>
                 </tbody>
               )}
