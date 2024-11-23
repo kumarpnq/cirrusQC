@@ -387,7 +387,7 @@ const ClientSection = ({ selectedArticle, selectedClient }) => {
           prominence: row.prominence,
           summary: row.detail_summary,
           qc2Remark: row.remarks,
-          qc3_status: "Z",
+          // qc3_status: "Z",
         },
       ];
       const data = { data: requestData, qcType: "QC3" };
@@ -483,22 +483,20 @@ const ClientSection = ({ selectedArticle, selectedClient }) => {
                   </td>
                   <td className="text-[0.9em]">{item.company_name}</td>
                   <td>
-                    {item.qc3_status !== "P" &&
-                      item.qc3_status !== "Y" &&
-                      item.qc3_status !== "Z" && (
-                        <Tooltip title="Accept">
-                          <IconButton
-                            onClick={() => handleAccept(item)}
-                            disabled={loadingRowId === item.company_id}
-                          >
-                            {loadingRowId === item.company_id ? (
-                              <CircularProgress size={"1em"} />
-                            ) : (
-                              <CheckIcon className="text-primary" />
-                            )}
-                          </IconButton>
-                        </Tooltip>
-                      )}
+                    {item.qc3_status !== "Y" && item.qc3_status !== "Z" && (
+                      <Tooltip title="Accept">
+                        <IconButton
+                          onClick={() => handleAccept(item)}
+                          disabled={loadingRowId === item.company_id}
+                        >
+                          {loadingRowId === item.company_id ? (
+                            <CircularProgress size={"1em"} />
+                          ) : (
+                            <CheckIcon className="text-primary" />
+                          )}
+                        </IconButton>
+                      </Tooltip>
+                    )}
                   </td>
                   <td>
                     {item.qc3_status === "N" || item.qc3_status === "E" ? (
@@ -635,9 +633,9 @@ const ClientSection = ({ selectedArticle, selectedClient }) => {
         handleClose={handleCloseAccept}
         articleType="online"
         selectedRow={selectedRowForAccept}
-        // setModifiedRows={setModifiedRows}
-        // setMainTableData={setEditableTagData}
-        setFetchTagDataAfterChange={setFetchTagDataAfterChange}
+        setModifiedRows={setModifiedRows}
+        setMainTableData={setEditableTagData}
+        // setFetchTagDataAfterChange={setFetchTagDataAfterChange}
       />
       <MapExtraModal
         open={openMapExtra}

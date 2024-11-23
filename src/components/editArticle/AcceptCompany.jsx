@@ -17,7 +17,7 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import { url } from "../../constants/baseUrl";
 import { toast } from "react-toastify";
-import axiosInstance from "../../../axiosConfigOra";
+// import axiosInstance from "../../../axiosConfigOra";
 import CloseIcon from "@mui/icons-material/Close";
 
 const CustomToolbar = () => {
@@ -35,9 +35,9 @@ const AcceptCompany = ({
   handleClose,
   selectedRow,
   articleType,
-  // setModifiedRows,
-  // setMainTableData,
-  setFetchTagDataAfterChange,
+  setModifiedRows,
+  setMainTableData,
+  // setFetchTagDataAfterChange,
 }) => {
   const [rows, setRows] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -47,6 +47,8 @@ const AcceptCompany = ({
   const accessKey = articleType === "print" ? "article_id" : "socialfeed_id";
   const prominenceKey =
     articleType === "online" ? "prominence" : "manual_prominence";
+
+  const selectedItem = selectedRows[0];
 
   useEffect(() => {
     const getDataForArticleOrSocialFeed = async () => {
@@ -80,96 +82,98 @@ const AcceptCompany = ({
     }
   }, [selectedRow, articleType, open]);
 
-  // const handleSaveRecord = () => {
-  //   if (!selectedItem || !selectedRow) {
-  //     toast.warning("Please select a row.");
-  //     return;
-  //   }
-
-  //   const data = {
-  //     [accessKey]: selectedRow[accessKey],
-  //     company_id: selectedRow.company_id,
-  //     company_name: selectedRow.company_name,
-  //     keyword: selectedItem.keyword,
-  //     [prominenceKey]: selectedItem.prominence,
-  //     reporting_subject: selectedItem.reportingSubject,
-  //     reporting_tone: selectedItem.sentiment,
-  //     qc3_status: "Z",
-  //     update_type: "U",
-  //   };
-
-  //   setModifiedRows((prevModifiedRows) => {
-  //     const existingRecordIndex = prevModifiedRows.findIndex(
-  //       (row) =>
-  //         row[accessKey] === selectedRow[accessKey] &&
-  //         row.company_id === selectedRow.company_id
-  //     );
-
-  //     if (existingRecordIndex !== -1) {
-  //       const updatedModifiedRows = [...prevModifiedRows];
-  //       updatedModifiedRows[existingRecordIndex] = {
-  //         ...updatedModifiedRows[existingRecordIndex],
-  //         ...data,
-  //       };
-  //       return updatedModifiedRows;
-  //     } else {
-  //       return [...prevModifiedRows, data];
-  //     }
-  //   });
-
-  //   setMainTableData((prevMainTableData) => {
-  //     const existingMainTableIndex = prevMainTableData.findIndex(
-  //       (row) =>
-  //         row[accessKey] === selectedRow[accessKey] &&
-  //         row.company_id === selectedRow.company_id
-  //     );
-
-  //     if (existingMainTableIndex !== -1) {
-  //       const updatedMainTableData = [...prevMainTableData];
-  //       updatedMainTableData[existingMainTableIndex] = {
-  //         ...updatedMainTableData[existingMainTableIndex],
-  //         ...data,
-  //       };
-  //       return updatedMainTableData;
-  //     } else {
-  //       return [...prevMainTableData, data];
-  //     }
-  //   });
-
-  //   handleClose();
-  // };
-
-  const handleInsertRecords = async () => {
-    try {
-      setInsertLoading(true);
-      const preparedCombineData = selectedRows.map((item) => ({
-        [accessKey]: selectedRow[accessKey],
-        company_id: selectedRow.company_id,
-        company_name: selectedRow.company_name,
-        keyword: item.keyword,
-        [prominenceKey]: item.prominence,
-        reporting_subject: item.reportingSubject,
-        reporting_tone: item.sentiment,
-        qc3_status: "Z",
-        update_type: "I",
-      }));
-      const endpoint =
-        articleType === "online"
-          ? "updatesocialfeedtagdetails/"
-          : "insertarticledetails/";
-      const response = await axiosInstance.post(endpoint, preparedCombineData);
-      if (response.data.result.success.length) {
-        toast.success(response.data.result.success[0]?.message);
-        setFetchTagDataAfterChange((prev) => !prev);
-      } else {
-        toast.warning(response.data.result.errors[0]?.error);
-      }
-    } catch (error) {
-      console.log(error.message);
-    } finally {
-      setInsertLoading(false);
+  const handleSaveRecord = () => {
+    if (!selectedItem || !selectedRow) {
+      toast.warning("Please select a row.");
+      return;
     }
+
+    const data = {
+      [accessKey]: selectedRow[accessKey],
+      company_id: selectedRow.company_id,
+      company_name: selectedRow.company_name,
+      keyword: selectedItem.keyword,
+      [prominenceKey]: selectedItem.prominence,
+      reporting_subject: selectedItem.reportingSubject,
+      reporting_tone: selectedItem.sentiment,
+      qc3_status: "Z",
+      update_type: "U",
+    };
+
+    setModifiedRows((prevModifiedRows) => {
+      const existingRecordIndex = prevModifiedRows.findIndex(
+        (row) =>
+          row[accessKey] === selectedRow[accessKey] &&
+          row.company_id === selectedRow.company_id
+      );
+
+      if (existingRecordIndex !== -1) {
+        const updatedModifiedRows = [...prevModifiedRows];
+        updatedModifiedRows[existingRecordIndex] = {
+          ...updatedModifiedRows[existingRecordIndex],
+          ...data,
+        };
+        return updatedModifiedRows;
+      } else {
+        return [...prevModifiedRows, data];
+      }
+    });
+
+    setMainTableData((prevMainTableData) => {
+      const existingMainTableIndex = prevMainTableData.findIndex(
+        (row) =>
+          row[accessKey] === selectedRow[accessKey] &&
+          row.company_id === selectedRow.company_id
+      );
+
+      if (existingMainTableIndex !== -1) {
+        const updatedMainTableData = [...prevMainTableData];
+        updatedMainTableData[existingMainTableIndex] = {
+          ...updatedMainTableData[existingMainTableIndex],
+          ...data,
+        };
+        return updatedMainTableData;
+      } else {
+        return [...prevMainTableData, data];
+      }
+    });
+
+    handleClose();
+    setSelectedRows([]);
+    setRowSelectionModel([]);
   };
+
+  // const handleInsertRecords = async () => {
+  //   try {
+  //     setInsertLoading(true);
+  //     const preparedCombineData = selectedRows.map((item) => ({
+  //       [accessKey]: selectedRow[accessKey],
+  //       company_id: selectedRow.company_id,
+  //       company_name: selectedRow.company_name,
+  //       keyword: item.keyword,
+  //       [prominenceKey]: item.prominence,
+  //       reporting_subject: item.reportingSubject,
+  //       reporting_tone: item.sentiment,
+  //       qc3_status: "Z",
+  //       update_type: "I",
+  //     }));
+  //     const endpoint =
+  //       articleType === "online"
+  //         ? "updatesocialfeedtagdetails/"
+  //         : "insertarticledetails/";
+  //     const response = await axiosInstance.post(endpoint, preparedCombineData);
+  //     if (response.data.result.success.length) {
+  //       toast.success(response.data.result.success[0]?.message);
+  //       setFetchTagDataAfterChange((prev) => !prev);
+  //     } else {
+  //       toast.warning(response.data.result.errors[0]?.error);
+  //     }
+  //   } catch (error) {
+  //     console.log(error.message);
+  //   } finally {
+  //     setInsertLoading(false);
+  //   }
+  // };
 
   const columns = [
     {
@@ -234,11 +238,11 @@ const AcceptCompany = ({
             <Button
               size="small"
               variant="outlined"
-              onClick={handleInsertRecords}
+              onClick={handleSaveRecord}
               sx={{ display: "flex", alignItems: "center", gap: 1 }}
             >
               {insertLoading && <CircularProgress size={"1em"} />}
-              Insert
+              Update
             </Button>
           )}
           <Divider sx={{ my: 1 }} />
@@ -251,6 +255,7 @@ const AcceptCompany = ({
               slots={{ toolbar: CustomToolbar }}
               density="compact"
               checkboxSelection
+              disableMultipleRowSelection
               rowSelectionModel={rowSelectionModel}
               onRowSelectionModelChange={handleRowSelectionChange}
               hideFooterSelectedRowCount
@@ -267,7 +272,8 @@ AcceptCompany.propTypes = {
   handleClose: PropTypes.func.isRequired,
   articleType: PropTypes.string.isRequired,
   selectedRow: PropTypes.object,
-  setFetchTagDataAfterChange: PropTypes.func,
+  setModifiedRows: PropTypes.func,
+  setMainTableData: PropTypes.func,
 };
 
 export default AcceptCompany;

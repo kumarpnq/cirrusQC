@@ -166,7 +166,7 @@ const MapExtraModal = ({
         qc3_status: "Z",
       }));
 
-      const preparedOnlineData = { data: dataForOnline, qcType: "QC2" };
+      const preparedOnlineData = { data: dataForOnline, qcType: "QC3" };
       const dataForPrint = dbSelectedRows.map((item) => ({
         articleId: articleId,
         companyId: item.companyId,

@@ -634,22 +634,20 @@ const SecondSection = (props) => {
                   >
                     <td className="p-2 ">{row.company_name}</td>
                     <td>
-                      {row.qc3_status !== "N" &&
-                        row.qc3_status !== "Y" &&
-                        row.qc3_status !== "Z" && (
-                          <Tooltip title="Accept">
-                            <IconButton
-                              onClick={() => handleAccept(row)}
-                              disabled={acceptRowId === row.company_id}
-                            >
-                              {acceptRowId === row.company_id ? (
-                                <CircularProgress size={"1em"} />
-                              ) : (
-                                <CheckIcon className="text-primary" />
-                              )}
-                            </IconButton>
-                          </Tooltip>
-                        )}
+                      {row.qc3_status !== "Y" && row.qc3_status !== "Z" && (
+                        <Tooltip title="Accept">
+                          <IconButton
+                            onClick={() => handleAccept(row)}
+                            disabled={acceptRowId === row.company_id}
+                          >
+                            {acceptRowId === row.company_id ? (
+                              <CircularProgress size={"1em"} />
+                            ) : (
+                              <CheckIcon className="text-primary" />
+                            )}
+                          </IconButton>
+                        </Tooltip>
+                      )}
                     </td>
 
                     <td>
@@ -832,9 +830,9 @@ const SecondSection = (props) => {
         handleClose={handleCloseAccept}
         articleType="print"
         selectedRow={selectedRowForAccept}
-        // setModifiedRows={setModifiedRows}
-        // setMainTableData={setEditableTagData}
-        setFetchTagDataAfterChange={setFetchTagDataAfterChange}
+        setModifiedRows={setModifiedRows}
+        setMainTableData={setEditableTagData}
+        // setFetchTagDataAfterChange={setFetchTagDataAfterChange}
       />
       <MapExtraModal
         open={openMapExtra}
