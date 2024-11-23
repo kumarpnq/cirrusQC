@@ -18,6 +18,8 @@ import useFetchData from "../../hooks/useFetchData";
 import { url } from "../../constants/baseUrl";
 import CustomButton from "../../@core/CustomButton";
 import Delete from "../../@core/Delete";
+import axiosInstance from "../../../axiosConfigOra";
+import { getRowClass } from "../../utils/getRowClass";
 
 const useStyles = makeStyles(() => ({
   dropDowns: {
@@ -347,6 +349,34 @@ const EditSection = ({
     setOpenDeleteDialog((prev) => !prev);
   };
 
+  const handleSaveQc3 = async () => {
+    try {
+      const filteredRows = selectedItems.filter(
+        (row) => getRowClass(row) === "accept"
+      );
+      const data = filteredRows.map((item) => ({
+        articleId: item.article_id,
+        companyId: item.company_id,
+        ...item,
+      }));
+
+      const response = await axiosInstance.post("updatePrint2database/", data);
+      if (response.data.result.success.length) {
+        toast.success(
+          `${response.data.result.success.length} Records updated.`
+        );
+        setSelectedItems([]);
+      }
+      if (response.data.result.errors.length > 0) {
+        toast.success(
+          `${response.data.result.success.length} Records not updated.`
+        );
+      }
+    } catch (error) {
+      toast.error("Something went wrong.");
+    }
+  };
+
   return (
     <>
       <Accordion sx={{ mt: 0.2 }}>
@@ -399,6 +429,8 @@ const EditSection = ({
               onClick={handleSave}
               isLoading={saveLoading}
             />
+            {}
+            <Button btnText="Accept Auto" onClick={handleSaveQc3} />
             {!!selectedItems.length && (
               <CustomButton
                 btnText="Delete"

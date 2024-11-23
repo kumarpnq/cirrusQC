@@ -3,7 +3,7 @@ import { IoIosArrowRoundDown, IoIosArrowRoundUp } from "react-icons/io";
 import getHeaderAbbreviation from "../../constants/concatHeader";
 import React, { useEffect, useState } from "react";
 import PropTypes from "prop-types";
-import { Box, IconButton, TableCell, TableRow, Tooltip } from "@mui/material";
+import { Box, TableCell, TableRow, Tooltip } from "@mui/material";
 import TableRowCheckBox from "./TableRow";
 import { AiOutlineLoading } from "react-icons/ai";
 import { EditAttributesOutlined } from "@mui/icons-material";
@@ -11,8 +11,9 @@ import UploadDialog from "../editArticle/UploadDialog";
 import { TableVirtuoso } from "react-virtuoso";
 import TotalRecordsCard from "../../@core/TotalRecords";
 import RadialMenu from "../../@core/RadialMenu";
-import FlagIcon from "@mui/icons-material/Flag";
+
 import QC3Modal from "../qc3/QC3Modal";
+import { getRowClass } from "../../utils/getRowClass";
 
 const useStyles = makeStyles(() => ({
   dropDowns: {
@@ -283,7 +284,7 @@ const MainTable = ({
                 selectedRowData.includes(rowData) ? "selected-row" : ""
               } ${
                 highlightUpdatedRows.includes(rowData) ? "updated-row" : ""
-              } ${"qc3-" + rowData.qc3_status}`}
+              } ${"qc3-" + rowData.qc3_status} ${getRowClass(rowData)}`}
             >
               <TableCell
                 size="small"

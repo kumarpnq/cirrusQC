@@ -27,6 +27,8 @@ import SubjectSearchable from "../research-dropdowns/table-dropdowns/SubjectSear
 import SearchableCategory from "../research-dropdowns/table-dropdowns/SearchableCategory";
 import Delete from "../deleteData/popupModal/Delete";
 import CustomButton from "../../@core/CustomButton";
+import axiosInstance from "../../../axiosConfigOra";
+import { getRowClass } from "../../utils/getRowClass";
 
 const useStyles = makeStyles(() => ({
   dropDowns: {
@@ -498,6 +500,36 @@ const ResearchTable = ({
   const handleDialogOpen = () => {
     setOpenDeleteDialog((prev) => !prev);
   };
+
+  // * accept auto
+  const handleAcceptAuto = async () => {
+    try {
+      const filteredRows = selectedRowData.filter(
+        (row) => getRowClass(row) === "accept"
+      );
+      const data = filteredRows.map((item) => ({
+        socialFeedId: item.social_feed_id,
+        companyId: item.company_id,
+        ...item,
+      }));
+
+      const response = await axiosInstance.post("update2databaseTemp/", data);
+      if (response.data.result.success.length) {
+        toast.success(
+          `${response.data.result.success.length} Records updated.`
+        );
+        setSelectedRowData([]);
+      }
+      if (response.data.result.errors.length > 0) {
+        toast.success(
+          `${response.data.result.success.length} Records not updated.`
+        );
+      }
+    } catch (error) {
+      console.log(error);
+      toast.error("Something went wrong.");
+    }
+  };
   return (
     <div>
       {/* filters for editing the cells */}
@@ -627,6 +659,13 @@ const ResearchTable = ({
             >
               {postingLoading ? "Loading..." : "Save"}
             </button>
+            {!!selectedRowData.length && (
+              <CustomButton
+                btnText="Accept Auto"
+                bg="bg-primary"
+                onClick={handleAcceptAuto}
+              />
+            )}
             {!!selectedRowData.length && (
               <CustomButton
                 btnText="Delete"

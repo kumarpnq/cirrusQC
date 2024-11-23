@@ -13,6 +13,7 @@ import { TableVirtuoso } from "react-virtuoso";
 import TotalRecordsCard from "../@core/TotalRecords";
 import RadialMenu from "../@core/RadialMenu";
 import QC3Modal from "../components/qc3/QC3Modal";
+import { getRowClass } from "../utils/getRowClass";
 
 const Qc2Table = ({
   isTableDataLoading,
@@ -344,7 +345,7 @@ const Qc2Table = ({
                       selectedItems.includes(items) ? "selected-row" : ""
                     } ${highlightRows.includes(items) ? "updated-row" : ""} ${
                       "qc3-" + items.qc3_status
-                    }`}
+                    } ${getRowClass(items)}`}
                   >
                     <td className="sticky left-0 px-6 py-2 bg-white top-10 whitespace-nowrap">
                       <input

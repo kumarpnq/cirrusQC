@@ -128,3 +128,64 @@ export const validateQuery = (inputQuery, setIsValid, setError) => {
     setError("Invalid query syntax");
   }
 };
+
+export const generateSuggestions = (inputQuery, cursorPos, setSuggestions) => {
+  const suggestions = [];
+  const beforeCursor = inputQuery.substring(0, cursorPos);
+  const words = beforeCursor.split(/\s+/);
+  const currentWord = words[words.length - 1] || "";
+
+  // Field suggestions
+  if (currentWord.endsWith(":")) {
+    suggestions.push(
+      '"exact phrase"',
+      "[min TO max]",
+      "{min TO max}",
+      "*wildcard*",
+      "/regex/",
+      ">value",
+      ">=value",
+      "<value",
+      "<=value"
+    );
+  }
+
+  // Boolean operator suggestions
+  const previousWord = words[words.length - 2] || "";
+  if (
+    previousWord &&
+    !syntaxRules.operators.comparison.includes(previousWord)
+  ) {
+    syntaxRules.operators.boolean.forEach((op) => {
+      if (op.toLowerCase().startsWith(currentWord.toLowerCase())) {
+        suggestions.push(op);
+      }
+    });
+  }
+
+  // Wildcard and fuzzy suggestions
+  if (
+    currentWord.length > 2 &&
+    !currentWord.includes("*") &&
+    !currentWord.includes("?")
+  ) {
+    suggestions.push(
+      `${currentWord}*`,
+      `*${currentWord}*`,
+      `${currentWord}~1`,
+      `${currentWord}~2`
+    );
+  }
+
+  // Range suggestions
+  if (currentWord.match(/^\d+$/)) {
+    suggestions.push(
+      `[${currentWord} TO *]`,
+      `{${currentWord} TO *}`,
+      `[* TO ${currentWord}]`,
+      `{* TO ${currentWord}}`
+    );
+  }
+
+  setSuggestions(suggestions);
+};

@@ -248,7 +248,7 @@ const SecondSection = (props) => {
       qc2Remark: i.qc2Remark,
       detailSummary: i.detailSummary,
       updateType: i.updatetype || "U",
-      qc3Status: i.qc3Status,
+      // qc3Status: i.qc3Status,
     }));
 
     const data_send = {
@@ -328,14 +328,12 @@ const SecondSection = (props) => {
           qc2Remark: rowData.qc2_remark,
           detailSummary: rowData.detail_summary,
         }));
-
-        const response = await axios.post(
-          `${url}insertarticledetails/`,
-          requestData,
-          {
-            headers: header,
-          }
-        );
+        const data = {
+          data: requestData,
+        };
+        const response = await axios.post(`${url}insertarticledetails/`, data, {
+          headers: header,
+        });
 
         const successOrError =
           (response.data.result.success.length && "company added") ||
@@ -651,7 +649,7 @@ const SecondSection = (props) => {
                     </td>
 
                     <td>
-                      {row.qc3_status === "N" || row.qc3_status === "E" ? (
+                      {row.qc3_status === "N" ? (
                         <IconButton onClick={() => handleOpenAccept(row)}>
                           <StoreIcon className="text-primary" />
                         </IconButton>

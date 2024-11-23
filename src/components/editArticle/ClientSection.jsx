@@ -299,7 +299,7 @@ const ClientSection = ({ selectedArticle, selectedClient }) => {
         keyword: obj.keyword,
         remarks: obj.remarks,
         detailSummary: obj.detailSummary,
-        qc3Status: obj.qc3_status,
+        // qc3Status: obj.qc3_status,
         updateType: obj.update_type || "U",
       }));
 
@@ -499,7 +499,7 @@ const ClientSection = ({ selectedArticle, selectedClient }) => {
                     )}
                   </td>
                   <td>
-                    {item.qc3_status === "N" || item.qc3_status === "E" ? (
+                    {item.qc3_status === "N" ? (
                       <IconButton onClick={() => handleOpenAccept(item)}>
                         <StoreIcon className="text-primary" />
                       </IconButton>

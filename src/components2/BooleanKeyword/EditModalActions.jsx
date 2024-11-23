@@ -4,6 +4,7 @@ import CustomSingleSelect from "../../@core/CustomSingleSelect2";
 import useFetchData from "../../hooks/useFetchData";
 import { url } from "../../constants/baseUrl";
 import { useState } from "react";
+import AutoGenerateModal from "./AutoGenerateModal";
 
 // Styled components
 const Container = styled(Box)(({ theme }) => ({
@@ -42,6 +43,10 @@ const StyledTypography = styled(Typography)({
 export const EditModalActions = ({ tabValue }) => {
   const [company, setCompany] = useState("PNQ DEMO");
   const [language, setLanguage] = useState("");
+  const [openAutoGenerate, setOpenAutoGenerate] = useState(false);
+
+  const handleCloseOpenAutoGenerate = () =>
+    setOpenAutoGenerate((prev) => !prev);
 
   const { data: languageData } = useFetchData(`${url}languagelist/`);
   const languageArray = Object.entries(languageData?.data?.languages || {}).map(
@@ -89,6 +94,19 @@ export const EditModalActions = ({ tabValue }) => {
           </StyledButton>
         </>
       )}
+      <Button
+        size="small"
+        variant="contained"
+        color="primary"
+        onClick={() => setOpenAutoGenerate(true)}
+      >
+        Auto Generate
+      </Button>
+      <AutoGenerateModal
+        open={openAutoGenerate}
+        handleClose={handleCloseOpenAutoGenerate}
+        companyName={company}
+      />
     </Container>
   );
 };
