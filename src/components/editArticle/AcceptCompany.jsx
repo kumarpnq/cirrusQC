@@ -164,9 +164,8 @@ const AcceptCompany = ({
       } else {
         toast.warning(response.data.result.errors[0]?.error);
       }
-      console.log(response);
     } catch (error) {
-      console.log(error);
+      console.log(error.message);
     } finally {
       setInsertLoading(false);
     }

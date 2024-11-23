@@ -18,9 +18,14 @@ const QueryBox = ({ type }) => {
         }}
       >
         {<Typography variant="body2">{type}</Typography>}
-        <Button size="small" variant="outlined">
-          Validate & Add
-        </Button>
+        <Box sx={{ display: "flex", gap: 1 }}>
+          <Button size="small" variant="outlined">
+            Validate & Add
+          </Button>
+          <Button size="small" variant="outlined">
+            Preview
+          </Button>
+        </Box>
       </Box>
 
       <TextField

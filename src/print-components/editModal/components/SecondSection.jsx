@@ -507,12 +507,13 @@ const SecondSection = (props) => {
           qc3_status: "Z",
         },
       ];
-      const response = await axiosInstance.post(
-        "insertarticledetails/",
-        requestData
-      );
+      const data = {
+        data: requestData,
+        qcType: "QC3",
+      };
+      const response = await axiosInstance.post("insertarticledetails/", data);
       if (response.data.result.success.length) {
-        toast.success(response.data.result.success[0]?.message);
+        toast.success(`Record inserted.`);
         setFetchTagDataAfterChange((prev) => !prev);
       } else {
         toast.warning(response.data.result.errors[0]?.error);

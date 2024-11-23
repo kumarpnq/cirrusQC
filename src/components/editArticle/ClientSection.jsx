@@ -390,13 +390,13 @@ const ClientSection = ({ selectedArticle, selectedClient }) => {
           qc3_status: "Z",
         },
       ];
-      const data = { data: requestData, qcType: "QC2" };
+      const data = { data: requestData, qcType: "QC3" };
       const response = await axiosInstance.post(
         "updatesocialfeedtagdetails/",
         data
       );
       if (response.data.result.success.length > 0) {
-        toast.success(response.data.result.success[0]?.message);
+        toast.success("Record inserted.");
         setFetchTagDataAfterChange((prev) => !prev);
       } else {
         toast.warning(toast.success(response.data.result.errors[0]?.error));
