@@ -5,7 +5,7 @@ import { green, orange } from "@mui/material/colors";
 import EditAddModal from "./EditAddModal";
 import { useState } from "react";
 
-const ClientMasterGrid = () => {
+const ClientMasterGrid = ({ data = [], loading }) => {
   const [open, setOpen] = useState(false);
   const handleClose = () => setOpen((prev) => !prev);
   const columns = [
@@ -44,12 +44,9 @@ const ClientMasterGrid = () => {
     },
   ];
 
-  const rows = Array.from({ length: 50 }, (_, index) => ({
-    id: index + 1,
-    clientId: `C${1000 + index}`,
-    clientName: `Client ${index + 1}`,
-    clientGroupId: `G${200 + index}`,
-    isActive: index % 2 === 0 ? "Y" : "N",
+  const rows = data.map((item, index) => ({
+    id: index,
+    ...item,
   }));
 
   return (
@@ -60,6 +57,7 @@ const ClientMasterGrid = () => {
           columns={columns}
           pageSize={10}
           checkboxSelection
+          loading={loading}
           slots={{ toolbar: GridToolbar }}
           slotProps={{
             toolbar: {

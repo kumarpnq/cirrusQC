@@ -1,4 +1,4 @@
-import { Box, Button, Paper } from "@mui/material";
+import { Box, Button, CircularProgress, Paper } from "@mui/material";
 import { useState } from "react";
 import CustomTextField from "../../@core/CutsomTextField";
 import FromDate from "../../components/research-dropdowns/FromDate";
@@ -6,8 +6,9 @@ import ToDate from "../../components/research-dropdowns/ToDate";
 import YesOrNo from "../../@core/YesOrNo";
 import { makeStyles } from "@mui/styles";
 import { styled } from "@mui/system";
-import EditAddModal from "./EditAddModal";
 import AddClientModal from "./AddClientModal";
+import axiosInstance from "../../../axiosConfig";
+import toast from "react-hot-toast";
 
 const useStyle = makeStyles(() => ({
   dropDowns: {
@@ -24,12 +25,11 @@ const StyledWrapper = styled(Box)({
   marginTop: 1,
 });
 
-const SearchFilters = () => {
+const SearchFilters = ({ loading, setLoading = () => {}, setData }) => {
   const classes = useStyle();
 
   const [fromDate, setFromDate] = useState(null);
   const [toDate, setToDate] = useState(null);
-  const [display, setDisplay] = useState(50);
   const [searchText, setSearchText] = useState("");
   const [isActive, setIsActive] = useState("");
 
@@ -38,7 +38,29 @@ const SearchFilters = () => {
 
   const handleSubmit = async (event) => {
     event.preventDefault();
-    alert("Yeah you clicked!");
+    try {
+      setLoading(true);
+
+      const params = {
+        //    searchText: Optional[str] = None,
+        // fromDate:Optional[str] = None,
+        // toDate:Optional[str] = None,
+        // isActive: Optional[str] = None,
+      };
+      if (searchText) params.searchText = searchText;
+      if (fromDate) params.fromDate = fromDate;
+      if (toDate) params.toDate = toDate;
+      if (isActive)
+        params.isActive =
+          (isActive === "Active" && "Y") || (isActive === "In Active" && "N");
+
+      const response = await axiosInstance.get("clientMaster/", { params });
+      console.log(response);
+    } catch (error) {
+      toast.error("Something went wrong.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -47,13 +69,7 @@ const SearchFilters = () => {
         <StyledWrapper component={Paper}>
           <FromDate fromDate={fromDate} setFromDate={setFromDate} isNoMargin />
           <ToDate dateNow={toDate} setDateNow={setToDate} />
-          <CustomTextField
-            width={100}
-            placeholder={"display"}
-            type={"number"}
-            value={display}
-            setValue={setDisplay}
-          />
+
           <CustomTextField
             width={200}
             placeholder={"search text"}
@@ -74,8 +90,9 @@ const SearchFilters = () => {
             size="small"
             variant="outlined"
             type="submit"
-            sx={{ mb: 0.3 }}
+            sx={{ mb: 0.3, display: "flex", alignItems: "center", gap: 1 }}
           >
+            {loading && <CircularProgress size={"1em"} />}
             Search
           </Button>
           <Button
