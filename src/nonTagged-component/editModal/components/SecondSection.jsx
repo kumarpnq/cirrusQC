@@ -278,13 +278,12 @@ const SecondSection = (props) => {
             DETAILSUMMARY: null,
           },
         ];
-        const response = await axios.post(
-          `${url}insertarticledetails/`,
-          requestData,
-          {
-            headers: header,
-          }
-        );
+        const data = {
+          data: requestData,
+        };
+        const response = await axios.post(`${url}insertarticledetails/`, data, {
+          headers: header,
+        });
         const successOrError =
           (response.data.result.success.length && "company added") ||
           (response.data.result.errors.length && "something went wrong");

@@ -183,7 +183,7 @@ const MapExtraModal = ({
         qc3_status: "Z",
       }));
       const requestData =
-        articleType === "online" ? preparedOnlineData : dataForPrint;
+        articleType === "online" ? preparedOnlineData : { data: dataForPrint };
 
       const endpoint =
         articleType === "online"
