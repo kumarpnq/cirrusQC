@@ -183,7 +183,9 @@ const MapExtraModal = ({
         qc3_status: "Z",
       }));
       const requestData =
-        articleType === "online" ? preparedOnlineData : { data: dataForPrint };
+        articleType === "online"
+          ? preparedOnlineData
+          : { data: dataForPrint, qcType: "QC3" };
 
       const endpoint =
         articleType === "online"
@@ -194,9 +196,7 @@ const MapExtraModal = ({
       });
 
       if (response.data.result.success.length) {
-        toast.info(
-          `${response.data.result.success.length} records inserted successfully.`
-        );
+        toast.info(`records inserted successfully.`);
         setFetchTableDataAfterInsert((prev) => !prev);
         setAiSelectionModal([]);
         setDbSelectionModal([]);
