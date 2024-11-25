@@ -11,14 +11,22 @@ import { useState } from "react";
 import KeywordView from "./KeywordView";
 import AddEditDialog from "./AddEditDialog";
 
-const BooleanGrid = () => {
-  const [openKeywordView, setOpenKeywordView] = useState(false);
-  const [openEdit, setOpenEdit] = useState(false);
-  const rows = Array.from({ length: 50 }, (_, index) => ({
-    id: index + 1,
-    company: `Company ${index + 1}`,
-    keyword: `Keyword ${index + 1}`,
-  }));
+const BooleanGrid = ({ data = [], loading }) => {
+  const [openEditOrView, setOpenEditOrView] = useState({
+    edit: false,
+    view: false,
+  });
+  const [selectedRow, setSelectedRow] = useState(null);
+
+  const handleOpen = (row, mode) => {
+    setSelectedRow(row);
+    setOpenEditOrView((prev) => ({ ...prev, [mode]: true }));
+  };
+
+  const handleClose = (mode) => {
+    setOpenEditOrView((prev) => ({ ...prev, [mode]: false }));
+    setSelectedRow(null);
+  };
 
   // Columns for the DataGrid
   const columns = [
@@ -29,7 +37,7 @@ const BooleanGrid = () => {
         <>
           <IconButton
             aria-label="edit"
-            onClick={() => setOpenEdit((prev) => !prev)}
+            onClick={() => handleOpen(params.row, "edit")}
           >
             <EditNoteIcon className="text-primary" />
           </IconButton>
@@ -45,17 +53,22 @@ const BooleanGrid = () => {
       renderCell: (params) => (
         <IconButton
           aria-label="view"
-          onClick={() => setOpenKeywordView((prev) => !prev)}
+          onClick={() => handleOpen(params.row, "view")}
         >
           <VisibilityIcon className="text-primary" />
         </IconButton>
       ),
     },
     {
-      field: "company",
+      field: "companyName",
       headerName: "Company",
     },
   ];
+
+  const rows = data.map((item, index) => ({
+    id: index,
+    ...item,
+  }));
 
   return (
     <>
@@ -67,6 +80,7 @@ const BooleanGrid = () => {
           disableColumnSelector
           disableDensitySelector
           density="compact"
+          loading={loading}
           slots={{
             toolbar: () => (
               <div style={{ display: "flex", justifyContent: "space-between" }}>
@@ -79,13 +93,25 @@ const BooleanGrid = () => {
         />
       </div>
       <KeywordView
-        open={openKeywordView}
-        handleClose={() => setOpenKeywordView((prev) => !prev)}
+        open={openEditOrView.view}
+        handleClose={() =>
+          setOpenEditOrView({
+            edit: false,
+            view: false,
+          })
+        }
+        row={selectedRow}
       />
       <AddEditDialog
-        open={openEdit}
-        handleClose={() => setOpenEdit((prev) => !prev)}
+        open={openEditOrView.edit}
+        handleClose={() =>
+          setOpenEditOrView({
+            edit: false,
+            view: false,
+          })
+        }
         fromWhere="Edit"
+        row={selectedRow}
       />
     </>
   );

@@ -40,7 +40,7 @@ const StyledTypography = styled(Typography)({
 });
 
 // JSX Component
-export const EditModalActions = ({ tabValue }) => {
+export const EditModalActions = () => {
   const [company, setCompany] = useState("PNQ DEMO");
   const [language, setLanguage] = useState("");
   const [openAutoGenerate, setOpenAutoGenerate] = useState(false);
@@ -74,26 +74,23 @@ export const EditModalActions = ({ tabValue }) => {
         />
       </StyledTypography>
 
-      {!!tabValue && (
-        <>
-          <StyledTypography>
-            <Label>Language:</Label>
-            <CustomSingleSelect
-              options={languageArray}
-              dropdownToggleWidth={250}
-              dropdownWidth={250}
-              keyId="code"
-              keyName="language"
-              setSelectedItem={setLanguage}
-              selectedItem={language}
-              title="Language"
-            />
-          </StyledTypography>
-          <StyledButton variant="outlined" size="small" type="submit">
-            Search
-          </StyledButton>
-        </>
-      )}
+      <StyledTypography>
+        <Label>Language:</Label>
+        <CustomSingleSelect
+          options={languageArray}
+          dropdownToggleWidth={250}
+          dropdownWidth={250}
+          keyId="code"
+          keyName="language"
+          setSelectedItem={setLanguage}
+          selectedItem={language}
+          title="Language"
+        />
+      </StyledTypography>
+      <StyledButton variant="outlined" size="small" type="submit">
+        Search
+      </StyledButton>
+
       <Button
         size="small"
         variant="contained"

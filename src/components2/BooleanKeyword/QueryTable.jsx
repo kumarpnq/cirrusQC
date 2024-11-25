@@ -1,4 +1,5 @@
 import React from "react";
+import PropTypes from "prop-types";
 import {
   List,
   ListItem,
@@ -13,6 +14,7 @@ import { styled } from "@mui/system";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditNoteIcon from "@mui/icons-material/EditNote";
 import TranslateIcon from "@mui/icons-material/Translate";
+import axiosInstance from "../../../axiosConfig";
 
 // Styled Components
 const StyledList = styled(List)({
@@ -66,14 +68,7 @@ const languages = [
   { label: "Marathi", value: "mr" },
 ];
 
-const data = [
-  {
-    id: 1,
-    query: `"Aditya birla power composites" OR ABPCL`,
-  },
-];
-
-const QueryList = () => {
+const QueryList = ({ setQuery, data = [] }) => {
   const [anchorEl, setAnchorEl] = React.useState(null);
   const [selectedLanguage, setSelectedLanguage] = React.useState("");
 
@@ -81,14 +76,23 @@ const QueryList = () => {
     setSelectedLanguage(event.target.value);
   };
 
-  const handleTranslate = (event) => {
+  const handleTranslate = async (event) => {
     setAnchorEl(event.currentTarget);
+    try {
+      const params = {
+        query: "",
+        languages: "hn,mr",
+      };
+      const response = await axiosInstance.get("translateBoolean", { params });
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   return (
     <StyledList>
       {data.map((row) => (
-        <StyledListItem key={row.id}>
+        <StyledListItem key={row.queryId}>
           {/* Action Buttons */}
           <Tooltip title="Delete">
             <IconButton size="small">
@@ -96,7 +100,11 @@ const QueryList = () => {
             </IconButton>
           </Tooltip>
           <Tooltip title="Edit">
-            <IconButton color="primary" size="small">
+            <IconButton
+              color="primary"
+              size="small"
+              onClick={() => setQuery(row.query)}
+            >
               <EditNoteIcon />
             </IconButton>
           </Tooltip>

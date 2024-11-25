@@ -55,7 +55,8 @@ const SearchFilters = ({ loading, setLoading = () => {}, setData }) => {
           (isActive === "Active" && "Y") || (isActive === "In Active" && "N");
 
       const response = await axiosInstance.get("clientMaster/", { params });
-      console.log(response);
+
+      setData(response.data.data.data || []);
     } catch (error) {
       toast.error("Something went wrong.");
     } finally {

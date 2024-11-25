@@ -29,6 +29,14 @@ const ContextProvider = ({ children }) => {
     clientMaster: false,
     booleanKeyword: false,
     deletePrintArticles: false,
+    cityMaster: false,
+    companyMaster: false,
+    publicationGroupMaster: false,
+    publicationMaster: false,
+    stateMaster: false,
+    countryMaster: false,
+    userMaster: false,
+    industryMaster: false,
   });
   const [permissionLoading, setPermissionLoading] = useState(false);
 

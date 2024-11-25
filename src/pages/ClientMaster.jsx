@@ -6,6 +6,7 @@ import { useState } from "react";
 const ClientMaster = () => {
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(false);
+
   return (
     <Box sx={{ px: 1 }}>
       <SearchFilters

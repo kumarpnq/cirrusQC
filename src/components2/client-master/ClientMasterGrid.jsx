@@ -58,6 +58,7 @@ const ClientMasterGrid = ({ data = [], loading }) => {
           pageSize={10}
           checkboxSelection
           loading={loading}
+          density="compact"
           slots={{ toolbar: GridToolbar }}
           slotProps={{
             toolbar: {

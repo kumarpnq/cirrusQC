@@ -9,13 +9,16 @@ import InfoIcon from "@mui/icons-material/Info";
 import IconButton from "@mui/material/IconButton";
 import Tooltip from "@mui/material/Tooltip";
 import QueryComponent from "./QueryRules";
+import PreviewModal from "./PreviewModal";
 
-const QueryBox = ({ type }) => {
+const QueryBox = ({ type, row }) => {
   const [query, setQuery] = useState("");
   const [isValid, setIsValid] = useState(true);
   const [error, setError] = useState("");
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [suggestions, setSuggestions] = useState([]);
+
+  console.log(row);
 
   const handleQueryChange = (event) => {
     let localQuery = event.target.value;
@@ -34,10 +37,11 @@ const QueryBox = ({ type }) => {
     const newQuery = [...words, suggestion].join(" ");
     setQuery(newQuery);
     setShowSuggestions(false);
-    validateQuery(newQuery);
+    validateQuery(newQuery, setIsValid, setError);
   };
 
   const [anchorEl, setAnchorEl] = useState(null);
+  const [openPreviewModal, setOpenPreviewModal] = useState(false);
 
   const handleClick = (event) => {
     setAnchorEl(event.currentTarget);
@@ -46,6 +50,8 @@ const QueryBox = ({ type }) => {
   const handleClose = () => {
     setAnchorEl(null);
   };
+
+  const handleClosePreviewModal = () => setOpenPreviewModal((prev) => !prev);
 
   const open = Boolean(anchorEl);
   const id = open ? "query-popover" : undefined;
@@ -66,7 +72,11 @@ const QueryBox = ({ type }) => {
           <Button size="small" variant="outlined">
             Validate & Add
           </Button>
-          <Button size="small" variant="outlined">
+          <Button
+            size="small"
+            variant="outlined"
+            onClick={() => setOpenPreviewModal((prev) => !prev)}
+          >
             Preview
           </Button>
         </Box>
@@ -119,13 +129,23 @@ const QueryBox = ({ type }) => {
           />
         )}
       </Box>
-      <QueryTable />
+      <QueryTable
+        setQuery={setQuery}
+        data={
+          type === "Include Query" ? row?.includeQuery : row?.excludeQuery || []
+        }
+      />
+      <PreviewModal
+        open={openPreviewModal}
+        handleClose={handleClosePreviewModal}
+      />
     </Box>
   );
 };
 
 QueryBox.propTypes = {
   type: PropTypes.string,
+  row: PropTypes.object,
 };
 
 export default QueryBox;

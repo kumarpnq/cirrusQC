@@ -189,3 +189,62 @@ export const generateSuggestions = (inputQuery, cursorPos, setSuggestions) => {
 
   setSuggestions(suggestions);
 };
+
+export const generateAutoQuery = (formValues) => {
+  const { companyName, ceo, products, keyPeoples, companyKeywords } =
+    formValues;
+
+  // Ensure companyName is always present
+  if (!companyName) {
+    throw new Error("Company name is required for generating a query.");
+  }
+
+  // Helper function to wrap terms in quotes for exact match
+  const quote = (term) => `"${term.trim()}"`;
+
+  // Start with the company name
+  let query = `${quote(companyName)}`;
+
+  // Collect optional conditions to be combined with OR
+  const conditions = [];
+
+  // Add CEO condition
+  if (ceo) {
+    conditions.push(`(${quote(companyName)} AND ${quote(ceo)})`);
+  }
+
+  // Add Products condition
+  if (products) {
+    conditions.push(`(${quote(companyName)} AND ${quote(products)})`);
+  }
+
+  // Combine keyPeoples and companyKeywords into one OR group
+  const additionalConditions = [];
+
+  if (keyPeoples) {
+    const keyPeoplesArray = keyPeoples
+      .split(",")
+      .map((person) => quote(person));
+    additionalConditions.push(...keyPeoplesArray);
+  }
+
+  if (companyKeywords) {
+    const keywordsArray = companyKeywords
+      .split(",")
+      .map((keyword) => quote(keyword));
+    additionalConditions.push(...keywordsArray);
+  }
+
+  if (additionalConditions.length > 0) {
+    conditions.push(
+      `(${quote(companyName)} OR ${additionalConditions.join(" OR ")})`
+    );
+  }
+
+  // Combine all conditions with OR
+  if (conditions.length > 0) {
+    query += ` OR ${conditions.join(" OR ")}`;
+  }
+
+  return query;
+};

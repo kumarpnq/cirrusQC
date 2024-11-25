@@ -1,8 +1,6 @@
 import {
   Button,
   Divider,
-  Tabs,
-  Tab,
   Typography,
   Box,
   Modal,
@@ -12,14 +10,10 @@ import {
 import PropTypes from "prop-types";
 import CloseIcon from "@mui/icons-material/Close";
 import QueryBox from "./QueryBox";
-import { useState } from "react";
+
 import { EditModalActions } from "./EditModalActions";
 
-const AddEditDialog = ({ open, handleClose, fromWhere }) => {
-  const [tabValue, setTabValue] = useState(0);
-  const handleTabChange = (event, newValue) => {
-    setTabValue(newValue);
-  };
+const AddEditDialog = ({ open, handleClose, fromWhere, row }) => {
   return (
     <Modal open={open} onClose={handleClose}>
       <Box
@@ -50,19 +44,11 @@ const AddEditDialog = ({ open, handleClose, fromWhere }) => {
           </IconButton>
         </Box>
         <Box>
-          <Tabs
-            value={tabValue}
-            onChange={handleTabChange}
-            aria-label="language tabs"
-          >
-            <Tab label="English" />
-            <Tab label="Other" />
-          </Tabs>
           <Divider />
-          <EditModalActions tabValue={tabValue} />
-          <QueryBox type={"Include Query"} />
+          <EditModalActions />
+          <QueryBox type={"Include Query"} row={row} />
           {/* exclude query */}
-          <QueryBox type={"Exclude Query"} />
+          <QueryBox type={"Exclude Query"} row={row} />
         </Box>
         <Divider />
         <Box

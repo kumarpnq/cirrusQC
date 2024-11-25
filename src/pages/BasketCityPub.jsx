@@ -28,6 +28,7 @@ import CountryMaster from "../components2/master/country-master/CountryMaster";
 import UserMaster from "../components2/master/user-master/UserMaster";
 import IndustryMaster from "../components2/master/industry-master/IndustryMaster";
 import PublicationGroupMaster from "../components2/master/publication-group-master/PublicationGroupMaster";
+import RenderComponent from "../components2/master/RenderComponent";
 
 const StyledMenuItem = styled(MenuItem)(({ theme }) => ({
   position: "relative",
@@ -76,36 +77,6 @@ const StyledTypography = styled(Typography)(({ theme }) => ({
   },
 }));
 
-const RenderComponent = ({ value }) => {
-  switch (value) {
-    case "City Master":
-      return <CityMaster />;
-    case "Company Master":
-      return <CompanyMaster />;
-    case "Publication Group Master":
-      return <PublicationGroupMaster />;
-    case "Publication Master":
-      return <PublicationMaster />;
-    case "Publication Master Online":
-      return <PublicationMasterOnline />;
-
-    case "State Master":
-      return <StateMaster />;
-    case "Country Master":
-      return <CountryMaster />;
-    case "User Master":
-      return <UserMaster />;
-    case "Industry Master":
-      return <IndustryMaster />;
-
-    default:
-      return <>No page.</>;
-  }
-};
-
-RenderComponent.propTypes = {
-  value: PropTypes.number,
-};
 const BasketCityPub = () => {
   const [anchorEl, setAnchorEl] = useState(null);
   const [selectedItem, setSelectedItem] = useState("City Master");

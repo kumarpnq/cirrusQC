@@ -11,6 +11,7 @@ import {
   Typography,
 } from "@mui/material";
 import { styled } from "@mui/system";
+import { generateAutoQuery } from "./utils";
 
 // Styled components
 const StyledDialog = styled(Dialog)(({ theme }) => ({
@@ -35,6 +36,7 @@ const AutoGenerateModal = ({ open, handleClose, companyName }) => {
     ceo: "",
     products: "",
     keyPeoples: "",
+    companyKeywords: "",
   });
 
   let testObj = {
@@ -42,6 +44,7 @@ const AutoGenerateModal = ({ open, handleClose, companyName }) => {
     ceo: "Saurav De",
     products: "Media & Research",
     keyPeoples: "Kumar,Sidd,Tushar",
+    companyKeywords: "News,charts,emailAlerts",
   };
 
   useEffect(() => {
@@ -72,26 +75,10 @@ const AutoGenerateModal = ({ open, handleClose, companyName }) => {
 
   const handleSubmit = () => {
     if (validateForm()) {
-      const { companyName, ceo, products, keyPeoples } = formValues;
+      const response = generateAutoQuery(formValues);
+      console.log(response);
 
-      const companyQuery = `"${companyName}"`;
-      const ceoQuery = `"${ceo}"`;
-
-      const productsArray = products
-        .split(/\s+/)
-        .map((product) => `"${product}"`);
-      const productsQuery = `(${productsArray.join(" OR ")})`;
-
-      const keyPeoplesArray = keyPeoples
-        .split(",")
-        .map((person) => `"${person.trim()}"`);
-      const keyPeoplesQuery = `(${keyPeoplesArray.join(" OR ")})`;
-
-      const finalQuery = `${companyQuery} OR ${ceoQuery} OR ${productsQuery} OR ${keyPeoplesQuery}`;
-
-      console.log("Generated Query:", finalQuery);
-
-      alert(`Generated OR Query:\n${finalQuery}`);
+      alert(`Generated OR Query:\n${response}`);
     }
   };
 
@@ -153,6 +140,18 @@ const AutoGenerateModal = ({ open, handleClose, companyName }) => {
             rows={4}
             error={!!errors.keyPeoples}
             helperText={errors.keyPeoples}
+            size="small"
+          />
+          <StyledTextField
+            fullWidth
+            label="Key Peoples"
+            name="keyPeoples"
+            value={formValues.companyKeywords}
+            onChange={handleChange}
+            multiline
+            rows={4}
+            error={!!errors.companyKeywords}
+            helperText={errors.companyKeywords}
             size="small"
           />
         </Box>
