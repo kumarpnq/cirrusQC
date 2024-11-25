@@ -99,6 +99,9 @@ const AcceptCompany = ({
       qc3_status: "Z",
       update_type: "U",
     };
+    if (screen == "print") {
+      data.header_space = selectedRow?.headerSpace;
+    }
 
     setModifiedRows((prevModifiedRows) => {
       const existingRecordIndex = prevModifiedRows.findIndex(

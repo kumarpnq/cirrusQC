@@ -375,7 +375,7 @@ const ClientSection = ({ selectedArticle, selectedClient }) => {
     try {
       const requestData = [
         {
-          updateType: "I",
+          updateType: row.qc3_status === "N" ? "U" : "I",
           socialFeedId: row.socialfeed_id,
           companyId: row.company_id,
           companyName: row.company_id,
@@ -390,13 +390,23 @@ const ClientSection = ({ selectedArticle, selectedClient }) => {
           // qc3_status: "Z",
         },
       ];
-      const data = { data: requestData, qcType: "QC3" };
-      const response = await axiosInstance.post(
-        "updatesocialfeedtagdetails/",
-        data
-      );
+      const endpoint =
+        row.qc3_status === "N"
+          ? "updateqc2socialfeedtagdetails/"
+          : "updatesocialfeedtagdetails/";
+      const data = { data: requestData };
+      if (row.qc3_status === "N") {
+        data.qcType = "QC2";
+      } else {
+        data.qcType = "QC3";
+      }
+      const response = await axiosInstance.post(endpoint, data);
       if (response.data.result.success.length > 0) {
-        toast.success("Record inserted.");
+        if (row.qc3_status === "N") {
+          toast.success("Record updated.");
+        } else {
+          toast.success("Record inserted.");
+        }
         setFetchTagDataAfterChange((prev) => !prev);
       } else {
         toast.warning(toast.success(response.data.result.errors[0]?.error));

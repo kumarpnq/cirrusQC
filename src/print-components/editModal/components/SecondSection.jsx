@@ -486,40 +486,81 @@ const SecondSection = (props) => {
 
   const [acceptRowId, setAcceptRowId] = useState(null);
   const handleAccept = async (row) => {
-    try {
-      setAcceptRowId(row.company_id);
-      const requestData = [
-        {
-          articleId: row.article_id,
-          companyId: row.company_id,
-          companyName: row.company_name,
-          manualProminence: row.manual_prominence,
-          headerSpace: row.header_space,
-          space: row.space,
-          reportingTone: row.reporting_tone,
-          reportingSubject: row.reporting_subject,
-          subcategory: row.subcategory,
-          keyword: row.keyword,
-          qc2Remark: row.qc2_remark,
-          detailSummary: row.detail_summary,
-          qc3_status: "Z",
-        },
-      ];
+    if (row?.qc3_status === "N") {
+      const i = row;
       const data = {
-        data: requestData,
-        qcType: "QC3",
+        articleId: i.article_id,
+        companyId: i.company_id,
+        companyName: i.company_name,
+        manualProminence: i.manual_prominence,
+        headerSpace: i.header_space,
+        space: i.space,
+        reportingTone: i.reporting_tone,
+        reportingSubject: i.reporting_subject,
+        subcategory: i.subcategory,
+        keyword: i.keyword,
+        qc2Remark: i.qc2_remark,
+        detailSummary: i.detail_summary,
+        updateType: "U",
       };
-      const response = await axiosInstance.post("insertarticledetails/", data);
-      if (response.data.result.success.length) {
-        toast.success(`Record inserted.`);
-        setFetchTagDataAfterChange((prev) => !prev);
-      } else {
-        toast.warning(response.data.result.errors[0]?.error);
+      const data_send = {
+        data: [data],
+        qcType: "QC2",
+      };
+      try {
+        setAcceptRowId(row.company_id);
+        const res = await axiosInstance.post(
+          "updateqc2articletagdetails/",
+          data_send
+        );
+        if (res.data) {
+          toast.success("Successfully saved changes!");
+          setFetchTagDataAfterChange(true);
+        }
+      } catch (error) {
+        toast.error("Something went wrong");
+      } finally {
+        setAcceptRowId(false);
       }
-    } catch (error) {
-      toast.error("Something went wrong");
-    } finally {
-      setAcceptRowId(false);
+    } else {
+      try {
+        setAcceptRowId(row.company_id);
+        const requestData = [
+          {
+            articleId: row.article_id,
+            companyId: row.company_id,
+            companyName: row.company_name,
+            manualProminence: row.manual_prominence,
+            headerSpace: row.header_space,
+            space: row.space,
+            reportingTone: row.reporting_tone,
+            reportingSubject: row.reporting_subject,
+            subcategory: row.subcategory,
+            keyword: row.keyword,
+            qc2Remark: row.qc2_remark,
+            detailSummary: row.detail_summary,
+            qc3_status: "Z",
+          },
+        ];
+        const data = {
+          data: requestData,
+          qcType: "QC3",
+        };
+        const response = await axiosInstance.post(
+          "insertarticledetails/",
+          data
+        );
+        if (response.data.result.success.length) {
+          toast.success(`Record inserted.`);
+          setFetchTagDataAfterChange((prev) => !prev);
+        } else {
+          toast.warning(response.data.result.errors[0]?.error);
+        }
+      } catch (error) {
+        toast.error("Something went wrong");
+      } finally {
+        setAcceptRowId(false);
+      }
     }
   };
 

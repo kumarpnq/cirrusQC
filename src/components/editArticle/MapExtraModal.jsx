@@ -172,7 +172,7 @@ const MapExtraModal = ({
         companyId: item.companyId,
         companyName: item.companyName,
         manualProminence: aiRow.prominence,
-        // headerSpace: aiRow.headerSpace,
+        headerSpace: aiRow.headerSpace,
         // space: aiRow.space,
         reportingTone: aiRow.reportingTone,
         reportingSubject: aiRow.reportingSubject,

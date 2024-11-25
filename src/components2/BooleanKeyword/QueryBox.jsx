@@ -1,9 +1,14 @@
-import { Box, Button, TextField, Typography } from "@mui/material";
+import { Box, Button, Popover, TextField, Typography } from "@mui/material";
 import { useState } from "react";
 import PropTypes from "prop-types";
 import QueryTable from "./QueryTable";
 import { generateSuggestions, validateQuery } from "./utils";
 import SuggestionsDropdown from "./SuggestionsDropdown";
+import InputAdornment from "@mui/material/InputAdornment";
+import InfoIcon from "@mui/icons-material/Info";
+import IconButton from "@mui/material/IconButton";
+import Tooltip from "@mui/material/Tooltip";
+import QueryComponent from "./QueryRules";
 
 const QueryBox = ({ type }) => {
   const [query, setQuery] = useState("");
@@ -31,6 +36,19 @@ const QueryBox = ({ type }) => {
     setShowSuggestions(false);
     validateQuery(newQuery);
   };
+
+  const [anchorEl, setAnchorEl] = useState(null);
+
+  const handleClick = (event) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
+
+  const open = Boolean(anchorEl);
+  const id = open ? "query-popover" : undefined;
 
   return (
     <Box sx={{ border: "1px solid #ddd", mt: 1, p: 0.5, position: "relative" }}>
@@ -64,7 +82,34 @@ const QueryBox = ({ type }) => {
         placeholder="Enter company boolean string (e.g., publication.name:'TheHindu' AND 'TimesNow' AND ('Breaking News' OR 'Prime Debate' OR 'Entertainment Show'))"
         error={!isValid}
         helperText={error}
+        InputProps={{
+          endAdornment: (
+            <InputAdornment position="end">
+              <Tooltip title={"Click for query info"} arrow>
+                <IconButton size="small" onClick={handleClick}>
+                  <InfoIcon />
+                </IconButton>
+              </Tooltip>
+            </InputAdornment>
+          ),
+        }}
       />
+      <Popover
+        id={id}
+        open={open}
+        anchorEl={anchorEl}
+        onClose={handleClose}
+        anchorOrigin={{
+          vertical: "bottom",
+          horizontal: "right",
+        }}
+        transformOrigin={{
+          vertical: "top",
+          horizontal: "right",
+        }}
+      >
+        <QueryComponent />
+      </Popover>
       <Box sx={{ position: "absolute", zIndex: 999, width: "100%" }}>
         {showSuggestions && !!suggestions.length && (
           <SuggestionsDropdown
