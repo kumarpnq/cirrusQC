@@ -36,7 +36,7 @@ const ClientSection = ({ selectedArticle, selectedClient }) => {
   const [editableTagData, setEditableTagData] = useState([]);
   const [verificationLoading, setVerificationLoading] = useState(false);
   const [password, setPassword] = useState("");
-  const [fetchTagDataAfterChange, setFetchTagDataAfterChange] = useState(false);
+
   const [modifiedRows, setModifiedRows] = useState([]);
   const [selectedCompanies, setSelectedCompanies] = useState([]);
   const [openAcceptCompany, setOpenAcceptCompany] = useState(false);
@@ -51,45 +51,44 @@ const ClientSection = ({ selectedArticle, selectedClient }) => {
   const handleClose = () => {
     setOpen(false);
   };
+
+  const fetchData = async () => {
+    try {
+      setTableDataLoading(true);
+      const headers = {
+        Authorization: `Bearer ${userToken}`,
+      };
+      const params = {
+        socialfeed_id: selectedArticle.social_feed_id,
+        client_id: selectedClient,
+      };
+      const response = await axios.get(`${url}getSocialFeedAutoTagDetails/`, {
+        headers: headers,
+        params,
+      });
+      const order = ["Y", "Z", "P", "Q", "R", "N", "E"];
+      let apiData = response.data.socialfeed_details || [];
+      const sortedData = apiData.sort((a, b) => {
+        const statusA = a.qc3_status;
+        const statusB = b.qc3_status;
+
+        const indexA = order.indexOf(statusA);
+        const indexB = order.indexOf(statusB);
+
+        if (indexA === -1) return 1;
+        if (indexB === -1) return -1;
+
+        return indexA - indexB;
+      });
+      setTableDataList(sortedData);
+      setTableDataLoading(false);
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    }
+  };
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        setTableDataLoading(true);
-        const headers = {
-          Authorization: `Bearer ${userToken}`,
-        };
-        const params = {
-          socialfeed_id: selectedArticle.social_feed_id,
-          client_id: selectedClient,
-        };
-        const response = await axios.get(`${url}getSocialFeedAutoTagDetails/`, {
-          headers: headers,
-          params,
-        });
-        const order = ["Y", "Z", "P", "Q", "R", "N", "E"];
-        let apiData = response.data.socialfeed_details || [];
-        const sortedData = apiData.sort((a, b) => {
-          const statusA = a.qc3_status;
-          const statusB = b.qc3_status;
-
-          const indexA = order.indexOf(statusA);
-          const indexB = order.indexOf(statusB);
-
-          if (indexA === -1) return 1;
-          if (indexB === -1) return -1;
-
-          return indexA - indexB;
-        });
-        setTableDataList(sortedData);
-        setTableDataLoading(false);
-        setFetchTagDataAfterChange(false);
-      } catch (error) {
-        console.error("Error fetching data:", error);
-      }
-    };
-
     fetchData();
-  }, [userToken, selectedArticle, fetchTagDataAfterChange]);
+  }, [userToken, selectedArticle]);
 
   const [subjects, setSubjects] = useState([]);
 
@@ -208,7 +207,7 @@ const ClientSection = ({ selectedArticle, selectedClient }) => {
           toast.success(successOrError);
           setSelectedCompanies([]);
           setSelectedCompany([]);
-          setFetchTagDataAfterChange(true);
+          fetchData();
         } else if (successOrError === "something went wrong") {
           toast.warning(successOrError);
         }
@@ -261,7 +260,7 @@ const ClientSection = ({ selectedArticle, selectedClient }) => {
       toast.success("Article deleted successfully.");
       setOpen(false);
       setPassword("");
-      setFetchTagDataAfterChange(true);
+      fetchData();
       setSelectedRowForDelete(null);
     }
   };
@@ -314,7 +313,7 @@ const ClientSection = ({ selectedArticle, selectedClient }) => {
       if (response.data.result.success.length > 0) {
         toast.success("Updated successfully");
         setModifiedRows([]);
-        setFetchTagDataAfterChange(true);
+        fetchData();
         setSaveLoading(false);
       } else {
         toast.warning("No record updated.");
@@ -407,7 +406,7 @@ const ClientSection = ({ selectedArticle, selectedClient }) => {
         } else {
           toast.success("Record inserted.");
         }
-        setFetchTagDataAfterChange((prev) => !prev);
+        fetchData();
       } else {
         toast.warning(toast.success(response.data.result.errors[0]?.error));
       }
@@ -653,7 +652,7 @@ const ClientSection = ({ selectedArticle, selectedClient }) => {
         clientId={selectedClient}
         articleId={selectedArticle?.social_feed_id}
         articleType={"online"}
-        setFetchTableDataAfterInsert={setFetchTagDataAfterChange}
+        fetchTagDetails={fetchData}
         tableData={editableTagData}
       />
     </>

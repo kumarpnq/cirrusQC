@@ -65,7 +65,7 @@ const MapExtraModal = ({
   clientId,
   articleId,
   articleType,
-  setFetchTableDataAfterInsert,
+  fetchTagDetails,
   tableData,
 }) => {
   const [data, setData] = useState([]);
@@ -197,7 +197,7 @@ const MapExtraModal = ({
 
       if (response.data.result.success.length) {
         toast.info(`records inserted successfully.`);
-        setFetchTableDataAfterInsert((prev) => !prev);
+        fetchTagDetails();
         setAiSelectionModal([]);
         setDbSelectionModal([]);
         setAiSelectedRows([]);
@@ -361,7 +361,7 @@ MapExtraModal.propTypes = {
   clientId: PropTypes.string.isRequired,
   articleId: PropTypes.number.isRequired,
   articleType: PropTypes.string.isRequired,
-  setFetchTableDataAfterInsert: PropTypes.func.isRequired,
+  fetchTagDetails: PropTypes.func.isRequired,
   tableData: PropTypes.array.isRequired,
 };
 

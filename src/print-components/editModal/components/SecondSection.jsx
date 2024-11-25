@@ -39,7 +39,7 @@ const SecondSection = (props) => {
   const [selectedCompanyId, setSelectedCompanyId] = useState("");
   const [tagData, setTagData] = useState([]);
   const [tagDataLoading, setTagDataLoading] = useState(false);
-  const [fetchTagDataAfterChange, setFetchTagDataAfterChange] = useState(false);
+
   const [saveLoading, setSaveLoading] = useState(false);
 
   const [editableTagData, setEditableTagData] = useState([]);
@@ -55,44 +55,43 @@ const SecondSection = (props) => {
 
   const articleId = !!selectedArticle && selectedArticle?.article_id;
 
+  const fetchTagDetails = async () => {
+    try {
+      setTagDataLoading(true);
+      const headers = { Authorization: `Bearer ${userToken}` };
+      const params = {
+        article_id: articleId,
+        client_id: selectedClient?.clientId,
+      };
+      const res = await axios.get(`${url}getArticleAutoTagDetails/`, {
+        headers,
+        params,
+      });
+
+      const order = ["Y", "Z", "P", "Q", "R", "N", "E"];
+      let apiData = res.data.article_details || [];
+      const sortedData = apiData.sort((a, b) => {
+        const statusA = a.qc3_status;
+        const statusB = b.qc3_status;
+
+        const indexA = order.indexOf(statusA);
+        const indexB = order.indexOf(statusB);
+
+        if (indexA === -1) return 1;
+        if (indexB === -1) return -1;
+
+        return indexA - indexB;
+      });
+      setTagData(sortedData);
+    } catch (error) {
+      console.log(error.message);
+    } finally {
+      setTagDataLoading(false);
+    }
+  };
   useEffect(() => {
-    const fetchTagDetails = async () => {
-      try {
-        setTagDataLoading(true);
-        const headers = { Authorization: `Bearer ${userToken}` };
-        const params = {
-          article_id: articleId,
-          client_id: selectedClient?.clientId,
-        };
-        const res = await axios.get(`${url}getArticleAutoTagDetails/`, {
-          headers,
-          params,
-        });
-
-        const order = ["Y", "Z", "P", "Q", "R", "N", "E"];
-        let apiData = res.data.article_details || [];
-        const sortedData = apiData.sort((a, b) => {
-          const statusA = a.qc3_status;
-          const statusB = b.qc3_status;
-
-          const indexA = order.indexOf(statusA);
-          const indexB = order.indexOf(statusB);
-
-          if (indexA === -1) return 1;
-          if (indexB === -1) return -1;
-
-          return indexA - indexB;
-        });
-        setTagData(sortedData);
-        setTagDataLoading(false);
-      } catch (error) {
-        console.log(error.message);
-      } finally {
-        setFetchTagDataAfterChange(false);
-      }
-    };
     fetchTagDetails();
-  }, [fetchTagDataAfterChange, userToken, articleId, selectedClient]);
+  }, [userToken, articleId, selectedClient]);
 
   const { data: tones } = useFetchData(`${url}reportingtonelist`);
   const reportingTones = tones?.data?.reportingtones_list || [];
@@ -268,7 +267,7 @@ const SecondSection = (props) => {
 
         if (res.data) {
           toast.success("Successfully saved changes!");
-          setFetchTagDataAfterChange(true);
+          fetchTagDetails();
         }
       }
 
@@ -344,7 +343,7 @@ const SecondSection = (props) => {
           setSelectedCompany([]);
           setSelectedCompanies([]);
           setSelectedCompanyId("");
-          setFetchTagDataAfterChange(true);
+          fetchTagDetails();
         } else if (successOrError === "something went wrong") {
           toast.warning(successOrError);
         }
@@ -426,7 +425,7 @@ const SecondSection = (props) => {
       toast.success("Article deleted successfully.");
       setOpen(false);
       setPassword("");
-      setFetchTagDataAfterChange(true);
+      fetchTagDetails();
       setCheckedRows([]);
     }
   };
@@ -515,7 +514,7 @@ const SecondSection = (props) => {
         );
         if (res.data) {
           toast.success("Successfully saved changes!");
-          setFetchTagDataAfterChange(true);
+          fetchTagDetails();
         }
       } catch (error) {
         toast.error("Something went wrong");
@@ -552,7 +551,7 @@ const SecondSection = (props) => {
         );
         if (response.data.result.success.length) {
           toast.success(`Record inserted.`);
-          setFetchTagDataAfterChange((prev) => !prev);
+          fetchTagDetails();
         } else {
           toast.warning(response.data.result.errors[0]?.error);
         }
@@ -880,7 +879,7 @@ const SecondSection = (props) => {
         articleId={articleId}
         articleType={"print"}
         setMainTableData={setEditableTagData}
-        setFetchTableDataAfterInsert={setFetchTagDataAfterChange}
+        fetchTagDetails={fetchTagDetails}
         tableData={editableTagData}
       />
     </div>
