@@ -91,6 +91,49 @@ const EditSection = ({
     setEditRow(e.target.value);
   };
 
+  //  * get prominence
+  const getProminenceValue = (prominenceString) => {
+    switch (prominenceString) {
+      case "Dedicated(1.0)":
+        return 1.0;
+      case "Lead Para/First Para(0.9)":
+        return 0.9;
+      case "High Prominence(0.8)":
+        return 0.8;
+      case "Medium Prominence(0.5)":
+        return 0.5;
+      case "Low Prominence(0.2)":
+        return 0.2;
+      case "Passing(0.05)":
+        return 0.05;
+      case "Passing(0.01)":
+        return 0.01;
+      default:
+        return 0;
+    }
+  };
+
+  // * space calculator
+  const calculateSpace = (row, isHeaderSpace, prominence, editValue) => {
+    if (isHeaderSpace && !prominence) {
+      return (getProminenceValue(row.m_prom) * parseFloat(editValue)).toFixed(
+        2
+      );
+    }
+
+    if (isHeaderSpace && prominence) {
+      return parseFloat(editValue * getProminenceValue(prominence)).toFixed(2);
+    }
+
+    if (!isHeaderSpace && prominence) {
+      return parseFloat(
+        getProminenceValue(prominence) * row.header_space
+      ).toFixed(2);
+    }
+
+    return row.space ?? "0.00";
+  };
+
   //updating tabledata
   const handleApplyChanges = () => {
     if (selectedItems.length <= 0)
@@ -99,12 +142,6 @@ const EditSection = ({
       });
 
     setApplyLoading(true);
-    let text = prominence;
-
-    let prominenceInNumber = ((text) => {
-      let match;
-      return (match = text.match(/\(([\d.]+)\)/)) ? match[1] : 0;
-    })(text);
 
     const isHeaderSpace = Boolean(editRow === "header_space");
 
@@ -121,6 +158,7 @@ const EditSection = ({
       }
     });
     setDifferData(newDifferData);
+    console.log(prominence);
 
     if (selectedItems.length > 0) {
       const updatedSelectedRows = selectedItems.map((row) => ({
@@ -129,14 +167,7 @@ const EditSection = ({
         reporting_subject: subject || row.reporting_subject,
         subcategory: category || row.subcategory,
         m_prom: prominence || row.m_prom,
-        space:
-          isHeaderSpace && !prominence
-            ? Number(row?.m_prom?.match(/\(([\d.]+)\)/)).toFixed(2)
-            : isHeaderSpace && prominence
-            ? Number(editValue * prominenceInNumber).toFixed(2)
-            : !isHeaderSpace && prominenceInNumber
-            ? Number(prominenceInNumber * row.header_space).toFixed(2)
-            : row.space,
+        space: calculateSpace(row, isHeaderSpace, prominence, editValue),
 
         detail_summary:
           (editRow === "detail_summary" && editValue) || row.detail_summary,
