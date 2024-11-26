@@ -203,7 +203,7 @@ export const generateAutoQuery = (formValues) => {
   const quote = (term) => `"${term.trim()}"`;
 
   // Start with the company name
-  let query = `${quote(companyName)}`;
+  let query = `++${quote(companyName)}`;
 
   // Collect optional conditions to be combined with OR
   const conditions = [];

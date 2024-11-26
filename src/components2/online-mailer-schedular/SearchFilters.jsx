@@ -99,17 +99,19 @@ const SearchFilters = () => {
       sx={{ display: "flex", alignItems: "center", flexWrap: "wrap" }}
       className="gap-1 mt-1"
     >
-      <CustomMultiSelect
-        dropdownToggleWidth={300}
-        dropdownWidth={300}
-        keyId="clientid"
-        keyName="clientname"
-        options={clientData?.data?.clients || []}
-        title="clients"
-        selectedItems={clients}
-        setSelectedItems={setClients}
-        isIncreased
-      />
+      <Box>
+        <CustomMultiSelect
+          dropdownToggleWidth={300}
+          dropdownWidth={300}
+          keyId="clientid"
+          keyName="clientname"
+          options={clientData?.data?.clients || []}
+          title="clients"
+          selectedItems={clients}
+          setSelectedItems={setClients}
+          isIncreased
+        />
+      </Box>
       <div className="flex items-center gap-1 border border-gray-300 rounded-sm p-[1px]">
         <FromDate fromDate={fromDate} setFromDate={setFromDate} isNoMargin />
         <YesOrNo

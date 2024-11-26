@@ -24,7 +24,7 @@ import { url } from "./constants/baseUrl";
 import Online from "./pages/qc1/Online";
 import Print from "./pages/qc1/Print";
 import Analytics from "./pages/Analytics/Analytics";
-import BasketCityPub from "./pages/BasketCityPub";
+// import BasketCityPub from "./pages/Master";
 import PrintSimilarArticles from "./pages/qc1/PrintSimilarArticles";
 import CopyArticles from "./pages/CopyArticles";
 import OnlineMailSchedular from "./pages/OnlineMailSchedular";
@@ -34,6 +34,7 @@ import ClientMaster from "./pages/ClientMaster";
 import BooleanKeyword from "./pages/BooleanKeyword";
 import DeletePrintArticles from "./pages/DeletePrintArticles";
 import MagazineStitch from "./pages/MagazineStitch";
+import Master from "./pages/Master";
 
 // Lazy load the components
 const Home = lazy(() => import("./pages/Home"));
@@ -68,6 +69,7 @@ function App() {
     booleanKeyword: false,
     deletePrintArticles: false,
     magazineStitch: false,
+    master: false,
   });
   const [loading, setLoading] = useState(false);
 
@@ -128,6 +130,7 @@ function App() {
       booleanKeyword: screenPermissions.BooleanKeyword,
       deletePrintArticles: screenPermissions.DeletePrintArticles,
       magazineStitch: screenPermissions.MagazineStitch,
+      master: screenPermissions.Master,
     });
   }, [screenPermissions]);
 
@@ -265,7 +268,7 @@ function App() {
                   )
                 }
               />
-              <Route
+              {/* <Route
                 path="/client-basket-city-publication"
                 element={
                   permissions.clientBasketCityPublication ? (
@@ -276,7 +279,7 @@ function App() {
                     <NotFound />
                   )
                 }
-              />
+              /> */}
               <Route
                 path="/copy-articles"
                 element={
@@ -366,6 +369,18 @@ function App() {
                 element={
                   permissions.magazineStitch ? (
                     <MagazineStitch />
+                  ) : loading ? (
+                    <div>Loading...</div>
+                  ) : (
+                    <NotFound />
+                  )
+                }
+              />
+              <Route
+                path="/master"
+                element={
+                  permissions.magazineStitch ? (
+                    <Master />
                   ) : loading ? (
                     <div>Loading...</div>
                   ) : (

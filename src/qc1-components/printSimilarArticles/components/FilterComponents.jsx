@@ -204,15 +204,16 @@ const FilterComponents = ({
           setValue={setHeadlineSummary}
         />
       </Typography>
-
-      <YesOrNo
-        classes={classes}
-        mapValue={["Grouped", "Un-grouped", "All"]}
-        placeholder="AllGrouped/UnGrouped"
-        value={allGroupedUnGrouped}
-        setValue={setAllGroupedUnGrouped}
-        width={140}
-      />
+      <Typography className="pt-3" component={"div"}>
+        <YesOrNo
+          classes={classes}
+          mapValue={["Grouped", "Un-grouped", "All"]}
+          placeholder="AllGrouped/UnGrouped"
+          value={allGroupedUnGrouped}
+          setValue={setAllGroupedUnGrouped}
+          width={140}
+        />
+      </Typography>
       <Button
         btnText={tableLoading ? "Searching" : "search"}
         onClick={fetchTableData}

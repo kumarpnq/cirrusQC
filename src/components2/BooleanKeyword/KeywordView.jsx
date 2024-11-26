@@ -1,64 +1,18 @@
-import { useState } from "react";
 import {
   Box,
   Modal,
-  Tab,
-  Tabs,
   Typography,
   IconButton,
   Divider,
   Paper,
-  Tooltip,
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import PropTypes from "prop-types";
-import AddBoxIcon from "@mui/icons-material/AddBox";
-import DisabledByDefaultIcon from "@mui/icons-material/DisabledByDefault";
 
-const english = [
-  {
-    id: 1,
-    text: `Active Drink" OR capsico OR "Dabur Chyawanprash" OR "Real fruit Juice" OR "Dabur amla" OR Chyawanshakti OR "Nature care" OR "Amit Burman" OR "P D Narang" OR Odopic OR Odonil OR lemoneez OR Shakhapushpi OR satisabgol OR "dabur india" OR odomos OR janmaghunti OR meswak OR "promise toothpaste" OR "Lal Dant Manjan" OR "anmol sarson amla" OR "Efarelle comfort" PR itchcare OR Nopane OR "vatika shampoo" OR "Pradip burman" OR "anand Burman" OR "sani fresh" OR Babool OR "Heena conditioning shampoo" OR "pudin hara" OR hajmola OR "sabyna strong" OR dabur OR ++(Dabur)`,
-  },
-  {
-    id: 2,
-    text: `"Dabur India" OR (Dabur AND ("Mohit Malhotra" OR "Ankush Jain" OR "Adarsh Sharma" OR "Mohit Burman" OR "Amit Burman" OR "Mayank Kumar" OR "Biplab Baksi" OR "Rahul Awasthi" OR "Swasthya Aur Suraksha" OR "Jivanti"))`,
-  },
-  {
-    id: 3,
-    text: `?Dabur India OR Dabur OR "Dabur red" OR "Dabur oral care" OR "Dabur oral" OR "Chawanprash" OR "Real Juices" OR "FEM" OR "Honey" OR "Glucose D" OR "Vatika" OR "Dabur Amla" OR "Dabur Meswak" OR "Babool" OR "Honitus" OR "Odomos" OR "Odomil" OR "Sanifresh" OR "Gulabari" OR "Hommade" OR "Dabur Vedic" OR "Fem" OR "Oxylife"`,
-  },
-  {
-    id: 4,
-    text: `(Dabur AND ("Swasthya Aur Suraksha" OR Jivanti OR "Mohit Malhotra" OR "Ankush Jain" OR "Adarsh Sharma" OR "Mohit Burman" OR "Amit Burman" OR "Mayank Kumar" OR "Biplab Baksi" OR "Rahul Awasthi"))`,
-  },
-];
-
-const hindi = [
-  {
-    id: 1,
-    text: `"ऍक्टिव्ह ड्रिंक" capsico "डाबर च्यवनप्राश" "रिअल फ्रूट ज्यूस" "डाबर आवळा" च्यवनशक्ती "नेचर केअर" "अमित बर्मन" "पी डी नारंग" Odopic Odonil lemoneez शंखपुष्पी satisabgol "डाबर इंडिया" odomos जन्मघुंटी meswak "प्रॉमिस टूथपेस्ट" "लाल दंत मंजन" "अनमोल सरसों आवळा" "Efarelle comfort" PR itchcare Nopane "वाटिका शॅम्पू" "प्रदीप बर्मन" "आनंद बर्मन" "सॅनी फ्रेश" बाबुल "हेना कंडिशनिंग शॅम्पू" "पुदीन हरा" हजमोला "सब्यना स्ट्रॉंग" डाबर ++(डाबर)`,
-  },
-  {
-    id: 2,
-    text: `"डाबर इंडिया" (डाबर ("मोहित मल्होत्रा" "अंकुश जैन" "आदर्श शर्मा" "मोहित बर्मन" "अमित बर्मन" "मयंक कुमार" "बिप्लब बक्सी" "राहुल अवस्थी" "स्वास्थ्य और सुरक्षा" "जीवंती"))`,
-  },
-  {
-    id: 3,
-    text: `?डाबर इंडिया डाबर "डाबर रेड" "डाबर ओरल केअर" "डाबर ओरल" "च्यवनप्राश" "रिअल ज्यूस" "FEM" "मध" "ग्लुकोज डी" "वाटिका" "डाबर आवळा" "डाबर मेस्वाक" "बाबुल" "होनिटस" "ओडोमोस" "ओडोमिल" "सॅनिफ्रेश" "गुलाबारी" "होममेड" "डाबर वेदिक" "फेम" "ऑक्सीलाइफ"`,
-  },
-  {
-    id: 4,
-    text: `(डाबर ("स्वास्थ्य और सुरक्षा" जीवंती "मोहित मल्होत्रा" "अंकुश जैन" "आदर्श शर्मा" "मोहित बर्मन" "अमित बर्मन" "मयंक कुमार" "बिप्लब बक्सी" "राहुल अवस्थी"))`,
-  },
-];
-
-const KeywordView = ({ open, handleClose }) => {
-  const [tabValue, setTabValue] = useState(0);
-
-  const handleTabChange = (event, newValue) => {
-    setTabValue(newValue);
-  };
+const KeywordView = ({ open, handleClose, row }) => {
+  // * queries
+  const includeQuery = row?.includeQuery || [];
+  const excludeQuery = row?.excludeQuery || [];
 
   return (
     <Modal
@@ -76,8 +30,8 @@ const KeywordView = ({ open, handleClose }) => {
           width: "70vw",
           bgcolor: "background.paper",
           boxShadow: 24,
-          p: 1,
-          borderRadius: 1,
+          p: 2,
+          borderRadius: 2,
         }}
       >
         {/* Modal Header */}
@@ -85,9 +39,9 @@ const KeywordView = ({ open, handleClose }) => {
           display="flex"
           justifyContent="space-between"
           alignItems="center"
-          mb={1}
+          mb={2}
         >
-          <Typography variant="h6" fontSize={"1em"}>
+          <Typography variant="h6" fontSize="1em" fontWeight="bold">
             Keyword View
           </Typography>
           <IconButton onClick={handleClose}>
@@ -95,72 +49,48 @@ const KeywordView = ({ open, handleClose }) => {
           </IconButton>
         </Box>
         <Divider />
-        {/* Modal Tabs */}
-        <Tabs
-          value={tabValue}
-          onChange={handleTabChange}
-          aria-label="keyword tabs"
-        >
-          <Tab
-            label={
-              <Tooltip title="Include Query">
-                <AddBoxIcon />
-              </Tooltip>
-            }
-          />
-          <Tab
-            label={
-              <Tooltip title="Exclude Query">
-                <DisabledByDefaultIcon />
-              </Tooltip>
-            }
-          />
-        </Tabs>
-        <Divider />
         {/* Modal Content */}
-        <Box mt={1}>
-          {tabValue === 0 && (
-            <Paper>
-              <Typography
-                id="keyword-view-modal-description"
-                color="GrayText"
-                fontSize={"1em"}
-                p={1}
-              >
-                {english.slice(0, 2).map((item) => (
-                  <Typography key={item.id} variant="body2" paragraph>
-                    <span className="font-bold">English : </span> {item.text}
-                  </Typography>
-                ))}
-                {hindi.slice(0, 2).map((item) => (
-                  <Typography key={item.id} variant="body2" paragraph>
-                    <span className="font-bold">Marathi : </span> {item.text}
-                  </Typography>
-                ))}
-              </Typography>
-            </Paper>
+        <Box
+          mt={2}
+          sx={{ border: "1px solid #ddd", borderRadius: "3px", p: 1 }}
+        >
+          <Typography variant="subtitle1" fontWeight="bold" color="primary">
+            Include Query
+          </Typography>
+          {includeQuery.length > 0 ? (
+            includeQuery.map((item, index) => (
+              <Paper key={index} sx={{ p: 1, mt: 1 }}>
+                <Typography variant="body2" color="textSecondary">
+                  <strong>{item.langName || "English"}:</strong> {item.query}
+                </Typography>
+              </Paper>
+            ))
+          ) : (
+            <Typography variant="body2" color="textSecondary" mt={1}>
+              No Include Queries Available.
+            </Typography>
           )}
-          {tabValue === 1 && (
-            <Paper>
-              <Typography
-                id="keyword-view-modal-description"
-                color="GrayText"
-                fontSize={"1em"}
-                p={1}
-              >
-                {/* Render 2 Marathi and 2 English texts */}
-                {english.slice(2, 4).map((item) => (
-                  <Typography key={item.id} variant="body2" paragraph>
-                    <span className="font-bold">English : </span> {item.text}
-                  </Typography>
-                ))}
-                {hindi.slice(2, 4).map((item) => (
-                  <Typography key={item.id} variant="body2" paragraph>
-                    <span className="font-bold">Marathi : </span> {item.text}
-                  </Typography>
-                ))}
-              </Typography>
-            </Paper>
+
+          <Typography
+            variant="subtitle1"
+            fontWeight="bold"
+            color="primary"
+            mt={2}
+          >
+            Exclude Query
+          </Typography>
+          {excludeQuery.length > 0 ? (
+            excludeQuery.map((item, index) => (
+              <Paper key={index} sx={{ p: 1, mt: 1 }}>
+                <Typography variant="body2" color="textSecondary">
+                  <strong>{item.langName || "English"}:</strong> {item.query}
+                </Typography>
+              </Paper>
+            ))
+          ) : (
+            <Typography variant="body2" color="textSecondary" mt={1}>
+              No Exclude Queries Available.
+            </Typography>
           )}
         </Box>
       </Box>
@@ -168,8 +98,32 @@ const KeywordView = ({ open, handleClose }) => {
   );
 };
 
+// Define PropTypes
 KeywordView.propTypes = {
   open: PropTypes.bool.isRequired,
   handleClose: PropTypes.func.isRequired,
+  row: PropTypes.shape({
+    includeQuery: PropTypes.arrayOf(
+      PropTypes.shape({
+        langName: PropTypes.string,
+        query: PropTypes.string.isRequired,
+      })
+    ),
+    excludeQuery: PropTypes.arrayOf(
+      PropTypes.shape({
+        langName: PropTypes.string,
+        query: PropTypes.string.isRequired,
+      })
+    ),
+  }),
 };
+
+// Default Props
+KeywordView.defaultProps = {
+  row: {
+    includeQuery: [],
+    excludeQuery: [],
+  },
+};
+
 export default KeywordView;

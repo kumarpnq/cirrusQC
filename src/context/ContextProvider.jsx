@@ -37,6 +37,7 @@ const ContextProvider = ({ children }) => {
     countryMaster: false,
     userMaster: false,
     industryMaster: false,
+    Master: false,
   });
   const [permissionLoading, setPermissionLoading] = useState(false);
 

@@ -142,12 +142,12 @@ export default function MainNav() {
           },
         ]
       : []),
-    ...(screenPermissions.ClientBasketCityPublication
+    ...(screenPermissions.Master
       ? [
           {
             id: 10,
             title: "Master",
-            path: "/client-basket-city-publication",
+            path: "/master",
             icon: <ShoppingBasketIcon />,
           },
         ]

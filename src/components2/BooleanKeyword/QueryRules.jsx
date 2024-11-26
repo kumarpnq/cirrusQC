@@ -1,4 +1,12 @@
-import { Box, Typography, List, ListItem, Paper } from "@mui/material";
+import {
+  Box,
+  Typography,
+  List,
+  ListItem,
+  Paper,
+  IconButton,
+} from "@mui/material";
+import { GridCloseIcon } from "@mui/x-data-grid";
 
 // Data for query rules and examples
 const queryRules = [
@@ -32,10 +40,15 @@ const exampleQueries = [
 ];
 
 // Single component combining both sections
-const QueryComponent = () => {
+const QueryComponent = ({ handleClose }) => {
   return (
     <Box sx={{ maxWidth: "700px", mx: "auto", p: 2 }}>
       {/* Query Rules Section */}
+      <Typography variant="div" sx={{ mb: 0.5, textAlign: "end" }}>
+        <IconButton color="primary" onClick={handleClose}>
+          <GridCloseIcon />
+        </IconButton>
+      </Typography>
       <Box
         sx={{
           borderRadius: "8px",

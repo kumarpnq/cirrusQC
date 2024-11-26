@@ -118,7 +118,7 @@ const QueryBox = ({ type, row }) => {
           horizontal: "right",
         }}
       >
-        <QueryComponent />
+        <QueryComponent handleClose={handleClose} />
       </Popover>
       <Box sx={{ position: "absolute", zIndex: 999, width: "100%" }}>
         {showSuggestions && !!suggestions.length && (

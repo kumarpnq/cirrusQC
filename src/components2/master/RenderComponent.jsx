@@ -11,56 +11,34 @@ import IndustryMaster from "./industry-master/IndustryMaster";
 import { useContext } from "react";
 import { ResearchContext } from "../../context/ContextProvider";
 
-// Example permission object
-const permissions = {
-  "City Master": ["Yes"],
-  "Company Master": ["Yes"],
-  "Publication Group Master": ["Yes"],
-  "Publication Master": ["Yes"],
-  "Publication Master Online": ["Yes"],
-  "State Master": ["Yes"],
-  "Country Master": ["Yes"],
-  "User Master": ["Yes"],
-  "Industry Master": ["Yes"],
-};
-
 const RenderComponent = ({ value }) => {
   const { screenPermissions } = useContext(ResearchContext);
-  const hasPermission = (requiredRoles) => requiredRoles.includes("");
 
   switch (value) {
     case "City Master":
-      return hasPermission(permissions["City Master"]) ? <CityMaster /> : null;
+      return screenPermissions?.CityMaster ? <CityMaster /> : null;
     case "Company Master":
-      return hasPermission(permissions["Company Master"]) ? (
-        <CompanyMaster />
-      ) : null;
+      return screenPermissions?.CompanyMaster ? <CompanyMaster /> : null;
     case "Publication Group Master":
-      return hasPermission(permissions["Publication Group Master"]) ? (
+      return screenPermissions?.PublicationGroupMaster ? (
         <PublicationGroupMaster />
       ) : null;
     case "Publication Master":
-      return hasPermission(permissions["Publication Master"]) ? (
+      return screenPermissions?.PublicationMaster ? (
         <PublicationMaster />
       ) : null;
     case "Publication Master Online":
-      return hasPermission(permissions["Publication Master Online"]) ? (
+      return screenPermissions?.PublicationMasterOnline ? (
         <PublicationMasterOnline />
       ) : null;
     case "State Master":
-      return hasPermission(permissions["State Master"]) ? (
-        <StateMaster />
-      ) : null;
+      return screenPermissions?.StateMaster ? <StateMaster /> : null;
     case "Country Master":
-      return hasPermission(permissions["Country Master"]) ? (
-        <CountryMaster />
-      ) : null;
+      return screenPermissions?.CountryMaster ? <CountryMaster /> : null;
     case "User Master":
-      return hasPermission(permissions["User Master"]) ? <UserMaster /> : null;
+      return screenPermissions?.UserMaster ? <UserMaster /> : null;
     case "Industry Master":
-      return hasPermission(permissions["Industry Master"]) ? (
-        <IndustryMaster />
-      ) : null;
+      return screenPermissions?.IndustryMaster ? <IndustryMaster /> : null;
 
     default:
       return null;

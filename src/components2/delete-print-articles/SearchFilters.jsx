@@ -1,7 +1,14 @@
 import PropTypes from "prop-types";
 import toast from "react-hot-toast";
 import { useState } from "react";
-import { Button, Paper, Box, Tooltip, CircularProgress } from "@mui/material";
+import {
+  Button,
+  Paper,
+  Box,
+  Tooltip,
+  CircularProgress,
+  Typography,
+} from "@mui/material";
 import { makeStyles } from "@mui/styles";
 import { format } from "date-fns";
 import { formattedNextDay } from "../../constants/dates";
@@ -83,12 +90,34 @@ const SearchFilters = ({ setData, loading, setLoading }) => {
         className="gap-1"
       >
         <Tooltip title="Article Date">
-          <Box>
+          <Box
+            sx={{
+              display: "flex",
+              alignItems: "center",
+              border: "1px solid #ccc",
+              borderRadius: "2px",
+              p: 0.2,
+              gap: 0.2,
+            }}
+          >
+            <Typography sx={{ fontSize: "0.875em" }}>
+              Article Date :{" "}
+            </Typography>
             <ToDate dateNow={articleDate} setDateNow={setArticleDate} />
           </Box>
         </Tooltip>
         <Tooltip title="Upload Date">
-          <Box>
+          <Box
+            sx={{
+              display: "flex",
+              alignItems: "center",
+              border: "1px solid #ccc",
+              borderRadius: "2px",
+              p: 0.2,
+              gap: 0.2,
+            }}
+          >
+            <Typography sx={{ fontSize: "0.875em" }}>Upload Date : </Typography>
             <ToDate dateNow={uploadDate} setDateNow={setUploadDate} />
           </Box>
         </Tooltip>

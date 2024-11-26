@@ -1,5 +1,4 @@
-import PropTypes from "prop-types";
-import { useState } from "react";
+import { useContext, useState } from "react";
 import {
   Box,
   Divider,
@@ -10,9 +9,6 @@ import {
   MenuItem,
   Typography,
 } from "@mui/material";
-import CompanyMaster from "../components2/company-master/CompanyMaster";
-import PublicationMaster from "../components2/publication-master/PublicationMaster";
-import PublicationMasterOnline from "../components2/publication-master-online/PublicationMasterOnline";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import EmailIcon from "@mui/icons-material/Email";
@@ -22,13 +18,8 @@ import PrintIcon from "@mui/icons-material/Print";
 import PublicIcon from "@mui/icons-material/Public";
 import PriorityHighIcon from "@mui/icons-material/PriorityHigh";
 import { styled } from "@mui/system";
-import CityMaster from "../components2/master/city-master/CityMaster";
-import StateMaster from "../components2/master/state-master/StateMaster";
-import CountryMaster from "../components2/master/country-master/CountryMaster";
-import UserMaster from "../components2/master/user-master/UserMaster";
-import IndustryMaster from "../components2/master/industry-master/IndustryMaster";
-import PublicationGroupMaster from "../components2/master/publication-group-master/PublicationGroupMaster";
 import RenderComponent from "../components2/master/RenderComponent";
+import { ResearchContext } from "../context/ContextProvider";
 
 const StyledMenuItem = styled(MenuItem)(({ theme }) => ({
   position: "relative",
@@ -77,9 +68,10 @@ const StyledTypography = styled(Typography)(({ theme }) => ({
   },
 }));
 
-const BasketCityPub = () => {
+const Master = () => {
   const [anchorEl, setAnchorEl] = useState(null);
-  const [selectedItem, setSelectedItem] = useState("City Master");
+  const [selectedItem, setSelectedItem] = useState("Company Master");
+  const { screenPermissions } = useContext(ResearchContext);
 
   const handleClick = (event) => {
     setAnchorEl(event.currentTarget);
@@ -95,15 +87,51 @@ const BasketCityPub = () => {
   };
 
   const menuOptions = [
-    { label: "City Master", icon: <AccountCircleIcon /> },
-    { label: "Company Master", icon: <EmailIcon /> },
-    { label: "State Master", icon: <BusinessIcon /> },
-    { label: "Country Master", icon: <LocationCityIcon /> },
-    { label: "User Master", icon: <PrintIcon /> },
-    { label: "Publication Group Master", icon: <PublicIcon /> },
-    { label: "Publication Master", icon: <PublicIcon /> },
-    { label: "Publication Master Online", icon: <PriorityHighIcon /> },
-    { label: "Industry Master", icon: <PriorityHighIcon /> },
+    {
+      label: "City Master",
+      icon: <AccountCircleIcon />,
+      permission: screenPermissions?.CityMaster,
+    },
+    {
+      label: "Company Master",
+      icon: <EmailIcon />,
+      permission: screenPermissions?.CompanyMaster,
+    },
+    {
+      label: "State Master",
+      icon: <BusinessIcon />,
+      permission: screenPermissions?.StateMaster,
+    },
+    {
+      label: "Country Master",
+      icon: <LocationCityIcon />,
+      permission: screenPermissions?.CountryMaster,
+    },
+    {
+      label: "User Master",
+      icon: <PrintIcon />,
+      permission: screenPermissions?.UserMaster,
+    },
+    {
+      label: "Publication Group Master",
+      icon: <PublicIcon />,
+      permission: screenPermissions?.PublicationGroupMaster,
+    },
+    {
+      label: "Publication Master",
+      icon: <PublicIcon />,
+      permission: screenPermissions?.PublicationMaster,
+    },
+    {
+      label: "Publication Master Online",
+      icon: <PriorityHighIcon />,
+      permission: screenPermissions?.PublicationMasterOnline,
+    },
+    {
+      label: "Industry Master",
+      icon: <PriorityHighIcon />,
+      permission: screenPermissions?.IndustryMaster,
+    },
   ];
 
   return (
@@ -125,6 +153,7 @@ const BasketCityPub = () => {
             key={index}
             onClick={() => handleSelect(option)}
             selected={selectedItem === option.label}
+            disabled={!option.permission}
           >
             <StyledListItemIcon>{option.icon}</StyledListItemIcon>
             <StyledListItemText primary={option.label} />
@@ -137,4 +166,4 @@ const BasketCityPub = () => {
   );
 };
 
-export default BasketCityPub;
+export default Master;

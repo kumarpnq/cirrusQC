@@ -98,6 +98,7 @@ const timeStampData = [
   { id: "07:30", timestamp: "07:30" },
   { id: "08:00", timestamp: "08:00" },
   { id: "08:30", timestamp: "08:30" },
+  { id: "08:45", timestamp: "08:45" },
   { id: "09:00", timestamp: "09:00" },
   { id: "09:30", timestamp: "09:30" },
   { id: "10:00", timestamp: "10:00" },
@@ -576,8 +577,6 @@ const EditDialog = ({
     }
   };
 
-  console.log();
-
   const handleInsert = async () => {
     try {
       setInsertLoading(true);
@@ -753,17 +752,19 @@ const EditDialog = ({
         </StyledItemWrapper>
         <StyledItemWrapper>
           <StyledText>Company:</StyledText>
-          <CustomMultiSelect
-            title="Company"
-            dropdownWidth={278}
-            dropdownToggleWidth={278}
-            keyId="companyid"
-            keyName="companyname"
-            options={companyData?.data?.companies || []}
-            selectedItems={selectedCompany}
-            setSelectedItems={setSelectedCompany}
-            isIncreased={false}
-          />
+          <Box sx={{ width: 277 }}>
+            <CustomMultiSelect
+              title="Company"
+              dropdownWidth={278}
+              dropdownToggleWidth={278}
+              keyId="companyid"
+              keyName="companyname"
+              options={companyData?.data?.companies || []}
+              selectedItems={selectedCompany}
+              setSelectedItems={setSelectedCompany}
+              isIncreased={false}
+            />
+          </Box>
         </StyledItemWrapper>
         <Divider sx={{ my: 1 }} />
         <Box sx={{ display: "flex", alignItems: "center" }}>
@@ -829,16 +830,18 @@ const EditDialog = ({
         </Box>
         <StyledItemWrapper>
           <StyledText>Login : </StyledText>
-          <CustomSingleSelect
-            dropdownToggleWidth={278}
-            dropdownWidth={278}
-            keyId="loginName"
-            keyName="loginName"
-            options={loginNames}
-            selectedItem={login}
-            setSelectedItem={setLogin}
-            title="Login"
-          />
+          <Box width={277}>
+            <CustomSingleSelect
+              dropdownToggleWidth={278}
+              dropdownWidth={278}
+              keyId="loginName"
+              keyName="loginName"
+              options={loginNames}
+              selectedItem={login}
+              setSelectedItem={setLogin}
+              title="Login"
+            />
+          </Box>
         </StyledItemWrapper>
         <StyledItemWrapper>
           <StyledText>Send Report Every:</StyledText>

@@ -70,7 +70,7 @@ const languages = [
 
 const QueryList = ({ setQuery, data = [] }) => {
   const [anchorEl, setAnchorEl] = React.useState(null);
-  const [selectedLanguage, setSelectedLanguage] = React.useState("");
+  const [selectedLanguage, setSelectedLanguage] = React.useState([]);
 
   const handleLanguageChange = (event) => {
     setSelectedLanguage(event.target.value);
@@ -88,6 +88,8 @@ const QueryList = ({ setQuery, data = [] }) => {
       console.log(error);
     }
   };
+
+  console.log(selectedLanguage);
 
   return (
     <StyledList>
@@ -115,12 +117,13 @@ const QueryList = ({ setQuery, data = [] }) => {
           </Tooltip>
 
           {/* Language Selector */}
-          <FormControl sx={{ minWidth: 120, mx: 1, height: 25 }}>
+          {/* <FormControl sx={{ minWidth: 120, mx: 1, height: 25 }}>
             <Select
               value={selectedLanguage}
               onChange={handleLanguageChange}
-              displayEmpty
+              multiple
               sx={{
+                width: 200,
                 height: 25,
                 lineHeight: "25px",
                 "& .MuiSelect-select": {
@@ -138,7 +141,7 @@ const QueryList = ({ setQuery, data = [] }) => {
                 </MenuItem>
               ))}
             </Select>
-          </FormControl>
+          </FormControl> */}
 
           {/* Query Text */}
           <QueryBox>{row.query}</QueryBox>

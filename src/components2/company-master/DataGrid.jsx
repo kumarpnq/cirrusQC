@@ -67,7 +67,7 @@ const DataGrid = ({ data, setSelectedRows }) => {
   }));
   return (
     <Fragment>
-      <Box sx={{ height: 500, width: "100%" }}>
+      <Box sx={{ height: "75vh", width: "100%" }}>
         <MUIDataGrid
           rows={rows}
           columns={columns}
