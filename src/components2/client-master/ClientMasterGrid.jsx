@@ -51,7 +51,7 @@ const ClientMasterGrid = ({ data = [], loading }) => {
 
   return (
     <>
-      <Box sx={{ height: 500, width: "100%" }}>
+      <Box sx={{ height: "80vh  ", width: "100%" }}>
         <DataGrid
           rows={rows}
           columns={columns}

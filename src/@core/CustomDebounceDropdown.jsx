@@ -92,8 +92,8 @@ const CustomDebounceDropdown = ({
         </span>
       </div>
       {isShowList && (
-        <ul className=" w-[250px] h-[200px] absolute bg-white z-30 shadow-lg rounded-md overflow-y-scroll">
-          <li className="sticky top-0 flex">
+        <ul className=" w-[270px] h-[200px] absolute bg-white z-30 shadow-lg rounded-md overflow-y-scroll">
+          <li className="sticky top-0 flex p-1 bg-white border border-gray-400 rounded-md">
             <input
               type="text"
               className="outline-none border border-gray-400 rounded-[3px] bg-secondory h-[30px] px-2 py-[2px] placeholder-black placeholder-opacity-75 placeholder-italic text-sm  hover:border-black"

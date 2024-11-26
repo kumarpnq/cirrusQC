@@ -474,14 +474,27 @@ const MainTable = ({
     {
       field: "thumbnail",
       headerName: "Thumbnail",
-      width: userColumnSettings?.thumbnail || 70,
-      height: 70,
+      width: userColumnSettings?.thumbnail || 100,
+      height: 100,
       renderCell: (params) => (
         <div style={iconCellStyle}>
           <Tooltip
             title={
-              <Box sx={{ objectFit: "contain" }}>
-                <img src={params.row.thumbnail} height={150} width={150} />
+              <Box
+                sx={{
+                  display: "flex",
+                  justifyContent: "center",
+                  alignItems: "center",
+                  height: 200,
+                  width: 200,
+                  objectFit: "contain",
+                }}
+              >
+                <img
+                  src={params.row.thumbnail}
+                  alt="Thumbnail"
+                  style={{ maxHeight: "100%", maxWidth: "100%" }}
+                />
               </Box>
             }
             placement="right"
