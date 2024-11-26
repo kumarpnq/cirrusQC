@@ -379,7 +379,7 @@ function App() {
               <Route
                 path="/master"
                 element={
-                  permissions.magazineStitch ? (
+                  permissions.master ? (
                     <Master />
                   ) : loading ? (
                     <div>Loading...</div>
