@@ -346,6 +346,11 @@ const Qc2Table = ({
                     } ${highlightRows.includes(items) ? "updated-row" : ""} ${
                       "qc3-" + items.qc3_status
                     } ${getRowClass(items)}`}
+                    style={{
+                      backgroundColor:
+                        (highlightRows.includes(items) && "#b1f0be") ||
+                        (selectedItems.includes(items) && "#ffeeba"),
+                    }}
                   >
                     <td className="sticky left-0 px-6 py-2 bg-white top-10 whitespace-nowrap">
                       <input

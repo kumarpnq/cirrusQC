@@ -1,20 +1,13 @@
-import React from "react";
 import PropTypes from "prop-types";
-import {
-  List,
-  ListItem,
-  IconButton,
-  MenuItem,
-  Select,
-  FormControl,
-  Box,
-  Tooltip,
-} from "@mui/material";
+import { List, ListItem, IconButton, Box, Tooltip } from "@mui/material";
 import { styled } from "@mui/system";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditNoteIcon from "@mui/icons-material/EditNote";
 import TranslateIcon from "@mui/icons-material/Translate";
 import axiosInstance from "../../../axiosConfig";
+import { Fragment, useState } from "react";
+import toast from "react-hot-toast";
+import DeleteConfirmationDialog from "../../@core/DeleteConfirmationDialog";
 
 // Styled Components
 const StyledList = styled(List)({
@@ -61,94 +54,124 @@ const QueryBox = styled(Box)({
   marginLeft: 2,
 });
 
-const languages = [
-  { label: "English", value: "en" },
-  { label: "Hindi", value: "hi" },
-  { label: "Bengali (Bangla)", value: "bn" },
-  { label: "Marathi", value: "mr" },
-];
+const QueryList = ({
+  setQuery,
+  setIsEdit,
+  data = [],
+  setQueryId,
+  companyId,
+}) => {
+  const [localQueryId, setLocalQueryId] = useState("");
+  const [openDeleteQueryOpen, setOpenDeleteQueryOpen] = useState(false);
+  const [filteredQueries, setFilteredQueries] = useState(data);
 
-const QueryList = ({ setQuery, data = [] }) => {
-  const [anchorEl, setAnchorEl] = React.useState(null);
-  const [selectedLanguage, setSelectedLanguage] = React.useState([]);
-
-  const handleLanguageChange = (event) => {
-    setSelectedLanguage(event.target.value);
-  };
-
-  const handleTranslate = async (event) => {
-    setAnchorEl(event.currentTarget);
+  const handleTranslate = async () => {
     try {
       const params = {
         query: "",
         languages: "hn,mr",
       };
       const response = await axiosInstance.get("translateBoolean", { params });
+      console.log(response);
     } catch (error) {
       console.log(error);
     }
   };
 
-  console.log(selectedLanguage);
+  const handleClick = (query, queryId) => {
+    setQuery(query);
+    setIsEdit(true);
+    setQueryId(queryId);
+  };
 
+  const handleDeleteQueryOpen = (query) => {
+    setLocalQueryId(query.queryId);
+    setOpenDeleteQueryOpen((prev) => !prev);
+  };
+
+  // * delete query
+  const handleDeleteQuery = async () => {
+    try {
+      const params = {
+        companyId,
+        queryId: localQueryId,
+      };
+      const response = await axiosInstance.delete("deleteBooleanQuery", {
+        params,
+      });
+      if (response.status === 200) {
+        toast.success(response.data.data.message);
+        setOpenDeleteQueryOpen(false);
+        setLocalQueryId(false);
+        setFilteredQueries(
+          data.filter((item) => item.queryId !== localQueryId)
+        );
+      }
+    } catch (error) {
+      toast.error("Something went wrong.");
+    }
+  };
+  const handleCloseDelete = () => {
+    setOpenDeleteQueryOpen(false);
+    setLocalQueryId("");
+  };
   return (
-    <StyledList>
-      {data.map((row) => (
-        <StyledListItem key={row.queryId}>
-          {/* Action Buttons */}
-          <Tooltip title="Delete">
-            <IconButton size="small">
-              <DeleteIcon />
-            </IconButton>
-          </Tooltip>
-          <Tooltip title="Edit">
-            <IconButton
-              color="primary"
-              size="small"
-              onClick={() => setQuery(row.query)}
-            >
-              <EditNoteIcon />
-            </IconButton>
-          </Tooltip>
-          <Tooltip title="Translate">
-            <IconButton color="primary" size="small" onClick={handleTranslate}>
-              <TranslateIcon />
-            </IconButton>
-          </Tooltip>
+    <Fragment>
+      <StyledList>
+        {filteredQueries.map((row) => (
+          <StyledListItem key={row.queryId}>
+            {/* Action Buttons */}
+            <Tooltip title="Delete">
+              <IconButton
+                size="small"
+                onClick={() => handleDeleteQueryOpen(row)}
+              >
+                <DeleteIcon />
+              </IconButton>
+            </Tooltip>
+            <Tooltip title="Edit">
+              <IconButton
+                color="primary"
+                size="small"
+                onClick={() => handleClick(row.query, row.queryId)}
+              >
+                <EditNoteIcon />
+              </IconButton>
+            </Tooltip>
+            <Tooltip title="Translate">
+              <IconButton
+                color="primary"
+                size="small"
+                onClick={handleTranslate}
+              >
+                <TranslateIcon />
+              </IconButton>
+            </Tooltip>
 
-          {/* Language Selector */}
-          {/* <FormControl sx={{ minWidth: 120, mx: 1, height: 25 }}>
-            <Select
-              value={selectedLanguage}
-              onChange={handleLanguageChange}
-              multiple
-              sx={{
-                width: 200,
-                height: 25,
-                lineHeight: "25px",
-                "& .MuiSelect-select": {
-                  padding: "0px 8px",
-                  height: "25px",
-                },
-              }}
-            >
-              <MenuItem value="">
-                <em>Language</em>
-              </MenuItem>
-              {languages.map((lang) => (
-                <MenuItem key={lang.value} value={lang.value}>
-                  {lang.label}
-                </MenuItem>
-              ))}
-            </Select>
-          </FormControl> */}
-
-          {/* Query Text */}
-          <QueryBox>{row.query}</QueryBox>
-        </StyledListItem>
-      ))}
-    </StyledList>
+            {/* Query Text */}
+            <QueryBox>{row.query}</QueryBox>
+          </StyledListItem>
+        ))}
+      </StyledList>
+      <DeleteConfirmationDialog
+        onDelete={handleDeleteQuery}
+        onClose={handleCloseDelete}
+        open={openDeleteQueryOpen}
+      />
+    </Fragment>
   );
 };
 
+QueryList.propTypes = {
+  setQuery: PropTypes.func.isRequired,
+  setIsEdit: PropTypes.func.isRequired,
+  data: PropTypes.arrayOf(
+    PropTypes.shape({
+      queryId: PropTypes.string.isRequired,
+      query: PropTypes.string.isRequired,
+    })
+  ).isRequired,
+  setQueryId: PropTypes.func.isRequired,
+  companyId: PropTypes.string,
+};
 export default QueryList;

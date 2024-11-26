@@ -9,9 +9,11 @@ import {
   DialogActions,
   TextField,
   Typography,
+  CircularProgress,
 } from "@mui/material";
 import { styled } from "@mui/system";
 import { generateAutoQuery } from "./utils";
+import axiosInstance from "../../../axiosConfig";
 
 // Styled components
 const StyledDialog = styled(Dialog)(({ theme }) => ({
@@ -30,14 +32,15 @@ const StyledTypography = styled(Typography)(({ theme }) => ({
   marginBottom: theme.spacing(0.5),
 }));
 
-const AutoGenerateModal = ({ open, handleClose, companyName }) => {
+const AutoGenerateModal = ({ open, handleClose, row, language }) => {
   const [formValues, setFormValues] = useState({
-    companyName,
+    companyName: "",
     ceo: "",
     products: "",
     keyPeoples: "",
     companyKeywords: "",
   });
+  const [loading, setLoading] = useState(false);
 
   let testObj = {
     companyName: "Perception & Quant",
@@ -73,12 +76,26 @@ const AutoGenerateModal = ({ open, handleClose, companyName }) => {
     return Object.keys(tempErrors).length === 0;
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     if (validateForm()) {
-      const response = generateAutoQuery(formValues);
-      console.log(response);
+      try {
+        setLoading(true);
+        const query = generateAutoQuery(formValues);
+        const requestData = {
+          companyId: row?.companyId,
+          includeQuery: {
+            query,
+            langId: language,
+          },
+        };
 
-      alert(`Generated OR Query:\n${response}`);
+        const response = await axiosInstance.post("newBoolean", requestData);
+        console.log(response);
+      } catch (error) {
+        console.log(error);
+      } finally {
+        setLoading(false);
+      }
     }
   };
 
@@ -101,7 +118,7 @@ const AutoGenerateModal = ({ open, handleClose, companyName }) => {
             fullWidth
             label="Company Name"
             name="companyName"
-            value={formValues.companyName || companyName}
+            value={formValues.companyName || row?.companyName}
             onChange={handleChange}
             error={!!errors.companyName}
             helperText={errors.companyName}
@@ -164,9 +181,11 @@ const AutoGenerateModal = ({ open, handleClose, companyName }) => {
           onClick={handleSubmit}
           size="small"
           color="primary"
-          variant="contained"
+          variant={loading ? "outlined" : "contained"}
+          sx={{ display: "flex", alignItems: "center", gap: 1 }}
         >
-          Submit
+          {loading && <CircularProgress size={"1em"} />}
+          validate & include
         </Button>
       </DialogActions>
     </StyledDialog>
@@ -177,6 +196,11 @@ AutoGenerateModal.propTypes = {
   open: PropTypes.bool.isRequired,
   handleClose: PropTypes.func.isRequired,
   companyName: PropTypes.string,
+  row: PropTypes.shape({
+    companyId: PropTypes.string,
+    companyName: PropTypes.string,
+  }),
+  language: PropTypes.string,
 };
 
 export default AutoGenerateModal;

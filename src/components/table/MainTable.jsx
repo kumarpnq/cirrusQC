@@ -160,6 +160,8 @@ const MainTable = ({
     setTableData([...highlightedData, ...filteredData]);
   };
 
+  console.log(highlightUpdatedRows);
+
   const dataToRender = searchedData.length > 0 ? searchedData : tableData;
 
   return (
@@ -285,6 +287,11 @@ const MainTable = ({
               } ${
                 highlightUpdatedRows.includes(rowData) ? "updated-row" : ""
               } ${"qc3-" + rowData.qc3_status} ${getRowClass(rowData)}`}
+              style={{
+                backgroundColor:
+                  (highlightUpdatedRows.includes(rowData) && "#b1f0be") ||
+                  (selectedRowData.includes(rowData) && "#ffeeba"),
+              }}
             >
               <TableCell
                 size="small"

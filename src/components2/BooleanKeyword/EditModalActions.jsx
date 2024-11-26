@@ -1,3 +1,4 @@
+import PropTypes from "prop-types";
 import { Box, Typography, TextField, Button } from "@mui/material";
 import { styled } from "@mui/system";
 import CustomSingleSelect from "../../@core/CustomSingleSelect2";
@@ -40,9 +41,8 @@ const StyledTypography = styled(Typography)({
 });
 
 // JSX Component
-export const EditModalActions = () => {
-  const [company, setCompany] = useState("PNQ DEMO");
-  const [language, setLanguage] = useState("");
+export const EditModalActions = ({ language, setLanguage, row }) => {
+  const [company, setCompany] = useState("");
   const [openAutoGenerate, setOpenAutoGenerate] = useState(false);
 
   const handleCloseOpenAutoGenerate = () =>
@@ -62,7 +62,7 @@ export const EditModalActions = () => {
         <StyledTextField
           type="text"
           aria-readonly
-          value={company}
+          value={company || row?.companyName}
           InputProps={{
             readOnly: true,
             style: {
@@ -102,8 +102,15 @@ export const EditModalActions = () => {
       <AutoGenerateModal
         open={openAutoGenerate}
         handleClose={handleCloseOpenAutoGenerate}
-        companyName={company}
+        language={language}
+        row={row}
       />
     </Container>
   );
+};
+
+EditModalActions.propTypes = {
+  language: PropTypes.string.isRequired,
+  setLanguage: PropTypes.func.isRequired,
+  row: PropTypes.object,
 };

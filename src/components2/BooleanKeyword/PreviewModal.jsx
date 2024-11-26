@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import PropTypes from "prop-types";
 import {
   Modal,
@@ -9,22 +9,49 @@ import {
   IconButton,
 } from "@mui/material";
 import { DataGrid, GridCloseIcon } from "@mui/x-data-grid";
+import axiosInstance from "../../../axiosConfig";
+import toast from "react-hot-toast";
 
-const PreviewModal = ({ open, handleClose }) => {
+const PreviewModal = ({ open, handleClose, row, query }) => {
   // Sample data for DataGrid
   const [data, setData] = useState([
     { id: 1, headline: "Breaking News 1", summary: "Summary 1" },
     { id: 2, headline: "Breaking News 2", summary: "Summary 2" },
     { id: 3, headline: "Breaking News 3", summary: "Summary 3" },
-    // Add more data as needed
   ]);
-
+  const [loading, setLoading] = useState(false);
   // Columns for DataGrid
   const columns = [
     { field: "id", headerName: "ID", width: 100 },
     { field: "headline", headerName: "Headline", width: 300 },
     { field: "summary", headerName: "Summary", width: 400 },
   ];
+
+  useEffect(() => {
+    const fetchBooleanRecords = async () => {
+      try {
+        setLoading(true);
+        const params = {
+          companyId: row?.companyId,
+          companyName: row?.companyName,
+        };
+        if (query?.whichQuery === "Include Query")
+          params.includeQuery = query?.query;
+        if (query?.whichQuery === "Exclude Query")
+          params.excludeQuery = query?.query;
+        const response = await axiosInstance.get("validateAndSearchArticle", {
+          params,
+        });
+        console.log(response.data);
+      } catch (error) {
+        toast.error("Something went wrong.");
+        console.log(error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    if (open) fetchBooleanRecords();
+  }, [open, query?.query, query?.whichQuery, row.companyId, row.companyName]);
 
   return (
     <Modal
@@ -88,6 +115,7 @@ const PreviewModal = ({ open, handleClose }) => {
             columns={columns}
             pageSize={5}
             rowsPerPageOptions={[5]}
+            loading={loading}
             density="compact"
             sx={{ height: "100%" }}
           />
@@ -100,5 +128,7 @@ const PreviewModal = ({ open, handleClose }) => {
 PreviewModal.propTypes = {
   open: PropTypes.bool.isRequired,
   handleClose: PropTypes.func.isRequired,
+  row: PropTypes.object,
+  query: PropTypes.object,
 };
 export default PreviewModal;

@@ -1,19 +1,14 @@
-import {
-  Button,
-  Divider,
-  Typography,
-  Box,
-  Modal,
-  IconButton,
-  Paper,
-} from "@mui/material";
+import { Divider, Typography, Box, Modal, IconButton } from "@mui/material";
 import PropTypes from "prop-types";
 import CloseIcon from "@mui/icons-material/Close";
 import QueryBox from "./QueryBox";
 
 import { EditModalActions } from "./EditModalActions";
+import { useState } from "react";
 
 const AddEditDialog = ({ open, handleClose, fromWhere, row }) => {
+  const [language, setLanguage] = useState("en");
+
   return (
     <Modal open={open} onClose={handleClose}>
       <Box
@@ -45,39 +40,16 @@ const AddEditDialog = ({ open, handleClose, fromWhere, row }) => {
         </Box>
         <Box>
           <Divider />
-          <EditModalActions />
-          <QueryBox type={"Include Query"} row={row} />
+          <EditModalActions
+            language={language}
+            setLanguage={setLanguage}
+            row={row}
+          />
+          <QueryBox type={"Include Query"} row={row} language={language} />
           {/* exclude query */}
-          <QueryBox type={"Exclude Query"} row={row} />
+          <QueryBox type={"Exclude Query"} row={row} language={language} />
         </Box>
         <Divider />
-        <Box
-          component={Paper}
-          sx={{
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "end",
-            py: 1,
-            gap: 1,
-          }}
-        >
-          <Button
-            onClick={handleClose}
-            color="primary"
-            size="small"
-            variant="outlined"
-          >
-            Cancel
-          </Button>
-          <Button
-            onClick={handleClose}
-            color="primary"
-            size="small"
-            variant="outlined"
-          >
-            Save
-          </Button>
-        </Box>
       </Box>
     </Modal>
   );

@@ -1,4 +1,11 @@
-import { Box, Button, Popover, TextField, Typography } from "@mui/material";
+import {
+  Box,
+  Button,
+  CircularProgress,
+  Popover,
+  TextField,
+  Typography,
+} from "@mui/material";
 import { useState } from "react";
 import PropTypes from "prop-types";
 import QueryTable from "./QueryTable";
@@ -10,15 +17,18 @@ import IconButton from "@mui/material/IconButton";
 import Tooltip from "@mui/material/Tooltip";
 import QueryComponent from "./QueryRules";
 import PreviewModal from "./PreviewModal";
+import toast from "react-hot-toast";
+import axiosInstance from "../../../axiosConfig";
 
-const QueryBox = ({ type, row }) => {
+const QueryBox = ({ type, row, language }) => {
   const [query, setQuery] = useState("");
   const [isValid, setIsValid] = useState(true);
   const [error, setError] = useState("");
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [suggestions, setSuggestions] = useState([]);
-
-  console.log(row);
+  const [acceptLoading, setAcceptLoading] = useState(false);
+  const [isEdit, setIsEdit] = useState(false);
+  const [queryId, setQueryId] = useState("");
 
   const handleQueryChange = (event) => {
     let localQuery = event.target.value;
@@ -56,6 +66,81 @@ const QueryBox = ({ type, row }) => {
   const open = Boolean(anchorEl);
   const id = open ? "query-popover" : undefined;
 
+  // * validate and add
+  const handleValidateAndAdd = async () => {
+    if (!isValid || !query) {
+      toast.error("Please put valid query.");
+      return;
+    }
+
+    try {
+      setAcceptLoading(true);
+      const requestData = {
+        // query: query.trim(),
+        companyId: row?.companyId,
+        companyName: row?.companyName,
+        langId: language,
+      };
+      const includeQuery = {};
+      const excludeQuery = {};
+      if (type === "Include Query") {
+        includeQuery.query = query;
+        includeQuery.langId = language;
+      }
+      if (Object.keys(includeQuery).length)
+        requestData.includeQuery = includeQuery;
+      if (type === "Exclude Query") {
+        excludeQuery.includeQuery = query;
+        excludeQuery.langId = language;
+      }
+      if (Object.keys(excludeQuery).length)
+        requestData.excludeQuery = excludeQuery;
+      const response = await axiosInstance.post("newBoolean", requestData);
+
+      if (response.status === 200) {
+        toast.success(response.data.data.message);
+      }
+    } catch (error) {
+      toast.error("Something went wrong.");
+    } finally {
+      setAcceptLoading(false);
+    }
+  };
+
+  // * validate and update
+  const handleValidateAndUpdate = async () => {
+    if (!isValid || !query) {
+      toast.error("Please put valid query.");
+      return;
+    }
+    try {
+      setAcceptLoading(true);
+      const requestData = {
+        // query: query.trim(),
+        companyId: row?.companyId,
+        companyName: row?.companyName,
+        booleanQuery: query,
+        booleanId: queryId,
+      };
+      // if (type === "Include Query") requestData.includeQuery = query;
+      // if (type === "Exclude Query") requestData.includeQuery = query;
+      const response = await axiosInstance.post("changeBoolean", requestData);
+      if (response.status === 200) {
+        toast.success(response.data.data.message);
+      }
+    } catch (error) {
+      toast.error("Something went wrong.");
+    } finally {
+      setAcceptLoading(false);
+    }
+  };
+
+  const handleClear = () => {
+    setQuery("");
+    setIsEdit(false);
+    setQueryId("");
+  };
+
   return (
     <Box sx={{ border: "1px solid #ddd", mt: 1, p: 0.5, position: "relative" }}>
       <Box
@@ -69,8 +154,14 @@ const QueryBox = ({ type, row }) => {
       >
         {<Typography variant="body2">{type}</Typography>}
         <Box sx={{ display: "flex", gap: 1 }}>
-          <Button size="small" variant="outlined">
-            Validate & Add
+          <Button
+            size="small"
+            variant="outlined"
+            onClick={isEdit ? handleValidateAndUpdate : handleValidateAndAdd}
+            sx={{ display: "flex", alignItems: "center", gap: 1 }}
+          >
+            {acceptLoading && <CircularProgress size={"1em"} />}
+            Validate & {isEdit ? "update" : "Add"}
           </Button>
           <Button
             size="small"
@@ -79,6 +170,9 @@ const QueryBox = ({ type, row }) => {
           >
             Preview
           </Button>
+          <Button size="small" variant="outlined" onClick={handleClear}>
+            Clear
+          </Button>
         </Box>
       </Box>
 
@@ -86,6 +180,7 @@ const QueryBox = ({ type, row }) => {
         value={query}
         onChange={handleQueryChange}
         onFocus={() => setShowSuggestions(true)}
+        onBlur={() => setShowSuggestions(false)}
         fullWidth
         multiline
         rows={4}
@@ -134,10 +229,18 @@ const QueryBox = ({ type, row }) => {
         data={
           type === "Include Query" ? row?.includeQuery : row?.excludeQuery || []
         }
+        setIsEdit={setIsEdit}
+        setQueryId={setQueryId}
+        companyId={row?.companyId}
       />
       <PreviewModal
         open={openPreviewModal}
         handleClose={handleClosePreviewModal}
+        query={{
+          query,
+          whichQuery: type,
+        }}
+        row={row}
       />
     </Box>
   );
@@ -146,6 +249,7 @@ const QueryBox = ({ type, row }) => {
 QueryBox.propTypes = {
   type: PropTypes.string,
   row: PropTypes.object,
+  language: PropTypes.string,
 };
 
 export default QueryBox;
