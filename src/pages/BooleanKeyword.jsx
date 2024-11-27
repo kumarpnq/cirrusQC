@@ -14,7 +14,7 @@ const BooleanKeyword = () => {
         setData={setData}
       />
       <Divider sx={{ my: 1 }} />
-      <BooleanGrid data={data} loading={loading} />
+      <BooleanGrid data={data} loading={loading} setData={setData} />
     </Box>
   );
 };

@@ -4,7 +4,7 @@ import { styled } from "@mui/system";
 import CustomSingleSelect from "../../@core/CustomSingleSelect2";
 import useFetchData from "../../hooks/useFetchData";
 import { url } from "../../constants/baseUrl";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import AutoGenerateModal from "./AutoGenerateModal";
 import Client from "../../print-components/dropdowns/Client";
 
@@ -42,8 +42,14 @@ const StyledTypography = styled(Typography)({
 });
 
 // JSX Component
-export const EditModalActions = ({ language, setLanguage, row, fromWhere }) => {
-  const [company, setCompany] = useState("");
+export const EditModalActions = ({
+  language,
+  setLanguage,
+  row,
+  fromWhere,
+  selectedFullClient,
+  setSelectedFullClient,
+}) => {
   const [openAutoGenerate, setOpenAutoGenerate] = useState(false);
   const [selectedClient, setSelectedClient] = useState("");
   const [testCompanies, setTestCompanies] = useState([]);
@@ -59,6 +65,23 @@ export const EditModalActions = ({ language, setLanguage, row, fromWhere }) => {
     })
   );
 
+  const { data: clientList } = useFetchData(`${url}clientlist/`);
+
+  useEffect(() => {
+    if (fromWhere === "Add" && selectedClient) {
+      const client = clientList?.data?.clients.find(
+        (client) => client.clientid === selectedClient
+      );
+
+      setSelectedFullClient(client);
+    }
+  }, [
+    clientList?.data?.clients,
+    fromWhere,
+    selectedClient,
+    setSelectedFullClient,
+  ]);
+
   return (
     <Container>
       {fromWhere !== "Add" ? (
@@ -67,7 +90,7 @@ export const EditModalActions = ({ language, setLanguage, row, fromWhere }) => {
           <StyledTextField
             type="text"
             aria-readonly
-            value={company || row?.companyName}
+            value={row?.companyName}
             InputProps={{
               readOnly: true,
               style: {
@@ -121,6 +144,8 @@ export const EditModalActions = ({ language, setLanguage, row, fromWhere }) => {
         handleClose={handleCloseOpenAutoGenerate}
         language={language}
         row={row}
+        fromWhere={fromWhere}
+        selectedFullClient={selectedFullClient}
       />
     </Container>
   );
@@ -131,4 +156,6 @@ EditModalActions.propTypes = {
   setLanguage: PropTypes.func.isRequired,
   row: PropTypes.object,
   fromWhere: PropTypes.string,
+  selectedFullClient: PropTypes.object,
+  setSelectedFullClient: PropTypes.func,
 };

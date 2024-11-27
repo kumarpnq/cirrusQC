@@ -11,17 +11,50 @@ import VisibilityIcon from "@mui/icons-material/Visibility";
 import { useState } from "react";
 import KeywordView from "./KeywordView";
 import AddEditDialog from "./AddEditDialog";
+import DeleteConfirmationDialog from "../../@core/DeleteConfirmationDialog";
+import toast from "react-hot-toast";
+import axiosInstance from "../../../axiosConfig";
 
-const BooleanGrid = ({ data = [], loading }) => {
+const BooleanGrid = ({ data = [], loading, setData }) => {
   const [openEditOrView, setOpenEditOrView] = useState({
     edit: false,
     view: false,
   });
   const [selectedRow, setSelectedRow] = useState(null);
+  const [deleteModalOpen, setDeleteModalOpen] = useState(false);
 
   const handleOpen = (row, mode) => {
     setSelectedRow(row);
     setOpenEditOrView((prev) => ({ ...prev, [mode]: true }));
+  };
+
+  const handleDeleteOpen = (row) => {
+    setSelectedRow(row);
+    setDeleteModalOpen(true);
+  };
+
+  const handleDeleteModalClose = () => {
+    setDeleteModalOpen(false);
+    setSelectedRow(null);
+  };
+
+  const handleDelete = async () => {
+    try {
+      const response = await axiosInstance.delete(
+        `removeCompanyKeywords/?companyId=${selectedRow?.companyId}`
+      );
+      if (response.status === 200) {
+        toast.success(response.data.data.message);
+        setDeleteModalOpen(false);
+        setSelectedRow(null);
+        const filteredData = data.filter(
+          (item) => item.companyId !== selectedRow.companyId
+        );
+        setData(filteredData);
+      }
+    } catch (error) {
+      toast.error("Something went wrong.");
+    }
   };
 
   // Columns for the DataGrid
@@ -37,7 +70,11 @@ const BooleanGrid = ({ data = [], loading }) => {
           >
             <EditNoteIcon className="text-primary" />
           </IconButton>
-          <IconButton aria-label="delete" size="small">
+          <IconButton
+            aria-label="delete"
+            size="small"
+            onClick={() => handleDeleteOpen(params.row)}
+          >
             <DeleteIcon />
           </IconButton>
         </>
@@ -110,6 +147,12 @@ const BooleanGrid = ({ data = [], loading }) => {
         fromWhere="Edit"
         row={selectedRow}
       />
+
+      <DeleteConfirmationDialog
+        open={deleteModalOpen}
+        onClose={handleDeleteModalClose}
+        onDelete={handleDelete}
+      />
     </>
   );
 };
@@ -117,5 +160,6 @@ const BooleanGrid = ({ data = [], loading }) => {
 BooleanGrid.propTypes = {
   data: PropTypes.array.isRequired,
   loading: PropTypes.bool.isRequired,
+  setData: PropTypes.func,
 };
 export default BooleanGrid;

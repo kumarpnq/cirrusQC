@@ -1,6 +1,5 @@
 import axios from "axios";
 import { url_mongo } from "./src/constants/baseUrl";
-import { useNavigate } from "react-router-dom";
 
 const axiosInstance = axios.create({
   baseURL: url_mongo,
@@ -26,8 +25,8 @@ axiosInstance.interceptors.response.use(
   (error) => {
     if (error.response && error.response.status === 401) {
       localStorage.removeItem("user");
-      const navigate = useNavigate();
-      navigate("/login");
+
+      window.location.replace("/login");
     }
     return Promise.reject(error);
   }

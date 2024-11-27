@@ -14,6 +14,7 @@ import {
 import { styled } from "@mui/system";
 import { generateAutoQuery } from "./utils";
 import axiosInstance from "../../../axiosConfig";
+import toast from "react-hot-toast";
 
 // Styled components
 const StyledDialog = styled(Dialog)(({ theme }) => ({
@@ -32,7 +33,14 @@ const StyledTypography = styled(Typography)(({ theme }) => ({
   marginBottom: theme.spacing(0.5),
 }));
 
-const AutoGenerateModal = ({ open, handleClose, row, language }) => {
+const AutoGenerateModal = ({
+  open,
+  handleClose,
+  row,
+  language,
+  fromWhere,
+  selectedFullClient,
+}) => {
   const [formValues, setFormValues] = useState({
     companyName: "",
     ceo: "",
@@ -82,7 +90,12 @@ const AutoGenerateModal = ({ open, handleClose, row, language }) => {
         setLoading(true);
         const query = generateAutoQuery(formValues);
         const requestData = {
-          companyId: row?.companyId,
+          companyId:
+            fromWhere === "Add" ? selectedFullClient?.clientid : row?.companyId,
+          companyName:
+            fromWhere === "Add"
+              ? selectedFullClient?.clientname
+              : row?.companyName,
           includeQuery: {
             query,
             langId: language,
@@ -90,9 +103,12 @@ const AutoGenerateModal = ({ open, handleClose, row, language }) => {
         };
 
         const response = await axiosInstance.post("newBoolean", requestData);
-        console.log(response);
+        if (response.status === 200) {
+          toast.success(response.data.data.message);
+          handleClose();
+        }
       } catch (error) {
-        console.log(error);
+        toast.error("Something went wrong.");
       } finally {
         setLoading(false);
       }
@@ -201,6 +217,8 @@ AutoGenerateModal.propTypes = {
     companyName: PropTypes.string,
   }),
   language: PropTypes.string,
+  fromWhere: PropTypes.string,
+  selectedFullClient: PropTypes.object,
 };
 
 export default AutoGenerateModal;

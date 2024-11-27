@@ -20,7 +20,16 @@ import PreviewModal from "./PreviewModal";
 import toast from "react-hot-toast";
 import axiosInstance from "../../../axiosConfig";
 
-const QueryBox = ({ type, row, language }) => {
+const QueryBox = ({
+  type,
+  row,
+  language,
+  filteredIncludeData,
+  filteredExcludeData,
+  fetchData,
+  selectedFullClient,
+  fromWhere,
+}) => {
   const [query, setQuery] = useState("");
   const [isValid, setIsValid] = useState(true);
   const [error, setError] = useState("");
@@ -77,8 +86,12 @@ const QueryBox = ({ type, row, language }) => {
       setAcceptLoading(true);
       const requestData = {
         // query: query.trim(),
-        companyId: row?.companyId,
-        companyName: row?.companyName,
+        companyId:
+          fromWhere === "Add" ? selectedFullClient?.clientid : row?.companyId,
+        companyName:
+          fromWhere === "Add"
+            ? selectedFullClient?.clientname
+            : row?.companyName,
         langId: language,
       };
       const includeQuery = {};
@@ -99,6 +112,8 @@ const QueryBox = ({ type, row, language }) => {
 
       if (response.status === 200) {
         toast.success(response.data.data.message);
+        setQuery("");
+        fetchData();
       }
     } catch (error) {
       toast.error("Something went wrong.");
@@ -117,8 +132,12 @@ const QueryBox = ({ type, row, language }) => {
       setAcceptLoading(true);
       const requestData = {
         // query: query.trim(),
-        companyId: row?.companyId,
-        companyName: row?.companyName,
+        companyId:
+          fromWhere === "Add" ? selectedFullClient?.clientid : row?.companyId,
+        companyName:
+          fromWhere === "Add"
+            ? selectedFullClient?.clientname
+            : row?.companyName,
         booleanQuery: query,
         booleanId: queryId,
       };
@@ -127,6 +146,10 @@ const QueryBox = ({ type, row, language }) => {
       const response = await axiosInstance.post("changeBoolean", requestData);
       if (response.status === 200) {
         toast.success(response.data.data.message);
+        setQueryId("");
+        setIsEdit(false);
+        setQuery("");
+        fetchData();
       }
     } catch (error) {
       toast.error("Something went wrong.");
@@ -166,7 +189,10 @@ const QueryBox = ({ type, row, language }) => {
           <Button
             size="small"
             variant="outlined"
-            onClick={() => setOpenPreviewModal((prev) => !prev)}
+            onClick={() => {
+              setOpenPreviewModal((prev) => !prev);
+            }}
+            disabled={!query}
           >
             Preview
           </Button>
@@ -227,11 +253,17 @@ const QueryBox = ({ type, row, language }) => {
       <QueryTable
         setQuery={setQuery}
         data={
-          type === "Include Query" ? row?.includeQuery : row?.excludeQuery || []
+          type === "Include Query"
+            ? filteredIncludeData
+            : filteredExcludeData || []
         }
         setIsEdit={setIsEdit}
         setQueryId={setQueryId}
         companyId={row?.companyId}
+        queryId={queryId}
+        type={type}
+        row={row}
+        query={query}
       />
       <PreviewModal
         open={openPreviewModal}
@@ -250,6 +282,10 @@ QueryBox.propTypes = {
   type: PropTypes.string,
   row: PropTypes.object,
   language: PropTypes.string,
+  filteredIncludeData: PropTypes.array,
+  filteredExcludeData: PropTypes.array,
+  fetchData: PropTypes.func,
+  selectedFullClient: PropTypes.object,
 };
 
 export default QueryBox;

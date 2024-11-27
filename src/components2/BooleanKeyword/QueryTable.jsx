@@ -1,13 +1,21 @@
 import PropTypes from "prop-types";
-import { List, ListItem, IconButton, Box, Tooltip } from "@mui/material";
+import {
+  List,
+  ListItem,
+  IconButton,
+  Box,
+  Tooltip,
+  CircularProgress,
+} from "@mui/material";
 import { styled } from "@mui/system";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditNoteIcon from "@mui/icons-material/EditNote";
 import TranslateIcon from "@mui/icons-material/Translate";
 import axiosInstance from "../../../axiosConfig";
-import { Fragment, useState } from "react";
+import { Fragment, useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import DeleteConfirmationDialog from "../../@core/DeleteConfirmationDialog";
+import LanguageQueryModal from "./languageQueryModal";
 
 // Styled Components
 const StyledList = styled(List)({
@@ -55,37 +63,32 @@ const QueryBox = styled(Box)({
 });
 
 const QueryList = ({
+  type,
   setQuery,
   setIsEdit,
   data = [],
+  queryId,
   setQueryId,
   companyId,
+  row,
 }) => {
   const [localQueryId, setLocalQueryId] = useState("");
   const [openDeleteQueryOpen, setOpenDeleteQueryOpen] = useState(false);
   const [filteredQueries, setFilteredQueries] = useState(data);
 
-  const handleTranslate = async () => {
-    try {
-      const params = {
-        query: "",
-        languages: "hn,mr",
-      };
-      const response = await axiosInstance.get("translateBoolean", { params });
-      console.log(response);
-    } catch (error) {
-      console.log(error);
-    }
-  };
+  useEffect(() => {
+    setFilteredQueries(data || []);
+  }, [data]);
 
-  const handleClick = (query, queryId) => {
-    setQuery(query);
+  const handleClick = (localQuery, queryId) => {
+    setQuery(localQuery);
     setIsEdit(true);
     setQueryId(queryId);
+    setLocalQueryId(queryId);
   };
 
-  const handleDeleteQueryOpen = (query) => {
-    setLocalQueryId(query.queryId);
+  const handleDeleteQueryOpen = (localQuery) => {
+    setLocalQueryId(localQuery.queryId);
     setOpenDeleteQueryOpen((prev) => !prev);
   };
 
@@ -115,11 +118,73 @@ const QueryList = ({
     setOpenDeleteQueryOpen(false);
     setLocalQueryId("");
   };
+
+  // * translate
+  const [translateLoadingId, setTranslateLoadingId] = useState("");
+  const [openTranslateModal, setOpenTranslateModal] = useState(false);
+  const [translatedData, setTranslatedData] = useState([]);
+  const handleTranslate = async (localQuery, id) => {
+    try {
+      setTranslateLoadingId(id);
+      const requestData = {
+        languages: [
+          "en",
+          "hi",
+          "bn",
+          "mr",
+          "gu",
+          "kn",
+          "ta",
+          "te",
+          "ml",
+          "as",
+          "mni",
+          "ne",
+          "or",
+          "pa",
+          "sa",
+          "ur",
+        ],
+      };
+      if (type === "Include Query") requestData.includeQuery = localQuery;
+      if (type === "Exclude Query") requestData.excludeQuery = localQuery;
+      const response = await axiosInstance.post(
+        "translateBooleanQuery",
+        requestData
+      );
+      if (response.status === 200) {
+        const data = response.data.data;
+
+        const queryArray = data
+          .map((langData) => ({
+            id: langData.langId,
+            query: langData.query,
+            langName: langData.langName,
+          }))
+          .filter((item) => item.query !== null && item.query !== "");
+        setOpenTranslateModal((prev) => !prev);
+        setTranslatedData(queryArray);
+      }
+    } catch (error) {
+      toast.error("Something went wrong.");
+    } finally {
+      setTranslateLoadingId("");
+    }
+  };
+
+  const handleCloseTranslateModal = () =>
+    setOpenTranslateModal((prev) => !prev);
+
   return (
     <Fragment>
       <StyledList>
         {filteredQueries.map((row) => (
-          <StyledListItem key={row.queryId}>
+          <StyledListItem
+            key={row.queryId}
+            sx={{
+              backgroundColor: queryId === row.queryId ? "#b1f0be" : "",
+            }}
+          >
             {/* Action Buttons */}
             <Tooltip title="Delete">
               <IconButton
@@ -142,14 +207,20 @@ const QueryList = ({
               <IconButton
                 color="primary"
                 size="small"
-                onClick={handleTranslate}
+                onClick={() => handleTranslate(row.query, row.queryId)}
               >
-                <TranslateIcon />
+                {translateLoadingId === row.queryId ? (
+                  <CircularProgress size={"1em"} />
+                ) : (
+                  <TranslateIcon />
+                )}
               </IconButton>
             </Tooltip>
 
             {/* Query Text */}
-            <QueryBox>{row.query}</QueryBox>
+            <Tooltip title={row.query}>
+              <QueryBox>{row.query}</QueryBox>
+            </Tooltip>
           </StyledListItem>
         ))}
       </StyledList>
@@ -158,11 +229,21 @@ const QueryList = ({
         onClose={handleCloseDelete}
         open={openDeleteQueryOpen}
       />
+      <LanguageQueryModal
+        loading={translateLoadingId}
+        handleClose={handleCloseTranslateModal}
+        open={openTranslateModal}
+        data={translatedData}
+        row={row}
+        type={type}
+      />
     </Fragment>
   );
 };
 
 QueryList.propTypes = {
+  query: PropTypes.string,
+  type: PropTypes.string,
   setQuery: PropTypes.func.isRequired,
   setIsEdit: PropTypes.func.isRequired,
   data: PropTypes.arrayOf(
@@ -171,7 +252,9 @@ QueryList.propTypes = {
       query: PropTypes.string.isRequired,
     })
   ).isRequired,
+  queryId: PropTypes.string,
   setQueryId: PropTypes.func.isRequired,
   companyId: PropTypes.string,
+  row: PropTypes.object,
 };
 export default QueryList;

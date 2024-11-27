@@ -1,57 +1,58 @@
 import { useEffect, useState } from "react";
 import PropTypes from "prop-types";
-import {
-  Modal,
-  Box,
-  TextField,
-  Button,
-  Paper,
-  IconButton,
-} from "@mui/material";
+import { Modal, Box, Paper, IconButton } from "@mui/material";
 import { DataGrid, GridCloseIcon } from "@mui/x-data-grid";
 import axiosInstance from "../../../axiosConfig";
 import toast from "react-hot-toast";
 
 const PreviewModal = ({ open, handleClose, row, query }) => {
   // Sample data for DataGrid
-  const [data, setData] = useState([
-    { id: 1, headline: "Breaking News 1", summary: "Summary 1" },
-    { id: 2, headline: "Breaking News 2", summary: "Summary 2" },
-    { id: 3, headline: "Breaking News 3", summary: "Summary 3" },
-  ]);
+  const [data, setData] = useState([]);
   const [loading, setLoading] = useState(false);
   // Columns for DataGrid
   const columns = [
-    { field: "id", headerName: "ID", width: 100 },
+    { field: "articleId", headerName: "ID", width: 150 },
+    { field: "type", headerName: "Type", width: 100 },
     { field: "headline", headerName: "Headline", width: 300 },
-    { field: "summary", headerName: "Summary", width: 400 },
+    { field: "summary", headerName: "Summary", width: 450 },
   ];
 
   useEffect(() => {
     const fetchBooleanRecords = async () => {
       try {
         setLoading(true);
-        const params = {
+        const requestData = {
           companyId: row?.companyId,
           companyName: row?.companyName,
         };
         if (query?.whichQuery === "Include Query")
-          params.includeQuery = query?.query;
+          requestData.includeQuery = query?.query;
         if (query?.whichQuery === "Exclude Query")
-          params.excludeQuery = query?.query;
-        const response = await axiosInstance.get("validateAndSearchArticle", {
-          params,
-        });
-        console.log(response.data);
+          requestData.excludeQuery = query?.query;
+        const response = await axiosInstance.post(
+          "validateBooleanQuery",
+          requestData
+        );
+        if (response.status === 200) {
+          toast.success(response.data.data.message);
+          setData(response.data.data.data || []);
+        }
       } catch (error) {
         toast.error("Something went wrong.");
-        console.log(error);
       } finally {
         setLoading(false);
       }
     };
     if (open) fetchBooleanRecords();
   }, [open, query?.query, query?.whichQuery, row?.companyId, row?.companyName]);
+
+  const rows = data.map((item) => ({
+    id: item._id,
+    type: item._index,
+    articleId: item._source.articleId || item._source.socialFeedId,
+    headline: item._source?.feedData?.headlines,
+    summary: item._source?.feedData?.summary,
+  }));
 
   return (
     <Modal
@@ -84,34 +85,15 @@ const PreviewModal = ({ open, handleClose, row, query }) => {
           }}
           component={Paper}
         >
-          <div className="flex items-center gap-1">
-            <TextField
-              label="From Date"
-              type="date"
-              InputLabelProps={{ shrink: true }}
-              size="small"
-            />
-
-            <TextField
-              label="To Date"
-              type="date"
-              size="small"
-              InputLabelProps={{ shrink: true }}
-            />
-
-            <Button size="small" variant="outlined" color="primary">
-              Search
-            </Button>
-          </div>
           <IconButton onClick={handleClose} color="primary">
             <GridCloseIcon />
           </IconButton>
         </Box>
 
         {/* DataGrid to display results */}
-        <Box sx={{ flexGrow: 1 }}>
+        <Box sx={{ width: "100%", height: 550 }}>
           <DataGrid
-            rows={data}
+            rows={rows}
             columns={columns}
             pageSize={5}
             rowsPerPageOptions={[5]}

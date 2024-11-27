@@ -602,7 +602,7 @@ const EditDialog = ({
             display={"flex"}
           >
             <Button
-              btnText={`Save Partial`}
+              btnText={`Save Partial & ${"Next"}`}
               onClick={() => {
                 handleSubmit(false, true);
               }}
