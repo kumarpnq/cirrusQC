@@ -44,6 +44,7 @@ const AddEditDialog = ({ open, handleClose, fromWhere, row }) => {
             language={language}
             setLanguage={setLanguage}
             row={row}
+            fromWhere={fromWhere}
           />
           <QueryBox type={"Include Query"} row={row} language={language} />
           {/* exclude query */}

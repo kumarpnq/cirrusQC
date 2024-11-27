@@ -594,6 +594,7 @@ const MainTable = ({
         setRowNumber={() => {}}
         isSimilar
         isFiltered
+        isMultipleArticles={false}
       />
     </>
   );

@@ -3,6 +3,7 @@ import {
   GridToolbarQuickFilter,
   GridToolbarExport,
 } from "@mui/x-data-grid";
+import PropTypes from "prop-types";
 import { IconButton } from "@mui/material";
 import EditNoteIcon from "@mui/icons-material/EditNote";
 import DeleteIcon from "@mui/icons-material/Delete";
@@ -21,11 +22,6 @@ const BooleanGrid = ({ data = [], loading }) => {
   const handleOpen = (row, mode) => {
     setSelectedRow(row);
     setOpenEditOrView((prev) => ({ ...prev, [mode]: true }));
-  };
-
-  const handleClose = (mode) => {
-    setOpenEditOrView((prev) => ({ ...prev, [mode]: false }));
-    setSelectedRow(null);
   };
 
   // Columns for the DataGrid
@@ -62,6 +58,7 @@ const BooleanGrid = ({ data = [], loading }) => {
     {
       field: "companyName",
       headerName: "Company",
+      width: 300,
     },
   ];
 
@@ -117,4 +114,8 @@ const BooleanGrid = ({ data = [], loading }) => {
   );
 };
 
+BooleanGrid.propTypes = {
+  data: PropTypes.array.isRequired,
+  loading: PropTypes.bool.isRequired,
+};
 export default BooleanGrid;

@@ -51,7 +51,7 @@ const PreviewModal = ({ open, handleClose, row, query }) => {
       }
     };
     if (open) fetchBooleanRecords();
-  }, [open, query?.query, query?.whichQuery, row.companyId, row.companyName]);
+  }, [open, query?.query, query?.whichQuery, row?.companyId, row?.companyName]);
 
   return (
     <Modal

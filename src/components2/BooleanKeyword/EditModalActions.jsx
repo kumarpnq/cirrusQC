@@ -6,6 +6,7 @@ import useFetchData from "../../hooks/useFetchData";
 import { url } from "../../constants/baseUrl";
 import { useState } from "react";
 import AutoGenerateModal from "./AutoGenerateModal";
+import Client from "../../print-components/dropdowns/Client";
 
 // Styled components
 const Container = styled(Box)(({ theme }) => ({
@@ -41,9 +42,11 @@ const StyledTypography = styled(Typography)({
 });
 
 // JSX Component
-export const EditModalActions = ({ language, setLanguage, row }) => {
+export const EditModalActions = ({ language, setLanguage, row, fromWhere }) => {
   const [company, setCompany] = useState("");
   const [openAutoGenerate, setOpenAutoGenerate] = useState(false);
+  const [selectedClient, setSelectedClient] = useState("");
+  const [testCompanies, setTestCompanies] = useState([]);
 
   const handleCloseOpenAutoGenerate = () =>
     setOpenAutoGenerate((prev) => !prev);
@@ -55,24 +58,38 @@ export const EditModalActions = ({ language, setLanguage, row }) => {
       code,
     })
   );
+
   return (
     <Container>
-      <StyledTypography>
-        <Label>Company:</Label>
-        <StyledTextField
-          type="text"
-          aria-readonly
-          value={company || row?.companyName}
-          InputProps={{
-            readOnly: true,
-            style: {
-              height: 25,
-              fontSize: "1em",
-              width: 250,
-            },
-          }}
-        />
-      </StyledTypography>
+      {fromWhere !== "Add" ? (
+        <StyledTypography>
+          <Label>Company:</Label>
+          <StyledTextField
+            type="text"
+            aria-readonly
+            value={company || row?.companyName}
+            InputProps={{
+              readOnly: true,
+              style: {
+                height: 25,
+                fontSize: "1em",
+                width: 250,
+              },
+            }}
+          />
+        </StyledTypography>
+      ) : (
+        <div className="flex items-center">
+          <Label>Company:</Label>{" "}
+          <Client
+            label="Client"
+            client={selectedClient}
+            setClient={setSelectedClient}
+            width={200}
+            setCompanies={setTestCompanies}
+          />
+        </div>
+      )}
 
       <StyledTypography>
         <Label>Language:</Label>
@@ -113,4 +130,5 @@ EditModalActions.propTypes = {
   language: PropTypes.string.isRequired,
   setLanguage: PropTypes.func.isRequired,
   row: PropTypes.object,
+  fromWhere: PropTypes.string,
 };
