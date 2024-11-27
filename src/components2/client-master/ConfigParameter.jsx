@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Table,
   TableBody,
@@ -11,10 +11,10 @@ import {
   MenuItem,
   Box,
   Paper,
-  Typography,
 } from "@mui/material";
 import { styled } from "@mui/system";
 import ComponentsHeader from "./ComponentsHeader";
+import axiosInstance from "../../../axiosConfig";
 
 // Sample data from the image
 const configParameters = [
@@ -44,14 +44,98 @@ const StyledTableRow = styled(TableRow)(({ theme }) => ({
   },
 }));
 
-const ConfigParameter = () => {
+const ConfigParameter = ({ clientId }) => {
   const [configData, setConfigData] = useState(configParameters);
+  const [loading, setLoading] = useState(false);
 
   const handleChange = (id, value) => {
     setConfigData((prevData) =>
       prevData.map((item) => (item.id === id ? { ...item, value } : item))
     );
   };
+
+  useEffect(() => {
+    const fetchSectionDetails = async () => {
+      try {
+        setLoading(true);
+        const response = await axiosInstance.get(
+          `configParams/?clientId=${clientId}`
+        );
+
+        const mailerInfo = response.data.data.data.mailerInfo;
+        const configParameters = [
+          {
+            id: 1,
+            name: "Show Left Logo",
+            type: "select",
+            value: mailerInfo.showMailerLeftLogo === "Y" ? "YES" : "NO",
+          },
+          {
+            id: 2,
+            name: "Show Right Logo",
+            type: "select",
+            value: mailerInfo.showMailerRightLogo === "Y" ? "YES" : "NO",
+          },
+          {
+            id: 3,
+            name: "Show Unsubscribe",
+            type: "select",
+            value: mailerInfo.showUnsubscribe === "Y" ? "YES" : "NO",
+          },
+          {
+            id: 4,
+            name: "Show Table Print Count",
+            type: "select",
+            value: mailerInfo.showTablePrintCount === "Y" ? "YES" : "NO",
+          },
+          {
+            id: 5,
+            name: "Show Table PrintSOV Count",
+            type: "select",
+            value: mailerInfo.showTablePrintSovCount === "Y" ? "YES" : "NO",
+          },
+          {
+            id: 6,
+            name: "Show Table Online Count",
+            type: "select",
+            value: mailerInfo.showTableOnlineCount === "Y" ? "YES" : "NO",
+          },
+          {
+            id: 7,
+            name: "Show Table OnlineSOV Count",
+            type: "select",
+            value: mailerInfo.showTableOnlineSovCount === "Y" ? "YES" : "NO",
+          },
+          {
+            id: 8,
+            name: "Show Mailer Title",
+            type: "select",
+            value: mailerInfo.showMailerTitle === "Y" ? "YES" : "NO",
+          },
+          {
+            id: 9,
+            name: "Show Mailer Subtitle",
+            type: "select",
+            value: mailerInfo.showMailerSubtitle === "Y" ? "YES" : "NO",
+          },
+          {
+            id: 10,
+            name: "Show Bottom Logo",
+            type: "select",
+            value: mailerInfo.showMailerBottomLogo === "Y" ? "YES" : "NO",
+          },
+        ];
+        setConfigData(configParameters);
+      } catch (error) {
+        console.log(error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    if (clientId) {
+      fetchSectionDetails();
+    }
+  }, [clientId]);
 
   return (
     <Box p={2}>

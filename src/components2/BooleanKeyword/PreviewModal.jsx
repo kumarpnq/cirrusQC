@@ -50,8 +50,10 @@ const PreviewModal = ({ open, handleClose, row, query }) => {
     id: item._id,
     type: item._index,
     articleId: item._source.articleId || item._source.socialFeedId,
-    headline: item._source?.feedData?.headlines,
-    summary: item._source?.feedData?.summary,
+    headline:
+      item._source?.feedData?.headlines || item._source?.articleData?.headlines,
+    summary:
+      item._source?.feedData?.summary || item._source?.articleData?.summary,
   }));
 
   return (

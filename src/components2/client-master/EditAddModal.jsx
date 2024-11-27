@@ -80,14 +80,14 @@ const StyledTypography = styled(Typography)(({ theme }) => ({
   },
 }));
 
-const EditAddModal = ({ open, onClose, openFromWhere }) => {
+const EditAddModal = ({ open, onClose, openFromWhere, row }) => {
   const [anchorEl, setAnchorEl] = useState(null);
   const [selectedItem, setSelectedItem] = useState("Client Detail");
 
   const TabToRender = (val) => {
     switch (val) {
       case "Client Detail":
-        return <ClientDetail />;
+        return <ClientDetail clientId={row?.clientId} />;
       case "Email Details":
         return <EmailDetails />;
       case "Company Basket":
@@ -208,6 +208,7 @@ EditAddModal.propTypes = {
   open: PropTypes.bool.isRequired,
   onClose: PropTypes.func.isRequired,
   openFromWhere: PropTypes.string,
+  row: PropTypes.object,
 };
 
 export default EditAddModal;

@@ -31,10 +31,6 @@ const StyledTextField = styled(TextField)({
   fontSize: "0.85rem",
 });
 
-const StyledButton = styled(Button)({
-  minWidth: "100px",
-});
-
 const StyledTypography = styled(Typography)({
   display: "flex",
   alignItems: "center",
@@ -127,9 +123,6 @@ export const EditModalActions = ({
           title="Language"
         />
       </StyledTypography>
-      <StyledButton variant="outlined" size="small" type="submit">
-        Search
-      </StyledButton>
 
       <Button
         size="small"

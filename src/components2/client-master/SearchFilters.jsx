@@ -23,6 +23,7 @@ const StyledWrapper = styled(Box)({
   flexWrap: "wrap",
   gap: 2,
   marginTop: 1,
+  padding: 2,
 });
 
 const SearchFilters = ({ loading, setLoading = () => {}, setData }) => {
@@ -66,7 +67,7 @@ const SearchFilters = ({ loading, setLoading = () => {}, setData }) => {
 
   return (
     <>
-      <form onSubmit={handleSubmit} className="mt-1 ">
+      <form onSubmit={handleSubmit} className="mt-1">
         <StyledWrapper component={Paper}>
           <FromDate fromDate={fromDate} setFromDate={setFromDate} isNoMargin />
           <ToDate dateNow={toDate} setDateNow={setToDate} />

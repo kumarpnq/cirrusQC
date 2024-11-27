@@ -13,13 +13,24 @@ import { format, addYears } from "date-fns";
 import YesOrNo from "../../@core/YesOrNo";
 import { makeStyles } from "@mui/styles";
 import ComponentsHeader from "./ComponentsHeader";
+import axiosInstance from "../../../axiosConfig";
+import PropTypes from "prop-types";
 
-const StyledWrapper = styled(Box)({
+const StyledWrapper = styled(Box)(({ theme }) => ({
   display: "flex",
   alignItems: "center",
-  gap: 1,
-  padding: 3,
-});
+  gap: theme.spacing(1),
+  padding: theme.spacing(0.5),
+  border: `1px solid ${theme.palette.primary.main}`,
+  borderRadius: theme.shape.borderRadius,
+
+  "&:hover": {
+    backgroundColor: "#ddd",
+    boxShadow: `0px 4px 10px ${theme.palette.primary.main}`, // adding shadow on hover
+    transform: "scale(1.001)", // slight scaling on hover
+    transition: "all 0.6s ease", // smooth transition for hover effects
+  },
+}));
 const StyledText = styled(Typography)({
   fontSize: "1em",
   color: "GrayText",
@@ -33,7 +44,7 @@ const useStyle = makeStyles(() => ({
   },
 }));
 
-const ClientInfo = () => {
+const ClientInfo = ({ clientId: idForFetch }) => {
   const classes = useStyle();
   const [clientId, setClientId] = useState("");
   const [encryptedClientId, setEncryptedClientId] = useState("");
@@ -78,6 +89,47 @@ const ClientInfo = () => {
     setSubToDate(format(nextYear, "yyyy-MM-dd"));
   }, []);
 
+  // * fetch main data
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await axiosInstance.get(
+          `clientSettings/?clientId=${idForFetch}`
+        );
+        const data = response.data.data.data;
+
+        let clientInfo = data?.clientInfo;
+        setClientId(clientInfo?.clientId);
+        setEncryptedClientId(encryptedClientId || "");
+        setClientName(clientInfo?.clientName);
+        setAddress(clientInfo?.clientAddress);
+        setContactPerson(clientInfo?.contactPerson);
+        setDesignation(clientInfo?.designation);
+        setEmailID(clientInfo?.email);
+        setPhoneNo(clientInfo?.phone);
+        setMobileNumber(clientInfo?.mobile);
+        setSubFromDate(clientInfo?.fromDate);
+        setSubToDate(clientInfo?.toDate);
+        setActive(clientInfo?.isActive == "Y" ? "Yes" : "No");
+        setClientGroupID(clientInfo?.clientGroupID);
+
+        let mailerInfo = data?.mailerInfo;
+        setMailerID(mailerInfo?.mailerId);
+        setMailerSubject(mailerInfo?.mailerSubject);
+        setMailerFormat(mailerInfo?.mailerFormat);
+        setBulkMailer(mailerInfo?.bulkMailer);
+        setSummary(mailerInfo?.hasSummary);
+        setMailerLogic(mailerInfo?.mailerLogic);
+      } catch (error) {
+        console.log(error);
+      }
+    };
+
+    if (idForFetch) {
+      fetchData();
+    }
+  }, [idForFetch]);
+
   return (
     <Box
       sx={{ border: "1px solid #DDD" }}
@@ -93,10 +145,11 @@ const ClientInfo = () => {
         <CustomTextField
           width={150}
           placeholder={"Client id"}
-          value={clientId}
+          value={clientId || idForFetch}
           setValue={setClientId}
           type={"text"}
           isRequired
+          isDisabled
         />
         {/*  hidden */}
         <StyledWrapper>
@@ -130,7 +183,7 @@ const ClientInfo = () => {
           cols={70}
           value={address}
           onChange={(e) => setAddress(e.target.value)}
-          className="border border-gray-300 rounded-sm hover:border-black"
+          className="border border-gray-300 rounded-sm hover:border-black text-[0.8em] px-3"
         />
       </StyledWrapper>
       <Divider />
@@ -196,7 +249,7 @@ const ClientInfo = () => {
         <StyledWrapper>
           <span className="mr-2 text-gray-500">From : </span>
           <TextField
-            type="date"
+            type="datetime-local"
             width={250}
             value={subFromDate}
             onChange={(e) => setSubFromDate(e.target.value)}
@@ -211,7 +264,7 @@ const ClientInfo = () => {
         <StyledWrapper>
           <span className="mx-2 text-gray-500">End : </span>
           <TextField
-            type="date"
+            type="datetime-local"
             width={200}
             value={subToDate}
             onChange={(e) => setSubToDate(e.target.value)}
@@ -523,4 +576,14 @@ const ClientInfo = () => {
   );
 };
 
+ClientInfo.propTypes = {
+  clientId: PropTypes.string.isRequired, // Define clientId as a required string
+  clientName: PropTypes.string.isRequired, // Define clientName as a required string
+  isActive: PropTypes.bool, // Define isActive as an optional boolean
+  onStatusChange: PropTypes.func, // Define a function for handling status changes
+  startDate: PropTypes.instanceOf(Date), // Define startDate as a Date object
+  endDate: PropTypes.instanceOf(Date), // Define endDate as a Date object
+  isEditable: PropTypes.bool, // Define isEditable as an optional boolean
+  // You can define more props as needed
+};
 export default ClientInfo;

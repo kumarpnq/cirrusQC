@@ -4,17 +4,28 @@ import EditNoteIcon from "@mui/icons-material/EditNote";
 import { green, orange } from "@mui/material/colors";
 import EditAddModal from "./EditAddModal";
 import { useState } from "react";
+import PropTypes from "prop-types";
 
 const ClientMasterGrid = ({ data = [], loading }) => {
   const [open, setOpen] = useState(false);
-  const handleClose = () => setOpen((prev) => !prev);
+  const [selectedRow, setSelectedRow] = useState(null);
+
+  const handleOpen = (row) => {
+    setOpen(true);
+    setSelectedRow(row);
+  };
+  const handleClose = () => {
+    setOpen((prev) => !prev);
+    setSelectedRow(null);
+  };
+
   const columns = [
     {
       field: "edit",
       headerName: "Edit",
       width: 100,
-      renderCell: () => (
-        <IconButton color="primary" onClick={() => setOpen(true)}>
+      renderCell: (params) => (
+        <IconButton color="primary" onClick={() => handleOpen(params.row)}>
           <EditNoteIcon
             style={{ cursor: "pointer", marginRight: 10 }}
             className="text-primary"
@@ -71,9 +82,26 @@ const ClientMasterGrid = ({ data = [], loading }) => {
           disableDensitySelector
         />
       </Box>
-      <EditAddModal open={open} onClose={handleClose} openFromWhere="edit" />
+      <EditAddModal
+        open={open}
+        onClose={handleClose}
+        openFromWhere="edit"
+        row={selectedRow}
+      />
     </>
   );
+};
+
+ClientMasterGrid.propTypes = {
+  data: PropTypes.arrayOf(
+    PropTypes.shape({
+      clientId: PropTypes.string.isRequired,
+      clientName: PropTypes.string.isRequired,
+      clientGroupId: PropTypes.string.isRequired,
+      isActive: PropTypes.string.isRequired,
+    })
+  ).isRequired,
+  loading: PropTypes.bool.isRequired,
 };
 
 export default ClientMasterGrid;

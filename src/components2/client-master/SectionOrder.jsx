@@ -1,7 +1,8 @@
 import { Box } from "@mui/material";
 import { DataGrid } from "@mui/x-data-grid";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import ComponentsHeader from "./ComponentsHeader";
+import axiosInstance from "../../../axiosConfig";
 
 const sectionArray = [
   { id: 1, name: "Ikea", value: 0 },
@@ -13,8 +14,9 @@ const sectionArray = [
   { id: 7, name: "Others", value: 0 },
 ];
 
-const SectionOrder = () => {
+const SectionOrder = ({ clientId }) => {
   const [rows, setRows] = useState(sectionArray);
+  const [loading, setLoading] = useState(false);
 
   const handleProcessRowUpdate = (newRow) => {
     const updatedRows = rows.map((row) =>
@@ -39,15 +41,35 @@ const SectionOrder = () => {
     },
   ];
 
+  useEffect(() => {
+    const fetchSectionDetails = async () => {
+      try {
+        setLoading(true);
+        const response = await axiosInstance.get(
+          `sectionOrder/?clientId=${clientId}`
+        );
+        console.log(response.data);
+      } catch (error) {
+        console.log(error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    if (clientId) {
+      fetchSectionDetails();
+    }
+  }, [clientId]);
+
   return (
     <Box sx={{ border: "1px solid #DDD", borderRadius: "3px", mt: 1, p: 1 }}>
       <ComponentsHeader title="Sort Order" loading={false} onSave={() => {}} />
-      <Box sx={{ height: 400, width: 500 }}>
+      <Box sx={{ height: 400, width: "100%" }}>
         <DataGrid
           rows={rows}
           columns={columns}
           pageSize={5}
           density="compact"
+          loading={loading}
           onProcessRowUpdate={handleProcessRowUpdate}
           disableRowSelectionOnClick
           hideFooterSelectedRowCount

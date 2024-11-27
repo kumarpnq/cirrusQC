@@ -5,6 +5,7 @@ import MailerColumns from "./MailerColumns";
 import MailerConfigure from "./MailerConfigure";
 import ClientInfo from "./ClientInfo";
 import SectionOrder from "./SectionOrder";
+import PropTypes from "prop-types";
 
 function a11yProps(index) {
   return {
@@ -13,14 +14,14 @@ function a11yProps(index) {
   };
 }
 
-const EditComponentRender = (value) => {
+const EditComponentRender = (value, clientId) => {
   switch (value) {
     case 0:
-      return <ClientInfo />;
+      return <ClientInfo clientId={clientId} />;
     case 1:
-      return <SectionOrder />;
+      return <SectionOrder clientId={clientId} />;
     case 2:
-      return <ConfigParameter />;
+      return <ConfigParameter clientId={clientId} />;
     case 3:
       return <MailerColumns />;
     case 4:
@@ -30,7 +31,7 @@ const EditComponentRender = (value) => {
       return <Typography>Invalid Tab</Typography>;
   }
 };
-const ClientDetail = () => {
+const ClientDetail = ({ clientId }) => {
   const [value, setValue] = useState(0);
 
   const handleChange = (event, newValue) => {
@@ -56,10 +57,13 @@ const ClientDetail = () => {
             <Tab label="MailerConfigure" {...a11yProps(4)} />
           </Tabs>
         </Box>
-        {EditComponentRender(value)}
+        {EditComponentRender(value, clientId)}
       </form>
     </div>
   );
 };
 
+ClientDetail.propTypes = {
+  clientId: PropTypes.string.isRequired,
+};
 export default ClientDetail;
