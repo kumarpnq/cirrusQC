@@ -208,14 +208,17 @@ const SearchFilters = ({
               setValue={setPubType}
               width={120}
             />
-            <YesOrNo
-              classes={classes}
-              placeholder="Temporary"
-              mapValue={["Yes", "No", "All"]}
-              value={temporary}
-              setValue={setTemporary}
-              width={120}
-            />
+            {mainFetchAPi !== "publicationMasterOnline" && (
+              <YesOrNo
+                classes={classes}
+                placeholder="Temporary"
+                mapValue={["Yes", "No", "All"]}
+                value={temporary}
+                setValue={setTemporary}
+                width={120}
+              />
+            )}
+
             <YesOrNo
               classes={classes}
               placeholder="Type"

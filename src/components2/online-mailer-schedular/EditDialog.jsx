@@ -177,6 +177,7 @@ const EditDialog = ({
       loginName: "",
       frequency: "Daily",
       updateType: "I",
+      weekly: [],
     },
     {
       entityType: "online",
@@ -187,6 +188,7 @@ const EditDialog = ({
       loginName: "",
       frequency: "Daily",
       updateType: "I",
+      weekly: [],
     },
     {
       entityType: "both",
@@ -197,6 +199,7 @@ const EditDialog = ({
       loginName: "",
       frequency: "Daily",
       updateType: "I",
+      weekly: [],
     },
   ]);
 
@@ -617,7 +620,8 @@ const EditDialog = ({
             item.frequency &&
             item.updateType &&
             item.clientId &&
-            item.clientName;
+            item.clientName &&
+            item.weekly.length;
 
           // Warn for any invalid item being removed
           if (!isValid) {
