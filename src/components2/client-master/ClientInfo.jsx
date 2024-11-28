@@ -15,6 +15,9 @@ import { makeStyles } from "@mui/styles";
 import ComponentsHeader from "./ComponentsHeader";
 import axiosInstance from "../../../axiosConfig";
 import PropTypes from "prop-types";
+import useMailerLogic from "./clientInfo/useMailerLogic";
+import useFetchMongoData from "../../hooks/useFetchMongoData";
+import CustomSingleSelect from "../../@core/CustomSingleSelect2";
 
 const StyledWrapper = styled(Box)(({ theme }) => ({
   display: "flex",
@@ -129,6 +132,12 @@ const ClientInfo = ({ clientId: idForFetch }) => {
       fetchData();
     }
   }, [idForFetch]);
+
+  // * get mailer logics
+  const { mailerLogic: mailerLogicArray } = useMailerLogic();
+  const { data } = useFetchMongoData(
+    `clientMailerFormat/?mailerLogic=${mailerLogic}`
+  );
 
   return (
     <Box
@@ -359,20 +368,18 @@ const ClientInfo = ({ clientId: idForFetch }) => {
       <Divider />
       <StyledWrapper>
         <StyledText>Mailer Logic : </StyledText>
-        <YesOrNo
-          classes={classes}
-          mapValue={[
-            "CompanyWise",
-            "HeadlineWise",
-            "SectionCompanyWise",
-            "SectionWise",
-            "StateWise",
-          ]}
-          placeholder="Mailer logic"
-          value={mailerLogic}
-          setValue={setMailerLogic}
-          width={300}
-        />
+        <div style={{ width: 300 }}>
+          <CustomSingleSelect
+            dropdownToggleWidth={300}
+            dropdownWidth={300}
+            keyId="logicId"
+            keyName="logicName"
+            options={mailerLogicArray}
+            title="Mailer Logic"
+            selectedItem={mailerLogic}
+            setMailerLogic={setMailerLogic}
+          />
+        </div>
 
         <StyledText>Mailer Format : </StyledText>
         <YesOrNo
