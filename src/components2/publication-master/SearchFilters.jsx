@@ -12,7 +12,7 @@ import { styled } from "@mui/system";
 import { toast } from "react-toastify";
 import { format } from "date-fns";
 import { url } from "../../constants/baseUrl";
-import { pubTypesAll } from "../../constants/dataArray";
+import { editionTypes, pubTypesAll } from "../../constants/dataArray";
 import axiosInstance from "../../../axiosConfig";
 import Accordion from "@mui/material/Accordion";
 import AccordionSummary from "@mui/material/AccordionSummary";
@@ -112,7 +112,7 @@ const SearchFilters = ({
         params.cityId = Number(selectedCity);
       }
       if (populate) {
-        params.isPopulate = populate === "Yes" ? "Y" : "N";
+        params.populate = populate === "Yes" ? "Y" : "N";
       }
       if (temporary && temporary !== "All") {
         params.isTemporary = temporary === "Yes" ? "Y" : "N";
@@ -240,14 +240,19 @@ const SearchFilters = ({
               setValue={setPopulate}
               width={120}
             />
-            <YesOrNo
-              classes={classes}
-              placeholder="Edition"
-              mapValue={["BD", "ND", "RD", "TAB", "PIM", "BIM", "TM", "WP"]}
-              value={edition}
-              setValue={setEdition}
-              width={120}
-            />
+            <Typography component={"div"} width={150}>
+              <CustomSingleSelect
+                dropdownToggleWidth={150}
+                dropdownWidth={250}
+                keyId="id"
+                keyName="name"
+                options={editionTypes}
+                selectedItem={edition}
+                setSelectedItem={setEdition}
+                title="Edition"
+              />
+            </Typography>
+
             <Button
               variant="outlined"
               size="small"

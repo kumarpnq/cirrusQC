@@ -28,13 +28,23 @@ import { makeStyles } from "@mui/styles";
 import { toast } from "react-toastify";
 import axiosInstance from "../../../axiosConfig";
 import CustomSingleSelect from "../../@core/CustomSingleSelect2";
-
-const StyledItemWrapper = styled(Box)({
+import { weeklyDays } from "../../constants/dataArray";
+const StyledItemWrapper = styled(Box)(({ theme }) => ({
   display: "flex",
   alignItems: "center",
-  gap: 1,
-  marginTop: 4,
-});
+  gap: theme.spacing(0.5), // Using theme spacing for gap
+  marginTop: theme.spacing(0.5), // Using theme spacing for margin top
+  padding: theme.spacing(0.5), // Adding padding for better spacing
+  border: `1px solid ${theme.palette.primary.main}`, // Adding a border using theme primary color
+  borderRadius: theme.shape.borderRadius, // Adding border-radius from theme
+
+  // Adding hover styles
+  "&:hover": {
+    backgroundColor: "#ddd", // Change background on hover
+    borderColor: theme.palette.primary.dark, // Darken the border color on hover
+    cursor: "pointer", // Change the cursor to pointer
+  },
+}));
 const StyledText = styled(Typography)({
   color: "GrayText",
   textWrap: "nowrap",
@@ -144,6 +154,7 @@ const EditDialog = ({
   const [screenTypeDD, setScreenTypeDD] = useState("print");
   const [selectedClient, setSelectedClient] = useState("");
   const [selectedCompany, setSelectedCompany] = useState([]);
+  const [weekly, setWeekly] = useState([]);
   const [every, setEvery] = useState("Daily");
   const [timeStamps, setTimeStamps] = useState([]);
   const [report, setReport] = useState({
@@ -868,6 +879,22 @@ const EditDialog = ({
               />
             </div>
           </Box>
+        </StyledItemWrapper>
+        <StyledItemWrapper>
+          <StyledText>Include Week:</StyledText>
+          <div className="mt-1">
+            <CustomMultiSelect
+              title="Include"
+              dropdownWidth={278}
+              dropdownToggleWidth={278}
+              keyId="id"
+              keyName="name"
+              options={weeklyDays}
+              selectedItems={weekly}
+              setSelectedItems={setWeekly}
+              isIncreased={false}
+            />
+          </div>
         </StyledItemWrapper>
 
         <Divider sx={{ my: 1 }} />
