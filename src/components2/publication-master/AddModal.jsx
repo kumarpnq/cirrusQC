@@ -21,6 +21,7 @@ import FormAction from "./FormAction";
 import axiosInstance from "../../../axiosConfig";
 import { toast } from "react-toastify";
 import {
+  editionTypes,
   publicationCategories,
   pubTypesAll,
   zones,
@@ -146,7 +147,7 @@ const AddModal = ({ open, handleClose, row, screen }) => {
       setEditionType(publicationDataLocal?.editionType);
       setCity(publicationDataLocal?.cityId);
       setZone(publicationDataLocal?.zone);
-      setLanguage(publicationDataLocal?.languageCode);
+      setLanguage(publicationDataLocal?.language);
       setType(publicationDataLocal?.newsType || publicationDataLocal?.newType);
       setPopulate(publicationDataLocal?.isPopulate === "Y" ? "Yes" : "No");
       setActive(publicationDataLocal?.isActive === "Y" ? "Yes" : "No");
@@ -164,6 +165,7 @@ const AddModal = ({ open, handleClose, row, screen }) => {
       setFetchLoading(false);
     }
   };
+
   useEffect(() => {
     if (open && row) {
       fetchPublicationData();
@@ -233,6 +235,9 @@ const AddModal = ({ open, handleClose, row, screen }) => {
       if (zone !== publicationData?.zone) {
         requestData.zone = zone;
       }
+      if (clusters !== publicationData?.clusters) {
+        requestData.clusterIds = clusters.join(",");
+      }
 
       //  if (JSON.stringify(clusters) !== JSON.stringify(publicationData?.clusterIds)) {
       //    requestData.clusterIds = clusters;
@@ -240,11 +245,11 @@ const AddModal = ({ open, handleClose, row, screen }) => {
 
       const newsTypeKey = screen === "online" ? "newType" : "newsType";
       if (type !== publicationData?.[newsTypeKey]) {
-        requestData[newsTypeKey] = newsTypeKey;
+        requestData[newsTypeKey] = type;
       }
 
-      if (language !== publicationData?.languageCode) {
-        requestData.languageCode = language;
+      if (language !== publicationData?.language) {
+        requestData.language = language;
       }
 
       if (getYN(populate) !== publicationData?.isPopulate) {
@@ -495,21 +500,15 @@ const AddModal = ({ open, handleClose, row, screen }) => {
                 </FieldWrapper>
                 <FieldWrapper>
                   <FieldLabel>Type Of Edition :</FieldLabel>
-                  <YesOrNo
-                    mapValue={[
-                      "BD",
-                      "ND",
-                      "RD",
-                      "TAB",
-                      "PIM",
-                      "BIM",
-                      "TM",
-                      "WP",
-                    ]}
-                    placeholder="Edition"
-                    classes={classes}
-                    value={editionType}
-                    setValue={setEditionType}
+                  <CustomSingleSelect
+                    dropdownToggleWidth={`100%`}
+                    dropdownWidth={"100%"}
+                    keyId="id"
+                    keyName="name"
+                    options={editionTypes}
+                    selectedItem={editionType}
+                    setSelectedItem={setEditionType}
+                    title="Edition"
                   />
                 </FieldWrapper>
                 {screen === "print" && (

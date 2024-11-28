@@ -132,7 +132,9 @@ const OtherInfo = ({
       if (screen === "online") {
         setMonthlyTraffic(data?.publicationMetrics?.monthlyTraffic);
         setArticleReach(data?.publicationMetrics?.articleReach);
-        setMonthlyUniqueVisitors(data?.publicationMetrics?.monthlyTraffic);
+        setMonthlyUniqueVisitors(
+          data?.publicationMetrics?.monthlyUniqueVisitors
+        );
         setMediaType(data?.publicationMetrics?.mediaType);
         setDeviceViewSplit(data?.publicationMetrics?.deviceViewSplit);
         setRankingIndia(data?.publicationMetrics?.rankingIndia);
@@ -168,7 +170,7 @@ const OtherInfo = ({
           publicationMetrics.fullCoverage = coverage === "Yes";
         }
         if (adRates !== publicationMetricsLocal?.adRates) {
-          publicationMetrics.adRates = coverage;
+          publicationMetrics.adRates = adRates;
         }
         if (tier !== publicationMetricsLocal?.tier) {
           publicationMetrics.tier = tier;
@@ -179,31 +181,31 @@ const OtherInfo = ({
       }
       // combine
       if (publicationScore !== publicationMetricsLocal?.publicationScore) {
-        publicationMetrics.publicationScore = publicationScore;
+        publicationMetrics.publicationScore = Number(publicationScore);
       }
 
       // for online only
       if (screen === "online") {
-        if (
-          monthlyTraffic !== Math.round(publicationMetricsLocal?.monthlyTraffic)
-        ) {
-          publicationMetrics.monthlyTraffic = monthlyTraffic;
+        if (monthlyTraffic !== publicationMetricsLocal?.monthlyTraffic) {
+          publicationMetrics.monthlyTraffic = Number(monthlyTraffic);
         }
         if (
           articleReach !== Math.round(publicationMetricsLocal?.articleReach)
         ) {
-          publicationMetrics.articleReach = articleReach;
+          publicationMetrics.articleReach = Number(articleReach);
         }
         if (
           monthlyTraffic !== Math.round(publicationMetricsLocal?.monthlyTraffic)
         ) {
-          publicationMetrics.monthlyTraffic = monthlyTraffic;
+          publicationMetrics.monthlyTraffic = Number(monthlyTraffic);
         }
         if (
           monthlyUniqueVisitors !==
           Math.round(publicationMetricsLocal?.monthlyUniqueVisitors)
         ) {
-          publicationMetrics.monthlyUniqueVisitors = monthlyUniqueVisitors;
+          publicationMetrics.monthlyUniqueVisitors = Number(
+            monthlyUniqueVisitors
+          );
         }
         if (mediaType !== publicationMetricsLocal?.mediaType) {
           publicationMetrics.mediaType = mediaType;
@@ -214,19 +216,19 @@ const OtherInfo = ({
         if (
           rankingIndia !== Math.round(publicationMetricsLocal?.rankingIndia)
         ) {
-          publicationMetrics.rankingIndia = rankingIndia;
+          publicationMetrics.rankingIndia = Number(rankingIndia);
         }
         if (
           rankingIndustry !==
           Math.round(publicationMetricsLocal?.rankingIndustry)
         ) {
-          publicationMetrics.rankingIndustry = rankingIndustry;
+          publicationMetrics.rankingIndustry = Number(rankingIndustry);
         }
         if (googleSearch !== publicationMetricsLocal?.googleSearch) {
-          publicationMetrics.googleSearch = googleSearch;
+          publicationMetrics.googleSearch = Number(googleSearch);
         }
         if (bingSearch !== publicationMetricsLocal?.bingSearch) {
-          publicationMetrics.bingSearch = bingSearch;
+          publicationMetrics.bingSearch = Number(bingSearch);
         }
       }
 
@@ -240,29 +242,29 @@ const OtherInfo = ({
         startDate !==
         format(subscriptionLocal?.startDate, "yyyy-MM-dd HH:mm:ss")
       ) {
-        subscription.startDate = startDate;
+        subscription.startDate = format(startDate, "yyyy-MM-dd HH:mm:ss");
       }
       if (
         endDate !== format(subscriptionLocal?.endDate, "yyyy-MM-dd HH:mm:ss")
       ) {
-        subscription.endDate = endDate;
+        subscription.endDate = format(endDate, "yyyy-MM-dd HH:mm:ss");
       }
 
       // * priority
       if (publication !== priorityLocal?.publication) {
-        priority.publication = publication;
+        priority.publication = Number(publication);
       }
       if (language !== priorityLocal?.language) {
-        priority.language = language;
+        priority.language = Number(language);
       }
       if (level1 !== priorityLocal?.level1) {
-        priority.level1 = level1;
+        priority.level1 = Number(level1);
       }
       if (level2 !== priorityLocal?.level2) {
-        priority.level2 = level2;
+        priority.level2 = Number(level2);
       }
       if (level3 !== priorityLocal?.level3) {
-        priority.level3 = level3;
+        priority.level3 = Number(level3);
       }
 
       if (Object.keys(publicationMetrics).length) {
@@ -298,6 +300,7 @@ const OtherInfo = ({
       setUpdateLoading(false);
     }
   };
+
   return (
     <form className="p-1 border rounded-md" onSubmit={handleSubmit}>
       {fetchLoading ? (
@@ -382,9 +385,7 @@ const OtherInfo = ({
                     }}
                     fullWidth
                     placeholder={"Monthly Traffic"}
-                    step="0.01"
                     value={monthlyTraffic}
-                    type="number"
                     onChange={(e) => setMonthlyTraffic(e.target.value)}
                   />
                 </FieldWrapper>
@@ -445,7 +446,7 @@ const OtherInfo = ({
                     type={"number"}
                     placeholder={"Ranking Industry"}
                     value={rankingIndustry}
-                    setValue={setRankingIndia}
+                    setValue={setRankingIndustry}
                   />
                 </FieldWrapper>
                 <FieldWrapper>
@@ -487,7 +488,7 @@ const OtherInfo = ({
               <FieldLabel>Start Date : </FieldLabel>
               <TextField
                 type="datetime-local"
-                InputProps={{ style: { height: 25 } }}
+                InputProps={{ style: { height: 25, fontSize: "0.8em" } }}
                 value={startDate}
                 onChange={(e) => setStartDate(e.target.value)}
                 fullWidth
@@ -497,7 +498,7 @@ const OtherInfo = ({
               <FieldLabel>End Date : </FieldLabel>
               <TextField
                 type="datetime-local"
-                InputProps={{ style: { height: 25 } }}
+                InputProps={{ style: { height: 25, fontSize: "0.8em" } }}
                 value={endDate}
                 onChange={(e) => setEndDate(e.target.value)}
                 fullWidth

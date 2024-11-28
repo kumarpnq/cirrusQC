@@ -161,16 +161,25 @@ const SearchFilters = ({
       <AccordionDetails>
         <form action="" onSubmit={handleSubmit}>
           <FilterWrapper>
-            <Tooltip title="Start Date" arrow>
-              <div className="mb-3">
-                <FromDate fromDate={fromDate} setFromDate={setFromDate} />
+            <div className="flex items-center gap-1">
+              <div className="flex items-center border border-gray-400 rounded-md p-[0.1em] gap-1">
+                <Typography fontSize={"0.8em"}>
+                  Subscription Start Date :{" "}
+                </Typography>
+                <FromDate
+                  fromDate={fromDate}
+                  setFromDate={setFromDate}
+                  isNoMargin
+                />
               </div>
-            </Tooltip>
-            <Tooltip title="End Date" arrow>
-              <div>
+
+              <div className="flex items-center border border-gray-400 rounded-md p-[0.1em] gap-1">
+                <Typography fontSize={"0.8em"}>
+                  Subscription End Date :{" "}
+                </Typography>
                 <ToDate dateNow={dateNow} setDateNow={setDateNow} />
               </div>
-            </Tooltip>
+            </div>
             <CustomTextField
               value={searchText}
               setValue={setSearchText}

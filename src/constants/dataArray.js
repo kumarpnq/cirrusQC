@@ -665,3 +665,14 @@ export const countriesWithCode = [
   { id: "96", name: "Nigeria" },
   { id: "65", name: "Singapore" },
 ];
+
+export const editionTypes = [
+  { id: "ND", name: "National Daily" },
+  { id: "TM", name: "Travel Magazine" },
+  { id: "RD", name: "Regional Daily" },
+  { id: "PIM", name: "Political Insights Magazine" },
+  { id: "BD", name: "Business Daily" },
+  { id: "TAB", name: "Technology and Business" },
+  { id: "WP", name: "Weekend Publication" },
+  { id: "BIM", name: "Business and Investment Magazine" },
+];
