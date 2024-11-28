@@ -128,10 +128,6 @@ AddEditDialog.propTypes = {
   row: PropTypes.shape({
     companyId: PropTypes.string.isRequired,
     companyName: PropTypes.string,
-    // Add other properties of the row here that you expect
-    // Example:
-    // language: PropTypes.string,
-    // id: PropTypes.string,
   }).isRequired,
 };
 export default AddEditDialog;

@@ -103,6 +103,10 @@ const QueryBox = ({
       if (Object.keys(includeQuery).length)
         requestData.includeQuery = includeQuery;
       if (type === "Exclude Query") {
+        requestData.includeQuery = {
+          query: filteredIncludeData[0]?.query,
+          langId: filteredIncludeData[0]?.langId,
+        };
         excludeQuery.includeQuery = query;
         excludeQuery.langId = language;
       }
@@ -286,6 +290,7 @@ QueryBox.propTypes = {
   filteredExcludeData: PropTypes.array,
   fetchData: PropTypes.func,
   selectedFullClient: PropTypes.object,
+  fromWhere: PropTypes.string,
 };
 
 export default QueryBox;

@@ -172,8 +172,10 @@ const QueryList = ({
     }
   };
 
-  const handleCloseTranslateModal = () =>
+  const handleCloseTranslateModal = () => {
     setOpenTranslateModal((prev) => !prev);
+    setTranslateLoadingId("");
+  };
 
   return (
     <Fragment>

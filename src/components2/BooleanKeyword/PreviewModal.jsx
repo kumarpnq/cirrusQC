@@ -4,6 +4,8 @@ import { Modal, Box, Paper, IconButton } from "@mui/material";
 import { DataGrid, GridCloseIcon } from "@mui/x-data-grid";
 import axiosInstance from "../../../axiosConfig";
 import toast from "react-hot-toast";
+import VisibilityIcon from "@mui/icons-material/Visibility";
+import { Link } from "react-router-dom";
 
 const PreviewModal = ({ open, handleClose, row, query }) => {
   // Sample data for DataGrid
@@ -12,6 +14,26 @@ const PreviewModal = ({ open, handleClose, row, query }) => {
   // Columns for DataGrid
   const columns = [
     { field: "articleId", headerName: "ID", width: 150 },
+    {
+      field: "link",
+      headerName: "View",
+      width: 50,
+      renderCell: (params) => (
+        <Link
+          to={
+            params.row.type === "printarticle"
+              ? `/articleview/download-file/${params.row.link} `
+              : `${params.row.link}`
+          }
+          target="_blank"
+          rel="noreferrer"
+        >
+          <IconButton color="primary">
+            <VisibilityIcon />
+          </IconButton>
+        </Link>
+      ),
+    },
     { field: "type", headerName: "Type", width: 100 },
     { field: "headline", headerName: "Headline", width: 300 },
     { field: "summary", headerName: "Summary", width: 450 },
@@ -49,6 +71,7 @@ const PreviewModal = ({ open, handleClose, row, query }) => {
   const rows = data.map((item) => ({
     id: item._id,
     type: item._index,
+    link: item.link,
     articleId: item._source.articleId || item._source.socialFeedId,
     headline:
       item._source?.feedData?.headlines || item._source?.articleData?.headlines,
@@ -102,6 +125,8 @@ const PreviewModal = ({ open, handleClose, row, query }) => {
             loading={loading}
             density="compact"
             sx={{ height: "100%" }}
+            disableRowSelectionOnClick
+            hideFooterSelectedRowCount
           />
         </Box>
       </Box>

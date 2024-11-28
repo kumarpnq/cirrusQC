@@ -177,7 +177,7 @@ const AutoGenerateModal = ({
           />
           <StyledTextField
             fullWidth
-            label="Key Peoples"
+            label="Company Keywords"
             name="keyPeoples"
             value={formValues.companyKeywords}
             onChange={handleChange}

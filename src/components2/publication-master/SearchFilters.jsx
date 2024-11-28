@@ -97,7 +97,7 @@ const SearchFilters = ({
         params.toDate = format(dateNow, "yyyy-MM-dd");
       }
       if (pubType) {
-        params.publicationType = pubType;
+        params.publicationType = pubType?.toLowerCase();
       }
       if (edition) {
         params.editionType = edition;
@@ -109,13 +109,13 @@ const SearchFilters = ({
         params.subscriptionType = subscription;
       }
       if (selectedCity) {
-        params.cityEdition = selectedCity;
+        params.cityId = Number(selectedCity);
       }
       if (populate) {
-        params.populate = populate;
+        params.isPopulate = populate === "Yes" ? "Y" : "N";
       }
-      if (temporary) {
-        params.temporary = temporary;
+      if (temporary && temporary !== "All") {
+        params.isTemporary = temporary === "Yes" ? "Y" : "N";
       }
       const response = await axiosInstance.get(mainFetchAPi, { params });
       setPublicationData(response.data.data.data || []);
