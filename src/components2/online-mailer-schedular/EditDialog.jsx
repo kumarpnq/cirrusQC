@@ -241,6 +241,10 @@ const EditDialog = ({
                 scheduleItem.loginName === login
             )
             .map((scheduleItem) => scheduleItem.time) || [];
+      const filteredWeekly =
+        row?.weekly
+          ?.filter((weekly) => weekly.isActive)
+          .map((weekly) => weekly.value) || [];
 
       const newInitialData = {
         selectedClient: row?.id,
@@ -257,7 +261,7 @@ const EditDialog = ({
           sendReport: report.sendReport ? report.sendReport : row?.sendReport,
           lastReport: report.lastReport ? report.lastReport : row?.lastReport,
         },
-        weekly: weekly,
+        weekly: filteredWeekly,
       };
 
       setInitialState(newInitialData);
@@ -273,6 +277,7 @@ const EditDialog = ({
         setTimeStamps(newInitialData.timeStamps);
         setReport(newInitialData.report);
         setLogin(newInitialData.loginName);
+        setWeekly(newInitialData.weekly);
       } else {
         if (initialState) {
           setSelectedClient(initialState.selectedClient || row?.id);
@@ -288,6 +293,7 @@ const EditDialog = ({
               lastReport: row?.lastReport || report.lastReport,
             }
           );
+          setWeekly(initialState?.weekly);
         }
       }
     }
@@ -314,6 +320,14 @@ const EditDialog = ({
         (stamp) => !initialState.timeStamps.includes(stamp)
       );
 
+      // Filter removed and added time slots
+      const removedWeekly = initialState.weekly?.filter(
+        (weekly) => !weekly.includes(weekly)
+      );
+      const addedWeekly = weekly.filter(
+        (weekly) => !initialState.weekly.includes(weekly)
+      );
+
       // Prepare company updates
       const companyUpdates = [
         ...removedCompanies.map((companyId) => ({
@@ -338,8 +352,20 @@ const EditDialog = ({
         })),
       ];
 
+      const weeklyUpdates = [
+        ...removedWeekly.map((weekly) => ({
+          weekly,
+          isActive: false,
+        })),
+        ...addedWeekly.map((weekly) => ({
+          weekly,
+          isActive: true,
+        })),
+      ];
+
       const hasCompanyChanges = companyUpdates.length > 0;
       const hasSlotChanges = slotUpdates.length > 0;
+      const hasWeeklyChanges = weeklyUpdates.length > 0;
 
       // Update only if there are actual changes
       if (hasCompanyChanges || hasSlotChanges) {
@@ -353,12 +379,15 @@ const EditDialog = ({
             slotUpdates: hasSlotChanges
               ? slotUpdates
               : prevData[screenTypeDD]?.slotUpdates || [],
+            weeklyUpdates: hasWeeklyChanges
+              ? weeklyUpdates
+              : prevData[screenTypeDD]?.weeklyUpdates || [],
           },
         }));
       }
     };
     detectChanges();
-  }, [selectedCompany, timeStamps, screenTypeDD, initialState, report]);
+  }, [selectedCompany, timeStamps, screenTypeDD, initialState, report, weekly]);
 
   // * insert status
   useEffect(() => {
@@ -541,7 +570,8 @@ const EditDialog = ({
 
       const data = Object.keys(modifiedData)
         .map((item) => {
-          const { slotUpdates, companyUpdates } = modifiedData[item];
+          const { slotUpdates, companyUpdates, weeklyUpdates } =
+            modifiedData[item];
 
           let update = {
             //  ...requestData,
@@ -554,6 +584,10 @@ const EditDialog = ({
 
           if (companyUpdates && companyUpdates.length > 0) {
             update.companyIds = companyUpdates;
+          }
+
+          if (weeklyUpdates && weeklyUpdates.length > 0) {
+            update.weeklyUpdates = weeklyUpdates;
           }
 
           return Object.keys(update).length > 0 ? update : null;
