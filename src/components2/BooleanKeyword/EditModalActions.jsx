@@ -45,6 +45,7 @@ export const EditModalActions = ({
   fromWhere,
   selectedFullClient,
   setSelectedFullClient,
+  fetchBooleanKeywords,
 }) => {
   const [openAutoGenerate, setOpenAutoGenerate] = useState(false);
   const [selectedClient, setSelectedClient] = useState("");
@@ -139,6 +140,7 @@ export const EditModalActions = ({
         row={row}
         fromWhere={fromWhere}
         selectedFullClient={selectedFullClient}
+        fetchBooleanKeywords={fetchBooleanKeywords}
       />
     </Container>
   );
@@ -151,4 +153,5 @@ EditModalActions.propTypes = {
   fromWhere: PropTypes.string,
   selectedFullClient: PropTypes.object,
   setSelectedFullClient: PropTypes.func,
+  fetchBooleanKeywords: PropTypes.func,
 };

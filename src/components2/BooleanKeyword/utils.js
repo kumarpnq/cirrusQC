@@ -224,20 +224,21 @@ export const generateAutoQuery = (formValues) => {
   if (keyPeoples) {
     const keyPeoplesArray = keyPeoples
       .split(",")
-      .map((person) => quote(person));
+      .map((person) => quote(person.trim()));
     additionalConditions.push(...keyPeoplesArray);
   }
 
   if (companyKeywords) {
     const keywordsArray = companyKeywords
       .split(",")
-      .map((keyword) => quote(keyword));
+      .map((keyword) => quote(keyword.trim()));
     additionalConditions.push(...keywordsArray);
   }
 
+  // Only add the combined OR group if there are any key people or keywords
   if (additionalConditions.length > 0) {
     conditions.push(
-      `(${quote(companyName)} OR ${additionalConditions.join(" OR ")})`
+      `(${quote(companyName)} AND (${additionalConditions.join(" OR ")}))`
     );
   }
 

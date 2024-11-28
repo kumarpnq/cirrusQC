@@ -92,7 +92,6 @@ const QueryBox = ({
           fromWhere === "Add"
             ? selectedFullClient?.clientname
             : row?.companyName,
-        langId: language,
       };
       const includeQuery = {};
       const excludeQuery = {};
@@ -101,17 +100,17 @@ const QueryBox = ({
         includeQuery.langId = language;
       }
       if (Object.keys(includeQuery).length)
-        requestData.includeQuery = includeQuery;
+        requestData.includeQuery = [includeQuery];
       if (type === "Exclude Query") {
-        requestData.includeQuery = {
-          query: filteredIncludeData[0]?.query,
-          langId: filteredIncludeData[0]?.langId,
-        };
-        excludeQuery.includeQuery = query;
+        requestData.includeQuery = filteredIncludeData.map((item) => ({
+          query: item.query,
+          langId: item.langId,
+        }));
+        excludeQuery.query = query;
         excludeQuery.langId = language;
       }
       if (Object.keys(excludeQuery).length)
-        requestData.excludeQuery = excludeQuery;
+        requestData.excludeQuery = [excludeQuery];
       const response = await axiosInstance.post("newBoolean", requestData);
 
       if (response.status === 200) {

@@ -92,6 +92,7 @@ const AddEditDialog = ({ open, handleClose, fromWhere, row }) => {
             fromWhere={fromWhere}
             selectedFullClient={selectedClient}
             setSelectedFullClient={setSelectedClient}
+            fetchBooleanKeywords={fetchBooleanKeywords}
           />
           <QueryBox
             type={"Include Query"}

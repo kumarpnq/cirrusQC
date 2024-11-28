@@ -40,6 +40,7 @@ const AutoGenerateModal = ({
   language,
   fromWhere,
   selectedFullClient,
+  fetchBooleanKeywords,
 }) => {
   const [formValues, setFormValues] = useState({
     companyName: "",
@@ -50,25 +51,40 @@ const AutoGenerateModal = ({
   });
   const [loading, setLoading] = useState(false);
 
-  let testObj = {
-    companyName: "Perception & Quant",
-    ceo: "Saurav De",
-    products: "Media & Research",
-    keyPeoples: "Kumar,Sidd,Tushar",
-    companyKeywords: "News,charts,emailAlerts",
-  };
-
-  useEffect(() => {
-    if (open) {
-      setFormValues(testObj);
-    }
-  }, [open]);
-
   const [errors, setErrors] = useState({});
 
   const handleChange = (e) => {
     setFormValues({ ...formValues, [e.target.name]: e.target.value });
   };
+
+  // * get company details
+  useEffect(() => {
+    const fetchCompanyDetails = async () => {
+      try {
+        const companyId =
+          fromWhere === "Add" ? selectedFullClient?.clientid : row?.companyId;
+        const response = await axiosInstance.get(
+          `booleanKeywordCompanyDetails/?companyId=${companyId}`
+        );
+
+        if (response.status === 200) {
+          let companyDetails = response.data?.data?.data?.companyInfo;
+          setFormValues({
+            companyName: companyDetails?.companyName,
+            ceo: companyDetails?.ceo?.join(","),
+            products: companyDetails?.products?.join(","),
+            keyPeoples: companyDetails?.keyPeople?.join(","),
+            companyKeywords: companyDetails?.companyKeywords?.join(","),
+          });
+        }
+      } catch (error) {
+        toast.error("Something went wrong.");
+      }
+    };
+    if (open) {
+      fetchCompanyDetails();
+    }
+  }, [open, fromWhere, row?.companyId, selectedFullClient]);
 
   const validateForm = () => {
     let tempErrors = {};
@@ -89,6 +105,7 @@ const AutoGenerateModal = ({
       try {
         setLoading(true);
         const query = generateAutoQuery(formValues);
+
         const requestData = {
           companyId:
             fromWhere === "Add" ? selectedFullClient?.clientid : row?.companyId,
@@ -96,16 +113,21 @@ const AutoGenerateModal = ({
             fromWhere === "Add"
               ? selectedFullClient?.clientname
               : row?.companyName,
-          includeQuery: {
-            query,
-            langId: language,
-          },
+          includeQuery: [
+            {
+              query,
+              langId: language,
+            },
+          ],
         };
 
         const response = await axiosInstance.post("newBoolean", requestData);
         if (response.status === 200) {
           toast.success(response.data.data.message);
           handleClose();
+          if (fromWhere === "Edit") {
+            fetchBooleanKeywords();
+          }
         }
       } catch (error) {
         toast.error("Something went wrong.");
@@ -165,7 +187,7 @@ const AutoGenerateModal = ({
           />
           <StyledTextField
             fullWidth
-            label="Key Peoples"
+            label="Key People"
             name="keyPeoples"
             value={formValues.keyPeoples}
             onChange={handleChange}
@@ -219,6 +241,7 @@ AutoGenerateModal.propTypes = {
   language: PropTypes.string,
   fromWhere: PropTypes.string,
   selectedFullClient: PropTypes.object,
+  fetchBooleanKeywords: PropTypes.func,
 };
 
 export default AutoGenerateModal;

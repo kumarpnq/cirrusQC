@@ -95,9 +95,12 @@ const QueryList = ({
   // * delete query
   const handleDeleteQuery = async () => {
     try {
+      const queryKey =
+        type === "Exclude Query" ? "excludeQuery" : "includeQuery";
       const params = {
         companyId,
         queryId: localQueryId,
+        queryType: queryKey,
       };
       const response = await axiosInstance.delete("deleteBooleanQuery", {
         params,

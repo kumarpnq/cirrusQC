@@ -94,7 +94,7 @@ const PublicationAddModal = ({ open, handleClose, screen }) => {
       const response = await axiosInstance.post(endpoint, requestData);
 
       if (response.status === 200) {
-        toast.success(response.data.response.status);
+        toast.success(response.data.response.message);
         setFormData({
           publicationName: "",
           actualPublication: "",

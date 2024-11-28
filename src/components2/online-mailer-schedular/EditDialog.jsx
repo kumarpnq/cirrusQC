@@ -257,6 +257,7 @@ const EditDialog = ({
           sendReport: report.sendReport ? report.sendReport : row?.sendReport,
           lastReport: report.lastReport ? report.lastReport : row?.lastReport,
         },
+        weekly: weekly,
       };
 
       setInitialState(newInitialData);
@@ -374,6 +375,7 @@ const EditDialog = ({
           loginName: login,
           frequency: every || "Daily",
           updateType: "I",
+          weekly,
         });
 
         const updateEntityStatus = (entityType) => {
@@ -413,6 +415,7 @@ const EditDialog = ({
     report,
     timeStamps,
     every,
+    weekly,
   ]);
 
   useEffect(() => {
@@ -456,6 +459,9 @@ const EditDialog = ({
 
         if (login !== currentEntity.loginName) {
           setLogin(currentEntity.loginName || "");
+        }
+        if (weekly !== currentEntity.weekly) {
+          setWeekly(currentEntity.weekly || []);
         }
       }
     }
@@ -660,6 +666,7 @@ const EditDialog = ({
               loginName: "",
               frequency: "Daily",
               updateType: "I",
+              weekly: [],
             },
             {
               entityType: "online",
@@ -670,6 +677,7 @@ const EditDialog = ({
               loginName: "",
               frequency: "Daily",
               updateType: "I",
+              weekly: [],
             },
             {
               entityType: "both",
@@ -680,6 +688,7 @@ const EditDialog = ({
               loginName: "",
               frequency: "Daily",
               updateType: "I",
+              weekly: [],
             },
           ],
         ]);
@@ -885,7 +894,7 @@ const EditDialog = ({
           </Box>
         </StyledItemWrapper>
         <StyledItemWrapper>
-          <StyledText>Include Week:</StyledText>
+          <StyledText>Exclude Days:</StyledText>
           <div className="mt-1">
             <CustomMultiSelect
               title="Include"

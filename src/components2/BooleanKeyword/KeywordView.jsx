@@ -28,6 +28,8 @@ const KeywordView = ({ open, handleClose, row }) => {
           left: "50%",
           transform: "translate(-50%, -50%)",
           width: "70vw",
+          height: "80vh",
+          overflowY: "auto",
           bgcolor: "background.paper",
           boxShadow: 24,
           p: 2,

@@ -108,7 +108,7 @@ const LanguageQueryModal = ({
         }
 
         if (Object.keys(includeQuery).length) {
-          requestData.includeQuery = includeQuery;
+          requestData.includeQuery = [includeQuery];
         }
 
         if (type === "Exclude Query") {
@@ -117,7 +117,7 @@ const LanguageQueryModal = ({
         }
 
         if (Object.keys(excludeQuery).length) {
-          requestData.excludeQuery = excludeQuery;
+          requestData.excludeQuery = [excludeQuery];
         }
 
         try {
