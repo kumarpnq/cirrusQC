@@ -15,7 +15,6 @@ import { makeStyles } from "@mui/styles";
 import ComponentsHeader from "./ComponentsHeader";
 import axiosInstance from "../../../axiosConfig";
 import PropTypes from "prop-types";
-import useMailerLogic from "./clientInfo/useMailerLogic";
 import useFetchMongoData from "../../hooks/useFetchMongoData";
 import CustomSingleSelect from "../../@core/CustomSingleSelect2";
 
@@ -134,9 +133,9 @@ const ClientInfo = ({ clientId: idForFetch }) => {
   }, [idForFetch]);
 
   // * get mailer logics
-  const { mailerLogic: mailerLogicArray } = useMailerLogic();
-  const { data } = useFetchMongoData(
-    `clientMailerFormat/?mailerLogic=${mailerLogic}`
+  const { data: mailerLogicData } = useFetchMongoData(`mailerLogicDDL`);
+  const { data: mailerFormatData } = useFetchMongoData(
+    `mailerFormatDDL/?logicid=${mailerLogic}`
   );
 
   return (
@@ -374,7 +373,7 @@ const ClientInfo = ({ clientId: idForFetch }) => {
             dropdownWidth={300}
             keyId="logicId"
             keyName="logicName"
-            options={mailerLogicArray}
+            options={mailerLogicData}
             title="Mailer Logic"
             selectedItem={mailerLogic}
             setMailerLogic={setMailerLogic}

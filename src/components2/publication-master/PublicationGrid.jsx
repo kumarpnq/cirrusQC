@@ -1,6 +1,6 @@
 import PropTypes from "prop-types";
 import { Box, IconButton } from "@mui/material";
-import { DataGrid } from "@mui/x-data-grid";
+import { DataGrid, GridToolbar } from "@mui/x-data-grid";
 import EditNoteIcon from "@mui/icons-material/EditNote";
 import { Fragment, useState } from "react";
 import AddModal from "./AddModal";
@@ -100,6 +100,15 @@ const PublicationGrid = ({
           columnVisibilityModel={{
             publicationGroupId: screen === "print",
           }}
+          slots={{ toolbar: GridToolbar }}
+          slotProps={{
+            toolbar: {
+              showQuickFilter: true,
+            },
+          }}
+          disableColumnFilter
+          disableColumnSelector
+          disableDensitySelector
         />
       </Box>
       <AddModal

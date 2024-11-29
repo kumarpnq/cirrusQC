@@ -1,6 +1,6 @@
 import PropTypes from "prop-types";
 import { Box } from "@mui/material";
-import { DataGrid, GridActionsCellItem } from "@mui/x-data-grid";
+import { DataGrid, GridActionsCellItem, GridToolbar } from "@mui/x-data-grid";
 import EditNoteIcon from "@mui/icons-material/EditNote";
 import { Fragment, useState } from "react";
 import PublicationGroupAddEditModal from "./PublicationGroupAddEditModal";
@@ -98,6 +98,15 @@ const PublicationGroupGrid = ({
           loading={loading}
           rowSelectionModel={selectionModal}
           onRowSelectionModelChange={handleSelectionChange}
+          slots={{ toolbar: GridToolbar }}
+          slotProps={{
+            toolbar: {
+              showQuickFilter: true,
+            },
+          }}
+          disableColumnFilter
+          disableColumnSelector
+          disableDensitySelector
         />
       </Box>
       <PublicationGroupAddEditModal

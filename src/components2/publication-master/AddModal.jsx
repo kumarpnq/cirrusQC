@@ -218,7 +218,7 @@ const AddModal = ({ open, handleClose, row, screen }) => {
         requestData.actualPublication = actualPublication;
       }
       if (publicationType !== publicationData?.publicationType) {
-        requestData.publicationType = publicationType.toLowerCase();
+        requestData.publicationType = publicationType?.toLowerCase();
       }
       if (publicationCategory !== publicationData?.publicationCategory) {
         requestData.publicationCategory = publicationCategory;
@@ -236,7 +236,7 @@ const AddModal = ({ open, handleClose, row, screen }) => {
         requestData.zone = zone;
       }
       if (clusters !== publicationData?.clusters) {
-        requestData.clusterIds = clusters.join(",");
+        requestData.clusterIds = clusters?.join(",");
       }
 
       //  if (JSON.stringify(clusters) !== JSON.stringify(publicationData?.clusterIds)) {
