@@ -678,6 +678,7 @@ export const editionTypes = [
 ];
 
 export const weeklyDays = [
+  { id: "Holidays", name: "Holidays" },
   { id: "Sunday", name: "Sunday" },
   { id: "Monday", name: "Monday" },
   { id: "Tuesday", name: "Tuesday" },
@@ -685,5 +686,4 @@ export const weeklyDays = [
   { id: "Thursday", name: "Thursday" },
   { id: "Friday", name: "Friday" },
   { id: "Saturday", name: "Saturday" },
-  { id: "Holidays", name: "Holidays" },
 ];

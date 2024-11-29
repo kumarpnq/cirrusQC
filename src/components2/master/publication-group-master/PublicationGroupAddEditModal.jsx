@@ -32,16 +32,32 @@ const PublicationGroupAddEditModal = ({
 
   const [updateLoading, setUpdateLoading] = useState(false);
 
+  const fetchSinglePubGroupData = async () => {
+    try {
+      const response = await axiosInstance.get(
+        `singlePubGroupData/?pubGroupId=${row?.pubGroupId}`
+      );
+
+      const localRow = response.data.data.data[0] || {};
+      setPublicationGroupName(localRow?.pubGroupName);
+      setQc3(
+        (localRow?.qc3 === "Y" && "Yes") || (localRow?.qc3 === "N" && "No")
+      );
+      setCopyright(localRow?.copyright || "");
+      setCountry(String(localRow?.countryId) || "");
+      setActive(
+        (localRow?.isActive === "Y" && "Yes") ||
+          (localRow?.isActive === "N" && "No")
+      );
+      setPublicationGroupId(localRow?.pubGroupId);
+    } catch (error) {
+      console.log(error);
+      toast.error("Something went wrong.");
+    }
+  };
   useEffect(() => {
     if (open && row && fromWhere === "Edit") {
-      setPublicationGroupId(row?.pubGroupId);
-      setPublicationGroupName(row?.pubGroupName);
-      setQc3((row?.qc3 === "Y" && "Yes") || (row?.qc3 === "N" && "No"));
-      setCopyright(row?.copyright || "");
-      setCountry(String(row?.countryId) || "");
-      setActive(
-        (row?.isActive === "Y" && "Yes") || (row?.isActive === "N" && "No")
-      );
+      fetchSinglePubGroupData();
     }
   }, [fromWhere, row, open]);
 
@@ -106,7 +122,12 @@ const PublicationGroupAddEditModal = ({
         setCopyright("");
         setCountry("");
         setActive("");
-        handleClose();
+        if (fromWhere === "Add") {
+          handleClose();
+        }
+        if (fromWhere === "Edit") {
+          fetchSinglePubGroupData();
+        }
         setFetchAfterSave(true);
       }
     } catch (error) {

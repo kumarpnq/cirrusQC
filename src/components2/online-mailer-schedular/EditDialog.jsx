@@ -28,6 +28,7 @@ import { makeStyles } from "@mui/styles";
 import { toast } from "react-toastify";
 import axiosInstance from "../../../axiosConfig";
 import CustomSingleSelect from "../../@core/CustomSingleSelect2";
+import { weeklyDays } from "../../constants/dataArray";
 const StyledItemWrapper = styled(Box)(({ theme }) => ({
   display: "flex",
   alignItems: "center",
@@ -153,7 +154,7 @@ const EditDialog = ({
   const [screenTypeDD, setScreenTypeDD] = useState("print");
   const [selectedClient, setSelectedClient] = useState("");
   const [selectedCompany, setSelectedCompany] = useState([]);
-  const [weekly, setWeekly] = useState("");
+  const [weekly, setWeekly] = useState([]);
   const [every, setEvery] = useState("Daily");
   const [timeStamps, setTimeStamps] = useState([]);
   const [report, setReport] = useState({
@@ -989,12 +990,15 @@ const EditDialog = ({
         <StyledItemWrapper>
           <StyledText>Exclude Days:</StyledText>
           <div className="mt-1">
-            <YesOrNo
-              mapValue={["Yes", "No"]}
-              placeholder="Exclude"
-              width={278}
-              value={weekly}
-              setValue={setWeekly}
+            <CustomMultiSelect
+              dropdownToggleWidth={278}
+              dropdownWidth={278}
+              keyId="id"
+              keyName="name"
+              options={weeklyDays}
+              selectedItems={weekly}
+              setSelectedItems={setWeekly}
+              title="Exclude"
             />
           </div>
         </StyledItemWrapper>
