@@ -152,7 +152,7 @@ const AddModal = ({ open, handleClose, row, screen }) => {
       setPopulate(publicationDataLocal?.isPopulate === "Y" ? "Yes" : "No");
       setActive(publicationDataLocal?.isActive === "Y" ? "Yes" : "No");
       setTemporary(publicationDataLocal?.isTemporary === "Y" ? "Yes" : "No");
-      setClusters(publicationDataLocal?.clusterIds || []);
+      setClusters([publicationDataLocal?.clusterIds] || []);
 
       // * for online only
       if (screen === "online") {
@@ -171,6 +171,8 @@ const AddModal = ({ open, handleClose, row, screen }) => {
       fetchPublicationData();
     }
   }, [open, row]);
+
+  console.log(clusters);
 
   const handleChange = (event, newValue) => {
     setSelectedTab(newValue);

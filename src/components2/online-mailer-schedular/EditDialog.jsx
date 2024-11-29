@@ -987,7 +987,7 @@ const EditDialog = ({
           </Box>
         </StyledItemWrapper>
         <StyledItemWrapper>
-          <StyledText>Exclude Holidays:</StyledText>
+          <StyledText>Exclude Days:</StyledText>
           <div className="mt-1">
             <YesOrNo
               mapValue={["Yes", "No"]}
