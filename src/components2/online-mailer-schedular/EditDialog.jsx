@@ -807,13 +807,78 @@ const EditDialog = ({
     }
   };
 
+  const handleAllClose = () => {
+    handleClose();
+    setModifiedData([]);
+    setScreenTypeDD("print");
+    setSelectedClient("");
+    setSelectedCompany([]);
+    setEvery("Daily");
+    setWeekly([]);
+    setTimeStamps([]);
+    setReport({
+      sendReport: "",
+      lastReport: "",
+    });
+    setActive("");
+    setInitialState(null);
+    setLogin("");
+    setLoginNames([]);
+    setInsertStatus([
+      {
+        entityType: "print",
+        // companyIds: [],
+        // isSendReport: false,
+        // isIncludeReport: false,
+        slots: [],
+        loginName: "",
+        frequency: "Daily",
+        updateType: "I",
+      },
+      {
+        entityType: "online",
+        // companyIds: [],
+        // isSendReport: false,
+        // isIncludeReport: false,
+        slots: [],
+        loginName: "",
+        frequency: "Daily",
+        updateType: "I",
+      },
+      {
+        entityType: "both",
+        // companyIds: [],
+        // isSendReport: false,
+        // isIncludeReport: false,
+        slots: [],
+        loginName: "",
+        frequency: "Daily",
+        updateType: "I",
+      },
+    ]);
+    setInsertStatus2([
+      {
+        entityType: "print",
+        login: "",
+        weekly: "",
+      },
+      {
+        entityType: "online",
+        login: "",
+        weekly: "",
+      },
+      {
+        entityType: "both",
+        login: "",
+        weekly: "",
+      },
+    ]);
+  };
+
   return (
     <Dialog
       open={open}
-      onClose={() => {
-        handleClose();
-        setModifiedData([]);
-      }}
+      onClose={handleAllClose}
       maxWidth="md"
       sx={{ "& .MuiDialog-paper": { height: "90vh" } }}
     >
@@ -1019,14 +1084,7 @@ const EditDialog = ({
         )}
       </DialogContent>
       <DialogActions>
-        <Button
-          onClick={() => {
-            handleClose();
-            setModifiedData([]);
-          }}
-          size="small"
-          variant="outlined"
-        >
+        <Button onClick={handleAllClose} size="small" variant="outlined">
           Cancel
         </Button>
         <Button
