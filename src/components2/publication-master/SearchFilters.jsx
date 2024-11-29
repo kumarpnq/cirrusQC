@@ -243,9 +243,9 @@ const SearchFilters = ({
               setValue={setPopulate}
               width={120}
             />
-            <Typography component={"div"} width={150}>
+            <Typography component={"div"} width={250}>
               <CustomSingleSelect
-                dropdownToggleWidth={150}
+                dropdownToggleWidth={250}
                 dropdownWidth={250}
                 keyId="id"
                 keyName="name"

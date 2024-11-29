@@ -172,8 +172,6 @@ const AddModal = ({ open, handleClose, row, screen }) => {
     }
   }, [open, row]);
 
-  console.log(clusters);
-
   const handleChange = (event, newValue) => {
     setSelectedTab(newValue);
   };
@@ -286,7 +284,7 @@ const AddModal = ({ open, handleClose, row, screen }) => {
           : "updateOnlinePublicationInfo";
       const response = await axiosInstance.post(`${endpoint}/`, requestData);
       if (response.status === 200) {
-        toast.success(response.data.message);
+        toast.success(response.data.data.message);
         setFullCoverage("");
         setSortOrder("");
         setPublicationData(null);
