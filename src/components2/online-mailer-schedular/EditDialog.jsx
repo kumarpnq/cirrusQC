@@ -256,12 +256,12 @@ const EditDialog = ({
             )
             .map((scheduleItem) => scheduleItem.time) || [];
       const filteredWeekly =
-        row?.excludeHolidays
+        row?.excludeDays
           ?.filter(
             (weekly) =>
               weekly.loginName === login && weekly.screenType === screenTypeDD
           )
-          .map((weekly) => weekly.excludeHolidays)[0] || "";
+          .map((weekly) => weekly.excludeDays) || [];
 
       const newInitialData = {
         selectedClient: row?.id,
@@ -278,10 +278,7 @@ const EditDialog = ({
           sendReport: report.sendReport ? report.sendReport : row?.sendReport,
           lastReport: report.lastReport ? report.lastReport : row?.lastReport,
         },
-        weekly:
-          (filteredWeekly === "Y" && "Yes") ||
-          (filteredWeekly === "N" && "No") ||
-          "",
+        weekly: filteredWeekly || [],
       };
 
       setInitialState(newInitialData);
@@ -536,14 +533,14 @@ const EditDialog = ({
         clientId: selectedClient,
         loginName: login,
         screenType: screenTypeDD,
-        excludeHolidays: weekly === "Yes" ? "Y" : "N",
+        excludeHolidays: weekly,
       };
       const filteredRecords = insertStatus2.filter((item) => item.login !== "");
       const dataForAdd = filteredRecords.map((item) => ({
         clientId: selectedClient,
         loginName: item.login,
         screenType: item.entityType,
-        excludeHolidays: item.weekly === "Yes" ? "Y" : "N",
+        excludeHolidays: item.weekly,
       }));
       const response = await axiosInstance.post(
         "updateholidayflag/",

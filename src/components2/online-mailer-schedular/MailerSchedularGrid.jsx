@@ -169,7 +169,7 @@ const MailerSchedularGrid = ({
     lastReport: yesNo(item.isIncludeReport),
     scheduledCompanies: item.scheduledCompanies,
     schedule: item.schedule,
-    excludeHolidays: item.excludeHolidays,
+    excludeDays: item.excludeDays,
   }));
 
   return (
