@@ -28,7 +28,6 @@ import { makeStyles } from "@mui/styles";
 import { toast } from "react-toastify";
 import axiosInstance from "../../../axiosConfig";
 import CustomSingleSelect from "../../@core/CustomSingleSelect2";
-import { weeklyDays } from "../../constants/dataArray";
 const StyledItemWrapper = styled(Box)(({ theme }) => ({
   display: "flex",
   alignItems: "center",
@@ -154,7 +153,7 @@ const EditDialog = ({
   const [screenTypeDD, setScreenTypeDD] = useState("print");
   const [selectedClient, setSelectedClient] = useState("");
   const [selectedCompany, setSelectedCompany] = useState([]);
-  const [weekly, setWeekly] = useState([]);
+  const [weekly, setWeekly] = useState("");
   const [every, setEvery] = useState("Daily");
   const [timeStamps, setTimeStamps] = useState([]);
   const [report, setReport] = useState({
@@ -177,7 +176,6 @@ const EditDialog = ({
       loginName: "",
       frequency: "Daily",
       updateType: "I",
-      weekly: [],
     },
     {
       entityType: "online",
@@ -188,7 +186,6 @@ const EditDialog = ({
       loginName: "",
       frequency: "Daily",
       updateType: "I",
-      weekly: [],
     },
     {
       entityType: "both",
@@ -199,7 +196,23 @@ const EditDialog = ({
       loginName: "",
       frequency: "Daily",
       updateType: "I",
-      weekly: [],
+    },
+  ]);
+  const [insertStatus2, setInsertStatus2] = useState([
+    {
+      entityType: "print",
+      login: "",
+      weekly: "",
+    },
+    {
+      entityType: "online",
+      login: "",
+      weekly: "",
+    },
+    {
+      entityType: "both",
+      login: "",
+      weekly: "",
     },
   ]);
 
@@ -242,9 +255,12 @@ const EditDialog = ({
             )
             .map((scheduleItem) => scheduleItem.time) || [];
       const filteredWeekly =
-        row?.weekly
-          ?.filter((weekly) => weekly.isActive)
-          .map((weekly) => weekly.value) || [];
+        row?.excludeHolidays
+          ?.filter(
+            (weekly) =>
+              weekly.loginName === login && weekly.screenType === screenTypeDD
+          )
+          .map((weekly) => weekly.excludeHolidays)[0] || "";
 
       const newInitialData = {
         selectedClient: row?.id,
@@ -261,7 +277,10 @@ const EditDialog = ({
           sendReport: report.sendReport ? report.sendReport : row?.sendReport,
           lastReport: report.lastReport ? report.lastReport : row?.lastReport,
         },
-        weekly: filteredWeekly,
+        weekly:
+          (filteredWeekly === "Y" && "Yes") ||
+          (filteredWeekly === "N" && "No") ||
+          "",
       };
 
       setInitialState(newInitialData);
@@ -321,12 +340,6 @@ const EditDialog = ({
       );
 
       // Filter removed and added time slots
-      const removedWeekly = initialState.weekly?.filter(
-        (weekly) => !weekly.includes(weekly)
-      );
-      const addedWeekly = weekly.filter(
-        (weekly) => !initialState.weekly.includes(weekly)
-      );
 
       // Prepare company updates
       const companyUpdates = [
@@ -352,20 +365,8 @@ const EditDialog = ({
         })),
       ];
 
-      const weeklyUpdates = [
-        ...removedWeekly.map((weekly) => ({
-          weekly,
-          isActive: false,
-        })),
-        ...addedWeekly.map((weekly) => ({
-          weekly,
-          isActive: true,
-        })),
-      ];
-
       const hasCompanyChanges = companyUpdates.length > 0;
       const hasSlotChanges = slotUpdates.length > 0;
-      const hasWeeklyChanges = weeklyUpdates.length > 0;
 
       // Update only if there are actual changes
       if (hasCompanyChanges || hasSlotChanges) {
@@ -379,15 +380,12 @@ const EditDialog = ({
             slotUpdates: hasSlotChanges
               ? slotUpdates
               : prevData[screenTypeDD]?.slotUpdates || [],
-            weeklyUpdates: hasWeeklyChanges
-              ? weeklyUpdates
-              : prevData[screenTypeDD]?.weeklyUpdates || [],
           },
         }));
       }
     };
     detectChanges();
-  }, [selectedCompany, timeStamps, screenTypeDD, initialState, report, weekly]);
+  }, [selectedCompany, timeStamps, screenTypeDD, initialState, report]);
 
   // * insert status
   useEffect(() => {
@@ -404,7 +402,6 @@ const EditDialog = ({
           loginName: login,
           frequency: every || "Daily",
           updateType: "I",
-          weekly,
         });
 
         const updateEntityStatus = (entityType) => {
@@ -444,7 +441,6 @@ const EditDialog = ({
     report,
     timeStamps,
     every,
-    weekly,
   ]);
 
   useEffect(() => {
@@ -489,12 +485,26 @@ const EditDialog = ({
         if (login !== currentEntity.loginName) {
           setLogin(currentEntity.loginName || "");
         }
-        if (weekly !== currentEntity.weekly) {
-          setWeekly(currentEntity.weekly || []);
-        }
       }
     }
   }, [screenTypeDD]);
+
+  useEffect(() => {
+    if (openedFromWhere === "add") {
+      setInsertStatus2((prev) =>
+        prev.map((item) =>
+          item.entityType === screenTypeDD
+            ? {
+                ...item,
+                entityType: screenTypeDD,
+                login: login,
+                weekly: weekly,
+              }
+            : item
+        )
+      );
+    }
+  }, [screenTypeDD, login, weekly, openedFromWhere]);
 
   const handleCheckboxChange = (event) => {
     setActive(event.target.checked ? "Yes" : "No");
@@ -517,6 +527,38 @@ const EditDialog = ({
   const [updateLoading, setUpdateLoading] = useState(false);
   const [insertLoading, setInsertLoading] = useState(false);
 
+  // * combine function for include holidays
+
+  const handleInsertOrAddHolidays = async () => {
+    try {
+      const data = {
+        clientId: selectedClient,
+        loginName: login,
+        screenType: screenTypeDD,
+        excludeHolidays: weekly === "Yes" ? "Y" : "N",
+      };
+      const filteredRecords = insertStatus2.filter((item) => item.login !== "");
+      const dataForAdd = filteredRecords.map((item) => ({
+        clientId: selectedClient,
+        loginName: item.login,
+        screenType: item.entityType,
+        excludeHolidays: item.weekly === "Yes" ? "Y" : "N",
+      }));
+      const response = await axiosInstance.post(
+        "updateholidayflag/",
+        openedFromWhere === "edit" ? [data] : dataForAdd
+      );
+      if (response.status === 200) {
+        handleClose();
+        handleFetch();
+        console.log(response.data?.success[0]);
+        toast.success(response.data?.success[0]);
+      }
+    } catch (error) {
+      console.log(error.message);
+    }
+  };
+
   const handleSave = async () => {
     try {
       setUpdateLoading(true);
@@ -530,6 +572,27 @@ const EditDialog = ({
       );
 
       const hasSlotChanges = removedSlots.length > 0 || addedSlots.length > 0;
+
+      // Check if there are any changes
+      const hasReportChanges =
+        row?.sendReport !== report.sendReport ||
+        row?.lastReport !== report.lastReport;
+
+      const hasActiveChanges = row?.active !== active;
+
+      const hasFrequencyChanges = initialState.every !== every;
+
+      const hasAnyChanges =
+        hasSlotChanges ||
+        hasReportChanges ||
+        hasActiveChanges ||
+        hasFrequencyChanges;
+
+      // Return early if no changes
+      if (!hasAnyChanges && Object.keys(modifiedData).length === 0) {
+        setUpdateLoading(false);
+        return;
+      }
 
       const requestData = {
         clientId: selectedClient,
@@ -660,8 +723,7 @@ const EditDialog = ({
             item.frequency &&
             item.updateType &&
             item.clientId &&
-            item.clientName &&
-            item.weekly.length;
+            item.clientName;
 
           // Warn for any invalid item being removed
           if (!isValid) {
@@ -700,7 +762,6 @@ const EditDialog = ({
               loginName: "",
               frequency: "Daily",
               updateType: "I",
-              weekly: [],
             },
             {
               entityType: "online",
@@ -711,7 +772,6 @@ const EditDialog = ({
               loginName: "",
               frequency: "Daily",
               updateType: "I",
-              weekly: [],
             },
             {
               entityType: "both",
@@ -722,7 +782,6 @@ const EditDialog = ({
               loginName: "",
               frequency: "Daily",
               updateType: "I",
-              weekly: [],
             },
           ],
         ]);
@@ -928,18 +987,14 @@ const EditDialog = ({
           </Box>
         </StyledItemWrapper>
         <StyledItemWrapper>
-          <StyledText>Exclude Days:</StyledText>
+          <StyledText>Exclude Holidays:</StyledText>
           <div className="mt-1">
-            <CustomMultiSelect
-              title="Include"
-              dropdownWidth={278}
-              dropdownToggleWidth={278}
-              keyId="id"
-              keyName="name"
-              options={weeklyDays}
-              selectedItems={weekly}
-              setSelectedItems={setWeekly}
-              isIncreased={false}
+            <YesOrNo
+              mapValue={["Yes", "No"]}
+              placeholder="Exclude"
+              width={278}
+              value={weekly}
+              setValue={setWeekly}
             />
           </div>
         </StyledItemWrapper>
@@ -974,14 +1029,23 @@ const EditDialog = ({
           Cancel
         </Button>
         <Button
-          onClick={openedFromWhere === "edit" ? handleSave : handleInsert}
+          onClick={async () => {
+            if (openedFromWhere === "edit") {
+              await handleSave();
+              if (initialState?.weekly !== (weekly === "Yes" ? "Y" : "N")) {
+                await handleInsertOrAddHolidays();
+              }
+            } else {
+              await handleInsert();
+              await handleInsertOrAddHolidays();
+            }
+          }}
           size="small"
           color="primary"
           variant="outlined"
           sx={{ display: "flex", alignItems: "center", gap: 1 }}
         >
-          {insertLoading ||
-            (updateLoading && <CircularProgress size={"1em"} />)}{" "}
+          {(insertLoading || updateLoading) && <CircularProgress size="1em" />}
           Save
         </Button>
       </DialogActions>

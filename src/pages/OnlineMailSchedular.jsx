@@ -96,6 +96,7 @@ const OnlineMailSchedular = () => {
         openedFromWhere="add"
         handleFetch={fetchData}
         clientIds={clientIds}
+        row={null}
       />
     </Box>
   );
