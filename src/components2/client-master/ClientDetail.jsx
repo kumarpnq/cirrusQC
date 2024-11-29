@@ -25,7 +25,7 @@ const EditComponentRender = (value, clientId) => {
     case 3:
       return <MailerColumns />;
     case 4:
-      return <MailerConfigure />;
+      return <MailerConfigure clientId={clientId} />;
 
     default:
       return <Typography>Invalid Tab</Typography>;

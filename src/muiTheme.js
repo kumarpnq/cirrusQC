@@ -32,6 +32,19 @@ const theme = createTheme({
         },
       },
     },
+    MuiMenuItem: {
+      styleOverrides: {
+        root: {
+          "&.Mui-selected": {
+            backgroundColor: "#0a4f7d", // Primary background color when selected
+            color: "#ffffff", // Text color when selected
+            "&:hover": {
+              backgroundColor: "#1a689a", // Slightly lighter color on hover
+            },
+          },
+        },
+      },
+    },
   },
 });
 

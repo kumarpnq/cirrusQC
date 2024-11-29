@@ -1,22 +1,15 @@
 import { Box } from "@mui/material";
-import { DataGrid } from "@mui/x-data-grid";
-import { useEffect, useState } from "react";
+import { DataGrid, useGridApiRef } from "@mui/x-data-grid";
+import { useCallback, useEffect, useRef, useState } from "react";
 import ComponentsHeader from "./ComponentsHeader";
 import axiosInstance from "../../../axiosConfig";
-
-const sectionArray = [
-  { id: 1, name: "Ikea", value: 0 },
-  { id: 2, name: "Industry", value: 0 },
-  { id: 3, name: "Industry2", value: 0 },
-  { id: 4, name: "Competition", value: 0 },
-  { id: 5, name: "Category", value: 0 },
-  { id: 6, name: "Industry3", value: 0 },
-  { id: 7, name: "Others", value: 0 },
-];
+import toast from "react-hot-toast";
+import PropTypes from "prop-types";
 
 const SectionOrder = ({ clientId }) => {
-  const [rows, setRows] = useState(sectionArray);
+  const [rows, setRows] = useState([]);
   const [loading, setLoading] = useState(false);
+  const apiRef = useGridApiRef();
 
   const handleProcessRowUpdate = (newRow) => {
     const updatedRows = rows.map((row) =>
@@ -28,13 +21,13 @@ const SectionOrder = ({ clientId }) => {
 
   const columns = [
     {
-      field: "name",
+      field: "mailSection",
       headerName: "Section Name",
       width: 200,
       editable: true,
     },
     {
-      field: "value",
+      field: "sortOrder",
       headerName: "Sort Order",
       width: 150,
       editable: true,
@@ -48,9 +41,14 @@ const SectionOrder = ({ clientId }) => {
         const response = await axiosInstance.get(
           `sectionOrder/?clientId=${clientId}`
         );
-        console.log(response.data);
+        const data = response.data.data.data || [];
+        const mappedData = data.map((item) => ({
+          id: item.mailSectionId,
+          ...item,
+        }));
+        setRows(mappedData || []);
       } catch (error) {
-        console.log(error);
+        toast.error("Something went wrong.");
       } finally {
         setLoading(false);
       }
@@ -60,9 +58,76 @@ const SectionOrder = ({ clientId }) => {
     }
   }, [clientId]);
 
+  const [hasUnsavedRows, setHasUnsavedRows] = useState(false);
+  const unsavedChangesRef = useRef({
+    unsavedRows: {},
+    rowsBeforeChange: {},
+  });
+
+  const processRowUpdate = useCallback((newRow, oldRow) => {
+    const rowId = newRow.id;
+
+    unsavedChangesRef.current.unsavedRows[rowId] = newRow;
+
+    if (!unsavedChangesRef.current.rowsBeforeChange[rowId]) {
+      unsavedChangesRef.current.rowsBeforeChange[rowId] = oldRow;
+    }
+
+    setHasUnsavedRows(true);
+
+    return newRow;
+  }, []);
+
+  const handleUpdate = async () => {
+    try {
+      const changedRows = Object.values(unsavedChangesRef.current.unsavedRows);
+
+      if (changedRows.length === 0) {
+        console.log("No changes to save.");
+        return;
+      }
+
+      const requestData = {
+        clientId,
+        sections: changedRows.map((row) => ({
+          mailSectionId: row.id,
+          mailSection: row.mailSection,
+          sortOrder: row.sortOrder,
+        })),
+      };
+
+      const response = await axiosInstance.post(
+        "updateSectionOrder/",
+        requestData
+      );
+
+      if (response.status === 200) {
+        unsavedChangesRef.current.unsavedRows = {};
+        unsavedChangesRef.current.rowsBeforeChange = {};
+        setHasUnsavedRows(false);
+        toast.success(response.data.data.message);
+      }
+    } catch (error) {
+      console.log("Error updating section order:", error);
+    }
+  };
+
+  // * highlight edit rows
+  const getRowClassName = (params) => {
+    return unsavedChangesRef.current.unsavedRows[params.row.id]
+      ? "highlight-row"
+      : "";
+  };
+
+  // *
+
   return (
     <Box sx={{ border: "1px solid #DDD", borderRadius: "3px", mt: 1, p: 1 }}>
-      <ComponentsHeader title="Sort Order" loading={false} onSave={() => {}} />
+      <ComponentsHeader
+        title="Sort Order"
+        loading={false}
+        onSave={handleUpdate}
+      />
       <Box sx={{ height: 400, width: "100%" }}>
         <DataGrid
           rows={rows}
@@ -70,6 +135,9 @@ const SectionOrder = ({ clientId }) => {
           pageSize={5}
           density="compact"
           loading={loading}
+          apiRef={apiRef}
+          processRowUpdate={processRowUpdate}
+          getRowClassName={getRowClassName}
           onProcessRowUpdate={handleProcessRowUpdate}
           disableRowSelectionOnClick
           hideFooterSelectedRowCount
@@ -79,4 +147,7 @@ const SectionOrder = ({ clientId }) => {
   );
 };
 
+SectionOrder.propTypes = {
+  clientId: PropTypes.string.isRequired,
+};
 export default SectionOrder;

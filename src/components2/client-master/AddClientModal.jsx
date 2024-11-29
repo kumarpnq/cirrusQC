@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import {
   Dialog,
   DialogActions,
@@ -7,10 +7,6 @@ import {
   TextField,
   Button,
   Grid,
-  MenuItem,
-  Select,
-  InputLabel,
-  FormControl,
   Typography,
   Divider,
   IconButton,
@@ -19,10 +15,14 @@ import {
   ListItem,
   ListItemText,
   Box,
+  InputAdornment,
+  Tooltip,
 } from "@mui/material";
 import MailIcon from "@mui/icons-material/Mail";
 import * as XLSX from "xlsx";
 import { format, addYears } from "date-fns";
+import DownloadIcon from "@mui/icons-material/Download";
+import ClearIcon from "@mui/icons-material/Clear";
 
 const AddClientModal = ({ open, onClose }) => {
   const [clientName, setClientName] = useState("");
@@ -32,12 +32,14 @@ const AddClientModal = ({ open, onClose }) => {
   });
   const [companyId, setCompanyId] = useState("");
   const [emailId, setEmailId] = useState("");
-  const [mailerFormat, setMailerFormat] = useState("");
-  const [mailerTime, setMailerTime] = useState("");
-  const [excelData, setExcelData] = useState(null);
+  const [excelData, setExcelData] = useState({
+    company: [{ companyId: "", companyName: "" }],
+    emails: [],
+  });
   const [excelError, setExcelError] = useState("");
   const [emails, setEmails] = useState([]);
   const [anchorEl, setAnchorEl] = useState(null);
+  const fileInputRef = useRef(null);
 
   const handleFileUpload = (e) => {
     const file = e.target.files[0];
@@ -46,10 +48,30 @@ const AddClientModal = ({ open, onClose }) => {
       reader.onload = (evt) => {
         const binaryString = evt.target.result;
         const wb = XLSX.read(binaryString, { type: "binary" });
-        const wsname = wb.SheetNames[0]; // Get the first sheet
-        const ws = wb.Sheets[wsname];
-        const data = XLSX.utils.sheet_to_json(ws, { header: 1 }); // Convert the sheet to JSON (rows)
-        setExcelData(data); // Store the data from Excel
+
+        const companySheet = wb.Sheets[wb.SheetNames[0]];
+        const companyData = XLSX.utils.sheet_to_json(companySheet, {
+          header: 1,
+        });
+
+        const emailsSheet = wb.Sheets[wb.SheetNames[1]];
+        const emailsData = XLSX.utils.sheet_to_json(emailsSheet, {
+          header: 1,
+        });
+
+        const company = companyData.slice(1).map((row) => ({
+          companyId: row[0],
+          companyName: row[1],
+        }));
+
+        const emails = emailsData.slice(1).map((row) => ({
+          email: row[0],
+        }));
+
+        setEmails(emails.map((i) => i.email));
+
+        setCompanyId(company.map((i) => i.companyName).join(","));
+        setExcelData({ company, emails });
       };
       reader.readAsBinaryString(file);
     } else {
@@ -60,11 +82,8 @@ const AddClientModal = ({ open, onClose }) => {
   const handleSave = () => {
     console.log({
       clientName,
-
       companyId,
       emailId,
-      mailerFormat,
-      mailerTime,
     });
     onClose();
   };
@@ -89,6 +108,16 @@ const AddClientModal = ({ open, onClose }) => {
   const handleClosePopover = () => {
     setAnchorEl(null);
   };
+
+  const handleClearFile = () => {
+    if (fileInputRef.current) {
+      fileInputRef.current.value = "";
+    }
+    setExcelData({
+      company: [{ companyId: "", companyName: "" }],
+      emails: [],
+    });
+  };
   const openPopover = Boolean(anchorEl);
   const popoverId = openPopover ? "simple-popover" : undefined;
 
@@ -110,18 +139,42 @@ const AddClientModal = ({ open, onClose }) => {
               accept=".xlsx,.xls"
               onChange={handleFileUpload}
               size="small"
+              inputRef={fileInputRef}
+              InputProps={{
+                endAdornment: (
+                  <>
+                    <InputAdornment position="end">
+                      <Tooltip title="Clear File" placement="top">
+                        <IconButton
+                          onClick={handleClearFile}
+                          sx={{ padding: 0 }}
+                          color="error"
+                        >
+                          <ClearIcon />
+                        </IconButton>
+                      </Tooltip>
+                    </InputAdornment>
+
+                    <InputAdornment position="end">
+                      <Tooltip title="Download Samplebook" placement="top">
+                        <IconButton
+                          component="a"
+                          href="/newClientSamplebook.xlsx"
+                          download="newClientSamplebook.xlsx"
+                          sx={{ padding: 0 }}
+                          color="primary"
+                        >
+                          <DownloadIcon />
+                        </IconButton>
+                      </Tooltip>
+                    </InputAdornment>
+                  </>
+                ),
+              }}
+              fullWidth
             />
-            {excelError && (
-              <Typography color="error" variant="body2">
-                {excelError}
-              </Typography>
-            )}
-            {excelData && (
-              <Typography variant="body2" color="primary">
-                Excel data loaded: {excelData.length} rows.
-              </Typography>
-            )}
           </Grid>
+
           <Grid item xs={12}>
             <TextField
               label="Client Name"
@@ -170,7 +223,7 @@ const AddClientModal = ({ open, onClose }) => {
 
           <Grid item xs={12}>
             <TextField
-              label="Company"
+              label="Companies"
               fullWidth
               variant="outlined"
               value={companyId}
@@ -192,7 +245,10 @@ const AddClientModal = ({ open, onClose }) => {
                 size="small"
                 InputProps={{
                   startAdornment: (
-                    <IconButton onClick={handleClickMailIcon}>
+                    <IconButton
+                      onClick={handleClickMailIcon}
+                      color={emails?.length ? "primary" : "default"}
+                    >
                       <MailIcon />
                     </IconButton>
                   ),
@@ -230,39 +286,6 @@ const AddClientModal = ({ open, onClose }) => {
                 </List>
               </Popover>
             </Box>
-          </Grid>
-
-          <Grid item xs={12}>
-            <FormControl fullWidth variant="outlined">
-              <InputLabel>Mailer Format</InputLabel>
-              <Select
-                value={mailerFormat}
-                onChange={(e) => setMailerFormat(e.target.value)}
-                label="Mailer Format"
-                required
-                size="small"
-              >
-                <MenuItem value="S1">BB Big font</MenuItem>
-                <MenuItem value="TAB20">New Mailer 2018 Custom</MenuItem>
-                <MenuItem value="SECO">Section CompanyWise</MenuItem>
-              </Select>
-            </FormControl>
-          </Grid>
-          <Grid item xs={12}>
-            <FormControl fullWidth variant="outlined">
-              <InputLabel>Mailer Time</InputLabel>
-              <Select
-                value={mailerTime}
-                onChange={(e) => setMailerTime(e.target.value)}
-                label="Mailer Time"
-                required
-                size="small"
-              >
-                <MenuItem value="morning">Morning</MenuItem>
-                <MenuItem value="afternoon">Afternoon</MenuItem>
-                <MenuItem value="evening">Evening</MenuItem>
-              </Select>
-            </FormControl>
           </Grid>
         </Grid>
       </DialogContent>
