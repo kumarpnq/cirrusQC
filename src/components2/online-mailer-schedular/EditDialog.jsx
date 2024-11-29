@@ -261,7 +261,7 @@ const EditDialog = ({
             (weekly) =>
               weekly.loginName === login && weekly.screenType === screenTypeDD
           )
-          .map((weekly) => weekly.excludeDays) || [];
+          .flatMap((weekly) => weekly.excludeDays) || [];
 
       const newInitialData = {
         selectedClient: row?.id,
