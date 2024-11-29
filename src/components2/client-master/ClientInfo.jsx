@@ -29,7 +29,7 @@ const StyledWrapper = styled(Box)(({ theme }) => ({
   "&:hover": {
     backgroundColor: "#ddd",
     boxShadow: `0px 4px 10px ${theme.palette.primary.main}`, // adding shadow on hover
-    transform: "scale(1.001)", // slight scaling on hover
+    // transform: "scale(1.001)", // slight scaling on hover
     transition: "all 0.6s ease", // smooth transition for hover effects
   },
 }));
@@ -135,8 +135,11 @@ const ClientInfo = ({ clientId: idForFetch }) => {
   // * get mailer logics
   const { data: mailerLogicData } = useFetchMongoData(`mailerLogicDDL`);
   const { data: mailerFormatData } = useFetchMongoData(
-    `mailerFormatDDL/?logicid=${mailerLogic}`
+    `mailerFormatDDL/?logicId=${mailerLogic}`
   );
+
+  let mailerLogicOptions = mailerLogicData?.data?.data?.fieldList || [];
+  let mailerFormatOptions = mailerFormatData?.data?.data || [];
 
   return (
     <Box
@@ -372,29 +375,27 @@ const ClientInfo = ({ clientId: idForFetch }) => {
             dropdownToggleWidth={300}
             dropdownWidth={300}
             keyId="logicId"
-            keyName="logicName"
-            options={mailerLogicData}
+            keyName="name"
+            options={mailerLogicOptions}
             title="Mailer Logic"
             selectedItem={mailerLogic}
-            setMailerLogic={setMailerLogic}
+            setSelectedItem={setMailerLogic}
           />
         </div>
 
         <StyledText>Mailer Format : </StyledText>
-        <YesOrNo
-          classes={classes}
-          mapValue={[
-            "Samsung",
-            "Simple Blue",
-            "Custom Tabular 2022",
-            "Cirrus Gold",
-            "BB Big Font",
-          ]}
-          placeholder="Mailer logic"
-          value={mailerFormat}
-          setValue={setMailerFormat}
-          width={300}
-        />
+        <div style={{ width: 300 }}>
+          <CustomSingleSelect
+            dropdownToggleWidth={300}
+            dropdownWidth={300}
+            keyId="formatId"
+            keyName="name"
+            options={mailerFormatOptions}
+            title="Mailer Format"
+            selectedItem={mailerFormat}
+            setSelectedItem={setMailerFormat}
+          />
+        </div>
       </StyledWrapper>
       <StyledWrapper>
         <StyledText>Online Mailer Format : </StyledText>

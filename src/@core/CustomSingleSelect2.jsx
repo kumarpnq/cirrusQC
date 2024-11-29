@@ -179,7 +179,7 @@ const CustomSingleSelect = ({
           anchorEl={anchorRef.current}
           placement="bottom-end"
           disablePortal
-          sx={{ zIndex: 50 }}
+          sx={{ zIndex: 999, backgroundColor: "white" }}
         >
           <ClickAwayListener onClickAway={handleClickAway}>
             <Paper

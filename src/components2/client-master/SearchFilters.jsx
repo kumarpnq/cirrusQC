@@ -1,4 +1,10 @@
-import { Box, Button, CircularProgress, Paper } from "@mui/material";
+import {
+  Box,
+  Button,
+  CircularProgress,
+  Paper,
+  Typography,
+} from "@mui/material";
 import { useState } from "react";
 import CustomTextField from "../../@core/CutsomTextField";
 import FromDate from "../../components/research-dropdowns/FromDate";
@@ -69,8 +75,18 @@ const SearchFilters = ({ loading, setLoading = () => {}, setData }) => {
     <>
       <form onSubmit={handleSubmit} className="mt-1">
         <StyledWrapper component={Paper}>
-          <FromDate fromDate={fromDate} setFromDate={setFromDate} isNoMargin />
-          <ToDate dateNow={toDate} setDateNow={setToDate} />
+          <div className="flex items-center p-1 border border-gray-400 rounded-md">
+            <Typography fontSize={"0.8em"}>Subscription Start : </Typography>
+            <FromDate
+              fromDate={fromDate}
+              setFromDate={setFromDate}
+              isNoMargin
+            />
+          </div>
+          <div className="flex items-center p-1 border border-gray-400 rounded-md">
+            <Typography fontSize={"0.8em"}>Subscription End : </Typography>
+            <ToDate dateNow={toDate} setDateNow={setToDate} />
+          </div>
 
           <CustomTextField
             width={200}
