@@ -533,14 +533,14 @@ const EditDialog = ({
         clientId: selectedClient,
         loginName: login,
         screenType: screenTypeDD,
-        excludeHolidays: weekly,
+        excludeDays: weekly,
       };
       const filteredRecords = insertStatus2.filter((item) => item.login !== "");
       const dataForAdd = filteredRecords.map((item) => ({
         clientId: selectedClient,
         loginName: item.login,
         screenType: item.entityType,
-        excludeHolidays: item.weekly,
+        excludeDays: item.weekly,
       }));
       const response = await axiosInstance.post(
         "updateholidayflag/",
