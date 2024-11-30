@@ -9,6 +9,8 @@ import {
   Divider,
   Paper,
   CircularProgress,
+  Select,
+  MenuItem,
 } from "@mui/material";
 import CustomTextField from "../../@core/CutsomTextField";
 import { styled } from "@mui/system";
@@ -52,6 +54,8 @@ const CompanyFormModal = ({ open, handleClose, rowId, isEdit }) => {
   const [qc3, setQc3] = useState("");
   const [country, setCountry] = useState("");
   const [active, setActive] = useState("");
+
+  console.log(industry);
 
   const [loading, setLoading] = useState(false);
 
@@ -228,20 +232,34 @@ const CompanyFormModal = ({ open, handleClose, rowId, isEdit }) => {
 
             <StyledFormControl fullWidth margin="normal">
               <StyledTypo variant="body2">Industry : </StyledTypo>
-              <select
-                name=""
-                id=""
-                className="w-full text-sm text-gray-500 border border-gray-400 rounded-sm hover:border-black"
-                value={industry}
-                onChange={(e) => setIndustry(e.target.value)}
+              <FormControl
+                variant="outlined"
+                sx={{ width: "100%", height: "25px" }}
               >
-                <option value="">Select Industry</option>
-                {industryDataArray.map((item) => (
-                  <option key={item.industry} value={item.industry}>
-                    {item.industry}
-                  </option>
-                ))}
-              </select>
+                <Select
+                  value={industry}
+                  onChange={(e) => setIndustry(e.target.value)}
+                  displayEmpty
+                  sx={{
+                    fontSize: "0.8em",
+                    height: "25px",
+                  }}
+                  inputProps={{ "aria-label": "Without label" }}
+                >
+                  <MenuItem value="" sx={{ fontSize: "0.8em" }}>
+                    <em>Select Industry</em>
+                  </MenuItem>
+                  {industryDataArray.map((item) => (
+                    <MenuItem
+                      key={item.industry}
+                      value={item.industry}
+                      sx={{ fontSize: "0.8em" }}
+                    >
+                      {item.industry}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
             </StyledFormControl>
 
             <StyledFormControl fullWidth margin="normal">
@@ -269,20 +287,34 @@ const CompanyFormModal = ({ open, handleClose, rowId, isEdit }) => {
 
             <StyledFormControl fullWidth margin="normal">
               <StyledTypo variant="body2">Country : </StyledTypo>
-              <select
-                name=""
-                id=""
-                className="w-full text-sm text-gray-500 border border-gray-400 rounded-sm hover:border-black"
-                value={country}
-                onChange={(e) => setCountry(e.target.value)}
+              <FormControl
+                variant="outlined"
+                sx={{ width: "100%", height: "25px" }}
               >
-                <option value="">Select Country</option>
-                {countryDataArray.map((item) => (
-                  <option key={item.countryId} value={item.countryId}>
-                    {item.countryName}
-                  </option>
-                ))}
-              </select>
+                <Select
+                  value={country}
+                  onChange={(e) => setCountry(e.target.value)}
+                  displayEmpty
+                  sx={{
+                    fontSize: "0.8em",
+                    height: "25px",
+                  }}
+                  inputProps={{ "aria-label": "Without label" }}
+                >
+                  <MenuItem value="" sx={{ fontSize: "0.8em" }}>
+                    <em>Select Industry</em>
+                  </MenuItem>
+                  {countryDataArray.map((item) => (
+                    <MenuItem
+                      key={item.countryId}
+                      value={item.countryId}
+                      sx={{ fontSize: "0.8em" }}
+                    >
+                      {item.countryName}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
             </StyledFormControl>
 
             <StyledFormControl fullWidth margin="normal">
