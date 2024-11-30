@@ -354,7 +354,7 @@ const DDComp = () => {
   // separation of company list logic
   const [companyData, setCompanyData] = useState([]);
   const [cachedCompanies, setCachedCompanies] = useState([]);
-  useLayoutEffect(() => {
+  useEffect(() => {
     const fetchCompanies = async () => {
       try {
         const headers = {
@@ -372,7 +372,7 @@ const DDComp = () => {
       }
     };
     fetchCompanies();
-  }, [client]);
+  }, [client, cachedCompanies.length, userToken]);
   const companiesToMap = !client
     ? cachedCompanies.length
       ? cachedCompanies
