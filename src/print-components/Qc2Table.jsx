@@ -372,9 +372,15 @@ const Qc2Table = ({
                         </IconButton>
                       </td>
                     </Tooltip> */}
-                    <td className="px-1 py-2 pl-6 whitespace-nowrap">
-                      <div className="truncate w-28">{items.company}</div>
-                    </td>
+                    <Tooltip
+                      placement="top"
+                      title={items.company}
+                      enterDelay={1000}
+                    >
+                      <td className="px-1 py-2 pl-6">
+                        <div className="w-28">{items.company}</div>
+                      </td>
+                    </Tooltip>
                     <Tooltip
                       placement="top"
                       title={items.headline}

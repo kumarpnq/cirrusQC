@@ -55,8 +55,6 @@ const CompanyFormModal = ({ open, handleClose, rowId, isEdit }) => {
   const [country, setCountry] = useState("");
   const [active, setActive] = useState("");
 
-  console.log(industry);
-
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {

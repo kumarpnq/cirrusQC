@@ -160,8 +160,6 @@ const MainTable = ({
     setTableData([...highlightedData, ...filteredData]);
   };
 
-  console.log(highlightUpdatedRows);
-
   const dataToRender = searchedData.length > 0 ? searchedData : tableData;
 
   return (

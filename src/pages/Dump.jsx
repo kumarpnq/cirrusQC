@@ -71,7 +71,7 @@ const Dump = () => {
   const [dumpLoading, setDumpLoading] = useState(false);
   const [openDialog, setOpenDialog] = useState(false);
   const [selectedColumnsForDump, setSelectedColumnsForDump] = useState([]);
-  const [qcPermission, setQcPermission] = useState(0);
+  const [qcPermission, setQcPermission] = useState(1);
   // job data
   const [jobData, setJobData] = useState([]);
   const [fetchDumpData, setFetchDumpData] = useState(false);

@@ -1,4 +1,11 @@
-import { useCallback, useContext, useEffect, useRef, useState } from "react";
+import {
+  useCallback,
+  useContext,
+  useEffect,
+  useLayoutEffect,
+  useRef,
+  useState,
+} from "react";
 import { makeStyles } from "@mui/styles";
 
 import Accordion from "@mui/material/Accordion";
@@ -71,7 +78,7 @@ const DDComp = () => {
       printTableRef.current.scrollIntoView({ behavior: "smooth" });
     }
   }, [printTableData]);
-  const [client, setClient] = useState([]);
+  const [client, setClient] = useState("");
   const [withCategory, setWithCategory] = useState("");
   const [companies, setCompanies] = useState([]);
   const [dateType, setDateType] = useState("upload");
@@ -346,7 +353,8 @@ const DDComp = () => {
 
   // separation of company list logic
   const [companyData, setCompanyData] = useState([]);
-  useEffect(() => {
+  const [cachedCompanies, setCachedCompanies] = useState([]);
+  useLayoutEffect(() => {
     const fetchCompanies = async () => {
       try {
         const headers = {
@@ -356,13 +364,20 @@ const DDComp = () => {
           headers,
         });
         setCompanyData(response.data.companies || []);
+        if (!client && !cachedCompanies.length) {
+          setCachedCompanies(response.data.companies || []);
+        }
       } catch (error) {
         console.log("Error while fetching companies");
       }
     };
     fetchCompanies();
   }, [client]);
-
+  const companiesToMap = !client
+    ? cachedCompanies.length
+      ? cachedCompanies
+      : companyData
+    : companyData || [];
   const classes = useStyle();
   return (
     <div className="flex flex-col h-screen px-4">
@@ -399,7 +414,7 @@ const DDComp = () => {
                 dropdownWidth={250}
                 keyId="companyid"
                 keyName="companyname"
-                options={companyData || []}
+                options={companiesToMap || []}
                 selectedItems={companies}
                 setSelectedItems={setCompanies}
                 title="companies"

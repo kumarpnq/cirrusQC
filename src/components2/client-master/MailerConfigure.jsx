@@ -18,6 +18,7 @@ import { makeStyles } from "@mui/styles";
 import axiosInstance from "../../../axiosConfig";
 import toast from "react-hot-toast";
 import { Virtuoso } from "react-virtuoso";
+import useFetchMongoData from "../../hooks/useFetchMongoData";
 
 const useStyle = makeStyles(() => ({
   dropDowns: {
@@ -77,6 +78,8 @@ const MailerConfigure = ({ clientId }) => {
     fetchMailerConfigure();
   }, [clientId]);
 
+  const { data: fontData } = useFetchMongoData("mailerFonts");
+
   const fontOptions = ["Arial", "Roboto", "Verdana", "Tahoma", "Georgia"];
 
   const handleCheckboxChange = useCallback((id) => {
@@ -122,7 +125,6 @@ const MailerConfigure = ({ clientId }) => {
       toast.error("No changes detected");
       return;
     }
-
     try {
       setUpdateLoading(true);
       const requestData = {
