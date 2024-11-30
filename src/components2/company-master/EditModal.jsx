@@ -139,8 +139,21 @@ const CompanyFormModal = ({ open, handleClose, rowId, isEdit }) => {
     handleClose();
   };
 
+  const handleCloseAll = () => {
+    setCompanyId("");
+    setCompanyName("");
+    setParentCompany("");
+    setIndustry("");
+    setShortCompany("");
+    setSubcategory("");
+    setQc3("");
+    setCountry("");
+    setActive("");
+    handleClose();
+  };
+
   return (
-    <Modal open={open} onClose={handleClose}>
+    <Modal open={open} onClose={handleCloseAll}>
       <Box
         sx={{
           position: "absolute",
@@ -287,7 +300,7 @@ const CompanyFormModal = ({ open, handleClose, rowId, isEdit }) => {
           <Box sx={{ display: "flex", justifyContent: "end", mt: 1, gap: 1 }}>
             <Button
               variant="outlined"
-              onClick={handleClose}
+              onClick={handleCloseAll}
               sx={{ ml: 2 }}
               size={"small"}
             >

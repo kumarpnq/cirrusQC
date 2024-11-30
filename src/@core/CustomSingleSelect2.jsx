@@ -204,7 +204,7 @@ const CustomSingleSelect = ({
                 </ListItem>
                 <Divider />
                 <ListWindow
-                  height={isInaccessible ? 300 : 160}
+                  height={isInaccessible ? 160 : 160}
                   itemCount={filteredOptions.length}
                   itemSize={40}
                   width={dropdownWidth}
