@@ -808,7 +808,7 @@ const Print = () => {
         rowNumber={articleNumber}
         selectedItems={selectedItems}
         isMultiple={false}
-        setSelectedItems={selectedItems}
+        setSelectedItems={setSelectedItems}
         setSelectionModal={setSelectionModal}
       />
       <GroupModal

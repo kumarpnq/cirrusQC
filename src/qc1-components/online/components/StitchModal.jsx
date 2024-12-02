@@ -64,6 +64,7 @@ const StitchModal = ({
   const [stitchedArticles, setStitchedArticles] = useState([]);
   const [fetchLoading, setFetchLoading] = useState(false);
   const [selectedRows, setSelectedRows] = useState([]);
+  const [selectionModal, setSelectionModal] = useState([]);
   const [filteredArticles, setFilteredArticles] = useState([]);
   const [openArticleView, setOpenArticleView] = useState(false);
   const [idForView, setIdForView] = useState(null);
@@ -125,6 +126,7 @@ const StitchModal = ({
   };
   const handleSelectionChange = (newSelection) => {
     setSelectedRows(newSelection);
+    setSelectionModal(newSelection);
   };
   const handleSave = async () => {
     try {
@@ -139,19 +141,22 @@ const StitchModal = ({
         headers: { Authorization: `Bearer ${userToken}` },
       });
       if (response.data.status.success.length) {
-        toast.success(
-          `${response.data?.status?.success?.length} rows ${
-            isStitch ? "stitched" : "un-stitched"
-          }.`
-        );
+        // toast.success(
+        //   `${response.data?.status?.success?.length} rows ${
+        //     isStitch ? "stitched" : "un-stitched"
+        //   }.`
+        // );
         fetchStitchedArticles();
         setSelectedRows([]);
+        setSelectionModal([]);
         fetchTagDetails();
+        handleClose();
       }
 
       if (response.data.status.error.length) {
         toast.error(
-          `${response.data.status.error.length} rows ${"are getting error"}.`
+          `${response.data.status.error.length} rows ${"are getting error"}.`,
+          { position: "bottom-right" }
         );
       }
     } catch (error) {
@@ -328,6 +333,7 @@ const StitchModal = ({
                   checkboxSelection
                   onColumnResize={handleColumnResize}
                   loading={fetchLoading && <CircularProgress />}
+                  rowSelectionModel={selectionModal}
                   onRowSelectionModelChange={(ids) => {
                     handleSelectionChange(ids);
                   }}
