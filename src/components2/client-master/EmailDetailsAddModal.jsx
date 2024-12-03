@@ -19,7 +19,8 @@ import {
 import { format, addYears } from "date-fns";
 import CloseIcon from "@mui/icons-material/Close";
 import { makeStyles } from "@mui/styles";
-import axiosInstance from "../../../axiosConfigOra";
+import axiosInstance from "../../../axiosConfig";
+import toast from "react-hot-toast";
 
 const useStyles = makeStyles((theme) => ({
   modalBox: {
@@ -59,7 +60,12 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const EmailDetailsAddModal = ({ open, handleClose }) => {
+const EmailDetailsAddModal = ({
+  open,
+  handleClose,
+  clientId,
+  fetchMainData,
+}) => {
   const classes = useStyles();
   const [saveLoading, setSaveLoading] = useState(false);
 
@@ -116,20 +122,28 @@ const EmailDetailsAddModal = ({ open, handleClose }) => {
       const emailRegex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
       const validRows = rows
         .filter((row) => row.emailId && emailRegex.test(row.emailId))
-        .map((item, index) => ({
-          ...item,
-          clientId: "DEMC",
-          serialNumber: index + 1,
-          sortOrder: item.sortOrder || "0",
+        .map((item) => ({
+          email: item.emailId,
+          name: item.name,
+          phone: Number(item.phone),
+          designation: item.designation,
+          startDate: item.startDate,
+          endDate: item.endDate,
+          sortOrder: item.sortOrder,
+          updateType: "I",
         }));
-
+      const requestData = {
+        clientId,
+        emailDetails: validRows,
+      };
       if (validRows.length > 0) {
         const response = await axiosInstance.post(
-          "insertclientmasteremaildetails",
-          validRows
+          "updateEmailDetails",
+          requestData
         );
 
-        if (response.data.updateStatus.success.length) {
+        if (response.data.data.data.success.length) {
+          toast.success(response.data.data.data.success[0]?.status);
           setRows(
             new Array(INITIAL_ROWS).fill(null).map((_, index) => ({
               id: index + 1,
@@ -142,12 +156,16 @@ const EmailDetailsAddModal = ({ open, handleClose }) => {
               sortOrder: "",
             }))
           );
+          handleClose();
+          fetchMainData();
+        } else {
+          toast.error(response.data.data.data.error[0]?.status);
         }
       } else {
         console.log("No valid rows to save.");
       }
     } catch (error) {
-      console.log(error);
+      toast.error("Something went wrong.");
     } finally {
       setSaveLoading(false);
     }
@@ -189,6 +207,7 @@ const EmailDetailsAddModal = ({ open, handleClose }) => {
               id="rowsToAdd"
               value={rowCount}
               onChange={(e) => setRowCount(e.target.value)}
+              InputProps={{ style: { height: 25, fontSize: "0.9em" } }}
             />
             <Button variant="outlined" size="small" onClick={handleAddRows}>
               Add
@@ -204,13 +223,13 @@ const EmailDetailsAddModal = ({ open, handleClose }) => {
           <Table sx={{ overflowY: "scroll" }}>
             <TableHead>
               <TableRow>
-                <TableCell>Email ID</TableCell>
-                <TableCell>Name</TableCell>
-                <TableCell>Phone</TableCell>
-                <TableCell>Designation</TableCell>
-                <TableCell>Start Date</TableCell>
-                <TableCell>End Date</TableCell>
-                <TableCell>Sort Order</TableCell>
+                <TableCell sx={{ padding: "4px 8px" }}>Email ID</TableCell>
+                <TableCell sx={{ padding: "4px 8px" }}>Name</TableCell>
+                <TableCell sx={{ padding: "4px 8px" }}>Phone</TableCell>
+                <TableCell sx={{ padding: "4px 8px" }}>Designation</TableCell>
+                <TableCell sx={{ padding: "4px 8px" }}>Start Date</TableCell>
+                <TableCell sx={{ padding: "4px 8px" }}>End Date</TableCell>
+                <TableCell sx={{ padding: "4px 8px" }}>Sort Order</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
@@ -221,7 +240,7 @@ const EmailDetailsAddModal = ({ open, handleClose }) => {
                     index % 2 === 0 ? classes.stripedRow : classes.hoverRow
                   }
                 >
-                  <TableCell>
+                  <TableCell sx={{ padding: "4px 8px" }}>
                     <TextField
                       fullWidth
                       value={row.emailId}
@@ -231,6 +250,8 @@ const EmailDetailsAddModal = ({ open, handleClose }) => {
                       InputProps={{
                         style: {
                           width: 250,
+                          height: 25,
+                          fontSize: "0.9em",
                         },
                       }}
                       variant="outlined"
@@ -248,7 +269,7 @@ const EmailDetailsAddModal = ({ open, handleClose }) => {
                       }
                     />
                   </TableCell>
-                  <TableCell>
+                  <TableCell sx={{ padding: "4px 8px" }}>
                     <TextField
                       fullWidth
                       value={row.name}
@@ -259,9 +280,10 @@ const EmailDetailsAddModal = ({ open, handleClose }) => {
                       variant="outlined"
                       size="small"
                       placeholder="Name"
+                      InputProps={{ style: { height: 25, fontSize: "0.9em" } }}
                     />
                   </TableCell>
-                  <TableCell>
+                  <TableCell sx={{ padding: "4px 8px" }}>
                     <TextField
                       fullWidth
                       value={row.phone}
@@ -272,9 +294,10 @@ const EmailDetailsAddModal = ({ open, handleClose }) => {
                       size="small"
                       type="number"
                       placeholder="1234567890"
+                      InputProps={{ style: { height: 25, fontSize: "0.9em" } }}
                     />
                   </TableCell>
-                  <TableCell>
+                  <TableCell sx={{ padding: "4px 8px" }}>
                     <TextField
                       fullWidth
                       value={row.designation}
@@ -284,9 +307,10 @@ const EmailDetailsAddModal = ({ open, handleClose }) => {
                       variant="outlined"
                       size="small"
                       placeholder="role"
+                      InputProps={{ style: { height: 25, fontSize: "0.9em" } }}
                     />
                   </TableCell>
-                  <TableCell>
+                  <TableCell sx={{ padding: "4px 8px" }}>
                     <TextField
                       fullWidth
                       value={row.startDate}
@@ -296,9 +320,10 @@ const EmailDetailsAddModal = ({ open, handleClose }) => {
                       type="date"
                       variant="outlined"
                       size="small"
+                      InputProps={{ style: { height: 25, fontSize: "0.9em" } }}
                     />
                   </TableCell>
-                  <TableCell>
+                  <TableCell sx={{ padding: "4px 8px" }}>
                     <TextField
                       fullWidth
                       value={row.endDate}
@@ -308,9 +333,10 @@ const EmailDetailsAddModal = ({ open, handleClose }) => {
                       type="date"
                       variant="outlined"
                       size="small"
+                      InputProps={{ style: { height: 25, fontSize: "0.9em" } }}
                     />
                   </TableCell>
-                  <TableCell>
+                  <TableCell sx={{ padding: "4px 8px" }}>
                     <TextField
                       fullWidth
                       value={row.sortOrder}
@@ -320,6 +346,7 @@ const EmailDetailsAddModal = ({ open, handleClose }) => {
                       placeholder="0"
                       variant="outlined"
                       size="small"
+                      InputProps={{ style: { height: 25, fontSize: "0.9em" } }}
                     />
                   </TableCell>
                 </TableRow>

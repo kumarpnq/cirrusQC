@@ -179,12 +179,21 @@ const ConfigParameter = ({ clientId }) => {
   };
 
   return (
-    <Box p={2}>
-      <ComponentsHeader
-        title="Config Parameter"
-        loading={updateLoading}
-        onSave={updateConfigParameter}
-      />
+    <Box
+      p={2}
+      display={"flex"}
+      flexDirection={"column"}
+      justifyContent={"center"}
+      alignItems={"center"}
+    >
+      <Box width={600}>
+        <ComponentsHeader
+          title="Config Parameter"
+          loading={updateLoading}
+          onSave={updateConfigParameter}
+        />
+      </Box>
+
       {loading ? (
         <Box
           sx={{
@@ -198,7 +207,7 @@ const ConfigParameter = ({ clientId }) => {
           <CircularProgress />
         </Box>
       ) : (
-        <TableContainer component={Paper}>
+        <TableContainer component={Paper} sx={{ width: 600 }}>
           <Table size="small" aria-label="config parameter table">
             <TableHead>
               <TableRow>

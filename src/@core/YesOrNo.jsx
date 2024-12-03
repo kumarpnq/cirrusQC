@@ -9,7 +9,16 @@ const useStyle = makeStyles(() => ({
   },
 }));
 
-const YesOrNo = ({ value, setValue, width, mapValue, placeholder }) => {
+const YesOrNo = ({
+  value,
+  setValue,
+  width,
+  mapValue,
+  placeholder,
+  isYN,
+  keyId,
+  keyName,
+}) => {
   const classes = useStyle();
   const handleValueChane = (event) => {
     setValue(event.target.value);
@@ -33,11 +42,11 @@ const YesOrNo = ({ value, setValue, width, mapValue, placeholder }) => {
         </MenuItem>
         {mapValue.map((item) => (
           <MenuItem
-            key={item}
-            value={item}
+            key={isYN ? item[keyId] : item}
+            value={isYN ? item[keyId] : item}
             sx={{ fontSize: "0.8em", opacity: 0.7 }}
           >
-            {item}
+            {isYN ? item[keyName] : item}
           </MenuItem>
         ))}
       </Select>
@@ -55,5 +64,8 @@ YesOrNo.propTypes = {
   ).isRequired,
   width: PropTypes.number,
   placeholder: PropTypes.string.isRequired,
+  isYN: PropTypes.bool,
+  keyId: PropTypes.string,
+  keyName: PropTypes.string,
 };
 export default YesOrNo;

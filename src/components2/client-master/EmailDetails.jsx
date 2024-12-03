@@ -9,12 +9,12 @@ import {
 import { DataGrid, useGridApiRef } from "@mui/x-data-grid";
 import { green, orange } from "@mui/material/colors";
 import toast from "react-hot-toast";
-import { format } from "date-fns";
+import { format, parseISO } from "date-fns";
 
 import EmailDetailsAddModal from "./EmailDetailsAddModal";
 import axiosInstance from "../../../axiosConfig";
 
-const EmailDetails = () => {
+const EmailDetails = ({ clientId }) => {
   const [data, setData] = useState([]);
 
   const [loading, setLoading] = useState(false);
@@ -28,10 +28,10 @@ const EmailDetails = () => {
       setLoading(true);
 
       const response = await axiosInstance.get(
-        "clientmailerdetails/?clientId=DEMC"
+        `emailDetails/?clientId=${clientId}`
       );
 
-      setData(response.data.data || []);
+      setData(response.data.data.data || []);
     } catch (error) {
       toast.error(error.message);
     } finally {
@@ -45,12 +45,12 @@ const EmailDetails = () => {
   const rows = data.map((item, index) => ({
     id: index,
     serialNumber: item.serialNumber,
-    email: item.emailId,
+    email: item.email,
     name: item.name || "",
     phone: item.phone || "",
     designation: item.designation || "",
-    startDate: item.emailStartDate,
-    endDate: item.emailEndDate,
+    startDate: item.startDate,
+    endDate: item.endDate,
     sortOrder: item.sortOrder,
     active: item.isActive === "Y" ? "Yes" : "No",
   }));
@@ -82,13 +82,26 @@ const EmailDetails = () => {
       field: "startDate",
       headerName: "Start Date",
       editable: true,
-      renderCell: (params) => <span>{format(params.value, "yyyy-MM-dd")}</span>,
+      renderCell: (params) => {
+        // Ensure you're referencing `startDate` correctly
+        const date = params?.row?.startDate
+          ? parseISO(params.row.startDate)
+          : null;
+        return (
+          <span>{date ? format(date, "yyyy-MM-dd") : "Invalid Date"}</span>
+        );
+      },
     },
     {
       field: "endDate",
       headerName: "End Date",
       editable: true,
-      renderCell: (params) => <span>{format(params.value, "yyyy-MM-dd")}</span>,
+      renderCell: (params) => {
+        const date = params?.row?.endDate ? parseISO(params.row.endDate) : null;
+        return (
+          <span>{date ? format(date, "yyyy-MM-dd") : "Invalid Date"}</span>
+        );
+      },
     },
     {
       field: "sortOrder",
@@ -142,10 +155,11 @@ const EmailDetails = () => {
         const oldRow = rowsBeforeChange[rowId];
         const request_data = {
           serialNumber: newRow.serialNumber,
+          updateType: "U",
         };
 
         if (oldRow.email !== newRow.email) {
-          request_data.emailId = newRow.email;
+          request_data.email = newRow.email;
         }
         if (oldRow.name !== newRow.name) {
           request_data.name = newRow.name;
@@ -177,21 +191,18 @@ const EmailDetails = () => {
         return request_data;
       });
       const data = {
-        clientId: "DEMC",
-        data: requestData,
+        clientId: clientId,
+        emailDetails: requestData,
       };
-      const response = await axiosInstance.post(
-        "/updateclientmailerdetails",
-        data
-      );
-      if (response.data.data.success.length) {
+      const response = await axiosInstance.post("/updateEmailDetails", data);
+      if (response.data.data.data.success.length) {
         unsavedChangesRef.current.unsavedRows = {};
         unsavedChangesRef.current.rowsBeforeChange = {};
-        const success = response.data.data.success[0]?.updateStatus;
+        const success = response.data.data.data.success[0]?.status;
         toast.success(success);
         fetchEmailDetails();
       } else {
-        toast.error(response.data?.error[0]?.message);
+        toast.error(response.data?.data.error[0]?.message);
       }
     } catch (error) {
       toast.error("Something went wrong.");
@@ -216,6 +227,16 @@ const EmailDetails = () => {
           display: "flex",
           alignItems: "center",
           justifyContent: "space-between",
+          border: "1px solid #ddd", // Initial border color
+          p: 1,
+          borderRadius: "3px",
+          my: 0.5,
+          boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)", // Subtle shadow
+          transition: "all 0.3s ease-in-out", // Smooth transition effect
+          "&:hover": {
+            boxShadow: "0 6px 12px rgba(0, 0, 0, 0.2)", // Larger shadow on hover
+            borderColor: "primary.main", // Change border color to primary on hover
+          },
         }}
       >
         <span className="text-primary">Edit Email Details.</span>
@@ -251,6 +272,8 @@ const EmailDetails = () => {
       <EmailDetailsAddModal
         open={addOpen}
         handleClose={() => setAddOpen(false)}
+        clientId={clientId}
+        fetchMainData={fetchEmailDetails}
       />
     </Fragment>
   );

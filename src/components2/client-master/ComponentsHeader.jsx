@@ -8,6 +8,16 @@ const ComponentsHeader = ({ title, onSave = () => {}, loading }) => {
         display: "flex",
         alignItems: "center",
         justifyContent: "space-between",
+        border: "1px solid #ddd", // Initial border color
+        p: 1,
+        borderRadius: "3px",
+        my: 0.5,
+        boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)", // Subtle shadow
+        transition: "all 0.3s ease-in-out", // Smooth transition effect
+        "&:hover": {
+          boxShadow: "0 6px 12px rgba(0, 0, 0, 0.2)", // Larger shadow on hover
+          borderColor: "primary.main", // Change border color to primary on hover
+        },
       }}
     >
       <Typography

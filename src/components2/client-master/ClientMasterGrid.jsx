@@ -6,7 +6,13 @@ import EditAddModal from "./EditAddModal";
 import { useState } from "react";
 import PropTypes from "prop-types";
 
-const ClientMasterGrid = ({ data = [], loading }) => {
+const ClientMasterGrid = ({
+  data = [],
+  loading,
+  selectionModal,
+  setSelectionModal,
+  setSelectedItems,
+}) => {
   const [open, setOpen] = useState(false);
   const [selectedRow, setSelectedRow] = useState(null);
 
@@ -60,6 +66,17 @@ const ClientMasterGrid = ({ data = [], loading }) => {
     ...item,
   }));
 
+  const handleSelectionModal = (newSelection) => {
+    // Update the selection model
+    setSelectionModal(newSelection);
+
+    // Get the full rows based on selected IDs
+    const selectedRows = rows.filter((row) => newSelection.includes(row.id));
+
+    // Update the selected items with the full rows
+    setSelectedItems(selectedRows);
+  };
+
   return (
     <>
       <Box sx={{ height: "80vh  ", width: "100%" }}>
@@ -76,6 +93,8 @@ const ClientMasterGrid = ({ data = [], loading }) => {
               showQuickFilter: true,
             },
           }}
+          rowSelectionModel={selectionModal}
+          onRowSelectionModelChange={handleSelectionModal}
           disableRowSelectionOnClick
           disableColumnFilter
           disableColumnSelector

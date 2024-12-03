@@ -17,7 +17,6 @@ import ComponentsHeader from "./ComponentsHeader";
 import { makeStyles } from "@mui/styles";
 import axiosInstance from "../../../axiosConfig";
 import toast from "react-hot-toast";
-import { Virtuoso } from "react-virtuoso";
 import useFetchMongoData from "../../hooks/useFetchMongoData";
 
 const useStyle = makeStyles(() => ({
@@ -41,9 +40,10 @@ const StyledTableRow = styled(TableRow)(({ theme }) => ({
 }));
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
-  padding: "8px 16px",
+  padding: "8px 16px", // Ensures consistent padding across columns
   fontSize: "0.875rem",
   borderBottom: `1px solid ${theme.palette.divider}`,
+  textAlign: "left", // Keeps text alignment consistent
 }));
 
 const StyledTableHeadCell = styled(TableCell)(({ theme }) => ({
@@ -53,6 +53,7 @@ const StyledTableHeadCell = styled(TableCell)(({ theme }) => ({
   borderBottom: `2px solid ${theme.palette.primary.dark}`,
   padding: "10px 16px",
   textAlign: "left",
+  minWidth: 150, // Adjust as per requirement to ensure consistent width
 }));
 
 const MailerConfigure = ({ clientId }) => {
@@ -172,15 +173,17 @@ const MailerConfigure = ({ clientId }) => {
           <TableBody>
             {tableData.map((row) => (
               <StyledTableRow key={row.fieldId}>
-                <StyledTableCell>
+                <StyledTableCell sx={{ width: 50 }}>
                   <Checkbox
                     checked={row.selected}
                     onChange={() => handleCheckboxChange(row.fieldId)}
                     size="small"
                   />
                 </StyledTableCell>
-                <StyledTableCell>{row.fieldName}</StyledTableCell>
-                <StyledTableCell>
+                <StyledTableCell sx={{ width: 250 }}>
+                  {row.fieldName}
+                </StyledTableCell>
+                <StyledTableCell sx={{ width: 250 }}>
                   <Select
                     select
                     value={row.fontName}
@@ -204,7 +207,7 @@ const MailerConfigure = ({ clientId }) => {
                     ))}
                   </Select>
                 </StyledTableCell>
-                <StyledTableCell>
+                <StyledTableCell sx={{ width: 250 }}>
                   <TextField
                     type="number"
                     value={row.fontSize}
@@ -219,12 +222,12 @@ const MailerConfigure = ({ clientId }) => {
                       style: {
                         height: 25,
                         fontSize: `${row.fontSize}px`,
+                        width: 250,
                       },
                     }}
-                    fullWidth
                   />
                 </StyledTableCell>
-                <StyledTableCell>
+                <StyledTableCell sx={{ width: 50 }}>
                   <TextField
                     type="color"
                     value={row.fontColor}

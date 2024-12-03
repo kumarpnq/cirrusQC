@@ -23,7 +23,7 @@ const EditComponentRender = (value, clientId) => {
     case 2:
       return <ConfigParameter clientId={clientId} />;
     case 3:
-      return <MailerColumns />;
+      return <MailerColumns clientId={clientId} />;
     case 4:
       return <MailerConfigure clientId={clientId} />;
 

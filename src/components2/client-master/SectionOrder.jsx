@@ -122,13 +122,27 @@ const SectionOrder = ({ clientId }) => {
   // *
 
   return (
-    <Box sx={{ border: "1px solid #DDD", borderRadius: "3px", mt: 1, p: 1 }}>
-      <ComponentsHeader
-        title="Sort Order"
-        loading={false}
-        onSave={handleUpdate}
-      />
-      <Box sx={{ height: 400, width: "100%" }}>
+    <Box
+      sx={{
+        border: "1px solid #DDD",
+        borderRadius: "3px",
+        mt: 1,
+        p: 1,
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        justifyContent: "center",
+      }}
+    >
+      <Box width={500}>
+        <ComponentsHeader
+          title="Sort Order"
+          loading={false}
+          onSave={handleUpdate}
+        />
+      </Box>
+
+      <Box sx={{ height: 400, width: 500 }}>
         <DataGrid
           rows={rows}
           columns={columns}

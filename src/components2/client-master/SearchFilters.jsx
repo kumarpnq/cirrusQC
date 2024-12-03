@@ -15,6 +15,7 @@ import { styled } from "@mui/system";
 import AddClientModal from "./AddClientModal";
 import axiosInstance from "../../../axiosConfig";
 import toast from "react-hot-toast";
+import DeleteConfirmationDialog from "../../@core/DeleteConfirmationDialog";
 
 const useStyle = makeStyles(() => ({
   dropDowns: {
@@ -32,19 +33,31 @@ const StyledWrapper = styled(Box)({
   padding: 2,
 });
 
-const SearchFilters = ({ loading, setLoading = () => {}, setData }) => {
+const SearchFilters = ({
+  loading,
+  setLoading = () => {},
+  setData,
+  selectedItems,
+  setSelectedItems,
+  setSelectionModal,
+}) => {
   const classes = useStyle();
 
   const [fromDate, setFromDate] = useState(null);
   const [toDate, setToDate] = useState(null);
   const [searchText, setSearchText] = useState("");
   const [isActive, setIsActive] = useState("");
+  const [deleteOpen, setDeleteOpen] = useState(false);
 
   const [open, setOpen] = useState(false);
   const handleClose = () => setOpen((prev) => !prev);
+  const handleDeleteOpen = () => setDeleteOpen((prev) => !prev);
+  const handleDeleteClose = () => {
+    setDeleteOpen(false);
+  };
 
   const handleSubmit = async (event) => {
-    event.preventDefault();
+    event?.preventDefault();
     try {
       setLoading(true);
 
@@ -68,6 +81,28 @@ const SearchFilters = ({ loading, setLoading = () => {}, setData }) => {
       toast.error("Something went wrong.");
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleDeleteClient = async () => {
+    try {
+      const clientIds = selectedItems.map((i) => i.clientId);
+      const params = {
+        clientIds: clientIds?.join(","),
+      };
+      const response = await axiosInstance.delete(`removeClient/`, {
+        params,
+      });
+      if (response.status === 200) {
+        toast.success(response.data.data.message);
+
+        handleDeleteClose();
+        setSelectedItems([]);
+        setSelectionModal([]);
+        await handleSubmit();
+      }
+    } catch (error) {
+      toast.error("Something went wrong.");
     }
   };
 
@@ -126,12 +161,18 @@ const SearchFilters = ({ loading, setLoading = () => {}, setData }) => {
             variant="outlined"
             color="error"
             sx={{ mb: 0.3 }}
+            onClick={handleDeleteOpen}
           >
             Delete
           </Button>
         </StyledWrapper>
       </form>
       <AddClientModal open={open} onClose={handleClose} />
+      <DeleteConfirmationDialog
+        open={deleteOpen}
+        onDelete={handleDeleteClient}
+        onClose={handleDeleteClose}
+      />
     </>
   );
 };

@@ -16,13 +16,13 @@ import MoreVertIcon from "@mui/icons-material/MoreVert";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import EmailIcon from "@mui/icons-material/Email";
 import BusinessIcon from "@mui/icons-material/Business";
-import LocationCityIcon from "@mui/icons-material/LocationCity";
-import PrintIcon from "@mui/icons-material/Print";
-import PublicIcon from "@mui/icons-material/Public";
-import PriorityHighIcon from "@mui/icons-material/PriorityHigh";
-import DescriptionIcon from "@mui/icons-material/Description";
-import PeopleIcon from "@mui/icons-material/People";
-import LocationOnIcon from "@mui/icons-material/LocationOn";
+// import LocationCityIcon from "@mui/icons-material/LocationCity";
+// import PrintIcon from "@mui/icons-material/Print";
+// import PublicIcon from "@mui/icons-material/Public";
+// import PriorityHighIcon from "@mui/icons-material/PriorityHigh";
+// import DescriptionIcon from "@mui/icons-material/Description";
+// import PeopleIcon from "@mui/icons-material/People";
+// import LocationOnIcon from "@mui/icons-material/LocationOn";
 import { styled } from "@mui/system";
 import EmailDetails from "./EmailDetails";
 import CompanyBasket from "./CompanyBasket";
@@ -89,9 +89,9 @@ const EditAddModal = ({ open, onClose, openFromWhere, row }) => {
       case "Client Detail":
         return <ClientDetail clientId={row?.clientId} />;
       case "Email Details":
-        return <EmailDetails />;
+        return <EmailDetails clientId={row?.clientId} />;
       case "Company Basket":
-        return <CompanyBasket />;
+        return <CompanyBasket clientId={row?.clientId} />;
       case "Keyword Details":
         return <KeywordDetails />;
       case "Basket City Pub":
@@ -128,13 +128,13 @@ const EditAddModal = ({ open, onClose, openFromWhere, row }) => {
     { label: "Client Detail", icon: <AccountCircleIcon /> },
     { label: "Email Details", icon: <EmailIcon /> },
     { label: "Company Basket", icon: <BusinessIcon /> },
-    { label: "City Basket", icon: <LocationCityIcon /> },
-    { label: "Print Publication", icon: <PrintIcon /> },
-    { label: "Online Publication New", icon: <PublicIcon /> },
-    { label: "Publication Priority", icon: <PriorityHighIcon /> },
-    { label: "Keyword Details", icon: <DescriptionIcon /> },
-    { label: "User Detail", icon: <PeopleIcon /> },
-    { label: "Basket City Pub", icon: <LocationOnIcon /> },
+    // { label: "City Basket", icon: <LocationCityIcon /> },
+    // { label: "Print Publication", icon: <PrintIcon /> },
+    // { label: "Online Publication New", icon: <PublicIcon /> },
+    // { label: "Publication Priority", icon: <PriorityHighIcon /> },
+    // { label: "Keyword Details", icon: <DescriptionIcon /> },
+    // { label: "User Detail", icon: <PeopleIcon /> },
+    // { label: "Basket City Pub", icon: <LocationOnIcon /> },
   ];
   return (
     <Modal

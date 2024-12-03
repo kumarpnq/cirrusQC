@@ -6,6 +6,8 @@ import { useState } from "react";
 const ClientMaster = () => {
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [selectionModal, setSelectionModal] = useState([]);
+  const [selectedItems, setSelectedItems] = useState([]);
 
   return (
     <Box sx={{ px: 1 }}>
@@ -13,9 +15,18 @@ const ClientMaster = () => {
         loading={loading}
         setLoading={setLoading}
         setData={setData}
+        setSelectionModal={setSelectionModal}
+        selectedItems={selectedItems}
+        setSelectedItems={setSelectedItems}
       />
       <Divider sx={{ my: 1 }} />
-      <ClientMasterGrid loading={loading} data={data} />
+      <ClientMasterGrid
+        loading={loading}
+        data={data}
+        setSelectionModal={setSelectionModal}
+        selectionModal={selectionModal}
+        setSelectedItems={setSelectedItems}
+      />
     </Box>
   );
 };
