@@ -166,7 +166,7 @@ const FirstSection = (props) => {
       <div className="flex flex-wrap items-center gap-2">
         <div className="flex items-center w-full gap-2">
           <label htmlFor="headlines" className="text-[0.9em] text-gray-500">
-            Headlines:
+            Headline:
           </label>
           <textarea
             id="headlines"
@@ -214,31 +214,39 @@ const FirstSection = (props) => {
             onChange={(e) => setArticleSummary(e.target.value)}
           />
         </div>
-        <div className="h-[25]">
-          <FormWithLabelTextField
-            label="Journalist"
-            type="text"
-            value={journalist}
-            setValue={setJournalist}
-            width={200}
-            tClasses={"ml-0"}
-          />
-        </div>
-
-        <div className="flex items-center gap-1 h-[25]">
-          <label className="text-[0.8em] text-gray-500">Publication:</label>
-          <CustomSingleSelect
-            options={publicationData?.data?.publications || []}
-            label="publication"
-            selectedValue={publication}
-            setSelectedValue={setPublication}
-            width={200}
-          />
+        <div className="flex items-center">
+          <div className="h-[25]">
+            <FormWithLabelTextField
+              label="Journalist"
+              type="text"
+              value={journalist}
+              setValue={setJournalist}
+              width={200}
+              tClasses={"ml-4"}
+            />
+          </div>
+          <div className="flex items-center gap-1 h-[25] ml-1">
+            <label className="text-[0.8em] text-gray-500">Publication:</label>
+            <div className="h-[25px]">
+              <YesOrNo
+                mapValue={publicationData?.data?.publications || []}
+                placeholder="Publication"
+                value={publication}
+                setValue={setPublication}
+                isYN
+                keyId={"publicationid"}
+                keyName={"publicationname"}
+                width={200}
+              />
+            </div>
+          </div>
         </div>
         <div className="flex flex-wrap items-center gap-2">
           <div className="flex items-center gap-2">
-            <label className="text-[0.8em] text-gray-500 w-[50px]">Box:</label>
-            <div className="ml-0">
+            <label className="text-[0.8em] text-gray-500 w-[50px] text-nowrap">
+              Box Value:
+            </label>
+            <div className="ml-4">
               <YesOrNo
                 classes={classes}
                 placeholder="Box"
@@ -282,6 +290,7 @@ const FirstSection = (props) => {
             value={space}
             setValue={setSpace}
             width={100}
+            tClasses={"ml-4"}
           />
           <FormWithLabelTextField
             label="Qc1 By"

@@ -125,128 +125,125 @@ const Details = ({ selectedRow }) => {
     }
   };
   return (
-    <Container className="w-full">
-      <Card className="w-full">
-        <CardContent sx={{ mx: 1 }}>
-          <FormControl>
+    <Box className="w-full">
+      <Box width={"100%"}>
+        <FormControl fullWidth>
+          <Box mb={1} display="flex" alignItems="center">
+            <Typography sx={{ fontSize: "0.9em" }}>RootURL:</Typography>
+            <TextField
+              sx={{ ml: 1.5 }}
+              fullWidth
+              value={selectedRow?.link?.props?.href}
+              InputProps={{
+                readOnly: true,
+                style: {
+                  fontSize: "0.8rem",
+                  height: 25,
+                },
+              }}
+            />
+          </Box>
+          <Box mb={1} display="flex" alignItems="center">
+            <Typography sx={{ fontSize: "0.9em" }}>Headlines:</Typography>
+            <TextField
+              size="small"
+              sx={{ ml: 0.8 }}
+              fullWidth
+              value={headline}
+              onChange={(e) => setHeadline(e.target.value)}
+              InputProps={{
+                style: {
+                  fontSize: "0.8rem",
+                  height: 25,
+                },
+              }}
+            />
+          </Box>
+          <Box mb={1} display="flex" alignItems="center">
+            <Typography sx={{ fontSize: "0.9em" }}>Journalist:</Typography>
+            <TextField
+              size="small"
+              sx={{ ml: 1 }}
+              fullWidth
+              value={journalist}
+              onChange={(e) => setJournalist(e.target.value)}
+              InputProps={{
+                style: {
+                  fontSize: "0.8rem",
+                  height: 25,
+                },
+              }}
+            />
+          </Box>
+          <Box
+            display="flex"
+            alignItems="center"
+            justifyContent="space-between"
+          >
             <Box mb={1} display="flex" alignItems="center">
-              <Typography sx={{ fontSize: "0.9em" }}>RootURL:</Typography>
-              <Typography
-                sx={{
-                  fontSize: "0.9em",
-                  ml: 1.7,
-                  border: "1px solid #ddd",
-                  p: 1,
-                  borderRadius: "3px",
-                }}
+              <Typography sx={{ fontSize: "0.9em" }}>Image:</Typography>
+              <ToggleButtonGroup
+                color="primary"
+                value={iAlignment}
+                exclusive
+                onChange={handleImageChange}
+                aria-label="Platform"
+                sx={{ ml: 3.8 }}
               >
-                {selectedRow?.link?.props?.href}
-              </Typography>
+                <ToggleButton value={"Yes"} size="small" color="success">
+                  Yes
+                </ToggleButton>
+                <ToggleButton value={"No"} size="small" color="error">
+                  No
+                </ToggleButton>
+              </ToggleButtonGroup>
             </Box>
             <Box mb={1} display="flex" alignItems="center">
-              <Typography sx={{ fontSize: "0.9em" }}>Headlines:</Typography>
-              <TextField
-                size="small"
-                sx={{ ml: 0.8 }}
-                fullWidth
-                value={headline}
-                onChange={(e) => setHeadline(e.target.value)}
-                InputProps={{
-                  style: {
-                    fontSize: "0.8rem",
-                    height: 25,
-                  },
-                }}
-              />
-            </Box>
-            <Box mb={1} display="flex" alignItems="center">
-              <Typography sx={{ fontSize: "0.9em" }}>Journalist:</Typography>
-              <TextField
-                size="small"
-                sx={{ ml: 1 }}
-                fullWidth
-                value={journalist}
-                onChange={(e) => setJournalist(e.target.value)}
-                InputProps={{
-                  style: {
-                    fontSize: "0.8rem",
-                    height: 25,
-                  },
-                }}
-              />
-            </Box>
-            <Box
-              display="flex"
-              alignItems="center"
-              justifyContent="space-between"
-            >
-              <Box mb={1} display="flex" alignItems="center">
-                <Typography sx={{ fontSize: "0.9em" }}>Image:</Typography>
-                <ToggleButtonGroup
-                  color="primary"
-                  value={iAlignment}
-                  exclusive
-                  onChange={handleImageChange}
-                  aria-label="Platform"
-                  sx={{ ml: 3.8 }}
-                >
-                  <ToggleButton value={"Yes"} size="small" color="success">
-                    Yes
-                  </ToggleButton>
-                  <ToggleButton value={"No"} size="small" color="error">
-                    No
-                  </ToggleButton>
-                </ToggleButtonGroup>
-              </Box>
-              <Box mb={1} display="flex" alignItems="center">
-                <Typography sx={{ fontSize: "0.9em", mr: 2 }}>
-                  Video:
-                </Typography>
-                <ToggleButtonGroup
-                  color="primary"
-                  value={vAlignment}
-                  exclusive
-                  onChange={handleVideoChange}
-                  aria-label="Platform"
-                >
-                  <ToggleButton value={"Yes"} size="small" color="success">
-                    Yes
-                  </ToggleButton>
-                  <ToggleButton value={"No"} size="small" color="error">
-                    No
-                  </ToggleButton>
-                </ToggleButtonGroup>
-              </Box>
-            </Box>
-            <Box mb={1} display="flex" alignItems="center">
-              <Typography sx={{ fontSize: "0.9em" }}>Qc1By:</Typography>
-              <Typography
-                sx={{ fontSize: "0.9em", fontWeight: "bold", ml: 3.5 }}
+              <Typography sx={{ fontSize: "0.9em", mr: 2 }}>Video:</Typography>
+              <ToggleButtonGroup
+                color="primary"
+                value={vAlignment}
+                exclusive
+                onChange={handleVideoChange}
+                aria-label="Platform"
               >
-                {selectedRow?.qc1_by}
-              </Typography>
+                <ToggleButton value={"Yes"} size="small" color="success">
+                  Yes
+                </ToggleButton>
+                <ToggleButton value={"No"} size="small" color="error">
+                  No
+                </ToggleButton>
+              </ToggleButtonGroup>
             </Box>
+          </Box>
+          <Box mb={1} display="flex" alignItems="center">
+            <Typography sx={{ fontSize: "0.9em" }}>Qc1By:</Typography>
+            <Typography sx={{ fontSize: "0.9em", fontWeight: "bold", ml: 3.5 }}>
+              {selectedRow?.qc1_by}
+            </Typography>
+          </Box>
 
-            <Box mb={1} display="flex" alignItems="center">
-              <Typography sx={{ fontSize: "0.9em" }}>Summary:</Typography>
-              <textarea
-                className="ml-3 w-full outline-none border border-gray-400 rounded-[3px] text-[0.8em] px-2 font-normal text-black placeholder:font-black"
-                rows={4}
-                value={summary}
-                onChange={(e) => setSummary(e.target.value)}
-              />
-            </Box>
-            <Box display="flex" justifyContent="flex-end">
-              <Button
-                btnText={updateLoading ? "Updating" : "Update"}
-                onClick={handleHeaderUpdate}
-                isLoading={updateLoading}
-              />
-            </Box>
-          </FormControl>
-        </CardContent>
-      </Card>
-    </Container>
+          <Box mb={1} display="flex" alignItems="center">
+            <Typography sx={{ fontSize: "0.9em" }}>Summary:</Typography>
+            <TextField
+              multiline
+              fullWidth
+              rows={4}
+              InputProps={{ style: { fontSize: "0.9em" } }}
+              value={summary}
+              onChange={(e) => setSummary(e.target.value)}
+            />
+          </Box>
+          <Box display="flex" justifyContent="flex-end">
+            <Button
+              btnText={updateLoading ? "Updating" : "Update"}
+              onClick={handleHeaderUpdate}
+              isLoading={updateLoading}
+            />
+          </Box>
+        </FormControl>
+      </Box>
+    </Box>
   );
 };
 

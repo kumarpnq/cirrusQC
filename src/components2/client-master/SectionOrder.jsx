@@ -34,25 +34,26 @@ const SectionOrder = ({ clientId }) => {
     },
   ];
 
+  const fetchSectionDetails = async () => {
+    try {
+      setLoading(true);
+      const response = await axiosInstance.get(
+        `sectionOrder/?clientId=${clientId}`
+      );
+      const data = response.data.data.data || [];
+      const mappedData = data.map((item) => ({
+        id: item.mailSectionId,
+        ...item,
+      }));
+      setRows(mappedData || []);
+    } catch (error) {
+      toast.error("Something went wrong.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   useEffect(() => {
-    const fetchSectionDetails = async () => {
-      try {
-        setLoading(true);
-        const response = await axiosInstance.get(
-          `sectionOrder/?clientId=${clientId}`
-        );
-        const data = response.data.data.data || [];
-        const mappedData = data.map((item) => ({
-          id: item.mailSectionId,
-          ...item,
-        }));
-        setRows(mappedData || []);
-      } catch (error) {
-        toast.error("Something went wrong.");
-      } finally {
-        setLoading(false);
-      }
-    };
     if (clientId) {
       fetchSectionDetails();
     }
@@ -105,10 +106,11 @@ const SectionOrder = ({ clientId }) => {
         unsavedChangesRef.current.unsavedRows = {};
         unsavedChangesRef.current.rowsBeforeChange = {};
         setHasUnsavedRows(false);
-        toast.success(response.data.data.message);
+        fetchSectionDetails();
+        toast.success(response.data.data.success[0]?.message);
       }
     } catch (error) {
-      console.log("Error updating section order:", error);
+      toast.error("Something went wrong");
     }
   };
 

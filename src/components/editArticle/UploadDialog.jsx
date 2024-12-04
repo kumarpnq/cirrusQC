@@ -1,13 +1,12 @@
 import PropTypes from "prop-types";
-import DialogTitle from "@mui/material/DialogTitle";
-import DialogContent from "@mui/material/DialogContent";
-import Button from "@mui/material/Button";
 import Typography from "@mui/material/Typography";
 import Details from "./DetailSection";
 import ArticleView from "./ArticleView";
 import Box from "@mui/material/Box";
 import Modal from "@mui/material/Modal";
 import ClientSection from "./ClientSection";
+import { Divider, IconButton } from "@mui/material";
+import CloseIcon from "@mui/icons-material/Close";
 
 const style = {
   position: "absolute",
@@ -20,7 +19,7 @@ const style = {
   bgcolor: "background.paper",
   border: "2px solid #000",
   boxShadow: 24,
-  // p: 4,
+  p: 1,
   display: "flex",
   flexDirection: "column",
 };
@@ -30,29 +29,33 @@ const UploadDialog = ({ open, handleClose, selectedRow, selectedClient }) => {
   return (
     <Modal open={open} onClose={handleClose}>
       <Box sx={style}>
-        <DialogTitle
+        <Typography
           display={"flex"}
           alignItems={"center"}
           justifyContent={"space-between"}
         >
-          <Typography> Article Edit</Typography>
-          <Button onClick={handleClose}>Close</Button>
-        </DialogTitle>
-        <DialogContent>
-          <Box sx={{ display: "flex", flexDirection: "column" }}>
-            <div className="flex">
+          <Typography>Article Edit</Typography>
+          <IconButton onClick={handleClose}>
+            <CloseIcon />
+          </IconButton>
+        </Typography>
+        <Box>
+          <Box sx={{ display: "flex" }}>
+            <div className="flex flex-col border rounded-md p-[3px]">
               <Details selectedRow={selectedRow} userToken={userToken} />
-              <ArticleView selectedArticle={selectedRow} />
+              <Divider sx={{ my: 0.5 }} />
+              <ClientSection
+                selectedArticle={selectedRow}
+                userToken={userToken}
+                selectedClient={selectedClient}
+              />
             </div>
 
             {/* client section */}
-            <ClientSection
-              selectedArticle={selectedRow}
-              userToken={userToken}
-              selectedClient={selectedClient}
-            />
+
+            <ArticleView selectedArticle={selectedRow} />
           </Box>
-        </DialogContent>
+        </Box>
       </Box>
     </Modal>
   );

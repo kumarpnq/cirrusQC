@@ -79,25 +79,22 @@ const MailerConfigure = ({ clientId }) => {
     fetchMailerConfigure();
   }, [clientId]);
 
-  const { data: fontData } = useFetchMongoData("mailerFonts");
+  const { data: fontData } = useFetchMongoData("fontsDDL/");
+  const fontsArray = fontData?.data?.data?.feildList || [];
 
-  const fontOptions = ["Arial", "Roboto", "Verdana", "Tahoma", "Georgia"];
-
-  const handleCheckboxChange = useCallback((id) => {
+  const handleCheckboxChange = (id, value) => {
     setTableData((prev) =>
       prev.map((row) =>
-        row.id === id ? { ...row, selected: !row.selected } : row
+        row.fieldId === id ? { ...row, isActive: value } : row
       )
     );
-  }, []);
+  };
 
-  const handleFontChange = useCallback((id, value) => {
+  const handleFontChange = (id, value) => {
     setTableData((prev) =>
-      prev.map((row) =>
-        row.fieldId === id ? { ...row, fontName: value } : row
-      )
+      prev.map((row) => (row.fieldId === id ? { ...row, fontId: value } : row))
     );
-  }, []);
+  };
 
   const handleFontSizeChange = (id, value) => {
     setTableData((prev) =>
@@ -118,7 +115,8 @@ const MailerConfigure = ({ clientId }) => {
   const updateMailerConfigure = async () => {
     const updatedData = tableData.filter(
       (row, index) =>
-        row.fontName !== initialState[index].fontName ||
+        row.isActive !== initialState[index].isActive ||
+        row.fontId !== initialState[index].fontId ||
         row.fontSize !== initialState[index].fontSize ||
         row.fontColor !== initialState[index].fontColor
     );
@@ -138,15 +136,12 @@ const MailerConfigure = ({ clientId }) => {
         requestData
       );
       if (response.status === 200) {
-        let success = response.data.data.success.length;
-        let error = response.data.data.error.length;
-        if (success > 0 && error == 0) {
-          toast.success(success[0]?.status);
-          fetchMailerConfigure();
-        }
+        let success = response.data.data.success[0]?.status;
+        toast.success(success);
+        fetchMailerConfigure();
       }
     } catch (error) {
-      console.error("Error updating configuration:", error);
+      toast.error("Something went wrong.");
     } finally {
       setUpdateLoading(false);
     }
@@ -156,7 +151,7 @@ const MailerConfigure = ({ clientId }) => {
     <Box sx={{ p: 4 }}>
       <ComponentsHeader
         title="Mailer Configuration"
-        loading={false}
+        loading={updateLoading}
         onSave={updateMailerConfigure}
       />
       <StyledTableContainer>
@@ -174,11 +169,21 @@ const MailerConfigure = ({ clientId }) => {
             {tableData.map((row) => (
               <StyledTableRow key={row.fieldId}>
                 <StyledTableCell sx={{ width: 50 }}>
-                  <Checkbox
-                    checked={row.selected}
-                    onChange={() => handleCheckboxChange(row.fieldId)}
-                    size="small"
-                  />
+                  <Select
+                    value={row?.isActive}
+                    onChange={(e) =>
+                      handleCheckboxChange(row.fieldId, e.target.value)
+                    }
+                    sx={{ fontSize: "0.9em" }}
+                    className={classes.dropDowns}
+                  >
+                    <MenuItem value="Y" sx={{ fontSize: "0.9em" }}>
+                      Yes
+                    </MenuItem>
+                    <MenuItem value="N" sx={{ fontSize: "0.9em" }}>
+                      No
+                    </MenuItem>
+                  </Select>
                 </StyledTableCell>
                 <StyledTableCell sx={{ width: 250 }}>
                   {row.fieldName}
@@ -186,7 +191,7 @@ const MailerConfigure = ({ clientId }) => {
                 <StyledTableCell sx={{ width: 250 }}>
                   <Select
                     select
-                    value={row.fontName}
+                    value={row.fontId}
                     onChange={(e) =>
                       handleFontChange(row.fieldId, e.target.value)
                     }
@@ -195,14 +200,21 @@ const MailerConfigure = ({ clientId }) => {
                     fullWidth
                     className={classes.dropDowns}
                     sx={{ fontFamily: row.fontName, fontSize: "0.9em" }}
+                    MenuProps={{
+                      PaperProps: {
+                        style: {
+                          maxHeight: 250, // Set the dropdown height to 250px
+                        },
+                      },
+                    }}
                   >
-                    {fontOptions.map((font) => (
+                    {fontsArray.map((font) => (
                       <MenuItem
-                        key={font}
-                        value={font}
-                        style={{ fontFamily: font, fontSize: "0.9em" }}
+                        key={font.id}
+                        value={font.id}
+                        style={{ fontFamily: font.name, fontSize: "0.9em" }}
                       >
-                        {font}
+                        {font.name}
                       </MenuItem>
                     ))}
                   </Select>

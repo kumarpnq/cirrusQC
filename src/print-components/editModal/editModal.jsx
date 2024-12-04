@@ -1,7 +1,15 @@
 import { Link } from "react-router-dom";
-import { Modal, Box, Typography, Button, Divider, Grid } from "@mui/material";
+import {
+  Modal,
+  Box,
+  Typography,
+  Divider,
+  Grid,
+  IconButton,
+} from "@mui/material";
 import { makeStyles } from "@mui/styles";
 import { FaExternalLinkAlt } from "react-icons/fa";
+import CloseIcon from "@mui/icons-material/Close";
 
 // ** components
 import FirstSection from "./components/FirstSection";
@@ -22,7 +30,7 @@ const style = {
   bgcolor: "background.paper",
   border: "2px solid #000",
   boxShadow: 24,
-  p: 4,
+  p: 1,
   display: "flex",
   flexDirection: "column",
 };
@@ -74,11 +82,13 @@ export default function EditModal({
             <Typography variant="h1" fontSize={"1em"}>
               Edit Articles
             </Typography>
-            <Button onClick={handleClose}>close</Button>
+            <IconButton onClick={handleClose}>
+              <CloseIcon />
+            </IconButton>
           </Box>
           <Grid container spacing={2}>
             {/* Left Section */}
-            <Grid item xs={12} md={7}>
+            <Grid item xs={12} md={6}>
               <Box
                 sx={{
                   width: "100%",
@@ -103,7 +113,7 @@ export default function EditModal({
             </Grid>
 
             {/* Right Section */}
-            <Grid item xs={12} md={5}>
+            <Grid item xs={12} md={6}>
               <Typography
                 variant="h6"
                 component="a"

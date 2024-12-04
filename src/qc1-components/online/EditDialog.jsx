@@ -471,6 +471,11 @@ const EditDialog = ({
     saveTableSettings("print", "EditMain", field, width);
   };
 
+  const [summaryAuto, setSummaryAuto] = useState({
+    isAutoHeight: false,
+    isMultiline: false,
+  });
+
   return (
     <Fragment>
       <Modal
@@ -495,154 +500,196 @@ const EditDialog = ({
               </IconButton>
             </Typography>
           </Box>
-          <Box sx={{ display: "flex", gap: 0.5 }}>
-            <Grid container spacing={1}>
-              <Grid item xs={12} sm={6}>
-                <CustomTextField
-                  id="headline"
-                  name="headline"
-                  label="Headline"
-                  value={formItems.headline}
-                  onChange={handleChange}
-                />
-              </Grid>
-              <Grid item xs={12} sm={6}>
-                <CustomTextField
-                  id="summary"
-                  name="summary"
-                  label="Summary"
-                  value={formItems.summary}
-                  onChange={handleChange}
-                />
-              </Grid>
-              <Grid item xs={12} sm={6}>
-                <CustomTextField
-                  id="journalist"
-                  name="journalist"
-                  label="Journalist"
-                  value={formItems.journalist}
-                  onChange={handleChange}
-                />
-              </Grid>
-              <Grid item xs={12} sm={6}>
-                <CustomTextField
-                  id="page"
-                  name="page"
-                  label="Page"
-                  type="number"
-                  value={formItems.page}
-                  onChange={handleChange}
-                />
-              </Grid>
-              <Grid item xs={12}>
-                <Box sx={{ width: "100%" }}>
-                  <CustomTextField
-                    id="articleSummary"
-                    name="articleSummary"
-                    label="Article Summary"
-                    value={formItems.articleSummary}
-                    onChange={handleChange}
-                    multiline
-                    fullWidth
-                  />
-                </Box>
-              </Grid>
-            </Grid>
-            <Box sx={{ mt: 2, height: 100 }}>
-              {isMultiple && (
-                <ScrollNavigator
-                  selectedItems={selectedItems}
-                  activeArticle={activeArticle}
-                  setActiveArticle={setActiveArticle}
-                  setSelectedItems={setSelectedItems}
-                  setOpen={setOpen}
-                  setSelectionModal={setSelectionModal}
-                />
-              )}
-            </Box>
-          </Box>
-
-          <Grid container spacing={1} mt={1}>
-            <Grid item xs={12} sm={6}>
-              <Card>
-                <CardContent>
-                  <Box display={"flex"} gap={1} flexWrap={"wrap"}>
-                    <Button
-                      btnText={updateHeaderLoading ? "saving" : "Save partial"}
-                      onClick={() => updateHeaderData(true)}
-                      isLoading={updateHeaderLoading}
+          <Box sx={{ display: "flex" }}>
+            <Box>
+              <Box sx={{ display: "flex", gap: 0.5 }}>
+                <Grid container spacing={1}>
+                  <Grid item xs={12} sm={6}>
+                    <CustomTextField
+                      id="headline"
+                      name="headline"
+                      label="Headline"
+                      value={formItems.headline}
+                      onChange={handleChange}
                     />
-                    <Button
-                      btnText={updateHeaderLoading ? "saving" : buttonText}
-                      onClick={() => updateHeaderData(false)}
-                      isLoading={updateHeaderLoading}
+                  </Grid>
+                  <Grid item xs={12} sm={6}>
+                    <CustomTextField
+                      id="summary"
+                      name="summary"
+                      label="Summary"
+                      value={formItems.summary}
+                      onChange={handleChange}
+                      onFocus={() => {
+                        setSummaryAuto({
+                          isAutoHeight: true,
+                          isMultiline: true,
+                        });
+                      }}
+                      onBlur={() => {
+                        setSummaryAuto({
+                          isAutoHeight: false,
+                          isMultiline: false,
+                        });
+                      }}
+                      isAutoHeight={summaryAuto.isAutoHeight}
+                      isMultiline={summaryAuto.isMultiline}
                     />
-                    {isMultiple && (
-                      <Button btnText="Skip & Next" onClick={handleSkip} />
-                    )}
-                    <input
+                  </Grid>
+                  <Grid item xs={12} sm={6}>
+                    <CustomTextField
+                      id="journalist"
+                      name="journalist"
+                      label="Journalist"
+                      value={formItems.journalist}
+                      onChange={handleChange}
+                    />
+                  </Grid>
+                  <Grid item xs={12} sm={6}>
+                    <CustomTextField
+                      id="page"
+                      name="page"
+                      label="Page"
                       type="number"
-                      value={pageNumber}
-                      onChange={(e) => setPageNumber(Number(e.target.value))}
-                      placeholder="page"
-                      className="h-[23px] outline-none border border-gray-400 mt-3 rounded-[3px] w-28 px-2 text-sm"
+                      value={formItems.page}
+                      onChange={handleChange}
                     />
-                    <Button btnText="Stitch" onClick={handleStitchOpen} />
-
-                    <Button onClick={handleUnStitchOpen} btnText="unStitch" />
-                  </Box>
-                  <Box
-                    sx={{
-                      display: "flex",
-                      alignItems: "center",
-                      gap: 1,
-                    }}
-                  >
-                    <DebounceSearchCompany
-                      setSelectedCompany={setSelectedCompanies}
-                      selectedCompany={selectedCompanies}
-                      isMultiple
-                    />
-                    <div className="flex gap-1 pb-1">
-                      <Button
-                        onClick={handleAddCompany}
-                        isLoading={addCompanyLoading}
-                        btnText={addCompanyLoading ? "adding" : "Add"}
+                  </Grid>
+                  <Grid item xs={12}>
+                    <Box sx={{ width: "100%" }}>
+                      <CustomTextField
+                        id="articleSummary"
+                        name="articleSummary"
+                        label="Article Summary"
+                        value={formItems.articleSummary}
+                        onChange={handleChange}
+                        onFocus={() => {
+                          setSummaryAuto({
+                            isAutoHeight: true,
+                            isMultiline: true,
+                          });
+                        }}
+                        onBlur={() => {
+                          setSummaryAuto({
+                            isAutoHeight: false,
+                            isMultiline: false,
+                          });
+                        }}
+                        isAutoHeight={summaryAuto.isAutoHeight}
+                        isMultiline={summaryAuto.isMultiline}
+                        fullWidth
                       />
-                      {!!selectionModel.length && (
+                    </Box>
+                  </Grid>
+                </Grid>
+                <Box sx={{ mt: 2, height: 100 }}>
+                  {isMultiple && (
+                    <ScrollNavigator
+                      selectedItems={selectedItems}
+                      activeArticle={activeArticle}
+                      setActiveArticle={setActiveArticle}
+                      setSelectedItems={setSelectedItems}
+                      setOpen={setOpen}
+                      setSelectionModal={setSelectionModal}
+                    />
+                  )}
+                </Box>
+              </Box>
+
+              <Box width={"100%"}>
+                <>
+                  <Card>
+                    <CardContent>
+                      <Box display={"flex"} gap={1} flexWrap={"wrap"}>
                         <Button
                           btnText={
-                            removeMultipleLoading ? "Removing" : "Remove"
+                            updateHeaderLoading ? "saving" : "Save partial"
                           }
-                          onClick={removeSelectedCompanies}
-                          isLoading={removeMultipleLoading}
-                          isDanger
+                          onClick={() => updateHeaderData(true)}
+                          isLoading={updateHeaderLoading}
                         />
-                      )}
-                    </div>
-                  </Box>
-                  <Box height={500} width={"100%"}>
-                    <DataGrid
-                      rows={rows}
-                      columns={columns}
-                      density="compact"
-                      checkboxSelection
-                      onColumnResize={handleColumnResize}
-                      onRowSelectionModelChange={handleRowSelection}
-                      loading={articleTagDetailsLoading && <CircularProgress />}
-                      pageSize={5}
-                      pageSizeOptions={[10, 100, 200, 1000]}
-                      columnBufferPx={1000}
-                      hideFooterSelectedRowCount
-                      disableRowSelectionOnClick
-                    />
-                  </Box>
-                </CardContent>
-              </Card>
-            </Grid>
-            <Grid item xs={12} sm={6}>
+                        <Button
+                          btnText={updateHeaderLoading ? "saving" : buttonText}
+                          onClick={() => updateHeaderData(false)}
+                          isLoading={updateHeaderLoading}
+                        />
+                        {isMultiple && (
+                          <Button btnText="Skip & Next" onClick={handleSkip} />
+                        )}
+                        <input
+                          type="number"
+                          value={pageNumber}
+                          onChange={(e) =>
+                            setPageNumber(Number(e.target.value))
+                          }
+                          placeholder="page"
+                          className="h-[23px] outline-none border border-gray-400 mt-3 rounded-[3px] w-28 px-2 text-sm"
+                        />
+                        <Button btnText="Stitch" onClick={handleStitchOpen} />
+
+                        <Button
+                          onClick={handleUnStitchOpen}
+                          btnText="unStitch"
+                        />
+                      </Box>
+                      <Box
+                        sx={{
+                          display: "flex",
+                          alignItems: "center",
+                          gap: 1,
+                        }}
+                      >
+                        <DebounceSearchCompany
+                          setSelectedCompany={setSelectedCompanies}
+                          selectedCompany={selectedCompanies}
+                          isMultiple
+                        />
+                        <div className="flex gap-1 pb-1">
+                          <Button
+                            onClick={handleAddCompany}
+                            isLoading={addCompanyLoading}
+                            btnText={addCompanyLoading ? "adding" : "Add"}
+                          />
+                          {!!selectionModel.length && (
+                            <Button
+                              btnText={
+                                removeMultipleLoading ? "Removing" : "Remove"
+                              }
+                              onClick={removeSelectedCompanies}
+                              isLoading={removeMultipleLoading}
+                              isDanger
+                            />
+                          )}
+                        </div>
+                      </Box>
+                      <Box height={500} width={"100%"}>
+                        <DataGrid
+                          rows={rows}
+                          columns={columns}
+                          density="compact"
+                          checkboxSelection
+                          onColumnResize={handleColumnResize}
+                          onRowSelectionModelChange={handleRowSelection}
+                          loading={
+                            articleTagDetailsLoading && <CircularProgress />
+                          }
+                          pageSize={5}
+                          pageSizeOptions={[10, 100, 200, 1000]}
+                          columnBufferPx={1000}
+                          hideFooterSelectedRowCount
+                          disableRowSelectionOnClick
+                        />
+                      </Box>
+                    </CardContent>
+                  </Card>
+                </>
+                <Box></Box>
+              </Box>
+            </Box>
+            <Box width={"100%"}>
               <Card>
                 <CardHeader
+                  sx={{ height: 3 }}
                   title={
                     <Typography
                       variant="h6"
@@ -651,12 +698,12 @@ const EditDialog = ({
                       alignItems="center"
                       gap={1}
                       fontSize={"0.9em"}
-                      // href={"https://marathi.abplive.com/"}
                       href={`/articleview/download-file/${link}`}
                       target="_blank"
                       rel="noreferrer"
                       fontFamily="nunito"
                       className="underline text-primary"
+                      height={3}
                     >
                       Article View
                       <FaExternalLinkAlt
@@ -672,12 +719,12 @@ const EditDialog = ({
                   <iframe
                     src={url + (defaultLink || row?.default_link)}
                     frameBorder="0"
-                    style={{ width: "100%", height: "540px" }}
+                    style={{ width: "100%", height: "100vh" }}
                   />
                 </CardContent>
               </Card>
-            </Grid>
-          </Grid>
+            </Box>
+          </Box>
         </Box>
       </Modal>
       <StitchModal

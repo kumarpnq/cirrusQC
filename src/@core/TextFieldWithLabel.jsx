@@ -1,4 +1,3 @@
-// CustomTextField.js
 import PropTypes from "prop-types";
 import { FormControl, TextField } from "@mui/material";
 
@@ -15,18 +14,23 @@ const CustomTextField = ({
 }) => {
   return (
     <FormControl fullWidth>
-      <label htmlFor={id} className="text-[0.9em]">
-        {label}
-      </label>
       <TextField
         id={id}
         name={name}
         variant="outlined"
+        label={label}
         size="small"
         InputProps={{
           style: {
             fontSize: "0.8rem",
-            height: !isAutoHeight && 25,
+            height: !isAutoHeight ? 25 : "auto",
+          },
+        }}
+        InputLabelProps={{
+          shrink: value ? true : undefined, // Ensures label stays in place when there's a value
+          style: {
+            fontSize: "0.9rem", // Adjust label font size
+            lineHeight: "1.2", // Ensure consistent spacing for label text
           },
         }}
         multiline={isMultiline}

@@ -1,4 +1,4 @@
-import { useEffect, useLayoutEffect, useState } from "react";
+import { Fragment, useEffect, useLayoutEffect, useState } from "react";
 import PropTypes from "prop-types";
 import {
   Modal,
@@ -47,6 +47,10 @@ const titleStyle = {
   display: "flex",
   alignItems: "center",
   justifyContent: "space-between",
+  position: "sticky",
+  top: 0,
+  background: "white",
+  zIndex: 999,
 };
 
 const EditDialog = ({
@@ -626,82 +630,77 @@ const EditDialog = ({
             </IconButton>
           </Typography>
         </Box>
-
-        <Card>
-          {" "}
-          <CardHeader
-            title={<Typography component={"span"}>Basic Details</Typography>}
-          />
-          <CardContent>
-            <Box component="form">
-              <Grid container spacing={1}>
-                <Grid item xs={12} sm={6}>
-                  <CustomTextField
-                    id="headline"
-                    name="headline"
-                    label="Headline"
-                    value={formItems.headline}
-                    onChange={handleChange}
-                  />
-                </Grid>
-                <Grid item xs={12} sm={6}>
-                  <CustomTextField
-                    id="summary"
-                    name="summary"
-                    label="Summary"
-                    value={formItems.summary}
-                    onChange={handleChange}
-                    onFocus={() => {
-                      setSummaryAuto({
-                        isAutoHeight: true,
-                        isMultiline: true,
-                      });
-                    }}
-                    onBlur={() => {
-                      setSummaryAuto({
-                        isAutoHeight: false,
-                        isMultiline: false,
-                      });
-                    }}
-                    isAutoHeight={summaryAuto.isAutoHeight}
-                    isMultiline={summaryAuto.isMultiline}
-                  />
-                </Grid>
-                <Grid item xs={12} sm={6}>
-                  <CustomTextField
-                    id="journalist"
-                    name="journalist"
-                    label="Journalist"
-                    value={formItems.journalist}
-                    onChange={handleChange}
-                  />
-                </Grid>
-                <Grid item xs={12} sm={6}>
-                  <CustomTextField
-                    id="tag"
-                    name="tag"
-                    label="Tag"
-                    value={formItems.tag}
-                    onChange={handleChange}
-                  />
-                </Grid>
-              </Grid>
-            </Box>
-          </CardContent>
-        </Card>
-        <Grid container spacing={1} mt={1}>
-          <Grid item xs={12} sm={6}>
+        <Box sx={{ display: "flex" }}>
+          <Box>
             <Card>
+              {" "}
               <CardHeader
+                sx={{ height: 3 }}
                 title={
-                  <Typography component={"span"}>Tagged Companies</Typography>
+                  <Typography component={"span"}>Basic Details</Typography>
                 }
               />
               <CardContent>
+                <Box component="form">
+                  <Grid container spacing={1}>
+                    <Grid item xs={12} sm={6}>
+                      <CustomTextField
+                        id="headline"
+                        name="headline"
+                        label="Headline"
+                        value={formItems.headline}
+                        onChange={handleChange}
+                      />
+                    </Grid>
+                    <Grid item xs={12} sm={6}>
+                      <CustomTextField
+                        id="summary"
+                        name="summary"
+                        label="Summary"
+                        value={formItems.summary}
+                        onChange={handleChange}
+                        onFocus={() => {
+                          setSummaryAuto({
+                            isAutoHeight: true,
+                            isMultiline: true,
+                          });
+                        }}
+                        onBlur={() => {
+                          setSummaryAuto({
+                            isAutoHeight: false,
+                            isMultiline: false,
+                          });
+                        }}
+                        isAutoHeight={summaryAuto.isAutoHeight}
+                        isMultiline={summaryAuto.isMultiline}
+                      />
+                    </Grid>
+                    <Grid item xs={12} sm={6}>
+                      <CustomTextField
+                        id="journalist"
+                        name="journalist"
+                        label="Journalist"
+                        value={formItems.journalist}
+                        onChange={handleChange}
+                      />
+                    </Grid>
+                    <Grid item xs={12} sm={6}>
+                      <CustomTextField
+                        id="tag"
+                        name="tag"
+                        label="Tag"
+                        value={formItems.tag}
+                        onChange={handleChange}
+                      />
+                    </Grid>
+                  </Grid>
+                </Box>
+              </CardContent>
+              <Box sx={{ px: 1 }}>
                 <Box
                   sx={{
                     display: "flex",
-                    justifyContent: "center",
+                    justifyContent: "start",
                     alignItems: "center",
                     gap: 1,
                   }}
@@ -728,7 +727,7 @@ const EditDialog = ({
                     )}
                   </div>
                 </Box>
-                <Box height={500} width={"100%"}>
+                <Box height={570} width={"100%"}>
                   <DataGrid
                     rows={rows}
                     columns={columns}
@@ -746,12 +745,13 @@ const EditDialog = ({
                     disableRowSelectionOnClick
                   />
                 </Box>
-              </CardContent>
+              </Box>
             </Card>
-          </Grid>
-          <Grid item xs={12} sm={6}>
+          </Box>
+          <Box sx={{ width: "100%" }}>
             <Card>
               <CardHeader
+                sx={{ height: 5 }}
                 title={
                   <Typography
                     variant="h6"
@@ -780,12 +780,12 @@ const EditDialog = ({
                 <iframe
                   src={iframeURI || row?.link}
                   frameBorder="0"
-                  style={{ width: "100%", height: "540px" }}
+                  style={{ width: "100%", height: "100vh" }}
                 />
               </CardContent>
             </Card>
-          </Grid>
-        </Grid>
+          </Box>
+        </Box>
       </Box>
     </Modal>
   );
