@@ -6,6 +6,7 @@ import EditDialog from "../components2/online-mailer-schedular/EditDialog";
 import SearchFilters from "../components2/online-mailer-schedular/SearchFilters";
 import SendMailGrid from "../components2/online-mailer-schedular/SendMailGrid";
 import axiosInstance from "../../axiosConfig";
+import WhatsappContact from "../components2/online-mailer-schedular/WhatsappContact";
 
 function a11yProps(index) {
   return {
@@ -54,11 +55,12 @@ const OnlineMailSchedular = () => {
       <Tabs value={value} onChange={handleChange} aria-label="activity logs">
         <Tab label="Config" {...a11yProps(0)} />
         <Tab label="Send Mail" {...a11yProps(1)} />
+        <Tab label="Whatsapp Contact" {...a11yProps(2)} />
       </Tabs>
       <Divider />
-      {value ? (
+      {value === 1 ? (
         <SearchFilters />
-      ) : (
+      ) : value === 0 ? (
         <Box
           sx={{
             display: "flex",
@@ -76,11 +78,13 @@ const OnlineMailSchedular = () => {
             ADD
           </Button>
         </Box>
-      )}
+      ) : null}
 
       <Divider sx={{ my: 1 }} />
-      {value ? (
+      {value === 1 ? (
         <SendMailGrid />
+      ) : value === 2 ? (
+        <WhatsappContact />
       ) : (
         <MailerSchedularGrid
           loading={loading}

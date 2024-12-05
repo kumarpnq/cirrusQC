@@ -256,12 +256,12 @@ const ClientInfo = ({ clientId: idForFetch, setGlobalTabValue }) => {
           <Divider />
           {/* contact area */}
           <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
-            <Box sx={{ maxWidth: 200 }}>
+            {/* <Box sx={{ maxWidth: 200 }}>
               <CompactStepper
                 activeStep={activeStep}
                 setActiveStep={setActiveStep}
               />
-            </Box>
+            </Box> */}
             <Box>
               <StyledWrapper>
                 <StyledText>Address : </StyledText>

@@ -16,20 +16,20 @@ import MoreVertIcon from "@mui/icons-material/MoreVert";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import EmailIcon from "@mui/icons-material/Email";
 import BusinessIcon from "@mui/icons-material/Business";
-// import LocationCityIcon from "@mui/icons-material/LocationCity";
-// import PrintIcon from "@mui/icons-material/Print";
-// import PublicIcon from "@mui/icons-material/Public";
-// import PriorityHighIcon from "@mui/icons-material/PriorityHigh";
-// import DescriptionIcon from "@mui/icons-material/Description";
-// import PeopleIcon from "@mui/icons-material/People";
-// import LocationOnIcon from "@mui/icons-material/LocationOn";
+import LocationCityIcon from "@mui/icons-material/LocationCity";
+import PrintIcon from "@mui/icons-material/Print";
+import PublicIcon from "@mui/icons-material/Public";
+import PriorityHighIcon from "@mui/icons-material/PriorityHigh";
+import DescriptionIcon from "@mui/icons-material/Description";
+import PeopleIcon from "@mui/icons-material/People";
+import LocationOnIcon from "@mui/icons-material/LocationOn";
 import { styled } from "@mui/system";
 import EmailDetails from "./EmailDetails";
 import CompanyBasket from "./CompanyBasket";
 import KeywordDetails from "./KeywordDetails";
 import BasketCityPubPage from "../../basketCityPub-components/BasketCityPubPage";
 import UserDetails from "./UserDetails";
-import CityBasket from "./CityBasket";
+// import CityBasket from "./CityBasket";
 import PrintPublication from "./PrintPublication";
 import OnlinePublicationNew from "./OnlinePublicationNew";
 
@@ -86,26 +86,28 @@ const EditAddModal = ({ open, onClose, openFromWhere, row }) => {
 
   const TabToRender = (val) => {
     switch (val) {
+      // * client basket portion
       case "Client Detail":
         return <ClientDetail clientId={row?.clientId} />;
       case "Email Details":
         return <EmailDetails clientId={row?.clientId} />;
       case "Company Basket":
         return <CompanyBasket clientId={row?.clientId} />;
-      case "Keyword Details":
-        return <KeywordDetails />;
-      case "Basket City Pub":
+      // * cluster portion
+      // case "Keyword Details":
+      //   return <KeywordDetails />;
+      case "Print Publications":
         return <BasketCityPubPage />;
-      case "User Detail":
-        return <UserDetails />;
-      case "City Basket":
-        return <CityBasket />;
-      case "Print Publication":
-        return <PrintPublication />;
-      case "Online Publication New":
+      // case "User Detail":
+      //   return <UserDetails />;
+      // case "City Basket":
+      //   return <CityBasket />;
+      // case "Print Publication":
+      //   return <PrintPublication />;
+      case "Online Publication":
         return <OnlinePublicationNew />;
-      case "Publication Priority":
-        return <OnlinePublicationNew />;
+      // case "Publication Priority":
+      //   return <OnlinePublicationNew />;
       default:
         return <p>No record found.</p>;
     }
@@ -130,11 +132,11 @@ const EditAddModal = ({ open, onClose, openFromWhere, row }) => {
     { label: "Company Basket", icon: <BusinessIcon /> },
     // { label: "City Basket", icon: <LocationCityIcon /> },
     // { label: "Print Publication", icon: <PrintIcon /> },
-    // { label: "Online Publication New", icon: <PublicIcon /> },
+    { label: "Online Publications", icon: <PublicIcon /> },
     // { label: "Publication Priority", icon: <PriorityHighIcon /> },
     // { label: "Keyword Details", icon: <DescriptionIcon /> },
     // { label: "User Detail", icon: <PeopleIcon /> },
-    // { label: "Basket City Pub", icon: <LocationOnIcon /> },
+    { label: "Print Publications", icon: <LocationOnIcon /> },
   ];
   return (
     <Modal
