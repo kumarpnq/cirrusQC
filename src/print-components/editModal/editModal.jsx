@@ -86,63 +86,57 @@ export default function EditModal({
               <CloseIcon />
             </IconButton>
           </Box>
-          <Grid container spacing={2}>
-            {/* Left Section */}
-            <Grid item xs={12} md={6}>
-              <Box
-                sx={{
-                  width: "100%",
-                  overflow: "hidden",
-                  border: "1px solid #DDD",
-                  borderRadius: "4px",
-                  p: 1,
-                }}
-              >
-                <FirstSection
-                  classes={classes}
-                  selectedArticle={selectedArticle}
-                  editedSingleArticle={editedSingleArticle}
-                  setEditedSingleArticle={setEditedSingleArticle}
-                />
-                <Divider sx={{ my: 1 }} />
-                <SecondSection
-                  selectedClient={selectedClient}
-                  selectedArticle={selectedArticle}
-                />
-              </Box>
-            </Grid>
 
-            {/* Right Section */}
-            <Grid item xs={12} md={6}>
-              <Typography
-                variant="h6"
-                component="a"
-                display="flex"
-                alignItems="center"
-                gap={1}
-                fontSize="0.9em"
-                className="underline text-primary"
+          <Box
+            sx={{
+              width: "100%",
+              border: "1px solid #DDD",
+              borderRadius: "4px",
+              p: 1,
+              height: "100%",
+            }}
+          >
+            <FirstSection
+              classes={classes}
+              selectedArticle={selectedArticle}
+              editedSingleArticle={editedSingleArticle}
+              setEditedSingleArticle={setEditedSingleArticle}
+            />
+            <Divider sx={{ my: 1 }} />
+            <SecondSection
+              selectedClient={selectedClient}
+              selectedArticle={selectedArticle}
+            />
+            <Typography
+              variant="h6"
+              component="a"
+              display="flex"
+              alignItems="center"
+              gap={1}
+              fontSize="0.9em"
+              className="underline text-primary"
+            >
+              <Link
+                to={`/articleview/download-file/${selectedArticle?.link}`}
+                target="_blank"
+                className="flex"
               >
-                <Link
-                  to={`/articleview/download-file/${selectedArticle?.link}`}
-                  target="_blank"
-                  className="flex"
-                >
-                  View
-                  <FaExternalLinkAlt style={{ fontSize: "1.2em" }} />
-                </Link>
-              </Typography>
+                View
+                <FaExternalLinkAlt style={{ fontSize: "1.2em" }} />
+              </Link>
+            </Typography>
 
-              {selectedArticle && selectedArticle.default_link && (
-                <iframe
-                  title="PDF Viewer"
-                  src={`${url}${selectedArticle.default_link}`}
-                  className={classes.iframe}
-                  style={{ width: "100%", height: "100vh" }}
-                />
-              )}
-            </Grid>
-          </Grid>
+            {selectedArticle && selectedArticle.default_link && (
+              <iframe
+                title="PDF Viewer"
+                src={`${url}${selectedArticle.default_link}`}
+                className={classes.iframe}
+                style={{ width: "100%", height: 600 }}
+              />
+            )}
+          </Box>
+
+          {/* Right Section */}
         </Box>
       </Modal>
     </div>

@@ -15,12 +15,16 @@ import {
   Divider,
   IconButton,
   CircularProgress,
+  InputAdornment,
+  Tooltip,
 } from "@mui/material";
-import { format, addYears } from "date-fns";
+import DownloadIcon from "@mui/icons-material/Download";
+import { format, addYears, parse, isValid } from "date-fns";
 import CloseIcon from "@mui/icons-material/Close";
 import { makeStyles } from "@mui/styles";
 import axiosInstance from "../../../axiosConfig";
 import toast from "react-hot-toast";
+import { read, utils } from "xlsx";
 
 const useStyles = makeStyles((theme) => ({
   modalBox: {
@@ -71,7 +75,8 @@ const EmailDetailsAddModal = ({
 
   const MAX_ROWS = 15;
   const INITIAL_ROWS = 5;
-  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+  const dateFormat = "yyyy-MM-dd";
 
   const [rowCount, setRowCount] = useState(INITIAL_ROWS);
   const [rows, setRows] = useState(
@@ -86,6 +91,8 @@ const EmailDetailsAddModal = ({
       sortOrder: "",
     }))
   );
+
+  console.log(rows);
 
   const handleAddRows = () => {
     if (rows.length > MAX_ROWS) {
@@ -114,6 +121,85 @@ const EmailDetailsAddModal = ({
     setRows((prevRows) =>
       prevRows.map((row) => (row.id === id ? { ...row, [field]: value } : row))
     );
+  };
+
+  const handleFileUpload = (event) => {
+    const file = event.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const data = new Uint8Array(e.target.result);
+        const workbook = read(data, { type: "array" });
+        const sheetName = workbook.SheetNames[0];
+        const sheet = workbook.Sheets[sheetName];
+        const parsedData = utils.sheet_to_json(sheet);
+
+        const formattedRows = parsedData.map((row, index) => {
+          // Ensure email exists and trim any extra spaces
+          const emailId = (row.email || "").trim();
+          const startDate = row.startDate || "";
+          const endDate = row.endDate || "";
+
+          // Validate email format
+          if (emailId && !emailRegex.test(emailId)) {
+            toast.error(`Invalid email format at row ${index + 1}: ${emailId}`);
+          }
+
+          // Convert Excel serial date number to JavaScript Date
+          const convertExcelDate = (serial) => {
+            if (typeof serial === "number") {
+              const utc_days = Math.floor(serial - 25569);
+              const utc_value = utc_days * 86400;
+              const date = new Date(utc_value * 1000);
+              return date;
+            }
+            return new Date(0); // Return a default date for invalid values
+          };
+
+          // Validate start date format using date-fns
+          let parsedStartDate = "";
+          if (startDate) {
+            parsedStartDate = convertExcelDate(startDate);
+            if (!isValid(parsedStartDate)) {
+              toast.error(
+                `Invalid start date format at row ${index + 1}: ${startDate}`
+              );
+            }
+          }
+
+          // Validate end date format using date-fns
+          let parsedEndDate = "";
+          if (endDate) {
+            parsedEndDate = convertExcelDate(endDate);
+            if (!isValid(parsedEndDate)) {
+              toast.error(
+                `Invalid end date format at row ${index + 1}: ${endDate}`
+              );
+            }
+          }
+
+          return {
+            id: index + 1,
+            emailId,
+            name: row.name || "",
+            phone: row.phone || "",
+            designation: row.designation || "",
+            startDate: parsedStartDate
+              ? parsedStartDate.toISOString().split("T")[0]
+              : "",
+            endDate: parsedEndDate
+              ? parsedEndDate.toISOString().split("T")[0]
+              : "",
+            sortOrder: row.sortOrder || "",
+          };
+        });
+
+        setRows(formattedRows);
+      };
+      reader.readAsArrayBuffer(file);
+    } else {
+      toast.error("No file selected.");
+    }
   };
 
   const handleSave = async () => {
@@ -171,8 +257,40 @@ const EmailDetailsAddModal = ({
     }
   };
 
+  const handleDownload = () => {
+    const link = document.createElement("a");
+    link.href = "/emailDetails.xlsx";
+    link.download = "emailDetails.xlsx";
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
+  const handleClear = () => {
+    // Clear the file input
+    document.getElementById("file").value = "";
+  };
+
+  const handleCloseAll = () => {
+    handleClose();
+    handleClear();
+    setRowCount(5);
+    setRows(
+      new Array(rowCount).fill(null).map((_, index) => ({
+        id: index + 1,
+        emailId: "",
+        name: "",
+        phone: "",
+        designation: "",
+        startDate: format(new Date(), "yyyy-MM-dd"),
+        endDate: format(addYears(new Date(), 2), "yyyy-MM-dd"),
+        sortOrder: "",
+      }))
+    );
+  };
+
   return (
-    <Modal open={open} onClose={handleClose}>
+    <Modal open={open} onClose={handleCloseAll}>
       <Box className={classes.modalBox}>
         <Box
           sx={{
@@ -181,10 +299,10 @@ const EmailDetailsAddModal = ({
             justifyContent: "space-between",
           }}
         >
-          <Typography variant="h6" component="h2">
+          <Typography variant="h6" component="h2" fontSize={"1em"}>
             Add Email Details
           </Typography>
-          <IconButton onClick={() => handleClose(setRowCount(5))}>
+          <IconButton onClick={handleCloseAll}>
             <CloseIcon />
           </IconButton>
         </Box>
@@ -212,6 +330,28 @@ const EmailDetailsAddModal = ({
             <Button variant="outlined" size="small" onClick={handleAddRows}>
               Add
             </Button>
+            <span>Or</span>
+            <TextField
+              type="file"
+              id="file"
+              size="small"
+              fullWidth
+              onChange={handleFileUpload}
+              InputProps={{
+                endAdornment: (
+                  <InputAdornment position="end">
+                    <IconButton onClick={handleClear} color="error">
+                      <CloseIcon />
+                    </IconButton>
+                    <Tooltip title="Download excel book.">
+                      <IconButton onClick={handleDownload} color="primary">
+                        <DownloadIcon />
+                      </IconButton>
+                    </Tooltip>
+                  </InputAdornment>
+                ),
+              }}
+            />
           </Box>
           <Button variant="outlined" size="small" onClick={handleSave}>
             {saveLoading && <CircularProgress size={"1em"} />}

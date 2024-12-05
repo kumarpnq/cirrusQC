@@ -11,22 +11,26 @@ import CustomSingleSelect from "../../@core/CustomSingleSelect2";
 import ClientDetailTabs from "./client-info/Tabs";
 import Info from "./client-info/Info";
 import toast from "react-hot-toast";
+import { emailRegex } from "../../constants/emailRegex";
+import CompactStepper from "./client-info/ContactStepper";
 
 const StyledWrapper = styled(Box)(({ theme }) => ({
   display: "flex",
   alignItems: "center",
   gap: theme.spacing(1),
   padding: theme.spacing(0.5),
-  border: `1px solid ${theme.palette.primary.main}`,
   borderRadius: theme.shape.borderRadius,
+
+  // Use box-shadow for a thinner border effect
+  boxShadow: `0 0 0 0.2px ${theme.palette.primary.main}`,
 
   "&:hover": {
     backgroundColor: "#ddd",
-    boxShadow: `0px 4px 10px ${theme.palette.primary.main}`, // adding shadow on hover
-    // transform: "scale(1.001)", // slight scaling on hover
-    transition: "all 0.6s ease", // smooth transition for hover effects
+    boxShadow: `0px 4px 10px ${theme.palette.primary.main}`,
+    transition: "all 0.6s ease",
   },
 }));
+
 const StyledText = styled(Typography)({
   fontSize: "1em",
   color: "GrayText",
@@ -41,7 +45,7 @@ const useStyle = makeStyles(() => ({
   },
 }));
 
-const ClientInfo = ({ clientId: idForFetch }) => {
+const ClientInfo = ({ clientId: idForFetch, setGlobalTabValue }) => {
   const classes = useStyle();
   const [tabValue, setTabValue] = useState(0);
   const [clientId, setClientId] = useState("");
@@ -68,6 +72,9 @@ const ClientInfo = ({ clientId: idForFetch }) => {
   // * states for comparison
   const [clientInfo, setClientInfo] = useState(null);
   const [mailerInfo, setMailerInfo] = useState(null);
+  const [emailError, setEmailError] = useState(false);
+
+  console.log(emailError);
 
   useEffect(() => {
     const today = new Date();
@@ -94,19 +101,18 @@ const ClientInfo = ({ clientId: idForFetch }) => {
       setContactPerson(clientInfo?.contactPerson);
       setDesignation(clientInfo?.designation);
       setEmailID(clientInfo?.email);
+      const email = clientInfo?.email || "";
+      setEmailError(!emailRegex.test(email));
       setPhoneNo(clientInfo?.phone);
       setMobileNumber(clientInfo?.mobile);
       setSubFromDate(clientInfo?.fromDate);
       setSubToDate(clientInfo?.toDate);
-      // setActive(clientInfo?.isActive == "Y" ? "Yes" : "No");
       setClientGroupID(clientInfo?.clientGroupId);
 
       let mailerInfo = data?.mailerInfo;
       setMailerID(mailerInfo?.mailerId);
       setMailerSubject(mailerInfo?.mailerSubject);
       setMailerFormat(mailerInfo?.mailerFormat);
-      // setBulkMailer(mailerInfo?.bulkMailer);
-      // setSummary(mailerInfo?.hasSummary);
       setMailerLogic(mailerInfo?.mailerLogic);
       setMailerInfo(mailerInfo);
     } catch (error) {
@@ -134,6 +140,12 @@ const ClientInfo = ({ clientId: idForFetch }) => {
 
   const handleUpdate = async () => {
     try {
+      const isEmailInvalid = !emailID || emailID === "na";
+      const isPhoneOrMobileInvalid = !phoneNo && !mobileNumber;
+      if (isEmailInvalid || isPhoneOrMobileInvalid) {
+        toast.error("EmailID, PhoneNo or MobileNumber are required.");
+        return;
+      }
       setUpdateLoading(true);
       const requestData = {
         clientId,
@@ -153,9 +165,9 @@ const ClientInfo = ({ clientId: idForFetch }) => {
       if (clientInfo?.mobile !== mobileNumber)
         clientInfoLocal.mobile = mobileNumber;
       if (clientInfo?.fromDate !== subFromDate)
-        clientInfoLocal.fromDate = format(subFromDate, "yyyy-MM-dd HH-MM-ss");
+        clientInfoLocal.fromDate = format(subFromDate, "yyyy-MM-dd HH:MM:ss");
       if (clientInfo?.toDate !== subToDate)
-        clientInfoLocal.toDate = format(subToDate, "yyyy-MM-dd HH-MM-ss");
+        clientInfoLocal.toDate = format(subToDate, "yyyy-MM-dd HH:MM:ss");
       if (clientInfo?.clientGroupId !== clientGroupID)
         clientInfoLocal.clientGroupId = clientGroupID;
       if (Object.keys(clientInfoLocal).length) {
@@ -179,6 +191,7 @@ const ClientInfo = ({ clientId: idForFetch }) => {
       if (response.status === 200) {
         toast.success(response.data.data.status);
         fetchData();
+        setTabValue(1);
       }
     } catch (error) {
       toast.error("Something went wrong.");
@@ -236,73 +249,85 @@ const ClientInfo = ({ clientId: idForFetch }) => {
             />
           </StyledWrapper>
           <Divider />
-          <StyledWrapper>
-            <StyledText>Address : </StyledText>
-            <textarea
-              rows={2}
-              cols={70}
-              value={address}
-              onChange={(e) => setAddress(e.target.value)}
-              className="border border-gray-300 rounded-sm hover:border-black text-[0.8em] px-3"
-            />
-          </StyledWrapper>
-          <Divider />
-          <StyledWrapper>
-            <StyledText>Contact Person : </StyledText>
-            <CustomTextField
-              width={300}
-              placeholder={"Contact person"}
-              value={contactPerson}
-              setValue={setContactPerson}
-              type={"text"}
-              isRequired
-            />
-          </StyledWrapper>
-          <Divider />
-          <StyledWrapper>
-            <StyledText>Designation : </StyledText>
-            <CustomTextField
-              width={300}
-              placeholder={"Designation"}
-              value={designation}
-              setValue={setDesignation}
-              type={"text"}
-              isRequired
-            />
-          </StyledWrapper>
-          <Divider />
-          <StyledWrapper>
-            <StyledText>Email ID : </StyledText>
-            <CustomTextField
-              width={300}
-              placeholder={"Email"}
-              value={emailID}
-              setValue={setEmailID}
-              type={"email"}
-              isRequired
-            />
-          </StyledWrapper>
-          <Divider />
-          <StyledWrapper>
-            <StyledText>Phone : </StyledText>
-            <CustomTextField
-              width={200}
-              placeholder={"12345"}
-              value={phoneNo}
-              setValue={setPhoneNo}
-              type={"number"}
-            />
-            <StyledWrapper>
-              <StyledText>Mobile : </StyledText>
-              <CustomTextField
-                width={200}
-                placeholder={"1234567890"}
-                value={mobileNumber}
-                setValue={setMobileNumber}
-                type={"number"}
-              />
-            </StyledWrapper>
-          </StyledWrapper>
+          {/* contact area */}
+          <Box sx={{ display: "flex" }}>
+            <CompactStepper />
+            <Box>
+              <StyledWrapper>
+                <StyledText>Address : </StyledText>
+                <textarea
+                  rows={2}
+                  cols={70}
+                  value={address}
+                  onChange={(e) => setAddress(e.target.value)}
+                  className="border border-gray-300 rounded-sm hover:border-black text-[0.8em] px-3"
+                />
+              </StyledWrapper>
+              <Divider />
+              <StyledWrapper>
+                <StyledText>Contact Person : </StyledText>
+                <CustomTextField
+                  width={300}
+                  placeholder={"Contact person"}
+                  value={contactPerson}
+                  setValue={setContactPerson}
+                  type={"text"}
+                  isRequired
+                />
+              </StyledWrapper>
+              <Divider />
+              <StyledWrapper>
+                <StyledText>Designation : </StyledText>
+                <CustomTextField
+                  width={300}
+                  placeholder={"Designation"}
+                  value={designation}
+                  setValue={setDesignation}
+                  type={"text"}
+                  isRequired
+                />
+              </StyledWrapper>
+              <Divider />
+              <StyledWrapper>
+                <StyledText>Email ID : </StyledText>
+                <TextField
+                  sx={{ width: 300 }}
+                  value={emailID}
+                  onChange={(e) => {
+                    setEmailID(e.target.value);
+                    setEmailError(!emailRegex.test(e.target.value));
+                  }}
+                  type="email"
+                  required
+                  placeholder="Email"
+                  InputProps={{ style: { height: 25, fontSize: "0.9em" } }}
+                  error={emailError}
+                />
+              </StyledWrapper>
+              <Divider />
+              <StyledWrapper>
+                <StyledText>Phone : </StyledText>
+                <CustomTextField
+                  width={200}
+                  placeholder={"12345"}
+                  value={phoneNo}
+                  setValue={setPhoneNo}
+                  type={"number"}
+                />
+                <StyledWrapper>
+                  <StyledText>Mobile : </StyledText>
+                  <CustomTextField
+                    width={200}
+                    placeholder={"1234567890"}
+                    value={mobileNumber}
+                    setValue={setMobileNumber}
+                    type={"number"}
+                  />
+                </StyledWrapper>
+              </StyledWrapper>
+            </Box>
+          </Box>
+
           <Divider />
           <StyledWrapper>
             <StyledText>Subscription : </StyledText>
@@ -404,38 +429,6 @@ const ClientInfo = ({ clientId: idForFetch }) => {
               />
             </div>
           </StyledWrapper>
-          {/* 
-          <StyledWrapper>
-            <StyledText>Client Type : </StyledText>
-            <FormControlLabel
-              control={
-                <Checkbox
-                  checked={advArticle.advertise}
-                  onChange={(e) => {
-                    setAdvArticle((prev) => ({
-                      ...prev,
-                      advertise: e.target.checked,
-                    }));
-                  }}
-                />
-              }
-              label="Advertise"
-            />
-            <FormControlLabel
-              control={
-                <Checkbox
-                  checked={advArticle.articles}
-                  onChange={(e) => {
-                    setAdvArticle((prev) => ({
-                      ...prev,
-                      articles: e.target.checked,
-                    }));
-                  }}
-                />
-              }
-              label="Articles"
-            />
-          </StyledWrapper> */}
         </Box>
       ) : (
         <Info
@@ -443,6 +436,7 @@ const ClientInfo = ({ clientId: idForFetch }) => {
           StyledWrapper={StyledWrapper}
           classes={classes}
           clientId={clientId}
+          setGlobalTabValue={setGlobalTabValue}
         />
       )}
     </Fragment>

@@ -1,5 +1,11 @@
 import { useEffect, useState } from "react";
-import { Checkbox, FormControlLabel, Box, FormGroup } from "@mui/material";
+import {
+  Checkbox,
+  FormControlLabel,
+  Box,
+  FormGroup,
+  CircularProgress,
+} from "@mui/material";
 import { styled } from "@mui/system";
 import ComponentsHeader from "./ComponentsHeader";
 import axiosInstance from "../../../axiosConfig";
@@ -43,9 +49,10 @@ const StyledFormControlLabel = styled(FormControlLabel)(({ theme }) => ({
   },
 }));
 
-const MailerColumns = ({ clientId }) => {
+const MailerColumns = ({ clientId, setGlobalTabValue }) => {
   const [mailerColumns, setMailerColumns] = useState([]);
   const [initialState, setInitialState] = useState([]);
+  const [fetchLoading, setFetchLoading] = useState(false);
   const [updateLoading, setUpdateLoading] = useState(false);
 
   const handleCheckboxChange = (id) => {
@@ -58,6 +65,7 @@ const MailerColumns = ({ clientId }) => {
 
   const fetchMailerColumns = async () => {
     try {
+      setFetchLoading(true);
       const response = await axiosInstance.get(
         `fetchMailerColumns/?clientId=${clientId}`
       );
@@ -72,6 +80,8 @@ const MailerColumns = ({ clientId }) => {
       }
     } catch (error) {
       toast.error("Something went wrong.");
+    } finally {
+      setFetchLoading(false);
     }
   };
 
@@ -115,6 +125,7 @@ const MailerColumns = ({ clientId }) => {
         const status = response.data.data?.data.success[0]?.message;
         toast.success(status);
         fetchMailerColumns();
+        setGlobalTabValue(4);
       } else {
         toast.error("Something went wrong.");
       }
@@ -142,22 +153,34 @@ const MailerColumns = ({ clientId }) => {
           onSave={handleUpdateColumns}
         />
       </Box>
-
-      <FormGroup sx={{ width: 600 }}>
-        {mailerColumns.map((column) => (
-          <StyledFormControlLabel
-            key={column.id}
-            control={
-              <Checkbox
-                checked={column.checked}
-                onChange={() => handleCheckboxChange(column.id)}
-                color="primary"
-              />
-            }
-            label={column.name}
-          />
-        ))}
-      </FormGroup>
+      {fetchLoading ? (
+        <Box
+          sx={{
+            width: 600,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+          }}
+        >
+          <CircularProgress />
+        </Box>
+      ) : (
+        <FormGroup sx={{ width: 600 }}>
+          {mailerColumns.map((column) => (
+            <StyledFormControlLabel
+              key={column.id}
+              control={
+                <Checkbox
+                  checked={column.checked}
+                  onChange={() => handleCheckboxChange(column.id)}
+                  color="primary"
+                />
+              }
+              label={column.name}
+            />
+          ))}
+        </FormGroup>
+      )}
     </Box>
   );
 };

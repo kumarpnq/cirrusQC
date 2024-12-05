@@ -29,7 +29,7 @@ const StyledTableRow = styled(TableRow)(({ theme }) => ({
   },
 }));
 
-const ConfigParameter = ({ clientId }) => {
+const ConfigParameter = ({ clientId, setGlobalTabValue }) => {
   const [configData, setConfigData] = useState([]);
   const [initialConfigData, setInitialConfigData] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -41,96 +41,96 @@ const ConfigParameter = ({ clientId }) => {
     );
   };
 
+  const fetchSectionDetails = async () => {
+    try {
+      setLoading(true);
+      const response = await axiosInstance.get(
+        `configParams/?clientId=${clientId}`
+      );
+
+      const mailerInfo = response.data.data.data.mailerInfo;
+      const configParameters = [
+        {
+          id: 1,
+          name: "Show Left Logo",
+          key: "showMailerLeftLogo", // Added key
+          type: "select",
+          value: mailerInfo.showMailerLeftLogo === "Y" ? "YES" : "NO",
+        },
+        {
+          id: 2,
+          name: "Show Right Logo",
+          key: "showMailerRightLogo", // Added key
+          type: "select",
+          value: mailerInfo.showMailerRightLogo === "Y" ? "YES" : "NO",
+        },
+        {
+          id: 3,
+          name: "Show Unsubscribe",
+          key: "showUnsubscribe", // Added key
+          type: "select",
+          value: mailerInfo.showUnsubscribe === "Y" ? "YES" : "NO",
+        },
+        {
+          id: 4,
+          name: "Show Table Print Count",
+          key: "showTablePrintCount", // Added key
+          type: "select",
+          value: mailerInfo.showTablePrintCount === "Y" ? "YES" : "NO",
+        },
+        {
+          id: 5,
+          name: "Show Table PrintSOV Count",
+          key: "showTablePrintSovCount", // Added key
+          type: "select",
+          value: mailerInfo.showTablePrintSovCount === "Y" ? "YES" : "NO",
+        },
+        {
+          id: 6,
+          name: "Show Table Online Count",
+          key: "showTableOnlineCount",
+          type: "select",
+          value: mailerInfo.showTableOnlineCount === "Y" ? "YES" : "NO",
+        },
+        {
+          id: 7,
+          name: "Show Table OnlineSOV Count",
+          key: "showTableOnlineSovCount",
+          type: "select",
+          value: mailerInfo.showTableOnlineSovCount === "Y" ? "YES" : "NO",
+        },
+        {
+          id: 8,
+          name: "Show Mailer Title",
+          key: "showMailerTitle",
+          type: "select",
+          value: mailerInfo.showMailerTitle === "Y" ? "YES" : "NO",
+        },
+        {
+          id: 9,
+          name: "Show Mailer Subtitle",
+          key: "showMailerSubtitle",
+          type: "select",
+          value: mailerInfo.showMailerSubtitle === "Y" ? "YES" : "NO",
+        },
+        {
+          id: 10,
+          name: "Show Bottom Logo",
+          key: "showMailerBottomLogo",
+          type: "select",
+          value: mailerInfo.showMailerBottomLogo === "Y" ? "YES" : "NO",
+        },
+      ];
+
+      setInitialConfigData(configParameters);
+      setConfigData(configParameters);
+    } catch (error) {
+      toast.error("Something went wrong.");
+    } finally {
+      setLoading(false);
+    }
+  };
   useEffect(() => {
-    const fetchSectionDetails = async () => {
-      try {
-        setLoading(true);
-        const response = await axiosInstance.get(
-          `configParams/?clientId=${clientId}`
-        );
-
-        const mailerInfo = response.data.data.data.mailerInfo;
-        const configParameters = [
-          {
-            id: 1,
-            name: "Show Left Logo",
-            key: "showMailerLeftLogo", // Added key
-            type: "select",
-            value: mailerInfo.showMailerLeftLogo === "Y" ? "YES" : "NO",
-          },
-          {
-            id: 2,
-            name: "Show Right Logo",
-            key: "showMailerRightLogo", // Added key
-            type: "select",
-            value: mailerInfo.showMailerRightLogo === "Y" ? "YES" : "NO",
-          },
-          {
-            id: 3,
-            name: "Show Unsubscribe",
-            key: "showUnsubscribe", // Added key
-            type: "select",
-            value: mailerInfo.showUnsubscribe === "Y" ? "YES" : "NO",
-          },
-          {
-            id: 4,
-            name: "Show Table Print Count",
-            key: "showTablePrintCount", // Added key
-            type: "select",
-            value: mailerInfo.showTablePrintCount === "Y" ? "YES" : "NO",
-          },
-          {
-            id: 5,
-            name: "Show Table PrintSOV Count",
-            key: "showTablePrintSovCount", // Added key
-            type: "select",
-            value: mailerInfo.showTablePrintSovCount === "Y" ? "YES" : "NO",
-          },
-          {
-            id: 6,
-            name: "Show Table Online Count",
-            key: "showTableOnlineCount",
-            type: "select",
-            value: mailerInfo.showTableOnlineCount === "Y" ? "YES" : "NO",
-          },
-          {
-            id: 7,
-            name: "Show Table OnlineSOV Count",
-            key: "showTableOnlineSovCount",
-            type: "select",
-            value: mailerInfo.showTableOnlineSovCount === "Y" ? "YES" : "NO",
-          },
-          {
-            id: 8,
-            name: "Show Mailer Title",
-            key: "showMailerTitle",
-            type: "select",
-            value: mailerInfo.showMailerTitle === "Y" ? "YES" : "NO",
-          },
-          {
-            id: 9,
-            name: "Show Mailer Subtitle",
-            key: "showMailerSubtitle",
-            type: "select",
-            value: mailerInfo.showMailerSubtitle === "Y" ? "YES" : "NO",
-          },
-          {
-            id: 10,
-            name: "Show Bottom Logo",
-            key: "showMailerBottomLogo",
-            type: "select",
-            value: mailerInfo.showMailerBottomLogo === "Y" ? "YES" : "NO",
-          },
-        ];
-
-        setInitialConfigData(configParameters);
-        setConfigData(configParameters);
-      } catch (error) {
-        toast.error("Something went wrong.");
-      } finally {
-        setLoading(false);
-      }
-    };
     if (clientId) {
       fetchSectionDetails();
     }
@@ -170,6 +170,8 @@ const ConfigParameter = ({ clientId }) => {
       );
       if (response.status === 200) {
         toast.success(response.data.data.message);
+        fetchSectionDetails();
+        setGlobalTabValue(3);
       }
     } catch (error) {
       toast.error("Failed to update configuration.");

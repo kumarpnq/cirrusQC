@@ -574,7 +574,7 @@ const SecondSection = (props) => {
   };
 
   return (
-    <div className="px-1 mt-2 min-h-[400px]">
+    <div className="h-full px-1 mt-2">
       <Box display={"flex"} alignItems={"center"} gap={1} flexWrap={"wrap"}>
         <div>
           <CustomMultiSelect

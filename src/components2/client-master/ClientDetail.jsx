@@ -14,16 +14,18 @@ function a11yProps(index) {
   };
 }
 
-const EditComponentRender = (value, clientId) => {
+const EditComponentRender = (value, clientId, setValue) => {
   switch (value) {
     case 0:
-      return <ClientInfo clientId={clientId} />;
+      return <ClientInfo clientId={clientId} setGlobalTabValue={setValue} />;
     case 1:
-      return <SectionOrder clientId={clientId} />;
+      return <SectionOrder clientId={clientId} setGlobalTabValue={setValue} />;
     case 2:
-      return <ConfigParameter clientId={clientId} />;
+      return (
+        <ConfigParameter clientId={clientId} setGlobalTabValue={setValue} />
+      );
     case 3:
-      return <MailerColumns clientId={clientId} />;
+      return <MailerColumns clientId={clientId} setGlobalTabValue={setValue} />;
     case 4:
       return <MailerConfigure clientId={clientId} />;
 
@@ -57,7 +59,7 @@ const ClientDetail = ({ clientId }) => {
             <Tab label="MailerConfigure" {...a11yProps(4)} />
           </Tabs>
         </Box>
-        {EditComponentRender(value, clientId)}
+        {EditComponentRender(value, clientId, setValue)}
       </form>
     </div>
   );

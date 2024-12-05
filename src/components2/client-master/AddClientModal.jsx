@@ -32,7 +32,7 @@ const AddClientModal = ({ open, onClose }) => {
   const [clientName, setClientName] = useState("");
   const [subscriptionDate, setSubscriptionDate] = useState({
     startDate: format(new Date(), "yyyy-MM-dd HH:mm:ss"),
-    endDate: format(addYears(new Date(), 2), "yyyy-MM-dd HH:mm:ss"),
+    endDate: format(addYears(new Date(), 1), "yyyy-MM-dd HH:mm:ss"),
   });
 
   const [companyId, setCompanyId] = useState("");

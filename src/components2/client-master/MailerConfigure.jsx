@@ -11,6 +11,7 @@ import {
   TextField,
   MenuItem,
   Select,
+  CircularProgress,
 } from "@mui/material";
 import { styled } from "@mui/system";
 import ComponentsHeader from "./ComponentsHeader";
@@ -61,18 +62,26 @@ const MailerConfigure = ({ clientId }) => {
 
   const [initialState, setInitialState] = useState([]);
   const [tableData, setTableData] = useState([]);
+  const [loading, setLoading] = useState(false);
   const [updateLoading, setUpdateLoading] = useState(false);
   const fetchMailerConfigure = async () => {
-    const params = {
-      clientId,
-      configName: "default",
-    };
-    const response = await axiosInstance.get(`clientMailerConfig/`, {
-      params,
-    });
-    let localData = response.data.data.data || [];
-    setTableData(localData);
-    setInitialState(localData);
+    try {
+      setLoading(true);
+      const params = {
+        clientId,
+        configName: "default",
+      };
+      const response = await axiosInstance.get(`clientMailerConfig/`, {
+        params,
+      });
+      let localData = response.data.data.data || [];
+      setTableData(localData);
+      setInitialState(localData);
+    } catch (error) {
+      toast.error("Something went wrong.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   useEffect(() => {
@@ -155,119 +164,131 @@ const MailerConfigure = ({ clientId }) => {
         onSave={updateMailerConfigure}
       />
       <StyledTableContainer>
-        <Table>
-          <TableHead>
-            <TableRow>
-              <StyledTableHeadCell>Select</StyledTableHeadCell>
-              <StyledTableHeadCell>Field Name</StyledTableHeadCell>
-              <StyledTableHeadCell>Font Name</StyledTableHeadCell>
-              <StyledTableHeadCell>Font Size</StyledTableHeadCell>
-              <StyledTableHeadCell>Font Color</StyledTableHeadCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {tableData.map((row) => (
-              <StyledTableRow key={row.fieldId}>
-                <StyledTableCell sx={{ width: 50 }}>
-                  <Select
-                    value={row?.isActive}
-                    onChange={(e) =>
-                      handleCheckboxChange(row.fieldId, e.target.value)
-                    }
-                    sx={{ fontSize: "0.9em" }}
-                    className={classes.dropDowns}
-                  >
-                    <MenuItem value="Y" sx={{ fontSize: "0.9em" }}>
-                      Yes
-                    </MenuItem>
-                    <MenuItem value="N" sx={{ fontSize: "0.9em" }}>
-                      No
-                    </MenuItem>
-                  </Select>
-                </StyledTableCell>
-                <StyledTableCell sx={{ width: 250 }}>
-                  {row.fieldName}
-                </StyledTableCell>
-                <StyledTableCell sx={{ width: 250 }}>
-                  <Select
-                    select
-                    value={row.fontId}
-                    onChange={(e) =>
-                      handleFontChange(row.fieldId, e.target.value)
-                    }
-                    variant="outlined"
-                    size="small"
-                    fullWidth
-                    className={classes.dropDowns}
-                    sx={{ fontFamily: row.fontName, fontSize: "0.9em" }}
-                    MenuProps={{
-                      PaperProps: {
-                        style: {
-                          maxHeight: 250, // Set the dropdown height to 250px
-                        },
-                      },
-                    }}
-                  >
-                    {fontsArray.map((font) => (
-                      <MenuItem
-                        key={font.id}
-                        value={font.id}
-                        style={{ fontFamily: font.name, fontSize: "0.9em" }}
-                      >
-                        {font.name}
+        {loading ? (
+          <Box
+            sx={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+            }}
+          >
+            <CircularProgress />
+          </Box>
+        ) : (
+          <Table>
+            <TableHead>
+              <TableRow>
+                <StyledTableHeadCell>Select</StyledTableHeadCell>
+                <StyledTableHeadCell>Field Name</StyledTableHeadCell>
+                <StyledTableHeadCell>Font Name</StyledTableHeadCell>
+                <StyledTableHeadCell>Font Size</StyledTableHeadCell>
+                <StyledTableHeadCell>Font Color</StyledTableHeadCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {tableData.map((row) => (
+                <StyledTableRow key={row.fieldId}>
+                  <StyledTableCell sx={{ width: 50 }}>
+                    <Select
+                      value={row?.isActive}
+                      onChange={(e) =>
+                        handleCheckboxChange(row.fieldId, e.target.value)
+                      }
+                      sx={{ fontSize: "0.9em" }}
+                      className={classes.dropDowns}
+                    >
+                      <MenuItem value="Y" sx={{ fontSize: "0.9em" }}>
+                        Yes
                       </MenuItem>
-                    ))}
-                  </Select>
-                </StyledTableCell>
-                <StyledTableCell sx={{ width: 250 }}>
-                  <TextField
-                    type="number"
-                    value={row.fontSize}
-                    onChange={(e) =>
-                      handleFontSizeChange(row.fieldId, e.target.value)
-                    }
-                    variant="outlined"
-                    size="small"
-                    InputProps={{
-                      min: 8,
-                      max: 72,
-                      style: {
-                        height: 25,
-                        fontSize: `${row.fontSize}px`,
-                        width: 250,
-                      },
-                    }}
-                  />
-                </StyledTableCell>
-                <StyledTableCell sx={{ width: 50 }}>
-                  <TextField
-                    type="color"
-                    value={row.fontColor}
-                    onChange={(e) =>
-                      handleColorChange(row.fieldId, e.target.value)
-                    }
-                    variant="outlined"
-                    size="small"
-                    sx={{
-                      width: 50,
-                      "& .MuiOutlinedInput-root": {
-                        "& fieldset": {
-                          borderColor: row.fontColor,
+                      <MenuItem value="N" sx={{ fontSize: "0.9em" }}>
+                        No
+                      </MenuItem>
+                    </Select>
+                  </StyledTableCell>
+                  <StyledTableCell sx={{ width: 250 }}>
+                    {row.fieldName}
+                  </StyledTableCell>
+                  <StyledTableCell sx={{ width: 250 }}>
+                    <Select
+                      select
+                      value={row.fontId}
+                      onChange={(e) =>
+                        handleFontChange(row.fieldId, e.target.value)
+                      }
+                      variant="outlined"
+                      size="small"
+                      fullWidth
+                      className={classes.dropDowns}
+                      sx={{ fontFamily: row.fontName, fontSize: "0.9em" }}
+                      MenuProps={{
+                        PaperProps: {
+                          style: {
+                            maxHeight: 250, // Set the dropdown height to 250px
+                          },
                         },
-                        "&:hover fieldset": {
-                          borderColor: row.fontColor,
+                      }}
+                    >
+                      {fontsArray.map((font) => (
+                        <MenuItem
+                          key={font.id}
+                          value={font.id}
+                          style={{ fontFamily: font.name, fontSize: "0.9em" }}
+                        >
+                          {font.name}
+                        </MenuItem>
+                      ))}
+                    </Select>
+                  </StyledTableCell>
+                  <StyledTableCell sx={{ width: 250 }}>
+                    <TextField
+                      type="number"
+                      value={row.fontSize}
+                      onChange={(e) =>
+                        handleFontSizeChange(row.fieldId, e.target.value)
+                      }
+                      variant="outlined"
+                      size="small"
+                      InputProps={{
+                        min: 8,
+                        max: 72,
+                        style: {
+                          height: 25,
+                          fontSize: `${row.fontSize}px`,
+                          width: 250,
                         },
-                        "&.Mui-focused fieldset": {
-                          borderColor: row.fontColor,
+                      }}
+                    />
+                  </StyledTableCell>
+                  <StyledTableCell sx={{ width: 50 }}>
+                    <TextField
+                      type="color"
+                      value={row.fontColor}
+                      onChange={(e) =>
+                        handleColorChange(row.fieldId, e.target.value)
+                      }
+                      variant="outlined"
+                      size="small"
+                      sx={{
+                        width: 50,
+                        "& .MuiOutlinedInput-root": {
+                          "& fieldset": {
+                            borderColor: row.fontColor,
+                          },
+                          "&:hover fieldset": {
+                            borderColor: row.fontColor,
+                          },
+                          "&.Mui-focused fieldset": {
+                            borderColor: row.fontColor,
+                          },
                         },
-                      },
-                    }}
-                  />
-                </StyledTableCell>
-              </StyledTableRow>
-            ))}
-          </TableBody>
-        </Table>
+                      }}
+                    />
+                  </StyledTableCell>
+                </StyledTableRow>
+              ))}
+            </TableBody>
+          </Table>
+        )}
       </StyledTableContainer>
     </Box>
   );

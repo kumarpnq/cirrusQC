@@ -6,7 +6,7 @@ import axiosInstance from "../../../axiosConfig";
 import toast from "react-hot-toast";
 import PropTypes from "prop-types";
 
-const SectionOrder = ({ clientId }) => {
+const SectionOrder = ({ clientId, setGlobalTabValue }) => {
   const [rows, setRows] = useState([]);
   const [loading, setLoading] = useState(false);
   const apiRef = useGridApiRef();
@@ -107,6 +107,7 @@ const SectionOrder = ({ clientId }) => {
         unsavedChangesRef.current.rowsBeforeChange = {};
         setHasUnsavedRows(false);
         fetchSectionDetails();
+        setGlobalTabValue(2);
         toast.success(response.data.data.success[0]?.message);
       }
     } catch (error) {

@@ -1,4 +1,4 @@
-import { Box, Divider } from "@mui/material";
+import { Box, Divider, MenuItem, Select } from "@mui/material";
 import { useEffect, useState } from "react";
 import YesOrNo from "../../../@core/YesOrNo";
 import PropTypes from "prop-types";
@@ -6,7 +6,13 @@ import axiosInstance from "../../../../axiosConfig";
 import toast from "react-hot-toast";
 import ComponentsHeader from "../ComponentsHeader";
 
-const Info = ({ StyledWrapper, StyledText, classes, clientId }) => {
+const Info = ({
+  StyledWrapper,
+  StyledText,
+  classes,
+  clientId,
+  setGlobalTabValue,
+}) => {
   const [bulkMailer, setBulkMailer] = useState("");
   const [summary, setSummary] = useState("");
   const [allowTagging, setAllowTagging] = useState("");
@@ -17,6 +23,7 @@ const Info = ({ StyledWrapper, StyledText, classes, clientId }) => {
   const [AllowSearchablePDF, setAllowSearchablePDF] = useState("");
   const [excelExport, setExcelExport] = useState("");
   const [active, setActive] = useState("");
+  const [screenPermission, setScreenPermission] = useState([]);
 
   // * comparison states
   const [clientInfo, setClientInfo] = useState(null);
@@ -86,6 +93,7 @@ const Info = ({ StyledWrapper, StyledText, classes, clientId }) => {
       );
       if (response.status === 200) {
         toast.success(response.data.status.message);
+        setGlobalTabValue(1);
         fetchInfo();
       }
     } catch (error) {
@@ -296,6 +304,26 @@ const Info = ({ StyledWrapper, StyledText, classes, clientId }) => {
             // width={150}
           />
         </StyledWrapper>
+        <StyledWrapper>
+          <StyledText>Screen Permission :</StyledText>
+          <Select
+            value={screenPermission}
+            onChange={(e) => setScreenPermission(e.target.value)}
+            multiple
+            fullWidth
+            sx={{ height: 25, fontSize: "0.9em" }}
+          >
+            <MenuItem value="online" sx={{ fontSize: "0.9em" }}>
+              Online
+            </MenuItem>
+            <MenuItem value="print" sx={{ fontSize: "0.9em" }}>
+              Print
+            </MenuItem>
+            <MenuItem value="both" sx={{ fontSize: "0.9em" }}>
+              Both
+            </MenuItem>
+          </Select>
+        </StyledWrapper>
       </Box>
     </Box>
   );
@@ -305,5 +333,6 @@ Info.propTypes = {
   StyledWrapper: PropTypes.elementType.isRequired,
   StyledText: PropTypes.elementType.isRequired,
   classes: PropTypes.object.isRequired,
+  setGlobalTabValue: PropTypes.func,
 };
 export default Info;

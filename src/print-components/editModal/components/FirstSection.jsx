@@ -7,7 +7,6 @@ import axios from "axios";
 import { url } from "../../../constants/baseUrl";
 import { toast } from "react-toastify";
 import useFetchData from "../../../hooks/useFetchData";
-import CustomSingleSelect from "../../../@core/CustomSingleSelect";
 
 const FirstSection = (props) => {
   const { classes, selectedArticle } = props;
@@ -196,8 +195,8 @@ const FirstSection = (props) => {
           </label>
           <textarea
             className="outline-none border border-gray-400 text-[0.9em] rounded-[3px]"
-            cols="100"
             rows={focusedTextFields.isArticleSummary ? 3 : 1}
+            style={{ width: "100%" }}
             onFocus={() =>
               setFocusedTextField((prevState) => ({
                 ...prevState,
