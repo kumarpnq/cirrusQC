@@ -74,7 +74,8 @@ const ClientInfo = ({ clientId: idForFetch, setGlobalTabValue }) => {
   const [mailerInfo, setMailerInfo] = useState(null);
   const [emailError, setEmailError] = useState(false);
 
-  console.log(emailError);
+  // * contact stepper
+  const [activeStep, setActiveStep] = useState(0);
 
   useEffect(() => {
     const today = new Date();
@@ -135,6 +136,10 @@ const ClientInfo = ({ clientId: idForFetch, setGlobalTabValue }) => {
   let mailerLogicOptions = mailerLogicData?.data?.data?.fieldList || [];
   let mailerFormatOptions = mailerFormatData?.data?.data || [];
   let clientGroupOptions = clientGroupData?.data?.data || [];
+  const availableFormats = ["PO21", "TAB20", "POH22", "CIR1", "SECO1", "S1"];
+  const filteredFormats = mailerFormatOptions.filter((format) =>
+    availableFormats.includes(format.formatId)
+  );
 
   const [updateLoading, setUpdateLoading] = useState(false);
 
@@ -250,8 +255,13 @@ const ClientInfo = ({ clientId: idForFetch, setGlobalTabValue }) => {
           </StyledWrapper>
           <Divider />
           {/* contact area */}
-          <Box sx={{ display: "flex" }}>
-            <CompactStepper />
+          <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
+            <Box sx={{ maxWidth: 200 }}>
+              <CompactStepper
+                activeStep={activeStep}
+                setActiveStep={setActiveStep}
+              />
+            </Box>
             <Box>
               <StyledWrapper>
                 <StyledText>Address : </StyledText>
@@ -422,7 +432,7 @@ const ClientInfo = ({ clientId: idForFetch, setGlobalTabValue }) => {
                 dropdownWidth={300}
                 keyId="formatId"
                 keyName="name"
-                options={mailerFormatOptions}
+                options={filteredFormats}
                 title="Mailer Format"
                 selectedItem={mailerFormat}
                 setSelectedItem={setMailerFormat}

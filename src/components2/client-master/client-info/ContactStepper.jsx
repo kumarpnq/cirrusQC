@@ -1,14 +1,12 @@
-import { useState } from "react";
 import { Stepper, Step, StepLabel, Box } from "@mui/material";
-import { DeliveryDining, Person } from "@mui/icons-material"; // MUI icons
+import { Person } from "@mui/icons-material";
+import BusinessIcon from "@mui/icons-material/Business";
 
-const CompactStepper = () => {
-  const [activeStep, setActiveStep] = useState(0);
-
+const CompactStepper = ({ activeStep, setActiveStep }) => {
   // Define your steps with corresponding icons
   const steps = [
-    { label: "Delhivery", icon: <DeliveryDining fontSize="large" /> },
-    { label: "Person", icon: <Person fontSize="large" /> },
+    { label: "Client", icon: <BusinessIcon fontSize="large" /> },
+    { label: "Delivery", icon: <Person fontSize="large" /> },
   ];
 
   // Handle icon click to set active step
