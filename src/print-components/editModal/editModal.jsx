@@ -93,7 +93,7 @@ export default function EditModal({
               border: "1px solid #DDD",
               borderRadius: "4px",
               p: 1,
-              height: "100%",
+              height: "100vh",
             }}
           >
             <FirstSection
@@ -114,6 +114,7 @@ export default function EditModal({
               alignItems="center"
               gap={1}
               fontSize="0.9em"
+              mt={1.5}
               className="underline text-primary"
             >
               <Link
