@@ -69,9 +69,18 @@ const ClientInfo = ({ clientId: idForFetch, setGlobalTabValue }) => {
   //   articles: true,
   // });
 
+  // * deliver info
+  const [deliveryAddress, setDeliveryAddress] = useState("");
+  const [deliverContactPerson, setDeliveryContactPerson] = useState("");
+  const [deliverDesignation, setDeliveryDesignation] = useState("");
+  const [deliverEmailID, setDeliveryEmailID] = useState("");
+  const [deliverPhoneNo, setDeliveryPhoneNo] = useState("");
+  const [deliverMobileNumber, setDeliveryMobileNumber] = useState("");
+
   // * states for comparison
   const [clientInfo, setClientInfo] = useState(null);
   const [mailerInfo, setMailerInfo] = useState(null);
+  const [deliveryInfo, setDeliveryInfo] = useState(null);
   const [emailError, setEmailError] = useState(false);
 
   // * contact stepper
@@ -116,6 +125,14 @@ const ClientInfo = ({ clientId: idForFetch, setGlobalTabValue }) => {
       setMailerFormat(mailerInfo?.mailerFormat);
       setMailerLogic(mailerInfo?.mailerLogic);
       setMailerInfo(mailerInfo);
+
+      let deliveryInfo = data?.deliveryInfo;
+      setDeliveryAddress(deliveryInfo?.clientAddress);
+      setDeliveryContactPerson(deliveryInfo?.contactPerson);
+      setDeliveryDesignation(deliveryInfo?.designation);
+      setDeliveryEmailID(deliveryInfo?.email);
+      setDeliveryMobileNumber(deliveryInfo?.mobile);
+      setDeliveryPhoneNo(deliveryInfo?.phone);
     } catch (error) {
       toast.error("Something went wrong.");
     }
@@ -157,6 +174,7 @@ const ClientInfo = ({ clientId: idForFetch, setGlobalTabValue }) => {
       };
       const clientInfoLocal = {};
       const mailerInfoLocal = {};
+      const deliveryInfoLocal = {};
       if (clientInfo?.clientName !== clientName)
         clientInfoLocal.clientName = clientName;
       if (clientInfo?.clientAddress !== address)
@@ -188,6 +206,22 @@ const ClientInfo = ({ clientId: idForFetch, setGlobalTabValue }) => {
         mailerInfoLocal.mailerLogic = mailerLogic;
       if (Object.keys(mailerInfoLocal).length) {
         requestData.mailerInfo = mailerInfoLocal;
+      }
+
+      if (deliveryInfo?.clientAddress !== deliveryAddress)
+        deliveryInfoLocal.clientAddress = deliveryAddress;
+      if (deliveryInfo?.contactPerson !== deliverContactPerson)
+        deliveryInfoLocal.contactPerson = deliverContactPerson;
+      if (deliveryInfo?.designation !== deliverDesignation)
+        deliveryInfoLocal.designation = deliverDesignation;
+      if (deliveryInfo?.email !== deliverEmailID)
+        deliveryInfoLocal.email = deliverEmailID;
+      if (deliveryInfo?.phone !== deliverPhoneNo)
+        deliveryInfoLocal.phone = deliverPhoneNo;
+      if (deliveryInfo?.mobile !== deliverMobileNumber)
+        deliveryInfoLocal.mobile = deliverMobileNumber;
+      if (Object.keys(deliveryInfoLocal).length) {
+        requestData.deliveryInfo = deliveryInfoLocal;
       }
       const response = await axiosInstance.post(
         "updateClientSettings/",
@@ -256,20 +290,24 @@ const ClientInfo = ({ clientId: idForFetch, setGlobalTabValue }) => {
           <Divider />
           {/* contact area */}
           <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
-            {/* <Box sx={{ maxWidth: 200 }}>
+            <Box sx={{ maxWidth: 200 }}>
               <CompactStepper
                 activeStep={activeStep}
                 setActiveStep={setActiveStep}
               />
-            </Box> */}
+            </Box>
             <Box>
               <StyledWrapper>
                 <StyledText>Address : </StyledText>
                 <textarea
                   rows={2}
                   cols={70}
-                  value={address}
-                  onChange={(e) => setAddress(e.target.value)}
+                  value={!activeStep ? address : deliveryAddress}
+                  onChange={(e) =>
+                    !activeStep
+                      ? setAddress(e.target.value)
+                      : setDeliveryAddress(e.target.value)
+                  }
                   className="border border-gray-300 rounded-sm hover:border-black text-[0.8em] px-3"
                 />
               </StyledWrapper>
@@ -279,8 +317,10 @@ const ClientInfo = ({ clientId: idForFetch, setGlobalTabValue }) => {
                 <CustomTextField
                   width={300}
                   placeholder={"Contact person"}
-                  value={contactPerson}
-                  setValue={setContactPerson}
+                  value={!activeStep ? contactPerson : deliverContactPerson}
+                  setValue={
+                    !activeStep ? setContactPerson : setDeliveryContactPerson
+                  }
                   type={"text"}
                   isRequired
                 />
@@ -291,8 +331,10 @@ const ClientInfo = ({ clientId: idForFetch, setGlobalTabValue }) => {
                 <CustomTextField
                   width={300}
                   placeholder={"Designation"}
-                  value={designation}
-                  setValue={setDesignation}
+                  value={!activeStep ? designation : deliverDesignation}
+                  setValue={
+                    !activeStep ? setDesignation : setDeliveryDesignation
+                  }
                   type={"text"}
                   isRequired
                 />
@@ -302,9 +344,13 @@ const ClientInfo = ({ clientId: idForFetch, setGlobalTabValue }) => {
                 <StyledText>Email ID : </StyledText>
                 <TextField
                   sx={{ width: 300 }}
-                  value={emailID}
+                  value={!activeStep ? emailID : deliverEmailID}
                   onChange={(e) => {
-                    setEmailID(e.target.value);
+                    if (!activeStep) {
+                      setEmailID(e.target.value);
+                    } else {
+                      setDeliveryEmailID(e.target.value);
+                    }
                     setEmailError(!emailRegex.test(e.target.value));
                   }}
                   type="email"
@@ -320,8 +366,8 @@ const ClientInfo = ({ clientId: idForFetch, setGlobalTabValue }) => {
                 <CustomTextField
                   width={200}
                   placeholder={"12345"}
-                  value={phoneNo}
-                  setValue={setPhoneNo}
+                  value={!activeStep ? phoneNo : deliverPhoneNo}
+                  setValue={!activeStep ? setPhoneNo : setDeliveryPhoneNo}
                   type={"number"}
                 />
                 <StyledWrapper>
@@ -329,8 +375,10 @@ const ClientInfo = ({ clientId: idForFetch, setGlobalTabValue }) => {
                   <CustomTextField
                     width={200}
                     placeholder={"1234567890"}
-                    value={mobileNumber}
-                    setValue={setMobileNumber}
+                    value={!activeStep ? mobileNumber : deliverMobileNumber}
+                    setValue={
+                      !activeStep ? setMobileNumber : setDeliveryMobileNumber
+                    }
                     type={"number"}
                   />
                 </StyledWrapper>

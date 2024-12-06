@@ -145,6 +145,7 @@ const MailerColumns = ({ clientId, setGlobalTabValue }) => {
       flexDirection={"column"}
       alignItems={"center"}
       justifyContent={"center"}
+      pb={2}
     >
       <Box width={600}>
         <ComponentsHeader
@@ -165,7 +166,7 @@ const MailerColumns = ({ clientId, setGlobalTabValue }) => {
           <CircularProgress />
         </Box>
       ) : (
-        <FormGroup sx={{ width: 600 }}>
+        <FormGroup sx={{ width: 600, mb: 1 }}>
           {mailerColumns.map((column) => (
             <StyledFormControlLabel
               key={column.id}

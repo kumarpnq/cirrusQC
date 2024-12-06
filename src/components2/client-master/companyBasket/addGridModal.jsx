@@ -43,8 +43,6 @@ const AddGridModal = ({
   }));
 
   const handleSelectionChange = (newSelection) => {
-    console.log(newSelection);
-
     setSelectionModal(newSelection);
     const selectedRowsData = rows.filter((row) =>
       newSelection.includes(row.id)
