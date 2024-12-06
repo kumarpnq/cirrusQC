@@ -91,7 +91,7 @@ const handlePostData = async (
           modifiedFieldsForRow.headline = updatedRow.headline;
         }
         if (updatedRow.remarks !== selectedItem.remarks) {
-          modifiedFieldsForRow.remarks = updatedRow.remarks;
+          modifiedFieldsForRow.remark = updatedRow.remarks;
         }
         if (updatedRow.keyword !== selectedItem.keyword) {
           modifiedFieldsForRow.keyword = updatedRow.keyword;
