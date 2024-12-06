@@ -8,29 +8,90 @@ import Button from "@mui/material/Button";
 import KeyboardArrowLeft from "@mui/icons-material/KeyboardArrowLeft";
 import KeyboardArrowRight from "@mui/icons-material/KeyboardArrowRight";
 import SelectableList from "../@core/SalactableList";
-import axios from "axios";
-import { url } from "../constants/baseUrl";
-import { arrayToString } from "../utils/arrayToString";
 import { toast } from "react-toastify";
+import axiosInstance from "../../axiosConfig";
 
 export default function Selector({
   cityData,
   publications,
   companyData,
-  clientid,
-  companies,
-  setCompanies,
-  setTableFetchFlag,
+  clientId,
+  clusterData,
+  fetchCBCP,
 }) {
+  const [companies, setCompanies] = React.useState([]);
   const [city, setCity] = React.useState([]);
   const [selectedPublications, setSelectedPublications] = React.useState([]);
+  const [filteredLists, setFilteredLists] = React.useState({
+    companies: [],
+    cities: [],
+    pubGroups: [],
+  });
+
+  React.useEffect(() => {
+    // * Extracting IDs from clusterData
+    const companyIds = clusterData?.companies?.map((i) => i.comapnyId) || [];
+    const cityIds = clusterData?.cities?.map((i) => i.cityId) || [];
+    const pubIds = clusterData?.pubGroups?.map((i) => i.pubGroupId) || [];
+
+    const sortedCompanies = [...companyData].sort((a, b) => {
+      const indexA = companyIds.indexOf(a.companyid);
+      const indexB = companyIds.indexOf(b.companyid);
+
+      if (indexA !== -1 && indexB !== -1) {
+        return indexA - indexB;
+      }
+
+      if (indexA !== -1) return -1;
+      if (indexB !== -1) return 1;
+
+      return 0;
+    });
+
+    const sortedCities = [...cityData].sort((a, b) => {
+      const indexA = cityIds.indexOf(a.cityid);
+      const indexB = cityIds.indexOf(b.cityid);
+
+      if (indexA !== -1 && indexB !== -1) {
+        return indexA - indexB;
+      }
+
+      if (indexA !== -1) return -1;
+      if (indexB !== -1) return 1;
+
+      return 0;
+    });
+
+    const sortedPublications = [...publications].sort((a, b) => {
+      const indexA = pubIds.indexOf(a.publicationgroupid);
+      const indexB = pubIds.indexOf(b.publicationgroupid);
+
+      if (indexA !== -1 && indexB !== -1) {
+        return indexA - indexB;
+      }
+
+      if (indexA !== -1) return -1;
+      if (indexB !== -1) return 1;
+
+      return 0;
+    });
+
+    setFilteredLists({
+      companies: sortedCompanies,
+      cities: sortedCities,
+      pubGroups: sortedPublications,
+    });
+    setCompanies([...companyIds]);
+    setCity([...cityIds]);
+    setSelectedPublications([...pubIds]);
+  }, [clusterData, cityData, publications, companyData]);
 
   const steps = [
     {
       label: "Select Company",
       component: (
         <SelectableList
-          data={companyData}
+          data={filteredLists.companies}
           idKey="companyid"
           nameKey="companyname"
           selectedItems={companies}
@@ -43,7 +104,7 @@ export default function Selector({
       label: "Select City",
       component: (
         <SelectableList
-          data={cityData}
+          data={filteredLists.cities}
           idKey="cityid"
           nameKey="cityname"
           selectedItems={city}
@@ -56,7 +117,7 @@ export default function Selector({
       label: "Select Publication",
       component: (
         <SelectableList
-          data={publications}
+          data={filteredLists.pubGroups}
           idKey="publicationgroupid"
           nameKey="publicationgroupname"
           selectedItems={selectedPublications}
@@ -77,40 +138,30 @@ export default function Selector({
   const handleBack = () => {
     setActiveStep((prevActiveStep) => prevActiveStep - 1);
   };
+
   //* generating table data
   const generateCBCP = async () => {
     try {
-      const userToken = localStorage.getItem("user");
-      const selectedCompanies = companies.map((i) => i.companyid);
-      const selectedCities = city.map((i) => i.cityid);
-      const selectedPublication = selectedPublications.map(
-        (i) => i.publicationgroupid
-      );
-      const missingFields = [];
-      if (!clientid) missingFields.push("client");
-      if (!selectedCompanies.length) missingFields.push("company");
-      if (!selectedCities.length) missingFields.push("city");
-      if (!selectedPublication.length) missingFields.push("publication");
-
-      if (missingFields.length > 0) {
-        toast.warning(`Missing fields: ${missingFields.join(", ")}`);
+      if (
+        !clientId ||
+        !city.length ||
+        !companies.length ||
+        !selectedPublications.length
+      ) {
+        toast.warning("All fields are required.");
         return;
       }
-      const request_data = {
-        clientid: clientid,
-        companyid: arrayToString(selectedCompanies),
-        cityid: arrayToString(selectedCities),
-        pubgroupid: arrayToString(selectedPublication),
+      const requestData = {
+        clientId,
+        companies: companies,
+        cities: city,
+        pubGroups: selectedPublications,
       };
-      const response = await axios.post(`${url}generateCBCP/`, request_data, {
-        headers: {
-          Authorization: `Bearer ${userToken}`,
-        },
-      });
+      const response = await axiosInstance.post(`generateCbcp/`, requestData);
 
       if (response) {
-        toast.success(response.data.result);
-        setTableFetchFlag(true);
+        toast.success(response.data.data.message);
+        fetchCBCP();
       } else {
         toast.warning("Error while generating");
       }
@@ -121,7 +172,7 @@ export default function Selector({
 
   return (
     <Box sx={{ maxWidth: 400, flexGrow: 1 }}>
-      <Box sx={{ height: 400, maxWidth: 400, width: "100%", pl: 2 }}>
+      <Box sx={{ height: 400, maxWidth: 400, pl: 2 }}>
         {steps[activeStep].component}
       </Box>
       <MobileStepper
@@ -182,8 +233,7 @@ Selector.propTypes = {
       companyname: PropTypes.string.isRequired,
     })
   ).isRequired,
-  clientid: PropTypes.string.isRequired,
-  companies: PropTypes.array.isRequired,
-  setCompanies: PropTypes.func.isRequired,
-  setTableFetchFlag: PropTypes.func.isRequired,
+  clientId: PropTypes.string.isRequired,
+  clusterData: PropTypes.array,
+  fetchCBCP: PropTypes.func,
 };

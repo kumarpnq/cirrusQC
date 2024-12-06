@@ -2,8 +2,9 @@ import { Fragment, useState } from "react";
 import { DataGrid } from "@mui/x-data-grid";
 import { Box, Button, Divider } from "@mui/material";
 import CustomMultiSelect from "../../@core/CustomMultiSelect";
+import useFetchMongoData from "../../hooks/useFetchMongoData";
 
-const CommonGrid = () => {
+const CommonGrid = ({ clientId }) => {
   const [selectedRows, setSelectedRows] = useState([]);
   const [data, setData] = useState([
     {
@@ -12,20 +13,19 @@ const CommonGrid = () => {
     },
   ]);
   const [selectedItems, setSelectedItems] = useState([]);
+  const { data: onlinePublications } = useFetchMongoData(`onlinePublications/`);
+  console.log(onlinePublications);
 
-  // Example rows data with publicationName field
   const rows = [
     { id: 1, publicationName: "Publication A" },
     { id: 2, publicationName: "Publication B" },
     { id: 3, publicationName: "Publication C" },
   ];
 
-  // Columns definition for DataGrid
   const columns = [
     { field: "publicationName", headerName: "Publication Name", width: 200 },
   ];
 
-  // Handler for selection change
   const handleSelectionChange = (selectionModel) => {
     setSelectedRows(selectionModel);
   };
@@ -52,7 +52,7 @@ const CommonGrid = () => {
         </Button>
       </Box>
       <Divider sx={{ my: 1 }} />
-      <Box sx={{ height: 400, width: "100%" }}>
+      <Box sx={{ height: "80vh", width: "100%" }}>
         <DataGrid
           rows={rows}
           columns={columns}

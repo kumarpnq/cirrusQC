@@ -97,15 +97,15 @@ const EditAddModal = ({ open, onClose, openFromWhere, row }) => {
       // case "Keyword Details":
       //   return <KeywordDetails />;
       case "Print Publications":
-        return <BasketCityPubPage />;
+        return <BasketCityPubPage row={row} />;
       // case "User Detail":
       //   return <UserDetails />;
       // case "City Basket":
       //   return <CityBasket />;
       // case "Print Publication":
       //   return <PrintPublication />;
-      case "Online Publication":
-        return <OnlinePublicationNew />;
+      case "Online Publications":
+        return <OnlinePublicationNew clientId={row?.clientId} />;
       // case "Publication Priority":
       //   return <OnlinePublicationNew />;
       default:

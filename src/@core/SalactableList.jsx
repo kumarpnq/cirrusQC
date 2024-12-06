@@ -4,16 +4,16 @@ import {
   Box,
   List,
   ListItem,
-  ListItemText,
   Input,
   Paper,
   Button,
   Divider,
+  Typography,
 } from "@mui/material";
 import { SearchOutlined } from "@mui/icons-material";
 
 const SelectableList = ({
-  data,
+  data = [],
   idKey,
   nameKey,
   selectedItems,
@@ -27,13 +27,11 @@ const SelectableList = ({
   }, [selectedItems]);
 
   const handleToggleItem = (item) => () => {
-    const currentIndex = selectedItemsLocal.findIndex(
-      (i) => i[idKey] === item[idKey]
-    );
+    const currentIndex = selectedItemsLocal.findIndex((i) => i === item[idKey]);
     const newSelectedItems = [...selectedItemsLocal];
 
     if (currentIndex === -1) {
-      newSelectedItems.push(item);
+      newSelectedItems.push(item[idKey]);
     } else {
       newSelectedItems.splice(currentIndex, 1);
     }
@@ -47,8 +45,9 @@ const SelectableList = ({
   };
 
   const handleSelectAll = () => {
-    setSelectedItemsLocal([...data]);
-    setSelectedItems([...data]);
+    const localIds = data.map((i) => i[idKey]);
+    setSelectedItemsLocal([...localIds]);
+    setSelectedItems([...localIds]);
   };
 
   const handleSelectNone = () => {
@@ -58,9 +57,10 @@ const SelectableList = ({
 
   const [searchTerm, setSearchTerm] = useState("");
 
-  const filteredItems = data.filter((item) =>
-    item[nameKey].toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const filteredItems =
+    data.filter((item) =>
+      item[nameKey].toLowerCase().includes(searchTerm.toLowerCase())
+    ) || [];
 
   return (
     <Box sx={{ maxWidth: 300, mt: 1 }} component={Paper}>
@@ -89,31 +89,53 @@ const SelectableList = ({
           </Button>
         </ListItem>
         <Divider sx={{ my: 1 }} />
-        {filteredItems.map((item) => (
-          <ListItem
-            key={item[idKey]}
-            button
-            onClick={handleToggleItem(item)}
-            dense
-            selected={selectedItemsLocal.some((i) => i[idKey] === item[idKey])}
-          >
-            <ListItemText primary={item[nameKey]} />
-          </ListItem>
-        ))}
+        {filteredItems?.map(
+          (item) =>
+            item &&
+            item[idKey] && (
+              <Box
+                key={item[idKey]}
+                onClick={handleToggleItem(item)}
+                sx={{
+                  padding: "8px",
+                  marginBottom: "4px",
+                  cursor: "pointer",
+                  borderRadius: "4px",
+                  backgroundColor: selectedItemsLocal?.some(
+                    (i) => i === item[idKey]
+                  )
+                    ? "primary.main"
+                    : "inherit",
+                  color: selectedItemsLocal?.some((i) => i === item[idKey])
+                    ? "white"
+                    : "inherit",
+                  "&:hover": {
+                    backgroundColor: "primary.light",
+                  },
+                }}
+                fontSize={"0.9em"}
+              >
+                <Typography variant="body1" fontSize={"0.9em"}>
+                  {item[nameKey] || "Unnamed"}
+                </Typography>
+              </Box>
+            )
+        )}
       </List>
     </Box>
   );
 };
 
+// Updated PropTypes to reflect the correct data keys
 SelectableList.propTypes = {
   data: PropTypes.arrayOf(
     PropTypes.shape({
-      cityid: PropTypes.number.isRequired,
-      cityname: PropTypes.string.isRequired,
+      companyid: PropTypes.string.isRequired, // changed from cityid to companyid
+      companyname: PropTypes.string.isRequired, // changed from cityname to companyname
     })
   ).isRequired,
-  idKey: PropTypes.string.isRequired,
-  nameKey: PropTypes.string.isRequired,
+  idKey: PropTypes.string.isRequired, // idKey now refers to 'companyid'
+  nameKey: PropTypes.string.isRequired, // nameKey now refers to 'companyname'
   selectedItems: PropTypes.array.isRequired,
   setSelectedItems: PropTypes.func.isRequired,
   placeholder: PropTypes.string,
