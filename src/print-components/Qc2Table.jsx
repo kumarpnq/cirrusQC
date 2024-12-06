@@ -285,8 +285,8 @@ const Qc2Table = ({
                           (item === "space" && "pl-16") ||
                           (item === "reporting_tone" && "pl-16") ||
                           (item === "reporting_subject" && "pl-3") ||
-                          (item === "remark" && "pl-16") ||
-                          (item === "keyword" && "pl-24") ||
+                          (item === "remark" && "pl-1") ||
+                          (item === "keyword" && "pl-40") ||
                           (item === "detail_summary" && "pl-32") ||
                           (item === "category" && "pl-36") ||
                           (item === "subcategory" && "pl-36") ||

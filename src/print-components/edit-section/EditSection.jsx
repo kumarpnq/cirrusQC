@@ -158,7 +158,6 @@ const EditSection = ({
       }
     });
     setDifferData(newDifferData);
-    console.log(prominence);
 
     if (selectedItems.length > 0) {
       const updatedSelectedRows = selectedItems.map((row) => ({
@@ -308,7 +307,7 @@ const EditSection = ({
             modifiedFieldsForRow.subcategory = updatedRow.subcategory;
           }
           if (updatedRow.remark !== selectedItem.remark) {
-            modifiedFieldsForRow.remarks = updatedRow.remark;
+            modifiedFieldsForRow.remark = updatedRow.remark;
           }
           if (updatedRow.space !== selectedItem.space) {
             modifiedFieldsForRow.space = updatedRow.space;
