@@ -10,7 +10,7 @@ export default function Button({
 }) {
   return (
     <button
-      className={`flex border border-gray-400 rounded px-5 uppercase text-white mt-3 tracking-wider text-[0.9em] bg-primary ${
+      className={`flex border border-gray-400 rounded px-5 uppercase text-white mt-3 tracking-wider text-[0.9em] bg-primary text-nowrap ${
         (isLoading && "text-yellow-300", isDanger ? "bg-red-500" : "bg-primary")
       }`}
       onClick={onClick}
