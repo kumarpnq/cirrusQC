@@ -92,7 +92,7 @@ const Info = ({
         requestData
       );
       if (response.status === 200) {
-        toast.success(response.data.status.message);
+        toast.success(response.data.data.status);
         setGlobalTabValue(1);
         fetchInfo();
       }

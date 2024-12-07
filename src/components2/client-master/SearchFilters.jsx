@@ -106,6 +106,13 @@ const SearchFilters = ({
     }
   };
 
+  const handleClear = () => {
+    setFromDate(null);
+    setToDate(null);
+    setSearchText("");
+    setIsActive("");
+  };
+
   return (
     <>
       <form onSubmit={handleSubmit} className="mt-1">
@@ -155,6 +162,9 @@ const SearchFilters = ({
             onClick={() => setOpen((prev) => !prev)}
           >
             Add
+          </Button>
+          <Button size="small" variant="outlined" onClick={handleClear}>
+            Clear
           </Button>
           <Button
             size="small"
