@@ -85,6 +85,7 @@ const SectionOrder = ({ clientId, setGlobalTabValue }) => {
 
       if (changedRows.length === 0) {
         console.log("No changes to save.");
+        setGlobalTabValue(2);
         return;
       }
 
