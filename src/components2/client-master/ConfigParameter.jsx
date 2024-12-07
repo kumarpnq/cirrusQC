@@ -155,7 +155,8 @@ const ConfigParameter = ({ clientId, setGlobalTabValue }) => {
 
       const updatedFields = getUpdatedFields();
       if (Object.keys(updatedFields).length === 0) {
-        toast.error("No changes detected.");
+        setGlobalTabValue(3);
+        console.log("No changes detected.");
         return;
       }
 

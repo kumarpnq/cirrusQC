@@ -14,7 +14,7 @@ function a11yProps(index) {
   };
 }
 
-const EditComponentRender = (value, clientId, setValue) => {
+const EditComponentRender = (value, clientId, setValue, setSelectedMainTab) => {
   switch (value) {
     case 0:
       return <ClientInfo clientId={clientId} setGlobalTabValue={setValue} />;
@@ -27,13 +27,18 @@ const EditComponentRender = (value, clientId, setValue) => {
     case 3:
       return <MailerColumns clientId={clientId} setGlobalTabValue={setValue} />;
     case 4:
-      return <MailerConfigure clientId={clientId} />;
+      return (
+        <MailerConfigure
+          clientId={clientId}
+          setSelectedMainTab={setSelectedMainTab}
+        />
+      );
 
     default:
       return <Typography>Invalid Tab</Typography>;
   }
 };
-const ClientDetail = ({ clientId }) => {
+const ClientDetail = ({ clientId, setSelectedMainTab }) => {
   const [value, setValue] = useState(0);
 
   const handleChange = (event, newValue) => {
@@ -59,7 +64,7 @@ const ClientDetail = ({ clientId }) => {
             <Tab label="MailerConfigure" {...a11yProps(4)} />
           </Tabs>
         </Box>
-        {EditComponentRender(value, clientId, setValue)}
+        {EditComponentRender(value, clientId, setValue, setSelectedMainTab)}
       </form>
     </div>
   );
@@ -67,5 +72,6 @@ const ClientDetail = ({ clientId }) => {
 
 ClientDetail.propTypes = {
   clientId: PropTypes.string.isRequired,
+  setSelectedMainTab: PropTypes.func.isRequired,
 };
 export default ClientDetail;

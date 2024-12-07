@@ -8,7 +8,7 @@ import toast from "react-hot-toast";
 import PropTypes from "prop-types";
 import DeleteConfirmationDialog from "../../@core/DeleteConfirmationDialog";
 
-const CommonGrid = ({ clientId }) => {
+const CommonGrid = ({ clientId, setSelectedMainTab }) => {
   const [selectedRows, setSelectedRows] = useState([]);
   const [selectionModal, setSelectionModal] = useState([]);
   const [selectedItems, setSelectedItems] = useState([]);
@@ -133,6 +133,7 @@ const CommonGrid = ({ clientId }) => {
           {addLoading && <CircularProgress size={"1em"} />}
           Add
         </Button>
+
         <Button
           variant="outlined"
           size="small"
@@ -140,6 +141,13 @@ const CommonGrid = ({ clientId }) => {
           onClick={handleDeleteOpen}
         >
           Delete
+        </Button>
+        <Button
+          variant="outlined"
+          size="small"
+          onClick={() => setSelectedMainTab("Print Publications")}
+        >
+          Next
         </Button>
       </Box>
       <Divider sx={{ my: 1 }} />
@@ -167,6 +175,7 @@ const CommonGrid = ({ clientId }) => {
 
 CommonGrid.propTypes = {
   clientId: PropTypes.string.isRequired,
+  setSelectedMainTab: PropTypes.func,
 };
 
 export default CommonGrid;

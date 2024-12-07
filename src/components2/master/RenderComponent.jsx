@@ -8,6 +8,7 @@ import StateMaster from "./state-master/StateMaster";
 import CountryMaster from "./country-master/CountryMaster";
 import UserMaster from "./user-master/UserMaster";
 import IndustryMaster from "./industry-master/IndustryMaster";
+import ClusterMaster from "./cluster-master/ClusterMaster";
 import { useContext } from "react";
 import { ResearchContext } from "../../context/ContextProvider";
 
@@ -39,6 +40,8 @@ const RenderComponent = ({ value }) => {
       return screenPermissions?.UserMaster ? <UserMaster /> : null;
     case "Industry Master":
       return screenPermissions?.IndustryMaster ? <IndustryMaster /> : null;
+    case "Cluster Master":
+      return <ClusterMaster />;
 
     default:
       return null;

@@ -22,7 +22,7 @@ import toast from "react-hot-toast";
 import { format, parseISO } from "date-fns";
 import AddGridModal from "./companyBasket/addGridModal";
 
-const CompanyBasket = ({ clientId }) => {
+const CompanyBasket = ({ clientId, setSelectedMainTab }) => {
   const [modifiedData, setModifiedData] = useState([]);
   const [clientBasketData, setClientBasketData] = useState([]);
   const [clientBasketLoading, setClientBasketLoading] = useState(false);
@@ -81,7 +81,8 @@ const CompanyBasket = ({ clientId }) => {
     try {
       setUpdateLoading(true);
       if (!modifiedData.length) {
-        toast.error("No data to update");
+        console.log("No data to update");
+        setSelectedMainTab("Online Publications");
         return;
       }
 

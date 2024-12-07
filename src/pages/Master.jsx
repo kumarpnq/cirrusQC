@@ -17,6 +17,7 @@ import LocationCityIcon from "@mui/icons-material/LocationCity";
 import PrintIcon from "@mui/icons-material/Print";
 import PublicIcon from "@mui/icons-material/Public";
 import PriorityHighIcon from "@mui/icons-material/PriorityHigh";
+import DashboardIcon from "@mui/icons-material/Dashboard";
 import { styled } from "@mui/system";
 import RenderComponent from "../components2/master/RenderComponent";
 import { ResearchContext } from "../context/ContextProvider";
@@ -131,6 +132,11 @@ const Master = () => {
       label: "Industry Master",
       icon: <PriorityHighIcon />,
       permission: screenPermissions?.IndustryMaster,
+    },
+    {
+      label: "Cluster Master",
+      icon: <DashboardIcon />,
+      permission: true,
     },
   ];
 

@@ -88,11 +88,27 @@ const EditAddModal = ({ open, onClose, openFromWhere, row }) => {
     switch (val) {
       // * client basket portion
       case "Client Detail":
-        return <ClientDetail clientId={row?.clientId} />;
+        return (
+          <ClientDetail
+            clientId={row?.clientId}
+            setSelectedItem={setSelectedItem}
+            setSelectedMainTab={setSelectedItem}
+          />
+        );
       case "Email Details":
-        return <EmailDetails clientId={row?.clientId} />;
+        return (
+          <EmailDetails
+            clientId={row?.clientId}
+            setSelectedMainTab={setSelectedItem}
+          />
+        );
       case "Company Basket":
-        return <CompanyBasket clientId={row?.clientId} />;
+        return (
+          <CompanyBasket
+            clientId={row?.clientId}
+            setSelectedMainTab={setSelectedItem}
+          />
+        );
       // * cluster portion
       // case "Keyword Details":
       //   return <KeywordDetails />;
@@ -105,7 +121,12 @@ const EditAddModal = ({ open, onClose, openFromWhere, row }) => {
       // case "Print Publication":
       //   return <PrintPublication />;
       case "Online Publications":
-        return <OnlinePublicationNew clientId={row?.clientId} />;
+        return (
+          <OnlinePublicationNew
+            clientId={row?.clientId}
+            setSelectedMainTab={setSelectedItem}
+          />
+        );
       // case "Publication Priority":
       //   return <OnlinePublicationNew />;
       default:
@@ -211,6 +232,7 @@ EditAddModal.propTypes = {
   onClose: PropTypes.func.isRequired,
   openFromWhere: PropTypes.string,
   row: PropTypes.object,
+  setSelectedMainTab: PropTypes.func,
 };
 
 export default EditAddModal;

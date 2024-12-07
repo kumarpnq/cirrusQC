@@ -19,7 +19,6 @@ const useStyle = makeStyles(() => ({
 const SearchFilters = ({ setCompanies, selectedRows, setSelectedRows }) => {
   const classes = useStyle();
 
-  const [display, setDisplay] = useState();
   const [searchText, setSearchText] = useState("");
   const [activeValue, setActiveValue] = useState("");
   const [loading, setLoading] = useState(false);
@@ -47,9 +46,6 @@ const SearchFilters = ({ setCompanies, selectedRows, setSelectedRows }) => {
         params.isActive = getActiveValue(activeValue);
       }
 
-      if (display) {
-        params.display = display;
-      }
       if (searchText) {
         params.searchText = searchText;
       }
@@ -104,13 +100,6 @@ const SearchFilters = ({ setCompanies, selectedRows, setSelectedRows }) => {
         className="flex flex-wrap items-center gap-1 p-1"
         onSubmit={handleFormSubmit}
       >
-        <CustomTextField
-          value={display}
-          setValue={setDisplay}
-          placeholder={"Display"}
-          type={"number"}
-          width={200}
-        />
         <CustomTextField
           value={searchText}
           setValue={setSearchText}

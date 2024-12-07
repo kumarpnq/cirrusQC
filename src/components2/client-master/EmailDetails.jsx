@@ -14,7 +14,7 @@ import { format, parseISO } from "date-fns";
 import EmailDetailsAddModal from "./EmailDetailsAddModal";
 import axiosInstance from "../../../axiosConfig";
 
-const EmailDetails = ({ clientId }) => {
+const EmailDetails = ({ clientId, setSelectedMainTab }) => {
   const [data, setData] = useState([]);
 
   const [loading, setLoading] = useState(false);
@@ -190,6 +190,11 @@ const EmailDetails = ({ clientId }) => {
 
         return request_data;
       });
+      if (!requestData.length) {
+        console.log("No changes detected");
+        setSelectedMainTab("Company Basket");
+        return;
+      }
       const data = {
         clientId: clientId,
         emailDetails: requestData,

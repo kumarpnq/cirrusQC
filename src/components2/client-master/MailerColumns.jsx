@@ -108,7 +108,8 @@ const MailerColumns = ({ clientId, setGlobalTabValue }) => {
         }));
 
       if (modifiedColumns.length === 0) {
-        toast.success("No changes to update.");
+        console.log("No changes to update.");
+        setGlobalTabValue(4);
         return;
       }
 

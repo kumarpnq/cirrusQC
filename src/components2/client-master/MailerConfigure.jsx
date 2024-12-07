@@ -57,7 +57,7 @@ const StyledTableHeadCell = styled(TableCell)(({ theme }) => ({
   minWidth: 150, // Adjust as per requirement to ensure consistent width
 }));
 
-const MailerConfigure = ({ clientId }) => {
+const MailerConfigure = ({ clientId, setSelectedMainTab }) => {
   const classes = useStyle();
 
   const [initialState, setInitialState] = useState([]);
@@ -130,7 +130,8 @@ const MailerConfigure = ({ clientId }) => {
         row.fontColor !== initialState[index].fontColor
     );
     if (updatedData.length === 0) {
-      toast.error("No changes detected");
+      console.log("No changes detected");
+      setSelectedMainTab("Email Details");
       return;
     }
     try {
