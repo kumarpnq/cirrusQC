@@ -600,10 +600,14 @@ const EditDialog = ({
                 <>
                   <Card>
                     <CardContent>
-                      <Box display={"flex"} gap={1} flexWrap={"wrap"}>
+                      <>
                         {isMultiple ? (
                           <>
-                            <Typography component={"div"}>
+                            <Typography
+                              component={"div"}
+                              display={"flex"}
+                              gap={0.5}
+                            >
                               {" "}
                               <Button
                                 btnText={
@@ -621,15 +625,18 @@ const EditDialog = ({
                                 onClick={() => updateHeaderData(false)}
                                 isLoading={updateHeaderLoading}
                               />
-                            </Typography>
-                            <Typography component={"div"}>
-                              {" "}
                               {isMultiple && (
                                 <Button
                                   btnText="Skip & Next"
                                   onClick={handleSkip}
                                 />
                               )}
+                            </Typography>
+                            <Typography
+                              component={"div"}
+                              display={"flex"}
+                              gap={0.5}
+                            >
                               <input
                                 type="number"
                                 value={pageNumber}
@@ -639,8 +646,6 @@ const EditDialog = ({
                                 placeholder="page"
                                 className="h-[23px] outline-none border border-gray-400 mt-3 rounded-[3px] w-28 px-2 text-sm"
                               />
-                            </Typography>
-                            <Typography component={"div"}>
                               <Button
                                 btnText="Stitch"
                                 onClick={handleStitchOpen}
@@ -653,7 +658,7 @@ const EditDialog = ({
                             </Typography>
                           </>
                         ) : (
-                          <>
+                          <Box display={"flex"} gap={1} flexWrap={"wrap"}>
                             {" "}
                             <Button
                               btnText={
@@ -692,9 +697,9 @@ const EditDialog = ({
                               onClick={handleUnStitchOpen}
                               btnText="unStitch"
                             />
-                          </>
+                          </Box>
                         )}
-                      </Box>
+                      </>
                       <Box
                         sx={{
                           display: "flex",
