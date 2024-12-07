@@ -34,11 +34,12 @@ const ScrollNavigator = ({
       setSelectedItems(filteredItems);
     }
   };
+
   return (
     <Box
       sx={{
-        position: "relative",
-        width: "300px",
+        // position: "relative",
+        width: "150px",
         height: "250px",
         overflow: "hidden",
       }}
@@ -62,7 +63,7 @@ const ScrollNavigator = ({
             )}
 
             <Typography variant="h6" fontSize={"0.9em"}>
-              {item.headline}
+              {item.id}
             </Typography>
             <Typography variant="subtitle2" fontWeight={"bold"}>
               {item.publication_name}
@@ -93,7 +94,7 @@ const StyledListItem = styled(ListItem)(({ active }) => ({
 }));
 
 const StyledList = styled(List)({
-  position: "relative",
+  // position: "relative",
   overflowY: "scroll",
   height: "100%",
   padding: 0,
@@ -104,7 +105,7 @@ const StyledList = styled(List)({
 });
 
 const StyledIconButton = styled(IconButton)({
-  position: "absolute",
+  // position: "absolute",
   right: 0,
   top: 0,
 });
