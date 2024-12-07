@@ -582,7 +582,7 @@ const EditDialog = ({
                     </Box>
                   </Grid>
                 </Grid>
-                <Box sx={{ mt: 2, height: 100 }}>
+                <Box sx={{ mt: 0, height: 100 }}>
                   {isMultiple && (
                     <ScrollNavigator
                       selectedItems={selectedItems}
@@ -601,36 +601,99 @@ const EditDialog = ({
                   <Card>
                     <CardContent>
                       <Box display={"flex"} gap={1} flexWrap={"wrap"}>
-                        <Button
-                          btnText={
-                            updateHeaderLoading ? "saving" : "Save partial"
-                          }
-                          onClick={() => updateHeaderData(true)}
-                          isLoading={updateHeaderLoading}
-                        />
-                        <Button
-                          btnText={updateHeaderLoading ? "saving" : buttonText}
-                          onClick={() => updateHeaderData(false)}
-                          isLoading={updateHeaderLoading}
-                        />
-                        {isMultiple && (
-                          <Button btnText="Skip & Next" onClick={handleSkip} />
-                        )}
-                        <input
-                          type="number"
-                          value={pageNumber}
-                          onChange={(e) =>
-                            setPageNumber(Number(e.target.value))
-                          }
-                          placeholder="page"
-                          className="h-[23px] outline-none border border-gray-400 mt-3 rounded-[3px] w-28 px-2 text-sm"
-                        />
-                        <Button btnText="Stitch" onClick={handleStitchOpen} />
+                        {isMultiple ? (
+                          <>
+                            <Typography component={"div"}>
+                              {" "}
+                              <Button
+                                btnText={
+                                  updateHeaderLoading
+                                    ? "saving"
+                                    : "Save partial"
+                                }
+                                onClick={() => updateHeaderData(true)}
+                                isLoading={updateHeaderLoading}
+                              />
+                              <Button
+                                btnText={
+                                  updateHeaderLoading ? "saving" : buttonText
+                                }
+                                onClick={() => updateHeaderData(false)}
+                                isLoading={updateHeaderLoading}
+                              />
+                            </Typography>
+                            <Typography component={"div"}>
+                              {" "}
+                              {isMultiple && (
+                                <Button
+                                  btnText="Skip & Next"
+                                  onClick={handleSkip}
+                                />
+                              )}
+                              <input
+                                type="number"
+                                value={pageNumber}
+                                onChange={(e) =>
+                                  setPageNumber(Number(e.target.value))
+                                }
+                                placeholder="page"
+                                className="h-[23px] outline-none border border-gray-400 mt-3 rounded-[3px] w-28 px-2 text-sm"
+                              />
+                            </Typography>
+                            <Typography component={"div"}>
+                              <Button
+                                btnText="Stitch"
+                                onClick={handleStitchOpen}
+                              />
 
-                        <Button
-                          onClick={handleUnStitchOpen}
-                          btnText="unStitch"
-                        />
+                              <Button
+                                onClick={handleUnStitchOpen}
+                                btnText="unStitch"
+                              />
+                            </Typography>
+                          </>
+                        ) : (
+                          <>
+                            {" "}
+                            <Button
+                              btnText={
+                                updateHeaderLoading ? "saving" : "Save partial"
+                              }
+                              onClick={() => updateHeaderData(true)}
+                              isLoading={updateHeaderLoading}
+                            />
+                            <Button
+                              btnText={
+                                updateHeaderLoading ? "saving" : buttonText
+                              }
+                              onClick={() => updateHeaderData(false)}
+                              isLoading={updateHeaderLoading}
+                            />
+                            {isMultiple && (
+                              <Button
+                                btnText="Skip & Next"
+                                onClick={handleSkip}
+                              />
+                            )}
+                            <input
+                              type="number"
+                              value={pageNumber}
+                              onChange={(e) =>
+                                setPageNumber(Number(e.target.value))
+                              }
+                              placeholder="page"
+                              className="h-[23px] outline-none border border-gray-400 mt-3 rounded-[3px] w-28 px-2 text-sm"
+                            />
+                            <Button
+                              btnText="Stitch"
+                              onClick={handleStitchOpen}
+                            />
+                            <Button
+                              onClick={handleUnStitchOpen}
+                              btnText="unStitch"
+                            />
+                          </>
+                        )}
                       </Box>
                       <Box
                         sx={{
