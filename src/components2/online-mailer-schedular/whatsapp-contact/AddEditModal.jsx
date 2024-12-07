@@ -13,6 +13,7 @@ import CustomTextField from "../../../@core/CutsomTextField";
 import CustomSingleSelect from "../../../@core/CustomSingleSelect2";
 import useFetchData from "../../../hooks/useFetchData";
 import { url } from "../../../constants/baseUrl";
+import CustomMultiSelect from "../../../@core/CustomMultiSelect";
 
 // Styles for modal content
 const style = {
@@ -41,7 +42,11 @@ const StyledText = styled(Typography)({
 
 const AddEditModal = ({ open, handleClose, row, fromWhere }) => {
   const [selectedClient, setSelectedClient] = useState("");
-  console.log(row);
+  const [selectedCompanies, setSelectedCompanies] = useState([]);
+  const [selectedUser, setSelectedUser] = useState("");
+  const [timeZone, setTimeZone] = useState("");
+  const [contacts, setContacts] = useState("");
+
   // * get user ids
   const userIds = row?.whatsappConfig?.map((item) => item.userId) || [];
   //  * get companies
@@ -80,14 +85,24 @@ const AddEditModal = ({ open, handleClose, row, fromWhere }) => {
                 <CustomSingleSelect
                   dropdownToggleWidth={"100%"}
                   dropdownWidth={"100%"}
-                  keyId="companyid"
-                  keyName="companyname"
+                  keyId="clientid"
+                  keyName="clientname"
                   options={[]}
                   selectedItem={selectedClient}
                   setSelectedItem={setSelectedClient}
                   title="Client"
                 />
               )}
+            </StyledWrapper>
+            <StyledWrapper>
+              <StyledText>company</StyledText>
+              <CustomMultiSelect
+                dropdownToggleWidth={"100%"}
+                dropdownWidth={"100%"}
+                keyId="companyid"
+                keyName="companyname"
+                options={[]}
+              />
             </StyledWrapper>
           </Box>
           <Divider sx={{ my: 1 }} />
