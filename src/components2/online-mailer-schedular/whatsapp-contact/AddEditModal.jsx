@@ -7,16 +7,18 @@ import {
   TextField,
   FormControlLabel,
   Checkbox,
+  CircularProgress,
 } from "@mui/material";
 import { styled } from "@mui/system";
 import PropTypes from "prop-types";
 import { useEffect, useState } from "react";
-import CustomTextField from "../../../@core/CutsomTextField";
 import CustomSingleSelect from "../../../@core/CustomSingleSelect2";
 import useFetchData from "../../../hooks/useFetchData";
 import { url } from "../../../constants/baseUrl";
 import CustomMultiSelect from "../../../@core/CustomMultiSelect";
 import YesOrNo from "../../../@core/YesOrNo";
+import toast from "react-hot-toast";
+import axiosInstance from "../../../../axiosConfig";
 
 // Styles for modal content
 const style = {
@@ -61,10 +63,16 @@ const AddEditModal = ({ open, handleClose, row, fromWhere }) => {
   const [selectedSlots, setSelectedSlots] = useState([]);
   const [selectedContacts, setSelectedContacts] = useState("");
 
+  // * update states
+  const [uploadLoading, setUploadLoading] = useState(false);
+
   // * get user ids
   const userIds = row?.whatsappConfig?.map((item) => item.userId) || [];
   //  * get companies
-  const { data: companiesData } = useFetchData(`${url}companylist/`);
+  const { data: companiesData } = useFetchData(
+    `${url}companylist/${row?.clientId}`
+  );
+  const companyArrayToMap = companiesData?.data?.companies || [];
 
   useEffect(() => {
     if (fromWhere === "Edit") {
@@ -86,8 +94,51 @@ const AddEditModal = ({ open, handleClose, row, fromWhere }) => {
       );
     }
   }, [selectedUser, fromWhere]);
-  const handleSubmit = (event) => {
+
+  const handleSubmit = async (event) => {
     event.preventDefault();
+    try {
+      setUploadLoading(true);
+      let rowForStates = row?.whatsappConfig?.find(
+        (i) => i.userId === selectedUser
+      );
+      let activeUserLocal = rowForStates?.isActive === "Y" ? "Yes" : "No";
+      let activeCompanies = rowForStates?.companyIds || [];
+      let activeSlots =
+        rowForStates?.slots
+          ?.filter((i) => i.isActive === "Y")
+          .map((i) => i.time) || [];
+      let activeContacts =
+        rowForStates?.contacts
+          ?.filter((i) => i.isActive === "Y")
+          .map((i) => i.contactNumber)
+          .join(",") || "";
+      const requestData = {
+        clientId: row.clientId,
+        userId: selectedUser,
+      };
+
+      if (activeUser !== activeUserLocal)
+        requestData.isActive = activeUser === "Yes" ? "Y" : "N";
+      if (JSON.stringify(selectedCompanies) !== JSON.stringify(activeCompanies))
+        requestData.companyIds = selectedCompanies;
+      if (JSON.stringify(selectedSlots) !== activeSlots)
+        requestData.slots = selectedSlots;
+      if (selectedContacts !== activeContacts)
+        requestData.contacts = selectedContacts.join(",");
+
+      const response = await axiosInstance.post(
+        `updateWhatsappSchedule/`,
+        requestData
+      );
+
+      console.log(response);
+    } catch (error) {
+      toast.error("Something went wrong.");
+      console.log(error);
+    } finally {
+      setUploadLoading(false);
+    }
   };
 
   return (
@@ -161,11 +212,11 @@ const AddEditModal = ({ open, handleClose, row, fromWhere }) => {
               <StyledWrapper>
                 <StyledText>Company : </StyledText>
                 <CustomMultiSelect
-                  dropdownToggleWidth={280}
-                  dropdownWidth={280}
+                  dropdownToggleWidth={270}
+                  dropdownWidth={270}
                   keyId="companyid"
                   keyName="companyname"
-                  options={[{ companyid: 1, companyname: "dabur" }]}
+                  options={companyArrayToMap || []}
                   selectedItems={selectedCompanies}
                   setSelectedItems={setSelectedCompanies}
                   title="Companies"
@@ -174,8 +225,8 @@ const AddEditModal = ({ open, handleClose, row, fromWhere }) => {
               <StyledWrapper>
                 <StyledText>Screen : </StyledText>
                 <CustomMultiSelect
-                  dropdownToggleWidth={280}
-                  dropdownWidth={280}
+                  dropdownToggleWidth={270}
+                  dropdownWidth={270}
                   keyId="screenId"
                   keyName="screenName"
                   options={[
@@ -201,8 +252,8 @@ const AddEditModal = ({ open, handleClose, row, fromWhere }) => {
               <StyledWrapper>
                 <StyledText>Slots : </StyledText>
                 <CustomMultiSelect
-                  dropdownToggleWidth={280}
-                  dropdownWidth={280}
+                  dropdownToggleWidth={270}
+                  dropdownWidth={300}
                   keyId="slotId"
                   keyName="slotName"
                   options={[{ slotId: 1, slotName: "00:00-00:30" }]}
@@ -232,7 +283,13 @@ const AddEditModal = ({ open, handleClose, row, fromWhere }) => {
             >
               Close
             </Button>
-            <Button variant="outlined" size="small" type="submit">
+            <Button
+              variant="outlined"
+              size="small"
+              type="submit"
+              sx={{ display: "flex", alignItems: "center", gap: 1 }}
+            >
+              {uploadLoading && <CircularProgress size={"1em"} />}
               Save
             </Button>
           </Box>

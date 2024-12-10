@@ -68,6 +68,7 @@ const StitchModal = ({
   const [filteredArticles, setFilteredArticles] = useState([]);
   const [openArticleView, setOpenArticleView] = useState(false);
   const [idForView, setIdForView] = useState(null);
+  const [loading, setLoading] = useState(false);
 
   const handleOpenArticleView = (id) => {
     setIdForView(id);
@@ -130,6 +131,7 @@ const StitchModal = ({
   };
   const handleSave = async () => {
     try {
+      setLoading(true);
       const userToken = localStorage.getItem("user");
       const request_data = {
         parent_id: articleId,
@@ -161,6 +163,8 @@ const StitchModal = ({
       }
     } catch (error) {
       toast.error("Something went wrong.");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -321,6 +325,7 @@ const StitchModal = ({
                   <Button
                     onClick={handleSave}
                     btnText={isStitch ? "Stitch" : "unStitch"}
+                    isLoading={loading}
                   />
                 </Typography>
               </Box>

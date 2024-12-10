@@ -179,7 +179,7 @@ const ArticleView = () => {
     (value === 3 && articleData?.TXTPATH);
 
   return (
-    <div className="h-screen px-4">
+    <div className="h-screen px-4 overflow-scroll">
       {/* header part */}
       <Box
         display="flex"

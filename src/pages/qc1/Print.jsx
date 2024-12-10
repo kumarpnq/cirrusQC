@@ -69,7 +69,7 @@ const Print = () => {
   const [uploadToDate, setUploadToDate] = useState(null);
   const [publicationGroup, setPublicationGroup] = useState("");
   const [publication, setPublication] = useState("");
-  const [pubType, setPubType] = useState("");
+  const [pubType, setPubType] = useState("DAILY");
   const [selectedCity, setSelectedCity] = useState([]);
   const [selectedLanguages, setSelectedLanguages] = useState([]);
   const [qc1Done, setQc1Done] = useState("0");

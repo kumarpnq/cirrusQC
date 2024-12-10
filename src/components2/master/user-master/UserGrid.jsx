@@ -96,18 +96,7 @@ const UserGrid = () => {
       sortable: false,
       disableColumnMenu: true,
     },
-    {
-      field: "delete",
-      headerName: "Delete",
-      renderCell: () => (
-        <IconButton onClick={() => alert("Record deleted.")}>
-          <DeleteIcon />
-        </IconButton>
-      ),
-      width: 70,
-      sortable: false,
-      disableColumnMenu: true,
-    },
+
     {
       field: "active",
       headerName: "Active",

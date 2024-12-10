@@ -34,6 +34,7 @@ const CustomTextField = ({
           },
         }}
         multiline={isMultiline}
+        maxRows={5}
         value={value}
         margin="dense"
         onChange={onChange}

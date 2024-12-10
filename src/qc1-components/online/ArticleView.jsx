@@ -23,6 +23,7 @@ const style = {
   height: "95vh",
   backgroundColor: "white",
   outline: "none",
+  overflow: "scroll",
 };
 
 function CustomTabPanel(props) {
