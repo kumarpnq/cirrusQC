@@ -5,7 +5,7 @@ export const style = {
   top: "50%",
   left: "50%",
   transform: "translate(-50%, -50%)",
-  width: 400,
+  width: 500,
   bgcolor: "background.paper",
   border: "1px solid #ddd",
   boxShadow: 24,
@@ -34,7 +34,7 @@ export const StyledText = styled(Typography)(({ theme }) => ({
   color: theme.palette.text.secondary,
   fontWeight: "500",
   whiteSpace: "nowrap",
-  width: 150,
+  width: 255,
   overflow: "hidden",
   textOverflow: "ellipsis",
   [theme.breakpoints.down("sm")]: {
@@ -47,7 +47,7 @@ export const StyledText = styled(Typography)(({ theme }) => ({
   },
   [theme.breakpoints.up("lg")]: {
     fontSize: "1em",
-    width: 150,
+    width: 250,
   },
   textAlign: "left",
   padding: theme.spacing(0.5),

@@ -687,3 +687,102 @@ export const weeklyDays = [
   { id: "friday", name: "Friday" },
   { id: "saturday", name: "Saturday" },
 ];
+
+export const screensArray = [
+  {
+    screenId: "Online-QC2",
+    screenName: "Online QC2",
+  },
+  {
+    screenId: "Print-QC2",
+    screenName: "Print QC2",
+  },
+  {
+    screenId: "Dump",
+    screenName: "Dump",
+  },
+  {
+    screenId: "Manual-upload",
+    screenName: "Manual Upload",
+  },
+  {
+    screenId: "Non-Tagged",
+    screenName: "Non Tagged",
+  },
+  {
+    screenId: "Analytics",
+    screenName: "Analytics",
+  },
+  {
+    screenId: "QC1-Online",
+    screenName: "QC1 Online",
+  },
+  {
+    screenId: "QC1-Print",
+    screenName: "QC1 Print",
+  },
+  {
+    screenId: "clientBasketCityPublication",
+    screenName: "Client Basket City Publication",
+  },
+  {
+    screenId: "PrintSimilarArticles",
+    screenName: "Print Similar Articles",
+  },
+  {
+    screenId: "CopyArticles",
+    screenName: "Copy Articles",
+  },
+  {
+    screenId: "DeletePrintArticles",
+    screenName: "Delete Print Articles",
+  },
+  {
+    screenId: "ClientMaster",
+    screenName: "Client Master",
+  },
+  {
+    screenId: "MailerScheduler",
+    screenName: "Mailer Scheduler",
+  },
+  {
+    screenId: "ClientBasketCityPublication",
+    screenName: "Client Basket City Publication",
+  },
+  {
+    screenId: "BooleanKeyword",
+    screenName: "Boolean Keyword",
+  },
+  {
+    screenId: "MagazineStitch",
+    screenName: "Magazine Stitch",
+  },
+  {
+    screenId: "Master",
+    screenName: "Master",
+  },
+  {
+    screenId: "CompanyMaster",
+    screenName: "Company Master",
+  },
+  {
+    screenId: "PublicationGroupMaster",
+    screenName: "Publication Group Master",
+  },
+  {
+    screenId: "PublicationMaster",
+    screenName: "Publication Master",
+  },
+  {
+    screenId: "PublicationMasterOnline",
+    screenName: "Publication Master Online",
+  },
+  {
+    screenId: "UserMaster",
+    screenName: "User Master",
+  },
+  {
+    screenId: "CountryMaster",
+    screenName: "Country Master",
+  },
+];

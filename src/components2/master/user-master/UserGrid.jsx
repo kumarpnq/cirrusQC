@@ -1,85 +1,18 @@
+import PropTypes from "prop-types";
 import { Box, IconButton } from "@mui/material";
 import { DataGrid } from "@mui/x-data-grid";
 import { CustomToolbar } from "../../../@core/CustomGridToolExportAndFilter";
 import EditNoteIcon from "@mui/icons-material/EditNote";
-import DeleteIcon from "@mui/icons-material/Delete";
 import { Fragment, useState } from "react";
 import UserAddEditModal from "./UserAddEditModal";
 
-const UserGrid = () => {
+const UserGrid = ({ loading, data = [] }) => {
   const [open, setOpen] = useState(false);
-  const [rows, setRows] = useState([
-    {
-      id: 1,
-      userType: "Client",
-      userName: "Bharti Realty",
-      loginName: "FTPRTR_BHART1RE7",
-      active: true,
-    },
-    {
-      id: 2,
-      userType: "Admin",
-      userName: "Global Tech Solutions",
-      loginName: "ADM_GTSOL123",
-      active: true,
-    },
-    {
-      id: 3,
-      userType: "Client",
-      userName: "Sunshine Enterprises",
-      loginName: "CLNT_SUNENP202",
-      active: false,
-    },
-    {
-      id: 4,
-      userType: "Admin",
-      userName: "Innovative Systems",
-      loginName: "ADM_INNOSYS01",
-      active: true,
-    },
-    {
-      id: 5,
-      userType: "Client",
-      userName: "MegaCorp Industries",
-      loginName: "CLNT_MEGACORP2",
-      active: true,
-    },
-    {
-      id: 6,
-      userType: "Client",
-      userName: "Vista Solutions",
-      loginName: "CLNT_VISTASOL44",
-      active: false,
-    },
-    {
-      id: 7,
-      userType: "Admin",
-      userName: "TechnoCore",
-      loginName: "ADM_TECHCOR3X",
-      active: true,
-    },
-    {
-      id: 8,
-      userType: "Client",
-      userName: "Future Ventures",
-      loginName: "CLNT_FUTURE123",
-      active: true,
-    },
-    {
-      id: 9,
-      userType: "Admin",
-      userName: "Prime Solutions",
-      loginName: "ADM_PRIME01",
-      active: false,
-    },
-    {
-      id: 10,
-      userType: "Client",
-      userName: "Elite Technologies",
-      loginName: "CLNT_ELITETECH1",
-      active: true,
-    },
-  ]);
+
+  const rows = data.map((item) => ({
+    id: item._id,
+    ...item,
+  }));
 
   const handleOpen = () => setOpen((prev) => !prev);
 
@@ -98,16 +31,16 @@ const UserGrid = () => {
     },
 
     {
-      field: "active",
+      field: "isActive",
       headerName: "Active",
       renderCell: (params) => (
         <Box
           sx={{
-            color: params.row.active ? "green" : "orange",
+            color: params.row.isActive === "Y" ? "green" : "orange",
             fontWeight: "bold",
           }}
         >
-          {params.row.active ? "Yes" : "No"}
+          {params.row.isActive === "Y" ? "Yes" : "No"}
         </Box>
       ),
       width: 100,
@@ -119,7 +52,7 @@ const UserGrid = () => {
 
   return (
     <Fragment>
-      <Box sx={{ height: "70vh", width: "100%" }}>
+      <Box sx={{ height: "80vh", width: "100%" }}>
         <DataGrid
           rows={rows}
           columns={columns}
@@ -128,6 +61,7 @@ const UserGrid = () => {
           slots={{
             toolbar: CustomToolbar,
           }}
+          loading={loading}
           disableRowSelectionOnClick
           hideFooterSelectedRowCount
         />
@@ -137,4 +71,21 @@ const UserGrid = () => {
   );
 };
 
+UserGrid.propTypes = {
+  loading: PropTypes.bool.isRequired,
+  data: PropTypes.arrayOf(
+    PropTypes.shape({
+      userType: PropTypes.string.isRequired,
+      userName: PropTypes.string.isRequired,
+      loginName: PropTypes.string.isRequired,
+      isActive: PropTypes.string.isRequired,
+      _id: PropTypes.string.isRequired,
+    })
+  ).isRequired,
+};
+
+UserGrid.defaultProps = {
+  loading: false,
+  data: [],
+};
 export default UserGrid;

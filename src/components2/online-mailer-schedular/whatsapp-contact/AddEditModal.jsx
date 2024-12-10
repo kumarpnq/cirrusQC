@@ -8,10 +8,12 @@ import {
   FormControlLabel,
   Checkbox,
   CircularProgress,
+  Select,
+  MenuItem,
 } from "@mui/material";
 import { styled } from "@mui/system";
 import PropTypes from "prop-types";
-import { useEffect, useState } from "react";
+import { useEffect, useLayoutEffect, useState } from "react";
 import CustomSingleSelect from "../../../@core/CustomSingleSelect2";
 import useFetchData from "../../../hooks/useFetchData";
 import { url } from "../../../constants/baseUrl";
@@ -19,6 +21,8 @@ import CustomMultiSelect from "../../../@core/CustomMultiSelect";
 import YesOrNo from "../../../@core/YesOrNo";
 import toast from "react-hot-toast";
 import axiosInstance from "../../../../axiosConfig";
+import { timeSlots } from "../../../constants/dataArray";
+import { getCompanies, getContacts, getSlots } from "./utils";
 
 // Styles for modal content
 const style = {
@@ -54,25 +58,45 @@ const StyledText = styled(Typography)({
   textWrap: "nowrap",
 });
 
-const AddEditModal = ({ open, handleClose, row, fromWhere }) => {
+const AddEditModal = ({ open, handleClose, row, fromWhere, fetchMainData }) => {
   const [selectedClient, setSelectedClient] = useState("");
   const [selectedCompanies, setSelectedCompanies] = useState([]);
   const [selectedUser, setSelectedUser] = useState("");
   const [activeUser, setActiveUser] = useState("");
-  const [selectedTimeZone, setSelectedTimeZone] = useState("");
   const [selectedSlots, setSelectedSlots] = useState([]);
   const [selectedContacts, setSelectedContacts] = useState("");
+  const [selectedPrint, setSelectedPrint] = useState("");
+  const [selectedOnline, setSelectedOnline] = useState("");
+  const [loginNames, setLoginNames] = useState([]);
 
   // * update states
   const [uploadLoading, setUploadLoading] = useState(false);
 
   // * get user ids
   const userIds = row?.whatsappConfig?.map((item) => item.userId) || [];
-  //  * get companies
+  //  * get companies and client
+  const { data: clientData } = useFetchData(`${url}clientlist/`);
   const { data: companiesData } = useFetchData(
-    `${url}companylist/${row?.clientId}`
+    `${url}companylist/${fromWhere === "Edit" ? row?.clientId : selectedClient}`
   );
   const companyArrayToMap = companiesData?.data?.companies || [];
+
+  useLayoutEffect(() => {
+    const fetchLoginDetail = async () => {
+      try {
+        const response = await axiosInstance.get(
+          `getusersforclient/?clientId=${selectedClient}`
+        );
+
+        setLoginNames(response.data.loginNames || []);
+      } catch (error) {
+        console.log(error.message);
+      }
+    };
+    if (open && fromWhere === "Add") {
+      fetchLoginDetail();
+    }
+  }, [open, selectedClient, fromWhere]);
 
   useEffect(() => {
     if (fromWhere === "Edit") {
@@ -92,27 +116,40 @@ const AddEditModal = ({ open, handleClose, row, fromWhere }) => {
           .map((i) => i.contactNumber)
           .join(",") || ""
       );
+      setSelectedPrint(rowForStates?.isPrint || "");
+      setSelectedOnline(rowForStates?.isOnline || "");
     }
   }, [selectedUser, fromWhere]);
+
+  const handleCheckboxChange = (e, which) => {
+    if (which === "print") {
+      setSelectedPrint(e.target.checked ? "Y" : "N");
+    } else {
+      setSelectedOnline(e.target.checked ? "Y" : "N");
+    }
+  };
 
   const handleSubmit = async (event) => {
     event.preventDefault();
     try {
       setUploadLoading(true);
+      const slotChanges = await getSlots(row, selectedUser, selectedSlots);
+
       let rowForStates = row?.whatsappConfig?.find(
         (i) => i.userId === selectedUser
       );
       let activeUserLocal = rowForStates?.isActive === "Y" ? "Yes" : "No";
-      let activeCompanies = rowForStates?.companyIds || [];
-      let activeSlots =
-        rowForStates?.slots
-          ?.filter((i) => i.isActive === "Y")
-          .map((i) => i.time) || [];
-      let activeContacts =
-        rowForStates?.contacts
-          ?.filter((i) => i.isActive === "Y")
-          .map((i) => i.contactNumber)
-          .join(",") || "";
+      let companyChanges = await getCompanies(
+        row,
+        selectedUser,
+        selectedCompanies
+      );
+      let contactChanges = await getContacts(
+        row,
+        selectedUser,
+        selectedContacts.split(",")
+      );
+
       const requestData = {
         clientId: row.clientId,
         userId: selectedUser,
@@ -120,21 +157,50 @@ const AddEditModal = ({ open, handleClose, row, fromWhere }) => {
 
       if (activeUser !== activeUserLocal)
         requestData.isActive = activeUser === "Yes" ? "Y" : "N";
-      if (JSON.stringify(selectedCompanies) !== JSON.stringify(activeCompanies))
-        requestData.companyIds = selectedCompanies;
-      if (JSON.stringify(selectedSlots) !== activeSlots)
-        requestData.slots = selectedSlots;
-      if (selectedContacts !== activeContacts)
-        requestData.contacts = selectedContacts.join(",");
+      if (companyChanges.length) requestData.companyIds = selectedCompanies;
+      if (slotChanges.length) requestData.slots = slotChanges;
+      if (contactChanges.length) requestData.contacts = contactChanges;
+      if (rowForStates.isPrint !== selectedPrint)
+        requestData.isPrint = selectedPrint;
+      if (rowForStates.isOnline !== selectedOnline)
+        requestData.isOnline = selectedOnline;
 
       const response = await axiosInstance.post(
         `updateWhatsappSchedule/`,
         requestData
       );
-
-      console.log(response);
+      if (response.status === 200) {
+        toast.success(response.data.data.message);
+        handleClose();
+        fetchMainData();
+      }
     } catch (error) {
       toast.error("Something went wrong.");
+      console.log(error);
+    } finally {
+      setUploadLoading(false);
+    }
+  };
+
+  const handleInsert = async (event) => {
+    event.preventDefault();
+    try {
+      setUploadLoading(true);
+      const requestData = {
+        clientId: selectedClient,
+        userId: selectedUser,
+        companyIds: selectedCompanies,
+        slots: selectedSlots,
+        contacts: selectedContacts,
+        isPrint: selectedPrint,
+        isOnline: selectedOnline,
+      };
+      const response = await axiosInstance.post(
+        `updateWhatsappSchedule/`,
+        requestData
+      );
+      console.log(response);
+    } catch (error) {
       console.log(error);
     } finally {
       setUploadLoading(false);
@@ -157,7 +223,7 @@ const AddEditModal = ({ open, handleClose, row, fromWhere }) => {
         >
           {fromWhere} Modal
         </Typography>
-        <form onSubmit={handleSubmit}>
+        <form onSubmit={fromWhere === "Edit" ? handleSubmit : handleInsert}>
           <Box>
             <StyledWrapper>
               <StyledText>Client : </StyledText>
@@ -176,7 +242,7 @@ const AddEditModal = ({ open, handleClose, row, fromWhere }) => {
                   dropdownWidth={"100%"}
                   keyId="clientid"
                   keyName="clientname"
-                  options={[]}
+                  options={clientData?.data?.clients || []}
                   selectedItem={selectedClient}
                   setSelectedItem={setSelectedClient}
                   title="Client"
@@ -191,7 +257,11 @@ const AddEditModal = ({ open, handleClose, row, fromWhere }) => {
             <StyledWrapper>
               <StyledText>User : </StyledText>
               <YesOrNo
-                mapValue={userIds}
+                mapValue={
+                  fromWhere === "Edit"
+                    ? userIds
+                    : loginNames.map((i) => i.loginName)
+                }
                 placeholder="User"
                 value={selectedUser}
                 setValue={setSelectedUser}
@@ -223,44 +293,42 @@ const AddEditModal = ({ open, handleClose, row, fromWhere }) => {
                 />
               </StyledWrapper>
               <StyledWrapper>
-                <StyledText>Screen : </StyledText>
-                <CustomMultiSelect
-                  dropdownToggleWidth={270}
-                  dropdownWidth={270}
-                  keyId="screenId"
-                  keyName="screenName"
-                  options={[
-                    { screenId: "online", screenName: "Online" },
-                    { screenId: "print", screenName: "Print" },
-                    { screenId: "both", screenName: "Combined" },
-                  ]}
-                  selectedItems={selectedSlots}
-                  setSelectedItems={setSelectedSlots}
-                  title="Screens"
+                <StyledText>Print : </StyledText>
+                <Checkbox
+                  checked={selectedPrint === "Y"}
+                  onChange={(e) => handleCheckboxChange(e, "print")}
                 />
               </StyledWrapper>
               <StyledWrapper>
-                <StyledText>Zone : </StyledText>
-                <YesOrNo
-                  mapValue={userIds}
-                  placeholder="Zone"
-                  value={selectedTimeZone}
-                  setValue={setSelectedTimeZone}
-                  // width={"100%"}
+                <StyledText>Online : </StyledText>
+                <Checkbox
+                  checked={selectedOnline === "Y"}
+                  onChange={(e) => handleCheckboxChange(e, "online")}
                 />
               </StyledWrapper>
+
               <StyledWrapper>
                 <StyledText>Slots : </StyledText>
-                <CustomMultiSelect
-                  dropdownToggleWidth={270}
-                  dropdownWidth={300}
-                  keyId="slotId"
-                  keyName="slotName"
-                  options={[{ slotId: 1, slotName: "00:00-00:30" }]}
-                  selectedItems={selectedSlots}
-                  setSelectedItems={setSelectedSlots}
-                  title="Slots"
-                />
+                <Select
+                  multiple
+                  value={selectedSlots}
+                  onChange={(e) => setSelectedSlots(e.target.value)}
+                  placeholder="Slots"
+                  MenuProps={{
+                    PaperProps: {
+                      style: {
+                        maxHeight: 250,
+                      },
+                    },
+                  }}
+                  style={{ height: 25, minWidth: 270 }}
+                >
+                  {timeSlots.map((slot) => (
+                    <MenuItem key={slot} value={slot}>
+                      {slot}
+                    </MenuItem>
+                  ))}
+                </Select>
               </StyledWrapper>
               <StyledWrapper>
                 <StyledText>Contacts : </StyledText>

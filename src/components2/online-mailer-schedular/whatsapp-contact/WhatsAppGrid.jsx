@@ -4,7 +4,11 @@ import EditNoteIcon from "@mui/icons-material/EditNote";
 import { Fragment, useState } from "react";
 import AddEditModal from "./AddEditModal";
 
-export default function WhatsappGrid({ whatsAppData = [], loading }) {
+export default function WhatsappGrid({
+  whatsAppData = [],
+  loading,
+  fetchMainData,
+}) {
   const [openEdit, setOpenEdit] = useState(false);
   const [selectedRow, setSelectedRow] = useState(null);
   const columns = [
@@ -107,6 +111,7 @@ export default function WhatsappGrid({ whatsAppData = [], loading }) {
         handleClose={handleEditClose}
         row={selectedRow}
         fromWhere={"Edit"}
+        fetchMainData={fetchMainData}
       />
     </Fragment>
   );

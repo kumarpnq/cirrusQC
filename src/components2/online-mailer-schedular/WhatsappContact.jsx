@@ -45,12 +45,17 @@ const WhatsappContact = () => {
         </Button>
       </Box>
       <Divider sx={{ my: 1 }} />
-      <WhatsappGrid whatsAppData={whatsAppData} loading={loading} />
+      <WhatsappGrid
+        whatsAppData={whatsAppData}
+        loading={loading}
+        fetchMainData={fetchWhatsAppSchedularData}
+      />
       <AddEditModal
         open={open}
         handleClose={() => setOpen(false)}
         fromWhere={"Add"}
         row={null}
+        fetchMainData={fetchWhatsAppSchedularData}
       />
     </Box>
   );
