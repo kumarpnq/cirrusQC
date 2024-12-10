@@ -14,8 +14,6 @@ import {
   countriesByContinent,
   qc2Array,
   qc1ArrayWithPartially,
-  qc2ArrayWithPartially,
-  qc1Array,
 } from "../constants/dataArray";
 import { url } from "../constants/baseUrl";
 
@@ -41,7 +39,6 @@ import YesOrNo from "../@core/YesOrNo";
 import { getValueByTitle } from "../utils/getQc3ValueUsingTitle";
 import { mapBinaryToYesNoAll } from "../utils/mapBinaryToYesNoAll";
 import CustomTextField from "../@core/CutsomTextField";
-import { yesNoToBinary } from "../utils/yesNoToBinary";
 
 const useStyle = makeStyles(() => ({
   dropDowns: {
@@ -275,7 +272,7 @@ const ResearchScreen = () => {
 
           const requestDataJSON = JSON.stringify(requestData);
           const response = await axios.post(
-            `${url}listArticlebyQCTemp/`,
+            `${url}listArticlebyQCOnline/`,
             requestDataJSON,
             {
               headers: {

@@ -123,10 +123,6 @@ const MainTable = ({
   // qc3
   const [qc3Open, setQc3Open] = useState(false);
 
-  const handleOpen = (item) => {
-    setQc3Open(true);
-    setSelectedArticle((prev) => (prev === item ? null : item));
-  };
   const handleCloseQC3 = () => {
     setQc3Open(false);
     setSelectedArticle(null);
@@ -237,14 +233,15 @@ const MainTable = ({
                       (header === "PUBLICATION" && "pl-48 ml-4") ||
                       (header === "LINK" && "pl-7") ||
                       (header === "REPORTING SUBJECT" && "pl-12") ||
-                      (header === "AUTHOR NAME" && "pl-[430px]") ||
-                      (header === "HEADSUMMARY" && "pl-8") ||
+                      (header === "AUTHOR NAME" && "pl-[10px]") ||
+                      (header === "HEADSUMMARY" && "pl-[44px]") ||
                       (header === "QC1 DONE" && "pl-[290px]") ||
                       (header === "COMPANY ID" && "pl-10") ||
                       (header === "CITY" && "pl-14") ||
                       (header === "LANGUAGE" && "pl-14") ||
                       (header === "QC2 ON" && "pl-16") ||
-                      (header === "DETAIL SUMMARY" && "pl-[100PX]")
+                      (header === "DETAIL SUMMARY" && "pl-[95PX]") ||
+                      (header === "SUBCATEGORY" && "pl-[325PX]")
                     }`}
                   >
                     <span className="flex items-center text-sm">
@@ -382,7 +379,7 @@ const MainTable = ({
                             (header === "HEADSUMMARY" && "w-[25rem] ml-20") ||
                             (header === "KEYWORD" && "w-40") ||
                             (header === "PUBLICATION" && "w-28") ||
-                            (header === "AUTHOR NAME" && "w-12 ml-24") ||
+                            (header === "AUTHOR NAME" && "w-12 ml-2") ||
                             (header === "SUBCATEGORY" && "text-red-500 pl-6")
                           }`}
                         >

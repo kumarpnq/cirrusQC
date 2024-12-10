@@ -281,12 +281,12 @@ const Qc2Table = ({
                           (item === "headline" && "pl-8") ||
                           (item === "publication" && "pl-44") ||
                           (item === "link" && "pl-32") ||
-                          (item === "header_space" && "pl-[135px]") ||
+                          (item === "header_space" && "pl-[120px]") ||
                           (item === "space" && "pl-16") ||
                           (item === "reporting_tone" && "pl-16") ||
                           (item === "reporting_subject" && "pl-3") ||
                           (item === "remark" && "pl-1") ||
-                          (item === "keyword" && "pl-40") ||
+                          (item === "keyword" && "pl-36") ||
                           (item === "detail_summary" && "pl-32") ||
                           (item === "category" && "pl-36") ||
                           (item === "subcategory" && "pl-36") ||
@@ -424,6 +424,19 @@ const Qc2Table = ({
                         <Tooltip title={items.author}>{items.author}</Tooltip>
                       </div>
                     </td>
+                    <td className="py-2 overflow-hidden">
+                      <div
+                        style={{
+                          display: "-webkit-box",
+                          WebkitBoxOrient: "vertical",
+                          WebkitLineClamp: 2,
+                          overflow: "hidden",
+                          width: 200,
+                        }}
+                      >
+                        {items.keyword}
+                      </div>
+                    </td>
                     <td className="py-2" style={{ width: "100px" }}>
                       <div
                         style={{ width: "100px" }}
@@ -477,19 +490,6 @@ const Qc2Table = ({
                     </td>
                     <td className="px-3 py-2 whitespace-nowrap">
                       <div style={{ width: "200px" }}>{items.remark}</div>
-                    </td>
-                    <td className="py-2 overflow-hidden">
-                      <div
-                        style={{
-                          display: "-webkit-box",
-                          WebkitBoxOrient: "vertical",
-                          WebkitLineClamp: 2,
-                          overflow: "hidden",
-                          width: 200,
-                        }}
-                      >
-                        {items.keyword}
-                      </div>
                     </td>
 
                     <td className="px-3 py-2 overflow-hidden">
