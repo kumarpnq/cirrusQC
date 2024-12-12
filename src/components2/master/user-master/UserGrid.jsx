@@ -6,9 +6,10 @@ import EditNoteIcon from "@mui/icons-material/EditNote";
 import { Fragment, useState } from "react";
 import UserAddEditModal from "./UserAddEditModal";
 
-const UserGrid = ({ loading, data = [] }) => {
+const UserGrid = ({ loading, data = [], setSelectedItems }) => {
   const [open, setOpen] = useState(false);
   const [selectedRow, setSelectedRow] = useState(null);
+  const [selectionModal, setSelectionModal] = useState([]);
 
   const rows = data.map((item) => ({
     id: item._id,
@@ -23,6 +24,12 @@ const UserGrid = ({ loading, data = [] }) => {
   const handleClose = () => {
     setOpen(false);
     setSelectedRow(null);
+  };
+
+  const handleSelectionModelChange = (newSelection) => {
+    setSelectionModal(newSelection);
+    const selectedRows = rows.filter((row) => newSelection.includes(row.id));
+    setSelectedItems(selectedRows);
   };
 
   const columns = [
@@ -71,6 +78,8 @@ const UserGrid = ({ loading, data = [] }) => {
             toolbar: CustomToolbar,
           }}
           loading={loading}
+          rowSelectionModel={selectionModal}
+          onRowSelectionModelChange={handleSelectionModelChange}
           disableRowSelectionOnClick
           hideFooterSelectedRowCount
         />
@@ -96,6 +105,8 @@ UserGrid.propTypes = {
       _id: PropTypes.string.isRequired,
     })
   ).isRequired,
+  selectedItems: PropTypes.array,
+  setSelectedItems: PropTypes.func,
 };
 
 UserGrid.defaultProps = {

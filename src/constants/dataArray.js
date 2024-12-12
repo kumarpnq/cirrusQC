@@ -817,3 +817,67 @@ export const buttonPermission = [
     buttonName: "Manual Upload",
   },
 ];
+
+export const clientScreenArray = [
+  {
+    screenId: "onlineHeadlines",
+    screenName: "Online News",
+  },
+  {
+    screenId: "printHeadlines",
+    screenName: "Print News",
+  },
+  {
+    screenId: "bothHeadlines",
+    screenName: "Both News",
+  },
+  {
+    screenId: "onlineDashboard",
+    screenName: "Online Dashboard",
+  },
+  {
+    screenId: "printDashboard",
+    screenName: "Print Dashboard",
+  },
+  {
+    screenId: "socialMedia",
+    screenName: "Social Media",
+  },
+];
+
+export const clientToolIcons = [
+  {
+    toolId: "excelDump",
+    toolName: "Excel Dump",
+  },
+  {
+    toolId: "mail",
+    toolName: "Mail",
+  },
+  {
+    toolId: "dossier",
+    toolName: "Dossier",
+  },
+];
+
+export const clientReports = [
+  {
+    reportId: "wordCloud",
+    reportName: "Word Cloud",
+  },
+  {
+    reportId: "reportPeers",
+    reportName: "Report Peers",
+  },
+  {
+    reportId: "visibilityImageQE",
+    reportName: "Visibility Image",
+  },
+];
+
+export const clientSelection = [
+  {
+    selectionId: "competition",
+    selectionName: "Competition",
+  },
+];

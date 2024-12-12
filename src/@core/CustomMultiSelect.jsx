@@ -112,8 +112,8 @@ const CustomMultiSelect = ({
     setListOpen(false);
   };
 
-  const filteredOptions = options.filter((option) =>
-    option[keyName].toLowerCase().includes(searchTerm.toLowerCase())
+  const filteredOptions = options?.filter((option) =>
+    option[keyName].toLowerCase().includes(searchTerm?.toLowerCase())
   );
 
   const Row = ({ index, style }) => {

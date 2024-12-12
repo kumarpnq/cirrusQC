@@ -3,7 +3,7 @@ import YesOrNo from "../../@core/YesOrNo";
 import CustomTextField from "../../@core/CutsomTextField";
 import { makeStyles } from "@mui/styles";
 import PropTypes from "prop-types";
-import { Fragment, useEffect, useState } from "react";
+import { Fragment, useState } from "react";
 import axiosInstance from "../../../axiosConfig";
 import toast from "react-hot-toast";
 import DeleteConfirmationDialog from "../../@core/DeleteConfirmationDialog";
@@ -24,6 +24,8 @@ const SearchFilters = ({
   selectedItems = [],
   fetchAfterSave,
   setFetchAfterSave,
+  globalKey,
+  globalKeyToSend,
 }) => {
   const classes = useStyle();
   const [isActive, setIsActive] = useState("All");
@@ -59,26 +61,28 @@ const SearchFilters = ({
     }
   };
 
-  // useEffect(() => {
-  //   if (fetchAfterSave) {
-  //     handleFormSubmit();
-  //   }
-  // }, [fetchAfterSave]);
-
   const handleDelete = async () => {
     try {
       const key = "pubGroupId";
       const keyToSend = "pubGroupIds";
-      const Ids = selectedItems.map((item) => item[key]);
+      const Ids = selectedItems.map(
+        (item) => item[globalKey ? globalKey : key]
+      );
 
       const response = await axiosInstance.delete(
-        `${deleteEndPoint}?${keyToSend}=${Ids.join(",")}`
+        `${deleteEndPoint}?${
+          globalKeyToSend ? globalKeyToSend : keyToSend
+        }=${Ids.join(",")}`
       );
 
       if (response.status === 200) {
         toast.success(response.data.data.message);
 
-        setData((prev) => prev.filter((item) => !Ids.includes(item[key])));
+        setData((prev) =>
+          prev.filter(
+            (item) => !Ids.includes(item[globalKey ? globalKey : key])
+          )
+        );
 
         handleDeleteOpenOrClose();
       }

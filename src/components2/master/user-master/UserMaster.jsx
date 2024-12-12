@@ -11,8 +11,9 @@ const UserMaster = () => {
   const [selectedItems, setSelectedItems] = useState([]);
 
   // * endpoints
-  let deleteEndPoint = "deleteUsers";
-  let mainEndPoint = "http://127.0.0.1:8000/usersList";
+  let deleteEndPoint = "http://127.0.0.1:8000/deleteUsers/";
+  let mainEndPoint = "http://127.0.0.1:8000/usersList/";
+
   return (
     <Box>
       <SearchFilters
@@ -24,9 +25,15 @@ const UserMaster = () => {
         setFetchAfterSave={() => {}}
         selectedItems={selectedItems}
         setData={setData}
+        globalKey={"id"}
+        globalKeyToSend={"userIds"}
       />
       <Divider sx={{ my: 1 }} />
-      <UserGrid loading={loading} data={data} />
+      <UserGrid
+        loading={loading}
+        data={data}
+        setSelectedItems={setSelectedItems}
+      />
       <UserAddEditModal
         open={open}
         handleClose={() => setOpen(false)}

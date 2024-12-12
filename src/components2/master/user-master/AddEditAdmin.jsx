@@ -6,6 +6,7 @@ import CustomMultiSelect from "../../../@core/CustomMultiSelect";
 import { buttonPermission, screensArray } from "../../../constants/dataArray";
 import axiosInstance from "../../../../axiosConfig";
 import toast from "react-hot-toast";
+import { generatePassword } from "./common";
 
 const AddEditAdmin = ({ handleClose, activeTab, fromWhere, row }) => {
   const [userName, setUserName] = useState("");
@@ -19,16 +20,7 @@ const AddEditAdmin = ({ handleClose, activeTab, fromWhere, row }) => {
   const [addUpdateLoading, setAddUpdateLoading] = useState(false);
   const [initialState, setInitialState] = useState(null);
 
-  // * password auto creation basis on the userName and loginName
-  const generatePassword = (userName, loginName) => {
-    const specialChars = "!@#$%^&*";
-    const randomSpecialChar =
-      specialChars[Math.floor(Math.random() * specialChars.length)];
-    const randomSuffix = Math.floor(1000 + Math.random() * 9000);
-
-    return `${userName}_${loginName}${randomSpecialChar}${randomSuffix}`;
-  };
-
+  // * password auto generation
   useEffect(() => {
     if (userName && loginName && fromWhere === "Add") {
       const generatedPassword = generatePassword(userName, loginName);
@@ -39,8 +31,13 @@ const AddEditAdmin = ({ handleClose, activeTab, fromWhere, row }) => {
   // * show the data of the user
   const fetchAdminDetails = async () => {
     try {
+      const params = {
+        loginName: row?.loginName,
+        userType: "US",
+      };
       const response = await axiosInstance.get(
-        `http://127.0.0.1:8000/getUserData/${row?.loginName}`
+        `http://127.0.0.1:8000/getUserData/`,
+        { params }
       );
 
       const localAdminResponse = response.data;
@@ -48,15 +45,21 @@ const AddEditAdmin = ({ handleClose, activeTab, fromWhere, row }) => {
       setUserName(localAdminResponse.userName);
       setLoginName(localAdminResponse.loginName);
       setPassword(localAdminResponse.password);
-      const activeScreenPermissions = Object.keys(
-        localAdminResponse.screenPermissions
-      ).filter((key) => localAdminResponse.screenPermissions[key] === "Yes");
-
-      const activeButtonPermissions = Object.keys(
-        localAdminResponse.buttonPermissions
-      ).filter((key) => localAdminResponse.buttonPermissions[key] === "Yes");
+      const activeScreenPermissions = localAdminResponse?.screenPermissions
+        .filter((i) => i.permission)
+        .map((i) => i.name);
+      const activeOnlineButtonPermissions =
+        localAdminResponse?.buttonPermissions
+          .filter(
+            (i) => i.permission && i.description === "Permission for online"
+          )
+          .map((i) => i.name);
+      const activePrintButtonPermissions = localAdminResponse?.buttonPermissions
+        .filter((i) => i.permission && i.description === "Permission for print")
+        .map((i) => i.name);
       setSelectedScreens(activeScreenPermissions);
-      setSelectedOnlineButtons(activeButtonPermissions);
+      setSelectedOnlineButtons(activeOnlineButtonPermissions);
+      setSelectedPrintButtons(activePrintButtonPermissions);
     } catch (error) {
       toast.error("Something went wrong");
     }
@@ -69,27 +72,51 @@ const AddEditAdmin = ({ handleClose, activeTab, fromWhere, row }) => {
 
   const addAdminUser = async () => {
     try {
+      if (!userName || !loginName || !password) {
+        toast.error("UserName, LoginName, Password are required fields.");
+        return;
+      }
       setAddUpdateLoading(true);
+      const finalData = [];
+      selectedOnlineButtons.forEach((button) => {
+        finalData.push({
+          button: button,
+          permission: true,
+          description: "online",
+        });
+      });
+      selectedPrintButtons.forEach((button) => {
+        finalData.push({
+          button: button,
+          permission: true,
+          description: "print",
+        });
+      });
       const requestData = {
-        userType: activeTab === 1 ? "AD" : "CL",
+        userType: activeTab === 1 ? "US" : "CL",
         loginName,
         password,
-        userName,
+        email: userName,
         screenPermissions: [
-          { screen: "Online-QC2", permission: "Yes" },
-          { screen: "Print-QC2", permission: "Yes" },
+          { screen: "Online-QC2", permission: true },
+          { screen: "Print-QC2", permission: false },
         ],
-        buttonPermissions: [
-          { button: "group", permission: "Yes" },
-          { button: "save", permission: "No" },
-        ],
+        buttonPermissions: finalData,
       };
 
       const response = await axiosInstance.post(
         `http://127.0.0.1:8000/addUser/`,
         requestData
       );
-      console.log(response);
+      if (response.status === 200) {
+        toast.success(response.data.message);
+        setUserName("");
+        setLoginName("");
+        setPassword("");
+        setSelectedScreens([]);
+        selectedOnlineButtons([]);
+        selectedPrintButtons([]);
+      }
     } catch (error) {
       toast.error("Something went wrong.");
     } finally {

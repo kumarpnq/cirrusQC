@@ -45,7 +45,11 @@ const UserAddEditModal = ({ open, handleClose, row, fromWhere }) => {
           )}
 
           {value === 0 ? (
-            <AddEditClient handleClose={handleClose} />
+            <AddEditClient
+              handleClose={handleClose}
+              fromWhere={fromWhere}
+              row={row}
+            />
           ) : (
             <AddEditAdmin
               handleClose={handleClose}
