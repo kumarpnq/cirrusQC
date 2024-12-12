@@ -786,3 +786,34 @@ export const screensArray = [
     screenName: "Country Master",
   },
 ];
+
+export const buttonPermission = [
+  {
+    buttonId: "group",
+    buttonName: "Group",
+  },
+  {
+    buttonId: "un_group",
+    buttonName: "Un-Group",
+  },
+  {
+    buttonId: "stitch",
+    buttonName: "Stitch",
+  },
+  {
+    buttonId: "un_stitch",
+    buttonName: "Un-Stitch",
+  },
+  {
+    buttonId: "add_and_remove_company",
+    buttonName: "Add Remove Company",
+  },
+  {
+    buttonId: "save",
+    buttonName: "Save",
+  },
+  {
+    buttonId: "manual_upload",
+    buttonName: "Manual Upload",
+  },
+];

@@ -1,17 +1,20 @@
 import PropTypes from "prop-types";
 import { Box, Button, CircularProgress, Paper } from "@mui/material";
-import Client from "../../print-components/dropdowns/Client";
 import { Fragment, useState } from "react";
 import YesOrNo from "../../@core/YesOrNo";
 import AddEditDialog from "./AddEditDialog";
 import toast from "react-hot-toast";
 import axiosInstance from "../../../axiosConfig";
+import useFetchData from "../../hooks/useFetchData";
+import { url } from "../../constants/baseUrl";
+import CustomSingleSelect from "../../@core/CustomSingleSelect2";
 
 const SearchFilters = ({ loading, setLoading, setData }) => {
-  const [selectedClient, setSelectedClient] = useState("");
-  const [testCompanies, setTestCompanies] = useState([]);
+  const [selectedCompany, setSelectedCompany] = useState("");
   const [selectedValidity, setSelectedValidity] = useState("");
   const [open, setOpen] = useState(false);
+
+  const { data: companyData } = useFetchData(`${url}companylist/`);
 
   const handleFormSubmit = async (event) => {
     event.preventDefault();
@@ -21,7 +24,7 @@ const SearchFilters = ({ loading, setLoading, setData }) => {
         // companyId,
         // isActive
       };
-      if (selectedClient) params.companyId = selectedClient;
+      if (selectedCompany) params.companyId = selectedCompany;
       if (selectedValidity)
         params.isActive = selectedValidity === "Valid" ? "Y" : "N";
       const response = await axiosInstance.get("keywordBoolean", { params });
@@ -39,16 +42,19 @@ const SearchFilters = ({ loading, setLoading, setData }) => {
       <form onSubmit={handleFormSubmit}>
         <Box
           component={Paper}
-          sx={{ display: "flex", alignItems: "center", px: 0.5 }}
+          sx={{ display: "flex", alignItems: "center", px: 0.5, py: 1 }}
           className="gap-1"
         >
-          <div className="pb-1.5">
-            <Client
-              label="Client"
-              client={selectedClient}
-              setClient={setSelectedClient}
-              width={200}
-              setCompanies={setTestCompanies}
+          <div className="">
+            <CustomSingleSelect
+              dropdownToggleWidth={250}
+              dropdownWidth={300}
+              keyId="companyid"
+              keyName="companyname"
+              options={companyData?.data?.companies || []}
+              setSelectedItem={setSelectedCompany}
+              selectedItem={selectedCompany}
+              title="Company"
             />
           </div>
 

@@ -87,10 +87,10 @@ const QueryBox = ({
       const requestData = {
         // query: query.trim(),
         companyId:
-          fromWhere === "Add" ? selectedFullClient?.clientid : row?.companyId,
+          fromWhere === "Add" ? selectedFullClient?.companyid : row?.companyId,
         companyName:
           fromWhere === "Add"
-            ? selectedFullClient?.clientname
+            ? selectedFullClient?.companyname
             : row?.companyName,
       };
       const includeQuery = {};
@@ -136,10 +136,10 @@ const QueryBox = ({
       const requestData = {
         // query: query.trim(),
         companyId:
-          fromWhere === "Add" ? selectedFullClient?.clientid : row?.companyId,
+          fromWhere === "Add" ? selectedFullClient?.companyid : row?.companyId,
         companyName:
           fromWhere === "Add"
-            ? selectedFullClient?.clientname
+            ? selectedFullClient?.companyname
             : row?.companyName,
         booleanQuery: query,
         booleanId: queryId,

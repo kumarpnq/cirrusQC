@@ -1,15 +1,24 @@
 import { Box, Modal, Typography, Tabs, Tab } from "@mui/material";
 import PropTypes from "prop-types";
 import { style } from "../common";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import AddEditClient from "./AddEditClient";
 import AddEditAdmin from "./AddEditAdmin";
 
-const UserAddEditModal = ({ open, handleClose }) => {
+const UserAddEditModal = ({ open, handleClose, row, fromWhere }) => {
   const [value, setValue] = useState(0);
   const handleChange = (event, newValue) => {
     setValue(newValue);
   };
+
+  // * set value according to the user
+
+  useEffect(() => {
+    if (row && fromWhere === "Edit") {
+      let localValue = row?.userType === "US" ? 1 : 0;
+      setValue(localValue);
+    }
+  }, [fromWhere, row]);
   return (
     <Modal
       open={open}
@@ -28,14 +37,22 @@ const UserAddEditModal = ({ open, handleClose }) => {
         </Typography>
 
         <Box sx={{ border: "1px solid #DDD", borderRadius: "3px", padding: 1 }}>
-          <Tabs value={value} onChange={handleChange}>
-            <Tab label="Client" />
-            <Tab label="Admin" />
-          </Tabs>
+          {fromWhere === "Add" && (
+            <Tabs value={value} onChange={handleChange}>
+              <Tab label="Client" />
+              <Tab label="Admin" />
+            </Tabs>
+          )}
+
           {value === 0 ? (
             <AddEditClient handleClose={handleClose} />
           ) : (
-            <AddEditAdmin />
+            <AddEditAdmin
+              handleClose={handleClose}
+              activeTab={value}
+              fromWhere={fromWhere}
+              row={row}
+            />
           )}
         </Box>
       </Box>
@@ -46,5 +63,7 @@ const UserAddEditModal = ({ open, handleClose }) => {
 UserAddEditModal.propTypes = {
   open: PropTypes.bool.isRequired,
   handleClose: PropTypes.func.isRequired,
+  row: PropTypes.object,
+  fromWhere: PropTypes.string,
 };
 export default UserAddEditModal;

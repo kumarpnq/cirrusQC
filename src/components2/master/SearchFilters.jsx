@@ -49,7 +49,7 @@ const SearchFilters = ({
 
       const response = await axiosInstance.get(endpoint, { params });
       if (response.status === 200) {
-        setData(response.data.data?.data || []);
+        setData(response.data.data?.data || response.data || []);
         setFetchAfterSave(false);
       }
     } catch (error) {
@@ -83,7 +83,6 @@ const SearchFilters = ({
         handleDeleteOpenOrClose();
       }
     } catch (error) {
-      console.log(error);
       toast.error("Something went wrong.");
     }
   };

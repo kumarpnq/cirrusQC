@@ -13,6 +13,7 @@ const CustomTextField = ({
   isRequired,
   isMultiline,
   autoComplete,
+  ...props
 }) => {
   const [showPassword, setShowPassword] = useState(false);
 
@@ -55,6 +56,7 @@ const CustomTextField = ({
       value={value}
       onChange={handleChange}
       disabled={isDisabled}
+      {...props}
     />
   );
 };

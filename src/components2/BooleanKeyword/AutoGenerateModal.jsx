@@ -48,9 +48,10 @@ const AutoGenerateModal = ({
     products: "",
     keyPeoples: "",
     companyKeywords: "",
+    industryKeywords: "",
   });
   const [loading, setLoading] = useState(false);
-
+  const [initialState, setInitialState] = useState(null);
   const [errors, setErrors] = useState({});
 
   const handleChange = (e) => {
@@ -62,19 +63,21 @@ const AutoGenerateModal = ({
     const fetchCompanyDetails = async () => {
       try {
         const companyId =
-          fromWhere === "Add" ? selectedFullClient?.clientid : row?.companyId;
+          fromWhere === "Add" ? selectedFullClient?.companyid : row?.companyId;
         const response = await axiosInstance.get(
-          `booleanKeywordCompanyDetails/?companyId=${companyId}`
+          `getCompanyKeywords/?companyId=${companyId}`
         );
 
         if (response.status === 200) {
-          let companyDetails = response.data?.data?.data?.companyInfo;
+          let companyDetails = response.data?.data;
+          setInitialState(companyDetails);
           setFormValues({
-            companyName: companyDetails?.companyName,
-            ceo: companyDetails?.ceo?.join(","),
-            products: companyDetails?.products?.join(","),
-            keyPeoples: companyDetails?.keyPeople?.join(","),
-            companyKeywords: companyDetails?.companyKeywords?.join(","),
+            companyName: companyDetails?.companyInfo.companyName,
+            ceo: companyDetails?.keywordInfo.ceo,
+            products: companyDetails?.keywordInfo?.product,
+            keyPeoples: companyDetails?.keywordInfo.keyPeople,
+            companyKeywords: companyDetails?.keywordInfo.companyKeyword,
+            industryKeywords: companyDetails?.keywordInfo.industryKeyword,
           });
         }
       } catch (error) {
@@ -100,6 +103,37 @@ const AutoGenerateModal = ({
     return Object.keys(tempErrors).length === 0;
   };
 
+  const updateCompanyKeyword = async () => {
+    try {
+      const requestData = {
+        ceo: formValues.ceo,
+        keyPeople: formValues.keyPeoples,
+        product: formValues.products,
+        companyKeyword: formValues.companyKeywords,
+        industryKeyword: formValues.industryKeywords,
+      };
+      let companyId =
+        fromWhere === "Add" ? selectedFullClient?.companyid : row?.companyId;
+      const response = await axiosInstance.put(
+        `updateCompanyKeywords/?companyId=${companyId}`,
+        requestData
+      );
+      console.log(response.data.message.message);
+    } catch (error) {
+      console.log(error.message);
+    }
+  };
+
+  const hasFormChanged = () => {
+    return (
+      formValues.ceo !== initialState.keywordInfo.ceo ||
+      formValues.products !== initialState.keywordInfo.product ||
+      formValues.keyPeoples !== initialState.keywordInfo.keyPeople ||
+      formValues.companyKeywords !== initialState.keywordInfo.companyKeyword ||
+      formValues.industryKeywords !== initialState.keywordInfo.industryKeyword
+    );
+  };
+
   const handleSubmit = async () => {
     if (validateForm()) {
       try {
@@ -108,10 +142,12 @@ const AutoGenerateModal = ({
 
         const requestData = {
           companyId:
-            fromWhere === "Add" ? selectedFullClient?.clientid : row?.companyId,
+            fromWhere === "Add"
+              ? selectedFullClient?.companyid
+              : row?.companyId,
           companyName:
             fromWhere === "Add"
-              ? selectedFullClient?.clientname
+              ? selectedFullClient?.companyname
               : row?.companyName,
           includeQuery: [
             {
@@ -125,6 +161,9 @@ const AutoGenerateModal = ({
         if (response.status === 200) {
           toast.success(response.data.data.message);
           handleClose();
+          if (hasFormChanged()) {
+            await updateCompanyKeyword();
+          }
           if (fromWhere === "Edit") {
             fetchBooleanKeywords();
           }
@@ -162,6 +201,7 @@ const AutoGenerateModal = ({
             helperText={errors.companyName}
             size="small"
             autoFocus
+            placeholder="company name"
           />
           <StyledTextField
             fullWidth
@@ -172,6 +212,7 @@ const AutoGenerateModal = ({
             error={!!errors.ceo}
             helperText={errors.ceo}
             size="small"
+            placeholder="CEO1,CEO2"
           />
           <StyledTextField
             fullWidth
@@ -184,6 +225,7 @@ const AutoGenerateModal = ({
             error={!!errors.products}
             helperText={errors.products}
             size="small"
+            placeholder="product1,product2"
           />
           <StyledTextField
             fullWidth
@@ -196,18 +238,29 @@ const AutoGenerateModal = ({
             error={!!errors.keyPeoples}
             helperText={errors.keyPeoples}
             size="small"
+            placeholder="people1,people2"
           />
           <StyledTextField
             fullWidth
             label="Company Keywords"
-            name="keyPeoples"
+            name="companyKeywords"
             value={formValues.companyKeywords}
             onChange={handleChange}
             multiline
             rows={4}
-            error={!!errors.companyKeywords}
-            helperText={errors.companyKeywords}
             size="small"
+            placeholder="companyKeyword1,companyKeyword2"
+          />
+          <StyledTextField
+            fullWidth
+            label="Industry Keywords"
+            name="industryKeywords"
+            value={formValues.industryKeywords}
+            onChange={handleChange}
+            multiline
+            rows={4}
+            size="small"
+            placeholder="industry1,industry2"
           />
         </Box>
       </DialogContent>

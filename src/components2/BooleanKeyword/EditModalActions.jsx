@@ -6,7 +6,6 @@ import useFetchData from "../../hooks/useFetchData";
 import { url } from "../../constants/baseUrl";
 import { useEffect, useState } from "react";
 import AutoGenerateModal from "./AutoGenerateModal";
-import Client from "../../print-components/dropdowns/Client";
 
 // Styled components
 const Container = styled(Box)(({ theme }) => ({
@@ -49,7 +48,6 @@ export const EditModalActions = ({
 }) => {
   const [openAutoGenerate, setOpenAutoGenerate] = useState(false);
   const [selectedClient, setSelectedClient] = useState("");
-  const [testCompanies, setTestCompanies] = useState([]);
 
   const handleCloseOpenAutoGenerate = () =>
     setOpenAutoGenerate((prev) => !prev);
@@ -62,18 +60,18 @@ export const EditModalActions = ({
     })
   );
 
-  const { data: clientList } = useFetchData(`${url}clientlist/`);
+  const { data: companyList } = useFetchData(`${url}companylist/`);
 
   useEffect(() => {
     if (fromWhere === "Add" && selectedClient) {
-      const client = clientList?.data?.clients.find(
-        (client) => client.clientid === selectedClient
+      const client = companyList?.data?.companies.find(
+        (company) => company.companyid === selectedClient
       );
 
       setSelectedFullClient(client);
     }
   }, [
-    clientList?.data?.clients,
+    companyList?.data?.companies,
     fromWhere,
     selectedClient,
     setSelectedFullClient,
@@ -101,12 +99,15 @@ export const EditModalActions = ({
       ) : (
         <div className="flex items-center">
           <Label>Company:</Label>{" "}
-          <Client
-            label="Client"
-            client={selectedClient}
-            setClient={setSelectedClient}
-            width={200}
-            setCompanies={setTestCompanies}
+          <CustomSingleSelect
+            dropdownToggleWidth={250}
+            dropdownWidth={300}
+            keyId="companyid"
+            keyName="companyname"
+            options={companyList?.data?.companies || []}
+            setSelectedItem={setSelectedClient}
+            selectedItem={selectedClient}
+            title="Company"
           />
         </div>
       )}

@@ -8,20 +8,29 @@ import UserAddEditModal from "./UserAddEditModal";
 
 const UserGrid = ({ loading, data = [] }) => {
   const [open, setOpen] = useState(false);
+  const [selectedRow, setSelectedRow] = useState(null);
 
   const rows = data.map((item) => ({
     id: item._id,
     ...item,
   }));
 
-  const handleOpen = () => setOpen((prev) => !prev);
+  const handleOpen = (row) => {
+    setOpen((prev) => !prev);
+    setSelectedRow(row);
+  };
+
+  const handleClose = () => {
+    setOpen(false);
+    setSelectedRow(null);
+  };
 
   const columns = [
     {
       field: "edit",
       headerName: "Edit",
-      renderCell: () => (
-        <IconButton color="primary" onClick={handleOpen}>
+      renderCell: (params) => (
+        <IconButton color="primary" onClick={() => handleOpen(params.row)}>
           <EditNoteIcon />
         </IconButton>
       ),
@@ -66,7 +75,12 @@ const UserGrid = ({ loading, data = [] }) => {
           hideFooterSelectedRowCount
         />
       </Box>
-      <UserAddEditModal open={open} handleClose={() => setOpen(false)} />
+      <UserAddEditModal
+        open={open}
+        handleClose={handleClose}
+        row={selectedRow}
+        fromWhere={"Edit"}
+      />
     </Fragment>
   );
 };
