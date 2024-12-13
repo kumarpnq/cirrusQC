@@ -12,7 +12,6 @@ const UserAddEditModal = ({ open, handleClose, row, fromWhere }) => {
   };
 
   // * set value according to the user
-
   useEffect(() => {
     if (row && fromWhere === "Edit") {
       let localValue = row?.userType === "US" ? 1 : 0;

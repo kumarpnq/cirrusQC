@@ -1,17 +1,20 @@
-import { Box, Button, CircularProgress, Typography } from "@mui/material";
+import { Box, Button, CircularProgress } from "@mui/material";
 import { StyledText, StyledWrapper } from "../common";
 import CustomTextField from "../../../@core/CutsomTextField";
 import { useEffect, useState } from "react";
-import CustomMultiSelect from "../../../@core/CustomMultiSelect";
 import { buttonPermission, screensArray } from "../../../constants/dataArray";
 import axiosInstance from "../../../../axiosConfig";
 import toast from "react-hot-toast";
 import { generatePassword } from "./common";
+import AdminScreenTable from "./components/AdminScreensTable";
+import DotsMobileStepper from "./components/stepper";
 
 const AddEditAdmin = ({ handleClose, activeTab, fromWhere, row }) => {
   const [userName, setUserName] = useState("");
   const [loginName, setLoginName] = useState("");
   const [password, setPassword] = useState("");
+  const [email, setEmail] = useState("");
+  const [fullName, setFullName] = useState("");
   const [selectedScreens, setSelectedScreens] = useState([]);
   const [selectedOnlineButtons, setSelectedOnlineButtons] = useState([]);
   const [selectedPrintButtons, setSelectedPrintButtons] = useState([]);
@@ -19,6 +22,8 @@ const AddEditAdmin = ({ handleClose, activeTab, fromWhere, row }) => {
   // * update add states
   const [addUpdateLoading, setAddUpdateLoading] = useState(false);
   const [initialState, setInitialState] = useState(null);
+  const [activeStep, setActiveStep] = useState(0);
+  let totalSteps = 2;
 
   // * password auto generation
   useEffect(() => {
@@ -45,21 +50,8 @@ const AddEditAdmin = ({ handleClose, activeTab, fromWhere, row }) => {
       setUserName(localAdminResponse.userName);
       setLoginName(localAdminResponse.loginName);
       setPassword(localAdminResponse.password);
-      const activeScreenPermissions = localAdminResponse?.screenPermissions
-        .filter((i) => i.permission)
-        .map((i) => i.name);
-      const activeOnlineButtonPermissions =
-        localAdminResponse?.buttonPermissions
-          .filter(
-            (i) => i.permission && i.description === "Permission for online"
-          )
-          .map((i) => i.name);
-      const activePrintButtonPermissions = localAdminResponse?.buttonPermissions
-        .filter((i) => i.permission && i.description === "Permission for print")
-        .map((i) => i.name);
-      setSelectedScreens(activeScreenPermissions);
-      setSelectedOnlineButtons(activeOnlineButtonPermissions);
-      setSelectedPrintButtons(activePrintButtonPermissions);
+      setEmail(localAdminResponse.email);
+      setFullName(localAdminResponse.fullName);
     } catch (error) {
       toast.error("Something went wrong");
     }
@@ -197,87 +189,78 @@ const AddEditAdmin = ({ handleClose, activeTab, fromWhere, row }) => {
 
   return (
     <Box>
-      <StyledWrapper>
-        <StyledText>User Name : </StyledText>
-        <CustomTextField
-          width={"100%"}
-          type={"text"}
-          value={userName}
-          setValue={setUserName}
-          placeholder={"User Name"}
+      {activeStep === 0 ? (
+        <>
+          {" "}
+          <StyledWrapper>
+            <StyledText>User Name : </StyledText>
+            <CustomTextField
+              width={"100%"}
+              type={"text"}
+              value={userName}
+              setValue={setUserName}
+              placeholder={"User Name"}
+            />
+          </StyledWrapper>
+          <StyledWrapper>
+            <StyledText>Full Name : </StyledText>
+            <CustomTextField
+              width={"100%"}
+              type={"text"}
+              value={fullName}
+              setValue={setFullName}
+              placeholder={"Login Name"}
+            />
+          </StyledWrapper>
+          <StyledWrapper>
+            <StyledText>Email : </StyledText>
+            <CustomTextField
+              width={"100%"}
+              type={"email"}
+              value={email}
+              setValue={setEmail}
+              placeholder={"Email"}
+            />
+          </StyledWrapper>
+          <StyledWrapper>
+            <StyledText>Login Name : </StyledText>
+            <CustomTextField
+              width={"100%"}
+              type={"text"}
+              value={loginName}
+              setValue={setLoginName}
+              placeholder={"Login Name"}
+              isDisabled={fromWhere === "Edit"}
+            />
+          </StyledWrapper>
+          <StyledWrapper>
+            <StyledText>Password : </StyledText>
+            <CustomTextField
+              width={"100%"}
+              type={"password"}
+              value={password}
+              setValue={setPassword}
+              placeholder={"Password"}
+              autoComplete={"new-password"}
+            />
+          </StyledWrapper>
+        </>
+      ) : (
+        <AdminScreenTable
+          initialState={initialState}
+          row={row}
+          fetchData={fetchAdminDetails}
         />
-      </StyledWrapper>
+      )}
 
-      <StyledWrapper>
-        <StyledText>Login Name : </StyledText>
-        <CustomTextField
-          width={"100%"}
-          type={"text"}
-          value={loginName}
-          setValue={setLoginName}
-          placeholder={"Login Name"}
-          isDisabled={fromWhere === "Edit"}
-        />
-      </StyledWrapper>
-      <StyledWrapper>
-        <StyledText>Password : </StyledText>
-        <CustomTextField
-          width={"100%"}
-          type={"password"}
-          value={password}
-          setValue={setPassword}
-          placeholder={"Password"}
-          autoComplete={"new-password"}
-        />
-      </StyledWrapper>
-      <StyledWrapper>
-        <StyledText>Screen Permissions : </StyledText>
-        <CustomMultiSelect
-          keyId="screenId"
-          keyName="screenName"
-          dropdownToggleWidth={272}
-          dropdownWidth={250}
-          options={screensArray}
-          selectedItems={selectedScreens}
-          setSelectedItems={setSelectedScreens}
-          title="Screen"
-        />
-      </StyledWrapper>
       <Box
-        border={"1px solid #ccc"}
-        borderRadius={"3px"}
-        padding={"0.5"}
-        margin={0.5}
+        sx={{ display: "flex", alignItems: "center", justifyContent: "center" }}
       >
-        <Typography variant="body-2" color={"GrayText"}>
-          Buttons Permission
-        </Typography>
-        <StyledWrapper>
-          <StyledText>Online : </StyledText>
-          <CustomMultiSelect
-            keyId="buttonId"
-            keyName="buttonName"
-            dropdownToggleWidth={272}
-            dropdownWidth={250}
-            options={buttonPermission}
-            selectedItems={selectedOnlineButtons}
-            setSelectedItems={setSelectedOnlineButtons}
-            title="Button"
-          />
-        </StyledWrapper>
-        <StyledWrapper>
-          <StyledText>Print : </StyledText>
-          <CustomMultiSelect
-            keyId="buttonId"
-            keyName="buttonName"
-            dropdownToggleWidth={272}
-            dropdownWidth={250}
-            options={buttonPermission}
-            selectedItems={selectedPrintButtons}
-            setSelectedItems={setSelectedPrintButtons}
-            title="Button"
-          />
-        </StyledWrapper>
+        <DotsMobileStepper
+          steps={totalSteps}
+          activeStep={activeStep}
+          setActiveStep={setActiveStep}
+        />
       </Box>
 
       <Box sx={{ mt: 0.5, display: "flex", justifyContent: "end", gap: 1 }}>

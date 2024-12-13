@@ -2,7 +2,7 @@ import { Box, Divider } from "@mui/material";
 import SearchFilters from "../SearchFilters";
 import { useState } from "react";
 import UserGrid from "./UserGrid";
-import UserAddEditModal from "./UserAddEditModal";
+import AddModal from "./components/AddModal";
 
 const UserMaster = () => {
   const [open, setOpen] = useState(false);
@@ -24,7 +24,7 @@ const UserMaster = () => {
         deleteEndPoint={deleteEndPoint}
         setFetchAfterSave={() => {}}
         selectedItems={selectedItems}
-        setData={setData}
+        setData={setData || []}
         globalKey={"id"}
         globalKeyToSend={"userIds"}
       />
@@ -34,12 +34,7 @@ const UserMaster = () => {
         data={data}
         setSelectedItems={setSelectedItems}
       />
-      <UserAddEditModal
-        open={open}
-        handleClose={() => setOpen(false)}
-        fromWhere={"Add"}
-        row={null}
-      />
+      <AddModal open={open} handleClose={() => setOpen(false)} />
     </Box>
   );
 };

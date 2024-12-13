@@ -51,7 +51,7 @@ const SearchFilters = ({
 
       const response = await axiosInstance.get(endpoint, { params });
       if (response.status === 200) {
-        setData(response.data.data?.data || response.data || []);
+        setData(response.data.data?.data || response?.data.data || []);
         setFetchAfterSave(false);
       }
     } catch (error) {
