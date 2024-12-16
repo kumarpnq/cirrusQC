@@ -11,8 +11,8 @@ const UserMaster = () => {
   const [selectedItems, setSelectedItems] = useState([]);
 
   // * endpoints
-  let deleteEndPoint = "http://127.0.0.1:8000/deleteUsers/";
-  let mainEndPoint = "http://127.0.0.1:8000/usersList/";
+  let deleteEndPoint = "deleteUsers/";
+  let mainEndPoint = "user/userList";
 
   return (
     <Box>

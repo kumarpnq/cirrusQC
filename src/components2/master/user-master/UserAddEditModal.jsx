@@ -32,7 +32,7 @@ const UserAddEditModal = ({ open, handleClose, row, fromWhere }) => {
           component="h2"
           fontSize={"1em"}
         >
-          Add / Edit User
+          Edit User
         </Typography>
 
         <Box sx={{ border: "1px solid #DDD", borderRadius: "3px", padding: 1 }}>

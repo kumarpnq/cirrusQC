@@ -14,6 +14,7 @@ import CustomTextField from "../../../../@core/CutsomTextField";
 import axiosInstance from "../../../../../axiosConfig";
 import { styled } from "@mui/system";
 import toast from "react-hot-toast";
+import LoginNameValidator from "./LoginNameValidator";
 
 const StyledText = styled(Typography)({
   color: "GrayText",
@@ -62,10 +63,7 @@ const AddModal = ({ open, handleClose }) => {
 
     try {
       setLoading(true);
-      const response = await axiosInstance.post(
-        `http://127.0.0.1:8000/addUser/`,
-        newUser
-      );
+      const response = await axiosInstance.post(`addUser/`, newUser);
       if (response.status === 200) {
         toast.success(response.data.message);
         setUserType("");
@@ -145,11 +143,9 @@ const AddModal = ({ open, handleClose }) => {
           </StyledWrapper>
           <StyledWrapper>
             <StyledText>Login Name:</StyledText>
-            <CustomTextField
-              placeholder="Login Name"
-              value={loginName}
-              setValue={setLoginName}
-              type="text"
+            <LoginNameValidator
+              loginName={loginName}
+              setLoginName={setLoginName}
             />
           </StyledWrapper>
           <StyledWrapper>

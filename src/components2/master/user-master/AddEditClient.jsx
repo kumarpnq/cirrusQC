@@ -2,29 +2,30 @@ import { Box, Button, CircularProgress, Divider } from "@mui/material";
 import CustomTextField from "../../../@core/CutsomTextField";
 import { useEffect, useState } from "react";
 import { StyledText, StyledWrapper } from "../common";
-import CustomMultiSelect from "../../../@core/CustomMultiSelect";
-import {
-  clientReports,
-  clientScreenArray,
-  clientSelection,
-  clientToolIcons,
-} from "../../../constants/dataArray";
 import toast from "react-hot-toast";
 import axiosInstance from "../../../../axiosConfig";
 import { generatePassword } from "./common";
+import DotsMobileStepper from "./components/stepper";
+import ClientScreenTable from "./components/clientScreenTable";
+import AddClients from "./components/addClients";
+import YesOrNo from "../../../@core/YesOrNo";
 
 const AddEditClient = ({ handleClose, fromWhere, row }) => {
+  const [active, setActive] = useState("");
   const [userName, setUserName] = useState("");
   const [loginName, setLoginName] = useState("");
   const [password, setPassword] = useState("");
-  const [selectedScreens, setSelectedScreens] = useState([]);
-  const [selectedToolIcons, setSelectedToolIcons] = useState([]);
-  const [selectedReports, setSelectedReports] = useState([]);
-  const [selectedSelection, setSelectedSelection] = useState([]);
+  const [email, setEmail] = useState("");
+  const [fullName, setFullName] = useState("");
+
+  // * stepper
+  const [activeStep, setActiveStep] = useState(0);
+  let totalSteps = 3;
 
   // * add update States
   const [initialState, setInitialState] = useState(null);
   const [addUpdateLoading, setAddUpdateLoading] = useState(false);
+  const [modifiedClients, setModifiedClients] = useState([]);
 
   // * password auto generation
   useEffect(() => {
@@ -51,23 +52,9 @@ const AddEditClient = ({ handleClose, fromWhere, row }) => {
       setUserName(localClientResponse.userName);
       setLoginName(localClientResponse.loginName);
       setPassword(localClientResponse.password);
-      const activeScreenPermissions = localClientResponse?.screenPermissions
-        ?.filter((i) => i.permission)
-        .map((i) => i.name);
-      const activeToolPermissions = localClientResponse?.toolIconPermissions
-        ?.filter((i) => i.permission)
-        .map((i) => i.name);
-      const activeReportPermissions = localClientResponse?.reportPermissions
-        ?.filter((i) => i.permission)
-        .map((i) => i.name);
-      const activeSelectionPermissions =
-        localClientResponse?.selectionPermissions
-          ?.filter((i) => i.permission)
-          .map((i) => i.name);
-      setSelectedScreens(activeScreenPermissions || []);
-      setSelectedToolIcons(activeToolPermissions || []);
-      setSelectedReports(activeReportPermissions || []);
-      setSelectedSelection(activeSelectionPermissions || []);
+      setEmail(localClientResponse.email);
+      setFullName(localClientResponse.fullName);
+      setActive(localClientResponse.isActive);
     } catch (error) {
       toast.error("Something went wrong");
     }
@@ -78,50 +65,30 @@ const AddEditClient = ({ handleClose, fromWhere, row }) => {
     }
   }, [fromWhere, row?.loginName]);
 
-  const addClientUser = async () => {
+  const updateClient = async () => {
     try {
-      if (!userName || !loginName || !password) {
-        toast.error("UserName, LoginName, Password are required fields.");
-        return;
-      }
       setAddUpdateLoading(true);
-
       const requestData = {
         userType: "CL",
-        loginName,
-        password,
-        email: userName,
-        screenPermissions: selectedScreens.map((i) => ({
-          screen: i,
-          permission: true,
-        })),
-        toolPermissions: selectedToolIcons.map((i) => ({
-          tool: i,
-          permission: true,
-        })),
-        reportPermissions: selectedReports.map((i) => ({
-          report: i,
-          permission: true,
-        })),
-        selectionPermissions: selectedSelection.map((i) => ({
-          selection: i,
-          permission: true,
-        })),
+        loginName: row?.loginName,
       };
 
-      const response = await axiosInstance.post(
-        `http://127.0.0.1:8000/addUser/`,
-        requestData
-      );
+      if (initialState.userName !== userName) requestData.userName = userName;
+      if (initialState.loginName !== loginName)
+        requestData.loginName = loginName;
+      if (initialState.password !== password) requestData.password = password;
+      if (initialState.email !== email) requestData.email = email;
+      if (initialState.fullName !== fullName) requestData.fullName = fullName;
+      if (initialState.isActive !== active) requestData.isActive = active;
+
+      if (!Object.keys(requestData).length) {
+        toast.error("No modified data.");
+        return;
+      }
+      const response = await axiosInstance.put(`updateUser/`, requestData);
       if (response.status === 200) {
         toast.success(response.data.message);
-        setUserName("");
-        setLoginName("");
-        setPassword("");
-        setSelectedScreens([]);
-        setSelectedToolIcons([]);
-        setSelectedReports([]);
-        setSelectedSelection([]);
+        fetchAdminDetails();
       }
     } catch (error) {
       toast.error("Something went wrong.");
@@ -129,94 +96,129 @@ const AddEditClient = ({ handleClose, fromWhere, row }) => {
       setAddUpdateLoading(false);
     }
   };
+
+  const sendModifiedClients = async () => {
+    try {
+      setAddUpdateLoading(true);
+      const modifiedData = modifiedClients.map((client) => ({
+        clientId: client.id,
+        clientName: client.clientName,
+        sortOrder: client.sortOrder,
+        isActive: client.active ? "Y" : "N",
+      }));
+      const requestData = {
+        loginName: row?.loginName,
+        userType: "CL",
+        clientPermission: modifiedData,
+      };
+      const response = await axiosInstance.put(`updateUser/`, requestData);
+      if (response.status === 200) {
+        toast.success(response.data.message);
+      }
+    } catch (error) {
+      toast.error("Something went wrong");
+    } finally {
+      setAddUpdateLoading(false);
+    }
+  };
+
   return (
     <div>
       <Box>
-        <StyledWrapper>
-          <StyledText>User Name : </StyledText>
-          <CustomTextField
-            width={"100%"}
-            type={"text"}
-            value={userName}
-            setValue={setUserName}
-            placeholder={"User Name"}
+        {activeStep === 0 ? (
+          <>
+            <StyledWrapper>
+              <StyledText>Active : </StyledText>
+              <YesOrNo
+                mapValue={[
+                  { name: "Yes", id: "Y" },
+                  { name: "No", id: "N" },
+                ]}
+                placeholder="Active"
+                value={active}
+                setValue={setActive}
+                isYN
+                keyId={"id"}
+                keyName={"name"}
+              />
+            </StyledWrapper>
+            <StyledWrapper>
+              <StyledText>User Name : </StyledText>
+              <CustomTextField
+                width={"100%"}
+                type={"text"}
+                value={userName}
+                setValue={setUserName}
+                placeholder={"User Name"}
+              />
+            </StyledWrapper>
+            <StyledWrapper>
+              <StyledText>Full Name : </StyledText>
+              <CustomTextField
+                width={"100%"}
+                type={"text"}
+                value={fullName}
+                setValue={setFullName}
+                placeholder={"Full Name"}
+              />
+            </StyledWrapper>
+            <StyledWrapper>
+              <StyledText>Email : </StyledText>
+              <CustomTextField
+                width={"100%"}
+                type={"email"}
+                value={email}
+                setValue={setEmail}
+                placeholder={"Email"}
+              />
+            </StyledWrapper>
+            <StyledWrapper>
+              <StyledText>Login Name : </StyledText>
+              <CustomTextField
+                width={"100%"}
+                type={"text"}
+                value={loginName}
+                setValue={setLoginName}
+                placeholder={"Login Name"}
+                isDisabled={fromWhere === "Edit"}
+              />
+            </StyledWrapper>
+            <StyledWrapper>
+              <StyledText>Password : </StyledText>
+              <CustomTextField
+                width={"100%"}
+                type={"password"}
+                value={password}
+                setValue={setPassword}
+                placeholder={"Password"}
+                autoComplete={"new-password"}
+              />
+            </StyledWrapper>
+          </>
+        ) : activeStep === 1 ? (
+          <AddClients
+            row={row}
+            modifiedClients={modifiedClients}
+            setModifiedClients={setModifiedClients}
+            initialState={initialState}
           />
-        </StyledWrapper>
-
-        <StyledWrapper>
-          <StyledText>Login Name : </StyledText>
-          <CustomTextField
-            width={"100%"}
-            type={"text"}
-            value={loginName}
-            setValue={setLoginName}
-            placeholder={"Login Name"}
+        ) : (
+          <ClientScreenTable
+            initialState={initialState}
+            fetchData={fetchAdminDetails}
+            row={row}
           />
-        </StyledWrapper>
-        <StyledWrapper>
-          <StyledText>Password : </StyledText>
-          <CustomTextField
-            width={"100%"}
-            type={"password"}
-            value={password}
-            setValue={setPassword}
-            placeholder={"Password"}
-            autoComplete={"new-password"}
-          />
-        </StyledWrapper>
-        <StyledWrapper>
-          <StyledText>screen Permissions : </StyledText>
-          <CustomMultiSelect
-            keyId="screenId"
-            keyName="screenName"
-            dropdownToggleWidth={272}
-            dropdownWidth={250}
-            options={clientScreenArray}
-            selectedItems={selectedScreens}
-            setSelectedItems={setSelectedScreens}
-            title="Screen"
-          />
-        </StyledWrapper>
-        <StyledWrapper>
-          <StyledText>Tool Permissions : </StyledText>
-          <CustomMultiSelect
-            keyId="toolId"
-            keyName="toolName"
-            dropdownToggleWidth={272}
-            dropdownWidth={250}
-            options={clientToolIcons}
-            selectedItems={selectedToolIcons}
-            setSelectedItems={setSelectedToolIcons}
-            title="Tools"
-          />
-        </StyledWrapper>
-        <StyledWrapper>
-          <StyledText>Report Permissions : </StyledText>
-          <CustomMultiSelect
-            keyId="reportId"
-            keyName="reportName"
-            dropdownToggleWidth={272}
-            dropdownWidth={250}
-            options={clientReports}
-            selectedItems={selectedReports}
-            setSelectedItems={setSelectedReports}
-            title="Reports"
-          />
-        </StyledWrapper>
-        <StyledWrapper>
-          <StyledText>Report Permissions : </StyledText>
-          <CustomMultiSelect
-            keyId="selectionId"
-            keyName="selectionName"
-            dropdownToggleWidth={272}
-            dropdownWidth={250}
-            options={clientSelection}
-            selectedItems={selectedSelection}
-            setSelectedItems={setSelectedSelection}
-            title="Selection"
-          />
-        </StyledWrapper>
+        )}
       </Box>
+
+      <Box sx={{ display: "flex", justifyContent: "center" }}>
+        <DotsMobileStepper
+          activeStep={activeStep}
+          setActiveStep={setActiveStep}
+          steps={totalSteps}
+        />
+      </Box>
+
       <Divider />
       <Box
         mt={2}
@@ -227,24 +229,32 @@ const AddEditClient = ({ handleClose, fromWhere, row }) => {
           gap: 1,
         }}
       >
-        <Button
-          onClick={handleClose}
-          variant="outlined"
-          sx={{ ml: 2 }}
-          size="small"
-        >
-          Cancel
-        </Button>
-        <Button
-          onClick={addClientUser}
-          variant="outlined"
-          color="primary"
-          size="small"
-          sx={{ display: "flex", alignItems: "center", gap: 1 }}
-        >
-          {addUpdateLoading && <CircularProgress size={"1em"} />}
-          Save
-        </Button>
+        {activeStep !== 2 && (
+          <>
+            {" "}
+            <Button
+              onClick={handleClose}
+              variant="outlined"
+              sx={{ ml: 2 }}
+              size="small"
+            >
+              Cancel
+            </Button>
+            <Button
+              onClick={
+                (activeStep === 0 && updateClient) ||
+                (activeStep === 1 && sendModifiedClients)
+              }
+              variant="outlined"
+              color="primary"
+              size="small"
+              sx={{ display: "flex", alignItems: "center", gap: 1 }}
+            >
+              {addUpdateLoading && <CircularProgress size={"1em"} />}
+              Save
+            </Button>
+          </>
+        )}
       </Box>
     </div>
   );

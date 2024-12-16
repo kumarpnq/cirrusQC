@@ -1,52 +1,40 @@
 import {
+  Box,
+  Checkbox,
+  CircularProgress,
+  Switch,
+  Table,
+  TableBody,
+  TableCell,
   TableContainer,
   TableHead,
   TableRow,
-  TableCell,
-  Table,
-  TableBody,
-  Checkbox,
-  Switch,
-  Box,
   Typography,
-  CircularProgress,
 } from "@mui/material";
-import { Fragment, useEffect, useState } from "react";
+import { Fragment, useState } from "react";
 import axiosInstance from "../../../../../axiosConfig";
 import toast from "react-hot-toast";
 
-const AdminScreenTable = ({ initialState, row, fetchData }) => {
-  const [screens, setScreens] = useState([]);
+const ClientScreenTable = ({ initialState, fetchData, row }) => {
+  const [screens, setScreens] = useState([[]]);
   const [selectedRow, setSelectedRow] = useState(null);
-  const [buttonData, setButtonData] = useState([]);
+  const [toolData, setToolData] = useState([]);
 
   // * update status
   const [screenUpdateId, setScreenUpdateId] = useState(null);
   const permissions = initialState?.screenPermissions?.flat() || [];
 
-  useEffect(() => {
-    const fetchAdminScreens = async () => {
-      try {
-        const response = await axiosInstance.get(`getAdminHubScreens/`);
-        setScreens(response.data.screens || []);
-      } catch (error) {
-        toast.error("Something went wrong");
-      }
-    };
-    fetchAdminScreens();
-  }, []);
-
   const handleCheckboxChange = (e, selectedPermission) => {
     const localButtonData =
       permissions.find((i) => i.screenId === selectedPermission.screenId)
-        ?.buttons || [];
+        ?.tools || [];
 
     if (selectedRow?.screenId === selectedPermission.screenId) {
       setSelectedRow(null);
-      setButtonData([]);
+      setToolData([]);
     } else {
       setSelectedRow(selectedPermission);
-      setButtonData(localButtonData);
+      setToolData(localButtonData);
     }
   };
 
@@ -65,6 +53,7 @@ const AdminScreenTable = ({ initialState, row, fetchData }) => {
     setScreens(updatedPermissions);
 
     const payload = {
+      userType: "CL",
       loginName: row?.loginName,
       screenPermission: [
         {
@@ -76,10 +65,7 @@ const AdminScreenTable = ({ initialState, row, fetchData }) => {
 
     try {
       setScreenUpdateId(permission.screenId);
-      const response = await axiosInstance.put(
-        `http://127.0.0.1:8000/updateUser/`,
-        payload
-      );
+      const response = await axiosInstance.put(`updateUser/`, payload);
       if (response.status === 200) {
         toast.success(response.data.message);
         fetchData();
@@ -92,43 +78,40 @@ const AdminScreenTable = ({ initialState, row, fetchData }) => {
     }
   };
 
-  const handleButtonPermissionChange = async (button) => {
-    const updatedButton = {
-      ...button,
-      permission: !button.permission,
+  const handleToolPermissionChanges = async (tool) => {
+    const updatedTool = {
+      ...tool,
+      permission: !tool.permission,
     };
 
-    const updatedButtonData = buttonData.map((btn) =>
-      btn.buttonId === button.buttonId
-        ? { ...btn, permission: updatedButton.permission }
-        : btn
+    const updatedToolData = toolData.map((item) =>
+      item.toolId === updatedTool.toolId
+        ? { ...item, permission: updatedTool.permission }
+        : item
     );
 
-    setButtonData(updatedButtonData);
+    setToolData(updatedToolData);
 
     const payload = {
+      userType: "CL",
       loginName: row?.loginName,
-      buttonPermission: [
+      toolPermission: [
         {
           screenId: selectedRow.screenId,
-
-          buttonId: button.buttonId,
-          permission: !button.permission,
+          toolId: tool.toolId,
+          permission: updatedTool.permission,
         },
       ],
     };
 
     try {
-      const response = await axiosInstance.put(
-        `http://127.0.0.1:8000/updateUser/`,
-        payload
-      );
+      const response = await axiosInstance.put(`updateUser/`, payload);
       if (response.status === 200) {
         toast.success(response.data.message);
       }
     } catch (error) {
-      toast.error("Failed to update button permission");
-      setButtonData(buttonData);
+      toast.error("Failed to update screen permission");
+      setToolData(toolData); // Reset tool data on error
     }
   };
 
@@ -177,7 +160,7 @@ const AdminScreenTable = ({ initialState, row, fetchData }) => {
             </TableBody>
           </Table>
         </TableContainer>
-        {!!buttonData.length && (
+        {!!toolData.length && (
           <TableContainer
             sx={{ height: 400, overflowY: "scroll", borderRadius: "3px" }}
           >
@@ -189,15 +172,15 @@ const AdminScreenTable = ({ initialState, row, fetchData }) => {
                 </TableRow>
               </TableHead>
               <TableBody>
-                {buttonData.map((item, index) => (
+                {toolData.map((item, index) => (
                   <TableRow key={index}>
                     <TableCell sx={{ padding: "4px" }}>
-                      {item.buttonName}
+                      {item.toolName}
                     </TableCell>
                     <TableCell sx={{ padding: "4px" }}>
                       <Switch
                         checked={item.permission}
-                        onChange={() => handleButtonPermissionChange(item)}
+                        onChange={() => handleToolPermissionChanges(item)}
                       />
                     </TableCell>
                   </TableRow>
@@ -211,4 +194,4 @@ const AdminScreenTable = ({ initialState, row, fetchData }) => {
   );
 };
 
-export default AdminScreenTable;
+export default ClientScreenTable;

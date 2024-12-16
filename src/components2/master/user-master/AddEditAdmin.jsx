@@ -2,22 +2,20 @@ import { Box, Button, CircularProgress } from "@mui/material";
 import { StyledText, StyledWrapper } from "../common";
 import CustomTextField from "../../../@core/CutsomTextField";
 import { useEffect, useState } from "react";
-import { buttonPermission, screensArray } from "../../../constants/dataArray";
 import axiosInstance from "../../../../axiosConfig";
 import toast from "react-hot-toast";
 import { generatePassword } from "./common";
 import AdminScreenTable from "./components/AdminScreensTable";
 import DotsMobileStepper from "./components/stepper";
+import YesOrNo from "../../../@core/YesOrNo";
 
 const AddEditAdmin = ({ handleClose, activeTab, fromWhere, row }) => {
+  const [active, setActive] = useState("");
   const [userName, setUserName] = useState("");
   const [loginName, setLoginName] = useState("");
   const [password, setPassword] = useState("");
   const [email, setEmail] = useState("");
   const [fullName, setFullName] = useState("");
-  const [selectedScreens, setSelectedScreens] = useState([]);
-  const [selectedOnlineButtons, setSelectedOnlineButtons] = useState([]);
-  const [selectedPrintButtons, setSelectedPrintButtons] = useState([]);
 
   // * update add states
   const [addUpdateLoading, setAddUpdateLoading] = useState(false);
@@ -40,10 +38,7 @@ const AddEditAdmin = ({ handleClose, activeTab, fromWhere, row }) => {
         loginName: row?.loginName,
         userType: "US",
       };
-      const response = await axiosInstance.get(
-        `http://127.0.0.1:8000/getUserData/`,
-        { params }
-      );
+      const response = await axiosInstance.get(`getUserData/`, { params });
 
       const localAdminResponse = response.data;
       setInitialState(localAdminResponse);
@@ -52,6 +47,7 @@ const AddEditAdmin = ({ handleClose, activeTab, fromWhere, row }) => {
       setPassword(localAdminResponse.password);
       setEmail(localAdminResponse.email);
       setFullName(localAdminResponse.fullName);
+      setActive(localAdminResponse.isActive);
     } catch (error) {
       toast.error("Something went wrong");
     }
@@ -62,120 +58,26 @@ const AddEditAdmin = ({ handleClose, activeTab, fromWhere, row }) => {
     }
   }, [fromWhere, row?.loginName]);
 
-  const addAdminUser = async () => {
-    try {
-      if (!userName || !loginName || !password) {
-        toast.error("UserName, LoginName, Password are required fields.");
-        return;
-      }
-      setAddUpdateLoading(true);
-      const finalData = [];
-      selectedOnlineButtons.forEach((button) => {
-        finalData.push({
-          button: button,
-          permission: true,
-          description: "online",
-        });
-      });
-      selectedPrintButtons.forEach((button) => {
-        finalData.push({
-          button: button,
-          permission: true,
-          description: "print",
-        });
-      });
-      const requestData = {
-        userType: activeTab === 1 ? "US" : "CL",
-        loginName,
-        password,
-        email: userName,
-        screenPermissions: [
-          { screen: "Online-QC2", permission: true },
-          { screen: "Print-QC2", permission: false },
-        ],
-        buttonPermissions: finalData,
-      };
-
-      const response = await axiosInstance.post(
-        `http://127.0.0.1:8000/addUser/`,
-        requestData
-      );
-      if (response.status === 200) {
-        toast.success(response.data.message);
-        setUserName("");
-        setLoginName("");
-        setPassword("");
-        setSelectedScreens([]);
-        selectedOnlineButtons([]);
-        selectedPrintButtons([]);
-      }
-    } catch (error) {
-      toast.error("Something went wrong.");
-    } finally {
-      setAddUpdateLoading(false);
-    }
-  };
-
   const updateAdmin = async () => {
     try {
       setAddUpdateLoading(true);
-      const requestData = {};
-
+      const requestData = {
+        userType: "CL",
+        loginName: row?.loginName,
+      };
       if (initialState.userName !== userName) requestData.userName = userName;
       if (initialState.loginName !== loginName)
         requestData.loginName = loginName;
       if (initialState.password !== password) requestData.password = password;
-
-      const updatedScreenPermissions = screensArray
-        .filter((screen) => {
-          const screenKey = screen.screenId;
-          const currentPermission = selectedScreens.includes(screenKey)
-            ? "Yes"
-            : "No";
-          const initialPermission =
-            initialState.screenPermissions[screenKey] || "No";
-          return currentPermission !== initialPermission;
-        })
-        .map((screen) => ({
-          screen: screen.screenId,
-          permission: selectedScreens.includes(screen.screenId) ? "Yes" : "No",
-        }));
-
-      if (updatedScreenPermissions.length > 0) {
-        requestData.screenPermissions = updatedScreenPermissions;
-      }
-
-      const updatedButtonPermissions = buttonPermission
-        .filter((button) => {
-          const buttonKey = button.buttonId;
-          const currentPermission = selectedOnlineButtons.includes(buttonKey)
-            ? "Yes"
-            : "No";
-          const initialPermission =
-            initialState.buttonPermissions[buttonKey] || "No";
-          return currentPermission !== initialPermission;
-        })
-        .map((button) => ({
-          button: button.buttonId,
-          permission: selectedOnlineButtons.includes(button.buttonId)
-            ? "Yes"
-            : "No",
-        }));
-
-      if (updatedButtonPermissions.length > 0) {
-        requestData.buttonPermissions = updatedButtonPermissions;
-      }
+      if (initialState.email !== email) requestData.email = email;
+      if (initialState.fullName !== fullName) requestData.fullName = fullName;
+      if (initialState.isActive !== active) requestData.isActive = active;
 
       if (!Object.keys(requestData).length) {
         toast.error("No modified data.");
         return;
       }
-
-      const response = await axiosInstance.put(
-        `http://127.0.0.1:8000/updateUser/${row?.loginName}`,
-        requestData
-      );
-
+      const response = await axiosInstance.put(`updateUser/`, requestData);
       if (response.status === 200) {
         toast.success(response.data.message);
         fetchAdminDetails();
@@ -192,6 +94,21 @@ const AddEditAdmin = ({ handleClose, activeTab, fromWhere, row }) => {
       {activeStep === 0 ? (
         <>
           {" "}
+          <StyledWrapper>
+            <StyledText>Active : </StyledText>
+            <YesOrNo
+              mapValue={[
+                { name: "Yes", id: "Y" },
+                { name: "No", id: "N" },
+              ]}
+              placeholder="Active"
+              value={active}
+              setValue={setActive}
+              isYN
+              keyId={"id"}
+              keyName={"name"}
+            />
+          </StyledWrapper>
           <StyledWrapper>
             <StyledText>User Name : </StyledText>
             <CustomTextField
@@ -262,21 +179,22 @@ const AddEditAdmin = ({ handleClose, activeTab, fromWhere, row }) => {
           setActiveStep={setActiveStep}
         />
       </Box>
-
-      <Box sx={{ mt: 0.5, display: "flex", justifyContent: "end", gap: 1 }}>
-        <Button size="small" variant="outlined" onClick={handleClose}>
-          Cancel
-        </Button>
-        <Button
-          size="small"
-          variant="outlined"
-          onClick={fromWhere === "Add" ? addAdminUser : updateAdmin}
-          sx={{ display: "flex", alignItems: "center", gap: 1 }}
-        >
-          {addUpdateLoading && <CircularProgress size={"1em"} />}
-          Save
-        </Button>
-      </Box>
+      {activeStep !== 1 && (
+        <Box sx={{ mt: 0.5, display: "flex", justifyContent: "end", gap: 1 }}>
+          <Button size="small" variant="outlined" onClick={handleClose}>
+            Cancel
+          </Button>
+          <Button
+            size="small"
+            variant="outlined"
+            onClick={updateAdmin}
+            sx={{ display: "flex", alignItems: "center", gap: 1 }}
+          >
+            {addUpdateLoading && <CircularProgress size={"1em"} />}
+            Save
+          </Button>
+        </Box>
+      )}
     </Box>
   );
 };

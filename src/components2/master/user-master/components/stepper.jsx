@@ -28,7 +28,11 @@ export default function DotsMobileStepper({
       activeStep={activeStep}
       sx={{ maxWidth: 400, flexGrow: 1 }}
       nextButton={
-        <Button size="small" onClick={handleNext} disabled={activeStep === 1}>
+        <Button
+          size="small"
+          onClick={handleNext}
+          disabled={activeStep === steps - 1}
+        >
           Next
           {theme.direction === "rtl" ? (
             <KeyboardArrowLeft />
@@ -52,7 +56,7 @@ export default function DotsMobileStepper({
 }
 
 DotsMobileStepper.propTypes = {
-  steps: PropTypes.number.isRequired, // Total number of steps (must be a number)
-  activeStep: PropTypes.number.isRequired, // Current active step (must be a number)
-  setActiveStep: PropTypes.func.isRequired, // Function to set the active step (must be a function)
+  steps: PropTypes.number.isRequired,
+  activeStep: PropTypes.number.isRequired,
+  setActiveStep: PropTypes.func.isRequired,
 };

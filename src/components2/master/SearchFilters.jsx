@@ -87,6 +87,7 @@ const SearchFilters = ({
         handleDeleteOpenOrClose();
       }
     } catch (error) {
+      console.log(error);
       toast.error("Something went wrong.");
     }
   };
@@ -99,6 +100,13 @@ const SearchFilters = ({
           sx={{ display: "flex", alignItems: "center", flexWrap: "wrap" }}
           className="gap-1 px-1 py-1"
         >
+          <CustomTextField
+            placeholder={"Search Text"}
+            width={200}
+            type={"text"}
+            value={searchText}
+            setValue={setSearchText}
+          />
           <YesOrNo
             classes={classes}
             mapValue={["All", "Active", "In Active"]}
@@ -106,13 +114,6 @@ const SearchFilters = ({
             placeholder="IsActive"
             value={isActive}
             setValue={setIsActive}
-          />
-          <CustomTextField
-            placeholder={"Search Text"}
-            width={200}
-            type={"text"}
-            value={searchText}
-            setValue={setSearchText}
           />
           <Button
             variant="outlined"
