@@ -6,9 +6,9 @@ import toast from "react-hot-toast";
 import axiosInstance from "../../../../axiosConfig";
 import { generatePassword } from "./common";
 import DotsMobileStepper from "./components/stepper";
-import AddClients from "./components/addClients";
 import YesOrNo from "../../../@core/YesOrNo";
 import ClientScreenTable from "./components/ClientScreenTableNew";
+import AddClients from "./components/AddClientsNew";
 
 const AddEditClient = ({ handleClose, fromWhere, row }) => {
   const [active, setActive] = useState("");
@@ -42,10 +42,7 @@ const AddEditClient = ({ handleClose, fromWhere, row }) => {
         loginName: row?.loginName,
         userType: "CL",
       };
-      const response = await axiosInstance.get(
-        `http://127.0.0.1:8000/getUserData/`,
-        { params }
-      );
+      const response = await axiosInstance.get(`/getUserData/`, { params });
 
       const localClientResponse = response.data;
       setInitialState(localClientResponse);
