@@ -9,10 +9,13 @@ import {
   TextField,
   ListItem,
   ListItemIcon,
+  CircularProgress,
 } from "@mui/material";
 import { useState } from "react";
 import { FixedSizeList } from "react-window";
 import useFetchMongoData from "../../../hooks/useFetchMongoData";
+import axiosInstance from "../../../../axiosConfig";
+import toast from "react-hot-toast";
 
 const style = {
   position: "absolute",
@@ -32,17 +35,25 @@ const OnlineAddModal = ({ open, handleClose }) => {
   );
   const onlinePublicationListArray = onlinePublications?.data?.data || [];
 
-  const [ClusterName, setClusterName] = useState("");
+  const [clusterName, setClusterName] = useState("");
   const [selectedPublications, setSelectedPublications] = useState([]);
   const [searchText, setSearchText] = useState("");
 
+  // * add update states
+  const [loading, setLoading] = useState(false);
+
   // Toggle selected items
-  const handleToggle = (publicationId) => {
-    const currentIndex = selectedPublications.indexOf(publicationId);
+  const handleToggle = (publication) => {
+    const currentIndex = selectedPublications.findIndex(
+      (selected) => selected.publicationId === publication.publicationId
+    );
     const newSelected = [...selectedPublications];
 
     if (currentIndex === -1) {
-      newSelected.push(publicationId);
+      newSelected.push({
+        publicationId: publication.publicationId,
+        publicationName: publication.publicationName,
+      });
     } else {
       newSelected.splice(currentIndex, 1);
     }
@@ -50,10 +61,36 @@ const OnlineAddModal = ({ open, handleClose }) => {
     setSelectedPublications(newSelected);
   };
 
-  // Filter list based on search input
   const filteredData = onlinePublicationListArray.filter((item) =>
     item.publicationName.toLowerCase().includes(searchText.toLowerCase())
   );
+
+  // * add new cluster
+  const handleAddCluster = async () => {
+    try {
+      setLoading(true);
+      const requestData = {
+        clusterType: "online",
+        clusterName,
+        publicationList: selectedPublications,
+      };
+      const response = await axiosInstance.post(
+        `http://127.0.0.1:8000/cluster/createCluster/`,
+        requestData
+      );
+      if (response.status === 200) {
+        toast.success(response.data.data.message);
+        setClusterName("");
+        setSearchText("");
+        setSelectedPublications([]);
+        handleClose();
+      }
+    } catch (error) {
+      toast.error("Something went wrong.");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const renderRow = ({ index, style }) => {
     const item = filteredData[index];
@@ -65,13 +102,15 @@ const OnlineAddModal = ({ open, handleClose }) => {
         role={undefined}
         dense
         button
-        onClick={() => handleToggle(item.publicationId)}
+        onClick={() => handleToggle(item)}
         style={style}
       >
         <ListItemIcon>
           <Checkbox
             edge="start"
-            checked={selectedPublications.indexOf(item.publicationId) !== -1}
+            checked={selectedPublications.some(
+              (selected) => selected.publicationId === item.publicationId
+            )}
             tabIndex={-1}
             disableRipple
             inputProps={{ "aria-labelledby": labelId }}
@@ -104,7 +143,7 @@ const OnlineAddModal = ({ open, handleClose }) => {
           size="small"
           fullWidth
           placeholder="Cluster Name"
-          value={ClusterName}
+          value={clusterName}
           onChange={(e) => setClusterName(e.target.value)}
           sx={{ my: 0.5 }}
         />
@@ -147,7 +186,13 @@ const OnlineAddModal = ({ open, handleClose }) => {
           >
             Close
           </Button>
-          <Button size="small" variant="outlined">
+          <Button
+            size="small"
+            variant="outlined"
+            onClick={handleAddCluster}
+            sx={{ display: "flex", gap: 1 }}
+          >
+            {loading && <CircularProgress size={"1em"} />}
             Save
           </Button>
         </Box>

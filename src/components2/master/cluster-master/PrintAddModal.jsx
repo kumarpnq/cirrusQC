@@ -12,6 +12,8 @@ import {
 } from "@mui/material";
 import { useState } from "react";
 import { FixedSizeList } from "react-window";
+import useFetchData from "../../../hooks/useFetchData";
+import { url } from "../../../constants/baseUrl";
 
 const style = {
   position: "absolute",
@@ -26,29 +28,20 @@ const style = {
 };
 
 const PrintAddModal = ({ open, handleClose }) => {
-  const demoPublications = [
-    { id: "msn", name: "msn.com" },
-    { id: "nyt", name: "nytimes.com" },
-    { id: "bbc", name: "bbc.com" },
-    { id: "cnn", name: "cnn.com" },
-    { id: "forbes", name: "forbes.com" },
-  ];
-
-  const demoCities = [
-    { id: "ny", name: "New York" },
-    { id: "la", name: "Los Angeles" },
-    { id: "sf", name: "San Francisco" },
-    { id: "chi", name: "Chicago" },
-    { id: "bos", name: "Boston" },
-  ];
-
   const [clusterName, setClusterName] = useState("");
   const [selectedPublications, setSelectedPublications] = useState([]);
   const [selectedCities, setSelectedCities] = useState([]);
   const [searchPublications, setSearchPublications] = useState("");
   const [searchCities, setSearchCities] = useState("");
 
-  // Toggle selected items for Publications
+  const { data: cityData } = useFetchData(`${url}citieslist`);
+  const { data: publicationData } = useFetchData(
+    `http://127.0.0.1:8000/publications/`
+  );
+
+  const demoPublications = publicationData?.data?.data || [];
+  const demoCities = cityData?.data?.cities || [];
+
   const handleTogglePublication = (id) => {
     const currentIndex = selectedPublications.indexOf(id);
     const newSelected = [...selectedPublications];
@@ -78,17 +71,19 @@ const PrintAddModal = ({ open, handleClose }) => {
 
   // Filter lists based on search input
   const filteredPublications = demoPublications.filter((item) =>
-    item.name.toLowerCase().includes(searchPublications.toLowerCase())
+    item.publicationName
+      .toLowerCase()
+      .includes(searchPublications.toLowerCase())
   );
 
   const filteredCities = demoCities.filter((item) =>
-    item.name.toLowerCase().includes(searchCities.toLowerCase())
+    item.cityname.toLowerCase().includes(searchCities.toLowerCase())
   );
 
-  const renderRow = (data, handleToggle, selectedItems) => {
+  const renderRow = (data, handleToggle, selectedItems, id, name) => {
     const rowRenderer = ({ index, style }) => {
       const item = data[index];
-      const labelId = `checkbox-list-label-${item.id}`;
+      const labelId = `checkbox-list-label-${item[id]}`;
 
       return (
         <ListItem
@@ -96,19 +91,19 @@ const PrintAddModal = ({ open, handleClose }) => {
           role={undefined}
           dense
           button
-          onClick={() => handleToggle(item.id)}
+          onClick={() => handleToggle(item[id])}
           style={style}
         >
           <ListItemIcon>
             <Checkbox
               edge="start"
-              checked={selectedItems.indexOf(item.id) !== -1}
+              checked={selectedItems.indexOf(item[id]) !== -1}
               tabIndex={-1}
               disableRipple
               inputProps={{ "aria-labelledby": labelId }}
             />
           </ListItemIcon>
-          <ListItemText id={labelId} primary={item.name} />
+          <ListItemText id={labelId} primary={item[id]} />
         </ListItem>
       );
     };
@@ -162,7 +157,9 @@ const PrintAddModal = ({ open, handleClose }) => {
                 {renderRow(
                   filteredPublications,
                   handleTogglePublication,
-                  selectedPublications
+                  selectedPublications,
+                  "publicationName",
+                  "publicationName"
                 )}
               </FixedSizeList>
             </Box>
@@ -191,7 +188,13 @@ const PrintAddModal = ({ open, handleClose }) => {
                 itemSize={46}
                 itemCount={filteredCities.length}
               >
-                {renderRow(filteredCities, handleToggleCity, selectedCities)}
+                {renderRow(
+                  filteredCities,
+                  handleToggleCity,
+                  selectedCities,
+                  "cityname",
+                  "cityid"
+                )}
               </FixedSizeList>
             </Box>
           </Box>

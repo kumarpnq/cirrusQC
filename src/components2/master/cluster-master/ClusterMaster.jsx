@@ -9,6 +9,7 @@ const ClusterMaster = () => {
   const handleChange = (event, newValue) => {
     setSelectedTab(newValue);
   };
+
   return (
     <Box>
       <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
@@ -21,6 +22,7 @@ const ClusterMaster = () => {
           <Tab label="Print" />
         </Tabs>
       </Box>
+
       {selectedTab === 0 ? <OnlineCluster /> : <PrintCluster />}
     </Box>
   );

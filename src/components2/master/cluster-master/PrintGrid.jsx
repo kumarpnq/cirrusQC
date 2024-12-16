@@ -1,18 +1,17 @@
 import { Box } from "@mui/material";
 import { DataGrid } from "@mui/x-data-grid";
+import PropTypes from "prop-types";
 
 const columns = [
   { field: "clusterId", headerName: "Cluster ID", width: 150 },
   { field: "clusterName", headerName: "Cluster Name", width: 200 },
 ];
 
-const rows = [
-  { id: 1, clusterId: "123", clusterName: "Cluster A" },
-  { id: 2, clusterId: "124", clusterName: "Cluster B" },
-  { id: 3, clusterId: "125", clusterName: "Cluster C" },
-  // Add more rows as needed
-];
-const PrintGrid = () => {
+const PrintGrid = ({ loading, clusterData = [] }) => {
+  const rows = clusterData.map((i, index) => ({
+    id: index,
+    ...i,
+  }));
   return (
     <Box sx={{ height: "70vh", width: "100%" }}>
       <DataGrid
@@ -21,6 +20,7 @@ const PrintGrid = () => {
         pageSize={5}
         rowsPerPageOptions={[5]}
         checkboxSelection
+        loading={loading}
         density="compact"
         hideFooterSelectedRowCount
         disableRowSelectionOnClick
@@ -29,4 +29,8 @@ const PrintGrid = () => {
   );
 };
 
+PrintGrid.propTypes = {
+  loading: PropTypes.bool.isRequired,
+  clusterData: PropTypes.arrayOf(PropTypes.object).isRequired,
+};
 export default PrintGrid;

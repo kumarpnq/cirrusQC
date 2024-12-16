@@ -6,9 +6,9 @@ import toast from "react-hot-toast";
 import axiosInstance from "../../../../axiosConfig";
 import { generatePassword } from "./common";
 import DotsMobileStepper from "./components/stepper";
-import ClientScreenTable from "./components/clientScreenTable";
 import AddClients from "./components/addClients";
 import YesOrNo from "../../../@core/YesOrNo";
+import ClientScreenTable from "./components/ClientScreenTableNew";
 
 const AddEditClient = ({ handleClose, fromWhere, row }) => {
   const [active, setActive] = useState("");

@@ -1,19 +1,25 @@
 import { DataGrid } from "@mui/x-data-grid";
 import { Box } from "@mui/material";
+import PropTypes from "prop-types";
 
 const columns = [
   { field: "clusterId", headerName: "Cluster ID", width: 150 },
   { field: "clusterName", headerName: "Cluster Name", width: 200 },
 ];
 
-const rows = [
-  { id: 1, clusterId: "123", clusterName: "Cluster A" },
-  { id: 2, clusterId: "124", clusterName: "Cluster B" },
-  { id: 3, clusterId: "125", clusterName: "Cluster C" },
-  // Add more rows as needed
-];
-
-const OnlineGrid = () => {
+const OnlineGrid = ({
+  loading,
+  clusterData = [],
+  selectedItems = [],
+  setSelectedItems,
+}) => {
+  const rows = clusterData.map((i) => ({
+    id: i.clusterId,
+    ...i,
+  }));
+  const handleRowSelection = (newSelection) => {
+    setSelectedItems(newSelection);
+  };
   return (
     <Box sx={{ height: "70vh", width: "100%" }}>
       <DataGrid
@@ -23,6 +29,9 @@ const OnlineGrid = () => {
         rowsPerPageOptions={[5]}
         checkboxSelection
         density="compact"
+        loading={loading}
+        rowSelectionModel={selectedItems}
+        onRowSelectionModelChange={handleRowSelection}
         hideFooterSelectedRowCount
         disableRowSelectionOnClick
       />
@@ -30,4 +39,10 @@ const OnlineGrid = () => {
   );
 };
 
+OnlineGrid.propTypes = {
+  loading: PropTypes.bool.isRequired,
+  clusterData: PropTypes.arrayOf(PropTypes.object).isRequired,
+  selectedItems: PropTypes.array.isRequired,
+  setSelectedItems: PropTypes.func.isRequired,
+};
 export default OnlineGrid;
