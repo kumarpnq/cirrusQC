@@ -70,7 +70,12 @@ const OnlineCluster = () => {
         setSelectedItems={setSelectedItems}
         selectedItems={selectedItems}
       />
-      <OnlineAddModal open={addModalOpen} handleClose={handleEditClose} />
+      <OnlineAddModal
+        open={addModalOpen}
+        handleClose={handleEditClose}
+        fromWhere={"Add"}
+        row={null}
+      />
     </Box>
   );
 };

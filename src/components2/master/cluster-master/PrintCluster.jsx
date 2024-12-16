@@ -11,11 +11,13 @@ const PrintCluster = () => {
   const [addModalOpen, setAddModalOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const [clusterData, setClusterData] = useState([]);
+  const [selectedItems, setSelectedItems] = useState([]);
+  const [deleteOpen, setDeleteOpen] = useState(false);
   const handleEditOpen = () => setAddModalOpen(true);
   const handleEditClose = () => setAddModalOpen(false);
 
   const fetchClusterMaster = async (event) => {
-    event.preventDefault();
+    event?.preventDefault();
     try {
       setLoading(true);
       const clusterType = "print";
@@ -30,16 +32,49 @@ const PrintCluster = () => {
       setLoading(false);
     }
   };
+
+  const deletePrintCluster = async () => {
+    try {
+      const params = {
+        clusterIds: selectedItems.join(","),
+      };
+      const response = await axiosInstance.delete(
+        `http://127.0.0.1:8000/cluster/deleteCluster/`,
+        { params }
+      );
+      if (response.status === 200) {
+        toast.success(response.data.data.message);
+        setSelectedItems([]);
+        setDeleteOpen(false);
+        fetchClusterMaster();
+      }
+    } catch (error) {
+      toast.error("something went wrong.");
+    }
+  };
   return (
     <Box sx={{ mt: 0.5 }}>
       <SearchFilters
         handleOpen={handleEditOpen}
         handleSubmit={fetchClusterMaster}
         loading={loading}
+        deleteOpen={deleteOpen}
+        setDeleteOpen={setDeleteOpen}
+        onDelete={deletePrintCluster}
       />
       <Divider sx={{ my: 1 }} />
-      <PrintGrid loading={loading} clusterData={clusterData} />
-      <PrintAddModal open={addModalOpen} handleClose={handleEditClose} />
+      <PrintGrid
+        loading={loading}
+        clusterData={clusterData}
+        setSelectedItems={setSelectedItems}
+        selectedItems={selectedItems}
+      />
+      <PrintAddModal
+        open={addModalOpen}
+        handleClose={handleEditClose}
+        fromWhere="Add"
+        row={null}
+      />
     </Box>
   );
 };

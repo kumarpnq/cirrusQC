@@ -9,11 +9,14 @@ import {
   TextField,
   ListItem,
   ListItemIcon,
+  CircularProgress,
 } from "@mui/material";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { FixedSizeList } from "react-window";
 import useFetchData from "../../../hooks/useFetchData";
 import { url } from "../../../constants/baseUrl";
+import axiosInstance from "../../../../axiosConfig";
+import toast from "react-hot-toast";
 
 const style = {
   position: "absolute",
@@ -27,27 +30,89 @@ const style = {
   borderRadius: 2,
 };
 
-const PrintAddModal = ({ open, handleClose }) => {
+const PrintAddModal = ({ open, handleClose, row, fromWhere }) => {
   const [clusterName, setClusterName] = useState("");
   const [selectedPublications, setSelectedPublications] = useState([]);
   const [selectedCities, setSelectedCities] = useState([]);
   const [searchPublications, setSearchPublications] = useState("");
   const [searchCities, setSearchCities] = useState("");
+  const [loading, setLoading] = useState(false);
 
+  // Fetch publication and city data
   const { data: cityData } = useFetchData(`${url}citieslist`);
-  const { data: publicationData } = useFetchData(
-    `http://127.0.0.1:8000/publications/`
-  );
+  const { data: publicationData } = useFetchData(`${url}publicationgroups/`);
 
-  const demoPublications = publicationData?.data?.data || [];
+  const demoPublications = publicationData?.data?.publication_groups || [];
   const demoCities = cityData?.data?.cities || [];
 
-  const handleTogglePublication = (id) => {
-    const currentIndex = selectedPublications.indexOf(id);
+  // * add update states
+  const [initialState, setInitialState] = useState(null);
+
+  const fetchClusterData = async () => {
+    try {
+      const params = {
+        clusterType: "print",
+        clusterId: row?.clusterId,
+      };
+      const response = await axiosInstance.get(
+        `http://127.0.0.1:8000/cluster/clusterDetails/`,
+        { params }
+      );
+      let localState = response.data.data.clusterData;
+      setInitialState(localState);
+      setClusterName(localState.clusterName);
+
+      // Extract publication groups from cities and remove duplicates
+      let publicationGroupSet = new Set();
+      let localPublicationIds = [];
+
+      localState.publicationList?.forEach((publication) => {
+        publication.cities?.forEach((city) => {
+          city.publicationGroups.forEach((group) => {
+            // Using the pubGroupId and name to ensure uniqueness
+            const pubGroupId = group.pubGroupId;
+            const pubGroupName = group.name;
+            const uniqueKey = `${pubGroupId}-${pubGroupName}`;
+
+            if (!publicationGroupSet.has(uniqueKey)) {
+              publicationGroupSet.add(uniqueKey);
+              localPublicationIds.push({
+                publicationgroupid: pubGroupId,
+                publicationgroupname: pubGroupName,
+              });
+            }
+          });
+        });
+      });
+
+      let localCities = localState.publicationList[0].cities?.map((i) => ({
+        cityid: i.cityId, // Accessing the correct cityId property
+        cityname: i.cityName,
+      }));
+
+      setSelectedCities(localCities || []);
+      setSelectedPublications(localPublicationIds || []);
+    } catch (error) {
+      toast.error("Something went wrong.");
+      console.log(error);
+    }
+  };
+
+  useEffect(() => {
+    if (fromWhere === "Edit" && row?.clusterId) {
+      fetchClusterData();
+    }
+  }, [fromWhere, row?.clusterId]);
+
+  // Toggle function for publications
+  const handleTogglePublication = (publication) => {
+    const currentIndex = selectedPublications.findIndex(
+      (item) => item.publicationgroupid === publication.publicationgroupid
+    );
     const newSelected = [...selectedPublications];
 
     if (currentIndex === -1) {
-      newSelected.push(id);
+      newSelected.push(publication);
     } else {
       newSelected.splice(currentIndex, 1);
     }
@@ -55,13 +120,15 @@ const PrintAddModal = ({ open, handleClose }) => {
     setSelectedPublications(newSelected);
   };
 
-  // Toggle selected items for Cities
-  const handleToggleCity = (id) => {
-    const currentIndex = selectedCities.indexOf(id);
+  // Toggle function for cities
+  const handleToggleCity = (city) => {
+    const currentIndex = selectedCities.findIndex(
+      (item) => item.cityid === city.cityid
+    );
     const newSelected = [...selectedCities];
 
     if (currentIndex === -1) {
-      newSelected.push(id);
+      newSelected.push(city);
     } else {
       newSelected.splice(currentIndex, 1);
     }
@@ -69,17 +136,108 @@ const PrintAddModal = ({ open, handleClose }) => {
     setSelectedCities(newSelected);
   };
 
-  // Filter lists based on search input
+  // Filter the lists based on search input
   const filteredPublications = demoPublications.filter((item) =>
-    item.publicationName
-      .toLowerCase()
-      .includes(searchPublications.toLowerCase())
+    item?.publicationgroupname
+      ?.toLowerCase()
+      ?.includes(searchPublications?.toLowerCase())
   );
 
   const filteredCities = demoCities.filter((item) =>
-    item.cityname.toLowerCase().includes(searchCities.toLowerCase())
+    item?.cityname
+      .toLowerCase()
+      .includes(searchCities?.toString().toLowerCase())
   );
 
+  // Handle add print clusters
+  const handleAddPrintClusters = async () => {
+    try {
+      setLoading(true);
+      const preparedPuData = selectedCities.map((city) => {
+        const relatedPublications = selectedPublications.map((pub) => ({
+          pubGroupId: pub.publicationgroupid,
+          name: pub.publicationgroupname,
+        }));
+
+        return {
+          cityId: city.cityid,
+          cityName: city.cityname,
+          publicationGroups: relatedPublications,
+        };
+      });
+
+      const requestData = {
+        clusterType: "print",
+        clusterName,
+        printClusterData: preparedPuData,
+      };
+      const response = await axiosInstance.post(
+        "http://127.0.0.1:8000/cluster/createCluster/",
+        requestData
+      );
+      if (response.status === 200) {
+        toast.success(response.data.data.message);
+        setSearchCities([]);
+        setSearchPublications("");
+        setSelectedPublications([]);
+        setSelectedCities([]);
+        setClusterName("");
+        handleClose();
+      }
+    } catch (error) {
+      toast.error("Something went wrong.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // handle update cluster
+  // * update cluster
+  const handleUpdateCluster = async () => {
+    try {
+      setLoading(true);
+
+      // Step 1: Create a request object with only changed fields
+      const preparedPuData = selectedCities.map((city) => {
+        const relatedPublications = selectedPublications.map((pub) => ({
+          pubGroupId: pub.publicationgroupid,
+          name: pub.publicationgroupname,
+        }));
+
+        return {
+          cityId: city.cityid,
+          cityName: city.cityname,
+          publicationGroups: relatedPublications,
+        };
+      });
+      const requestData = {
+        clusterType: "print",
+        clusterId: row?.clusterId,
+        printClusterData: preparedPuData,
+      };
+
+      if (initialState.clusterName !== clusterName) {
+        requestData.clusterName = clusterName;
+      }
+
+      // Step 5: Send the update request
+      const response = await axiosInstance.post(
+        `http://127.0.0.1:8000/cluster/updateClusterDetails/`,
+        requestData
+      );
+
+      if (response.status === 200) {
+        toast.success(response.data.data.message);
+        fetchClusterData();
+      }
+    } catch (error) {
+      toast.error("Something went wrong.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Render the row for publications and cities
   const renderRow = (data, handleToggle, selectedItems, id, name) => {
     const rowRenderer = ({ index, style }) => {
       const item = data[index];
@@ -87,23 +245,25 @@ const PrintAddModal = ({ open, handleClose }) => {
 
       return (
         <ListItem
-          key={item.id}
+          key={item[id]}
           role={undefined}
           dense
           button
-          onClick={() => handleToggle(item[id])}
+          onClick={() => handleToggle(item)}
           style={style}
         >
           <ListItemIcon>
             <Checkbox
               edge="start"
-              checked={selectedItems.indexOf(item[id]) !== -1}
+              checked={selectedItems.some(
+                (selected) => selected[id] === item[id]
+              )}
               tabIndex={-1}
               disableRipple
               inputProps={{ "aria-labelledby": labelId }}
             />
           </ListItemIcon>
-          <ListItemText id={labelId} primary={item[id]} />
+          <ListItemText id={labelId} primary={item[name]} />
         </ListItem>
       );
     };
@@ -112,10 +272,20 @@ const PrintAddModal = ({ open, handleClose }) => {
     return rowRenderer;
   };
 
+  // * handle close all
+  const handleCloseAll = () => {
+    handleClose();
+    setClusterName("");
+    setInitialState(null);
+    setSearchCities("");
+    setSelectedPublications([]);
+    setSelectedCities([]);
+  };
+
   return (
     <Modal
       open={open}
-      onClose={handleClose}
+      onClose={handleCloseAll}
       aria-labelledby="modal-title"
       aria-describedby="modal-description"
     >
@@ -142,7 +312,7 @@ const PrintAddModal = ({ open, handleClose }) => {
             >
               <TextField
                 size="small"
-                placeholder="Search Publications"
+                placeholder="Search Publication Groups"
                 value={searchPublications}
                 onChange={(e) => setSearchPublications(e.target.value)}
                 fullWidth
@@ -150,7 +320,6 @@ const PrintAddModal = ({ open, handleClose }) => {
               />
               <FixedSizeList
                 height={200}
-                // width={280}
                 itemSize={46}
                 itemCount={filteredPublications.length}
               >
@@ -158,8 +327,8 @@ const PrintAddModal = ({ open, handleClose }) => {
                   filteredPublications,
                   handleTogglePublication,
                   selectedPublications,
-                  "publicationName",
-                  "publicationName"
+                  "publicationgroupid",
+                  "publicationgroupname"
                 )}
               </FixedSizeList>
             </Box>
@@ -184,7 +353,6 @@ const PrintAddModal = ({ open, handleClose }) => {
               />
               <FixedSizeList
                 height={200}
-                // width={280}
                 itemSize={46}
                 itemCount={filteredCities.length}
               >
@@ -192,8 +360,8 @@ const PrintAddModal = ({ open, handleClose }) => {
                   filteredCities,
                   handleToggleCity,
                   selectedCities,
-                  "cityname",
-                  "cityid"
+                  "cityid",
+                  "cityname"
                 )}
               </FixedSizeList>
             </Box>
@@ -203,7 +371,7 @@ const PrintAddModal = ({ open, handleClose }) => {
         {/* Action Buttons */}
         <Box mt={2} display="flex" justifyContent="flex-end">
           <Button
-            onClick={handleClose}
+            onClick={handleCloseAll}
             color="primary"
             size="small"
             variant="outlined"
@@ -211,8 +379,16 @@ const PrintAddModal = ({ open, handleClose }) => {
           >
             Close
           </Button>
-          <Button size="small" variant="outlined">
-            Save
+          <Button
+            size="small"
+            variant="outlined"
+            onClick={
+              fromWhere === "Add" ? handleAddPrintClusters : handleUpdateCluster
+            }
+            sx={{ display: "flex", gap: 1 }}
+          >
+            {loading && <CircularProgress size={"1em"} />}
+            {fromWhere === "Add" ? "Save" : "Edit"}
           </Button>
         </Box>
       </Box>

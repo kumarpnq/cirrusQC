@@ -11,7 +11,7 @@ import {
   ListItemIcon,
   CircularProgress,
 } from "@mui/material";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { FixedSizeList } from "react-window";
 import useFetchMongoData from "../../../hooks/useFetchMongoData";
 import axiosInstance from "../../../../axiosConfig";
@@ -29,7 +29,7 @@ const style = {
   borderRadius: 2,
 };
 
-const OnlineAddModal = ({ open, handleClose }) => {
+const OnlineAddModal = ({ open, handleClose, row, fromWhere }) => {
   const { data: onlinePublications } = useFetchMongoData(
     `onlinePublicationList/`
   );
@@ -38,6 +38,39 @@ const OnlineAddModal = ({ open, handleClose }) => {
   const [clusterName, setClusterName] = useState("");
   const [selectedPublications, setSelectedPublications] = useState([]);
   const [searchText, setSearchText] = useState("");
+
+  // * add update states
+  const [initialState, setInitialState] = useState(null);
+
+  const fetchClusterData = async () => {
+    try {
+      const params = {
+        clusterType: "online",
+        clusterId: row?.clusterId,
+      };
+      const response = await axiosInstance.get(
+        `http://127.0.0.1:8000/cluster/clusterDetails/`,
+        { params }
+      );
+      let localState = response.data.data.clusterData;
+      setInitialState(localState);
+      setClusterName(localState.clusterName);
+      let localPublicationIds =
+        localState.publicationList.map((i) => ({
+          publicationId: i.id,
+          publicationName: i.publicationName,
+        })) || [];
+      setSelectedPublications(localPublicationIds);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  useEffect(() => {
+    if (fromWhere === "Edit" && row?.clusterId) {
+      fetchClusterData();
+    }
+  }, [fromWhere, row?.clusterId]);
 
   // * add update states
   const [loading, setLoading] = useState(false);
@@ -60,10 +93,6 @@ const OnlineAddModal = ({ open, handleClose }) => {
 
     setSelectedPublications(newSelected);
   };
-
-  const filteredData = onlinePublicationListArray.filter((item) =>
-    item.publicationName.toLowerCase().includes(searchText.toLowerCase())
-  );
 
   // * add new cluster
   const handleAddCluster = async () => {
@@ -91,6 +120,86 @@ const OnlineAddModal = ({ open, handleClose }) => {
       setLoading(false);
     }
   };
+
+  // * update cluster
+  const handleUpdateCluster = async () => {
+    try {
+      setLoading(true);
+
+      // Step 1: Create a request object with only changed fields
+      const requestData = {
+        clusterType: "online",
+        clusterId: row?.clusterId,
+      };
+
+      // Step 2: Check if the cluster name has changed and include it if necessary
+      if (initialState.clusterName !== clusterName) {
+        requestData.clusterName = clusterName;
+      }
+
+      // Step 3: Calculate added and removed publications
+      const initialPublicationIds = initialState.publicationList.map(
+        (pub) => pub.id
+      );
+      const selectedPublicationIds = selectedPublications.map(
+        (pub) => pub.publicationId
+      );
+
+      const removedPublications = initialPublicationIds.filter(
+        (id) => !selectedPublicationIds.includes(id)
+      );
+      const addedPublications = selectedPublicationIds.filter(
+        (id) => !initialPublicationIds.includes(id)
+      );
+
+      // Step 4: Add removed and added publications if any changes
+      if (removedPublications.length > 0) {
+        requestData.removedPublications = removedPublications.join(",");
+      }
+
+      if (addedPublications.length > 0) {
+        requestData.addedPublications = addedPublications.map((id) => ({
+          publicationId: id,
+          publicationName: selectedPublications.find(
+            (pub) => pub.publicationId === id
+          ).publicationName,
+        }));
+      }
+
+      // Step 5: Send the update request
+      const response = await axiosInstance.post(
+        `http://127.0.0.1:8000/cluster/updateClusterDetails/`,
+        requestData
+      );
+
+      if (response.status === 200) {
+        toast.success(response.data.data.message);
+        fetchClusterData(); // Fetch updated cluster data after successful update
+      }
+    } catch (error) {
+      toast.error("Something went wrong.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const filteredData = onlinePublicationListArray
+    .filter((item) =>
+      item.publicationName.toLowerCase().includes(searchText.toLowerCase())
+    )
+    .sort((a, b) => {
+      const isASelected = selectedPublications.some(
+        (selected) => selected.publicationId === a.publicationId
+      );
+      const isBSelected = selectedPublications.some(
+        (selected) => selected.publicationId === b.publicationId
+      );
+
+      // Ensure selected items appear at the top
+      if (isASelected && !isBSelected) return -1;
+      if (!isASelected && isBSelected) return 1;
+      return 0; // If both are selected or both are not, maintain order
+    });
 
   const renderRow = ({ index, style }) => {
     const item = filteredData[index];
@@ -189,11 +298,13 @@ const OnlineAddModal = ({ open, handleClose }) => {
           <Button
             size="small"
             variant="outlined"
-            onClick={handleAddCluster}
+            onClick={
+              fromWhere === "Add" ? handleAddCluster : handleUpdateCluster
+            }
             sx={{ display: "flex", gap: 1 }}
           >
             {loading && <CircularProgress size={"1em"} />}
-            Save
+            {fromWhere === "Add" ? "Save" : "Update"}
           </Button>
         </Box>
       </Box>

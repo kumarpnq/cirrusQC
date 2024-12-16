@@ -1,11 +1,9 @@
 import { DataGrid } from "@mui/x-data-grid";
-import { Box } from "@mui/material";
+import { Box, IconButton } from "@mui/material";
 import PropTypes from "prop-types";
-
-const columns = [
-  { field: "clusterId", headerName: "Cluster ID", width: 150 },
-  { field: "clusterName", headerName: "Cluster Name", width: 200 },
-];
+import { EditNote } from "@mui/icons-material";
+import { Fragment, useState } from "react";
+import OnlineAddModal from "./OnlineAddModal";
 
 const OnlineGrid = ({
   loading,
@@ -13,6 +11,30 @@ const OnlineGrid = ({
   selectedItems = [],
   setSelectedItems,
 }) => {
+  const [editOpen, setEditOpen] = useState(false);
+  const [selectedRow, setSelectedRow] = useState(null);
+
+  const handleEditOpen = (row) => {
+    setEditOpen((prev) => !prev);
+    setSelectedRow(row);
+  };
+
+  const handleEditClose = () => {
+    setEditOpen(false);
+  };
+  const columns = [
+    {
+      field: "_",
+      headerName: "Edit",
+      renderCell: (params) => (
+        <IconButton color="primary" onClick={() => handleEditOpen(params.row)}>
+          <EditNote />
+        </IconButton>
+      ),
+    },
+    { field: "clusterId", headerName: "Cluster ID", width: 150 },
+    { field: "clusterName", headerName: "Cluster Name", width: 200 },
+  ];
   const rows = clusterData.map((i) => ({
     id: i.clusterId,
     ...i,
@@ -21,21 +43,29 @@ const OnlineGrid = ({
     setSelectedItems(newSelection);
   };
   return (
-    <Box sx={{ height: "70vh", width: "100%" }}>
-      <DataGrid
-        rows={rows}
-        columns={columns}
-        pageSize={5}
-        rowsPerPageOptions={[5]}
-        checkboxSelection
-        density="compact"
-        loading={loading}
-        rowSelectionModel={selectedItems}
-        onRowSelectionModelChange={handleRowSelection}
-        hideFooterSelectedRowCount
-        disableRowSelectionOnClick
+    <Fragment>
+      <Box sx={{ height: "70vh", width: "100%" }}>
+        <DataGrid
+          rows={rows}
+          columns={columns}
+          pageSize={5}
+          rowsPerPageOptions={[5]}
+          checkboxSelection
+          density="compact"
+          loading={loading}
+          rowSelectionModel={selectedItems}
+          onRowSelectionModelChange={handleRowSelection}
+          hideFooterSelectedRowCount
+          disableRowSelectionOnClick
+        />
+      </Box>
+      <OnlineAddModal
+        open={editOpen}
+        handleClose={handleEditClose}
+        row={selectedRow}
+        fromWhere={"Edit"}
       />
-    </Box>
+    </Fragment>
   );
 };
 
