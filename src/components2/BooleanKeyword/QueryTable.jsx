@@ -58,9 +58,9 @@ const QueryBox = styled(Box)({
   whiteSpace: "normal", // Allows text to wrap onto multiple lines
   textOverflow: "ellipsis", // Ensures ellipsis appears if text overflows
   display: "-webkit-box", // Enables multi-line ellipsis support
-  WebkitBoxOrient: "vertical", // Defines the orientation of the flexbox
-  WebkitLineClamp: 2, // Limits the content to 2 lines
-  lineHeight: "1.4", // Adjusts line spacing for readability
+  WebkitBoxOrient: "vertical",
+  WebkitLineClamp: 2,
+  lineHeight: "1.4",
   fontWeight: 500,
   color: "#333",
   marginLeft: 2,
