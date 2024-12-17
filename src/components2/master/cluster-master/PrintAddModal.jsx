@@ -54,10 +54,9 @@ const PrintAddModal = ({ open, handleClose, row, fromWhere }) => {
         clusterType: "print",
         clusterId: row?.clusterId,
       };
-      const response = await axiosInstance.get(
-        `http://127.0.0.1:8000/cluster/clusterDetails/`,
-        { params }
-      );
+      const response = await axiosInstance.get(`cluster/clusterDetails/`, {
+        params,
+      });
       let localState = response.data.data.clusterData;
       setInitialState(localState);
       setClusterName(localState.clusterName);
@@ -172,7 +171,7 @@ const PrintAddModal = ({ open, handleClose, row, fromWhere }) => {
         printClusterData: preparedPuData,
       };
       const response = await axiosInstance.post(
-        "http://127.0.0.1:8000/cluster/createCluster/",
+        "cluster/createCluster/",
         requestData
       );
       if (response.status === 200) {
@@ -222,7 +221,7 @@ const PrintAddModal = ({ open, handleClose, row, fromWhere }) => {
 
       // Step 5: Send the update request
       const response = await axiosInstance.post(
-        `http://127.0.0.1:8000/cluster/updateClusterDetails/`,
+        `cluster/updateClusterDetails/`,
         requestData
       );
 
