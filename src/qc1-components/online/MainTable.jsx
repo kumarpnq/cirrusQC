@@ -487,13 +487,23 @@ const MainTable = ({
                   alignItems: "center",
                   height: 200,
                   width: 200,
-                  objectFit: "contain",
+                  overflow: "hidden", // To avoid any overflow beyond the container
+                  backgroundPosition: "center", // Centers the image
+                  backgroundClip: "unset", // Removes clipping
+                  objectFit: "contain", // Ensures the entire image fits within the box without cropping
+                  padding: 0, // Ensures no internal padding causing overflow
                 }}
               >
                 <img
                   src={params.row.thumbnail}
                   alt="Thumbnail"
-                  style={{ maxHeight: "100%", maxWidth: "100%" }}
+                  style={{
+                    width: "100%", // Ensures the image scales with the width of the container
+                    height: "auto", // Adjusts height to maintain aspect ratio
+                    objectFit: "contain", // Maintains the aspect ratio and makes sure the image fits in the container
+                    display: "block", // Removes any unwanted spacing around the image
+                    margin: "auto", // Centers the image if it's smaller than the container
+                  }}
                 />
               </Box>
             }
@@ -503,7 +513,14 @@ const MainTable = ({
             <img
               src={params.row.thumbnail}
               alt="thumbnail"
-              style={{ width: "80", height: "100" }}
+              style={{
+                // backgroundImage: `url(${params.row.thumbnail})`,
+                backgroundSize: "contain",
+                backgroundPosition: "center",
+                backgroundRepeat: "no-repeat",
+                width: "80px", // Thumbnail size
+                height: "100px", // Thumbnail size
+              }}
               className="p-1 border rounded-lg shadow-md"
             />
           </Tooltip>
@@ -528,11 +545,19 @@ const MainTable = ({
       width: userColumnSettings?.head_summary || 450,
       editable: true,
       ...multilineColumn,
-      // renderCell: (params) => (
-      //   <div style={{ whiteSpace: "pre-wrap", wordWrap: "break-word" }}>
-      //     {params.value}
-      //   </div>
-      // ),
+      renderCell: (params) => (
+        <div
+          style={{
+            whiteSpace: "pre-wrap", // Ensures text wraps onto the next line
+            wordWrap: "break-word", // Breaks long words to fit within the cell
+            maxHeight: "4.5em", // Limits the height to approximately 4 lines
+            overflow: "hidden", // Prevents overflow of content
+            lineHeight: "1.2", // Ensures proper line spacing for text
+          }}
+        >
+          {params.value}
+        </div>
+      ),
     },
     {
       field: "journalist",
