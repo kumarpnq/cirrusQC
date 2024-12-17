@@ -55,11 +55,16 @@ const StyledListItem = styled(ListItem)({
 const QueryBox = styled(Box)({
   flexGrow: 1,
   overflow: "hidden",
-  whiteSpace: "nowrap",
-  textOverflow: "ellipsis",
+  whiteSpace: "normal", // Allows text to wrap onto multiple lines
+  textOverflow: "ellipsis", // Ensures ellipsis appears if text overflows
+  display: "-webkit-box", // Enables multi-line ellipsis support
+  WebkitBoxOrient: "vertical", // Defines the orientation of the flexbox
+  WebkitLineClamp: 2, // Limits the content to 2 lines
+  lineHeight: "1.4", // Adjusts line spacing for readability
   fontWeight: 500,
   color: "#333",
   marginLeft: 2,
+  fontSize: "0.9em",
 });
 
 const QueryList = ({
