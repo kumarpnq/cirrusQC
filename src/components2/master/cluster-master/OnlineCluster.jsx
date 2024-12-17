@@ -38,10 +38,9 @@ const OnlineCluster = () => {
       const params = {
         clusterIds: selectedItems.join(","),
       };
-      const response = await axiosInstance.delete(
-        `http://127.0.0.1:8000/cluster/deleteCluster/`,
-        { params }
-      );
+      const response = await axiosInstance.delete(`cluster/deleteCluster/`, {
+        params,
+      });
       if (response.status === 200) {
         toast.success(response.data.data.message);
         setSelectedItems([]);

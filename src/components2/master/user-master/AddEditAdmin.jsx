@@ -62,7 +62,7 @@ const AddEditAdmin = ({ handleClose, activeTab, fromWhere, row }) => {
     try {
       setAddUpdateLoading(true);
       const requestData = {
-        userType: "CL",
+        userType: "US",
         loginName: row?.loginName,
       };
       if (initialState.userName !== userName) requestData.userName = userName;

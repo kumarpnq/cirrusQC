@@ -13,7 +13,7 @@ const PreviewModal = ({ open, handleClose, row, query }) => {
   const [loading, setLoading] = useState(false);
   // Columns for DataGrid
   const columns = [
-    { field: "articleId", headerName: "ID", width: 150 },
+    // { field: "articleId", headerName: "ID", width: 150 },
     {
       field: "link",
       headerName: "View",
@@ -35,8 +35,8 @@ const PreviewModal = ({ open, handleClose, row, query }) => {
       ),
     },
     { field: "type", headerName: "Type", width: 100 },
-    { field: "headline", headerName: "Headline", width: 300 },
-    { field: "summary", headerName: "Summary", width: 450 },
+    { field: "headline", headerName: "Headline", width: 550 },
+    { field: "summary", headerName: "Summary", width: 550 },
   ];
 
   useEffect(() => {

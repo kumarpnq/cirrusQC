@@ -66,6 +66,7 @@ const AdminScreenTable = ({ initialState, row, fetchData }) => {
 
     const payload = {
       loginName: row?.loginName,
+      userType: "US",
       screenPermission: [
         {
           screenId: permission.screenId,
@@ -76,10 +77,7 @@ const AdminScreenTable = ({ initialState, row, fetchData }) => {
 
     try {
       setScreenUpdateId(permission.screenId);
-      const response = await axiosInstance.put(
-        `http://127.0.0.1:8000/updateUser/`,
-        payload
-      );
+      const response = await axiosInstance.put(`updateUser/`, payload);
       if (response.status === 200) {
         toast.success(response.data.message);
         fetchData();
@@ -108,6 +106,7 @@ const AdminScreenTable = ({ initialState, row, fetchData }) => {
 
     const payload = {
       loginName: row?.loginName,
+      userType: "US",
       buttonPermission: [
         {
           screenId: selectedRow.screenId,
@@ -119,12 +118,10 @@ const AdminScreenTable = ({ initialState, row, fetchData }) => {
     };
 
     try {
-      const response = await axiosInstance.put(
-        `http://127.0.0.1:8000/updateUser/`,
-        payload
-      );
+      const response = await axiosInstance.put(`updateUser/`, payload);
       if (response.status === 200) {
         toast.success(response.data.message);
+        fetchData();
       }
     } catch (error) {
       toast.error("Failed to update button permission");
