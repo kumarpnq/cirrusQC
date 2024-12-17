@@ -3,6 +3,9 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import EditNoteIcon from "@mui/icons-material/EditNote";
 import { Fragment, useState } from "react";
 import AddEditModal from "./AddEditModal";
+import axiosInstance from "../../../../axiosConfig";
+import DeleteConfirmationDialog from "../../../@core/DeleteConfirmationDialog";
+import toast from "react-hot-toast";
 
 export default function WhatsappGrid({
   whatsAppData = [],
@@ -11,6 +14,16 @@ export default function WhatsappGrid({
 }) {
   const [openEdit, setOpenEdit] = useState(false);
   const [selectedRow, setSelectedRow] = useState(null);
+  const [deleteOpen, setDeleteOpen] = useState(false);
+
+  const handleDeleteOpen = (row) => {
+    setDeleteOpen((prev) => !prev);
+    setSelectedRow(row);
+  };
+  const handleDeleteClose = () => {
+    setSelectedRow(null);
+    setDeleteOpen(false);
+  };
   const columns = [
     {
       field: "actions",
@@ -28,7 +41,7 @@ export default function WhatsappGrid({
           key={`delete-${params.id}`}
           icon={<DeleteIcon />}
           label="Delete"
-          onClick={() => handleDelete(params.row)}
+          onClick={() => handleDeleteOpen(params.row)}
         />,
       ],
     },
@@ -48,9 +61,9 @@ export default function WhatsappGrid({
       ),
     },
     {
-      field: "client",
+      field: "clientName",
       headerName: "Client",
-      width: 150,
+      width: 200,
     },
     {
       field: "contacts",
@@ -88,9 +101,18 @@ export default function WhatsappGrid({
     setOpenEdit(false);
     setSelectedRow(null);
   };
-  const handleDelete = (id) => {
-    // Handle delete action
-    console.log("Delete row", id);
+  const handleDelete = async () => {
+    try {
+      const response = await axiosInstance.delete(
+        `removeWhatsappConfig/?clientId=${selectedRow?.clientId}`
+      );
+      if (response.status === 200) {
+        setDeleteOpen(false);
+        toast.success("Contact deleted.");
+      }
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   return (
@@ -112,6 +134,11 @@ export default function WhatsappGrid({
         row={selectedRow}
         fromWhere={"Edit"}
         fetchMainData={fetchMainData}
+      />
+      <DeleteConfirmationDialog
+        open={deleteOpen}
+        onClose={handleDeleteClose}
+        onDelete={handleDelete}
       />
     </Fragment>
   );

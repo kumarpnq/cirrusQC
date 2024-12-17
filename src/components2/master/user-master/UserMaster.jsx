@@ -12,7 +12,7 @@ const UserMaster = () => {
 
   // * endpoints
   let deleteEndPoint = "deleteUsers/";
-  let mainEndPoint = "user/userList";
+  let mainEndPoint = "usersMasterList/";
 
   return (
     <Box>

@@ -22,7 +22,7 @@ const OnlineCluster = () => {
       setLoading(true);
       const clusterType = "online";
       const response = await axiosInstance.get(
-        `clusterMaster/?clusterType=${clusterType}`
+        `cluster/clusterMaster/?clusterType=${clusterType}`
       );
 
       setClusterData(response.data.data.data || []);

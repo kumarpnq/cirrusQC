@@ -22,7 +22,7 @@ const PrintCluster = () => {
       setLoading(true);
       const clusterType = "print";
       const response = await axiosInstance.get(
-        `clusterMaster/?clusterType=${clusterType}`
+        `cluster/clusterMaster/?clusterType=${clusterType}`
       );
 
       setClusterData(response.data.data.data || []);

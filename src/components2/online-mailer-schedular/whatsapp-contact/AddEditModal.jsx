@@ -185,23 +185,38 @@ const AddEditModal = ({ open, handleClose, row, fromWhere, fetchMainData }) => {
   const handleInsert = async (event) => {
     event.preventDefault();
     try {
+      const preparedSlots = selectedSlots.map((i) => ({
+        time: i,
+        isActive: "Y",
+      }));
+      const preparedContacts = selectedContacts.split(",").map((i) => ({
+        contactNumber: i,
+        isActive: "Y",
+      }));
+      const preparedCompanies = selectedCompanies.map((i) => ({
+        contactId: i,
+        isActive: "Y",
+      }));
       setUploadLoading(true);
       const requestData = {
         clientId: selectedClient,
         userId: selectedUser,
-        companyIds: selectedCompanies,
-        slots: selectedSlots,
-        contacts: selectedContacts,
+        companyIds: preparedCompanies,
+        slots: preparedSlots,
+        contacts: preparedContacts,
         isPrint: selectedPrint,
         isOnline: selectedOnline,
       };
       const response = await axiosInstance.post(
-        `updateWhatsappSchedule/`,
+        `addWhatsappSchedule`,
         requestData
       );
-      console.log(response);
+      if (response.status === 200) {
+        toast.success(response.data.data.message);
+        handleClose();
+      }
     } catch (error) {
-      console.log(error);
+      toast.error("Something went wrong.");
     } finally {
       setUploadLoading(false);
     }
@@ -318,10 +333,11 @@ const AddEditModal = ({ open, handleClose, row, fromWhere, fetchMainData }) => {
                     PaperProps: {
                       style: {
                         maxHeight: 250,
+                        fontSize: "0.9em",
                       },
                     },
                   }}
-                  style={{ height: 25, minWidth: 270 }}
+                  style={{ height: 25, minWidth: 270, fontSize: "0.9em" }}
                 >
                   {timeSlots.map((slot) => (
                     <MenuItem key={slot} value={slot}>
@@ -335,6 +351,7 @@ const AddEditModal = ({ open, handleClose, row, fromWhere, fetchMainData }) => {
                 <TextField
                   multiline
                   fullWidth
+                  InputProps={{ style: { fontSize: "0.9em" } }}
                   value={selectedContacts}
                   onChange={(e) => setSelectedContacts(e.target.value)}
                 />
