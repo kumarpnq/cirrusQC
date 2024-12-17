@@ -12,6 +12,7 @@ const SearchFilters = ({
   onDelete = () => {},
   deleteOpen,
   setDeleteOpen,
+  isHideYesOrNo,
 }) => {
   const [searchText, setSearchText] = useState("");
   const [isActive, setIsActive] = useState("");
@@ -21,15 +22,15 @@ const SearchFilters = ({
 
   return (
     <Fragment>
-      <form onSubmit={handleSubmit}>
-        <Box sx={{ display: "flex", alignItems: "center", gap: 0.5 }}>
-          <CustomTextField
-            type={"text"}
-            placeholder={"Search Text"}
-            width={250}
-            value={searchText}
-            setValue={setSearchText}
-          />
+      <Box sx={{ display: "flex", alignItems: "center", gap: 0.5 }}>
+        <CustomTextField
+          type={"text"}
+          placeholder={"Search Text"}
+          width={250}
+          value={searchText}
+          setValue={setSearchText}
+        />
+        {!isHideYesOrNo && (
           <YesOrNo
             mapValue={["Yes", "No"]}
             placeholder="Select"
@@ -37,28 +38,30 @@ const SearchFilters = ({
             setValue={setIsActive}
             width={200}
           />
-          <Button
-            size="small"
-            variant="outlined"
-            type="submit"
-            sx={{ display: "flex", gap: 1 }}
-          >
-            {loading && <CircularProgress size={"1em"} />}
-            Search
-          </Button>
-          <Button variant="outlined" size="small" onClick={handleOpen}>
-            Add
-          </Button>
-          <Button
-            variant="outlined"
-            size="small"
-            color="error"
-            onClick={handleDeleteOpen}
-          >
-            Delete
-          </Button>
-        </Box>
-      </form>
+        )}
+
+        <Button
+          size="small"
+          variant="outlined"
+          onClick={() => handleSubmit(searchText)}
+          sx={{ display: "flex", gap: 1 }}
+        >
+          {loading && <CircularProgress size={"1em"} />}
+          Search
+        </Button>
+        <Button variant="outlined" size="small" onClick={handleOpen}>
+          Add
+        </Button>
+        <Button
+          variant="outlined"
+          size="small"
+          color="error"
+          onClick={handleDeleteOpen}
+        >
+          Delete
+        </Button>
+      </Box>
+
       <DeleteConfirmationDialog
         open={deleteOpen}
         onClose={handleDeleteClose}
@@ -75,6 +78,7 @@ SearchFilters.propTypes = {
   onDelete: PropTypes.func.isRequired,
   deleteOpen: PropTypes.bool.isRequired,
   setDeleteOpen: PropTypes.func.isRequired,
+  isHideYesOrNo: PropTypes.bool,
 };
 
 export default SearchFilters;

@@ -16,14 +16,18 @@ const OnlineCluster = () => {
   const handleEditOpen = () => setAddModalOpen(true);
   const handleEditClose = () => setAddModalOpen(false);
 
-  const fetchClusterMaster = async (event) => {
-    event?.preventDefault();
+  const fetchClusterMaster = async (text) => {
     try {
       setLoading(true);
-      const clusterType = "online";
-      const response = await axiosInstance.get(
-        `cluster/clusterMaster/?clusterType=${clusterType}`
-      );
+      const params = {
+        clusterType: "online",
+      };
+      if (text) {
+        params.searchText = text;
+      }
+      const response = await axiosInstance.get(`cluster/clusterMaster/`, {
+        params,
+      });
 
       setClusterData(response.data.data.data || []);
     } catch (error) {
@@ -61,6 +65,7 @@ const OnlineCluster = () => {
         onDelete={deleteOnlineCluster}
         deleteOpen={deleteOpen}
         setDeleteOpen={setDeleteOpen}
+        isHideYesOrNo
       />
       <Divider sx={{ my: 1 }} />
       <OnlineGrid
