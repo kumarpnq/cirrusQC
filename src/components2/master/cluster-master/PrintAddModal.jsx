@@ -289,7 +289,13 @@ const PrintAddModal = ({ open, handleClose, row, fromWhere }) => {
       aria-describedby="modal-description"
     >
       <Box sx={style}>
-        <Typography id="modal-title" variant="h6" component="h2" mb={2}>
+        <Typography
+          id="modal-title"
+          variant="h6"
+          component="h2"
+          mb={1}
+          fontSize={"1em"}
+        >
           Add Print Cluster
         </Typography>
         <TextField
@@ -301,38 +307,6 @@ const PrintAddModal = ({ open, handleClose, row, fromWhere }) => {
           sx={{ mb: 0.5 }}
         />
         <Box display="flex" gap={2}>
-          <Box sx={{ flex: 1 }}>
-            <Box
-              sx={{
-                border: "1px solid #ddd",
-                borderRadius: 1,
-                height: 270,
-              }}
-            >
-              <TextField
-                size="small"
-                placeholder="Search Publication Groups"
-                value={searchPublications}
-                onChange={(e) => setSearchPublications(e.target.value)}
-                fullWidth
-                sx={{ mb: 2 }}
-              />
-              <FixedSizeList
-                height={200}
-                itemSize={46}
-                itemCount={filteredPublications.length}
-              >
-                {renderRow(
-                  filteredPublications,
-                  handleTogglePublication,
-                  selectedPublications,
-                  "publicationgroupid",
-                  "publicationgroupname"
-                )}
-              </FixedSizeList>
-            </Box>
-          </Box>
-
           {/* Cities Section */}
           <Box sx={{ flex: 1 }}>
             <Box
@@ -361,6 +335,37 @@ const PrintAddModal = ({ open, handleClose, row, fromWhere }) => {
                   selectedCities,
                   "cityid",
                   "cityname"
+                )}
+              </FixedSizeList>
+            </Box>
+          </Box>
+          <Box sx={{ flex: 1 }}>
+            <Box
+              sx={{
+                border: "1px solid #ddd",
+                borderRadius: 1,
+                height: 270,
+              }}
+            >
+              <TextField
+                size="small"
+                placeholder="Search Publication Groups"
+                value={searchPublications}
+                onChange={(e) => setSearchPublications(e.target.value)}
+                fullWidth
+                sx={{ mb: 2 }}
+              />
+              <FixedSizeList
+                height={200}
+                itemSize={46}
+                itemCount={filteredPublications.length}
+              >
+                {renderRow(
+                  filteredPublications,
+                  handleTogglePublication,
+                  selectedPublications,
+                  "publicationgroupid",
+                  "publicationgroupname"
                 )}
               </FixedSizeList>
             </Box>

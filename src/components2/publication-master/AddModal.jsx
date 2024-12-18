@@ -118,7 +118,7 @@ const AddModal = ({ open, handleClose, row, screen }) => {
     publicationGroupsData?.data?.publication_groups || [];
 
   const { data: clusterData } = useFetchMongoData(
-    `clusterMaster/?clusterType=${screen}`
+    `cluster/clusterMaster/?clusterType=${screen}`
   );
   const clusterArrayToMap = clusterData?.data?.data || [];
 
@@ -152,7 +152,7 @@ const AddModal = ({ open, handleClose, row, screen }) => {
       setPopulate(publicationDataLocal?.isPopulate === "Y" ? "Yes" : "No");
       setActive(publicationDataLocal?.isActive === "Y" ? "Yes" : "No");
       setTemporary(publicationDataLocal?.isTemporary === "Y" ? "Yes" : "No");
-      setClusters([publicationDataLocal?.clusterIds] || []);
+      setClusters(publicationDataLocal?.clusterIds.split(",") || []);
 
       // * for online only
       if (screen === "online") {

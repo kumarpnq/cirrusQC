@@ -261,7 +261,7 @@ const OnlineAddModal = ({ open, handleClose, row, fromWhere }) => {
           sx={{
             border: "1px solid #ddd",
             borderRadius: 1,
-            height: 275,
+            height: 550,
             // overflow: "auto",
           }}
         >
@@ -274,7 +274,7 @@ const OnlineAddModal = ({ open, handleClose, row, fromWhere }) => {
             sx={{ mb: 2, p: 1 }}
           />
           <FixedSizeList
-            height={200}
+            height={470}
             width={360}
             itemSize={46}
             itemCount={filteredData.length}
