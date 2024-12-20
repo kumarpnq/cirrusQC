@@ -891,6 +891,16 @@ const EditDialog = ({
         frequency: "Daily",
         updateType: "I",
       },
+      {
+        entityType: "magazine",
+        // companyIds: [],
+        // isSendReport: false,
+        // isIncludeReport: false,
+        slots: [],
+        loginName: "",
+        frequency: "Daily",
+        updateType: "I",
+      },
     ]);
     setInsertStatus2([
       {
@@ -905,6 +915,11 @@ const EditDialog = ({
       },
       {
         entityType: "both",
+        login: "",
+        weekly: "",
+      },
+      {
+        entityType: "magazine",
         login: "",
         weekly: "",
       },
@@ -1090,6 +1105,7 @@ const EditDialog = ({
             </div>
           </Box>
         </StyledItemWrapper>
+        {openedFromWhere === "add" && <Divider sx={{ my: 1 }} />}
         <StyledItemWrapper>
           <StyledText>Exclude Days:</StyledText>
           <div className="mt-1">

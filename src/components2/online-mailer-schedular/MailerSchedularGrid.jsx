@@ -114,11 +114,13 @@ const MailerSchedularGrid = ({
         <Tooltip
           title={
             <>
-              {params.value.map((i, index) => (
-                <div key={index} style={{ whiteSpace: "pre-line" }}>
-                  {i.companyName}
-                </div>
-              ))}
+              {params.value.map((i, index) => {
+                return (
+                  <div key={index} style={{ whiteSpace: "pre-line" }}>
+                    {i.companyName}
+                  </div>
+                );
+              })}
             </>
           }
         >
