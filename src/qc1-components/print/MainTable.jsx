@@ -330,6 +330,43 @@ const MainTable = ({
       width: userColumnSettings?.headline || 250,
       editable: true,
       ...multilineColumn,
+      renderCell: (params) => (
+        <Tooltip
+          title={params.value}
+          PopperProps={{
+            modifiers: [
+              {
+                name: "offset",
+                options: {
+                  offset: [0, 8], // Adjust the tooltip position if necessary
+                },
+              },
+            ],
+          }}
+          sx={{
+            "& .MuiTooltip-tooltip": {
+              backgroundColor: "black", // Set background color to black
+              color: "white", // Optional: Set text color to white for contrast
+            },
+          }}
+        >
+          <div
+            style={{
+              whiteSpace: "normal", // Ensures text wraps properly within the cell
+              wordWrap: "break-word", // Breaks long words to fit within the cell
+              maxHeight: "4.5em", // Limits the height to approximately 4 lines
+              overflow: "hidden", // Prevents overflow of content
+              lineHeight: "1.4", // Ensures proper line spacing for text
+              textOverflow: "ellipsis", // Adds ellipsis if the text overflows
+              display: "-webkit-box", // Set as flex-like box to allow for multiline ellipsis
+              WebkitBoxOrient: "vertical", // Enables multi-line truncation with ellipsis
+              WebkitLineClamp: 3, // Limit the number of lines to 4 and adds ellipsis
+            }}
+          >
+            {params.value}
+          </div>
+        </Tooltip>
+      ),
     },
     {
       field: "summary",

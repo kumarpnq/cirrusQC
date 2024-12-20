@@ -32,19 +32,15 @@ const MailerSchedularGrid = ({
   const [deleteOpen, setDeleteOpen] = useState(false);
   const handleDelete = async () => {
     try {
-      const requestData = {
+      const params = {
         clientId: selectedRow?.id,
-        updateType: "D",
       };
-      const preparedData = {
-        data: [requestData],
-      };
-      const response = await axiosInstance.post(
-        `updateMailerScheduler`,
-        preparedData
-      );
 
-      if (response.data?.scheduleData?.success?.length) {
+      const response = await axiosInstance.delete(`removeMailerSchedule/`, {
+        params,
+      });
+
+      if (response.data?.scheduleData?.status === "success") {
         const filteredData = scheduleData.filter(
           (item) => item.clientId !== selectedRow?.id
         );
@@ -52,9 +48,9 @@ const MailerSchedularGrid = ({
         handleFetch();
         setSelectedRow(null);
         setDeleteOpen(false);
-        toast.success(response.data?.scheduleData?.success[0].status);
+        toast.success(response.data?.scheduleData?.message);
       } else {
-        toast.success(response.data?.scheduleData?.success[0].status);
+        toast.success(response.data?.scheduleData?.message);
       }
     } catch (error) {
       toast.error("Something went wrong.");
@@ -85,10 +81,11 @@ const MailerSchedularGrid = ({
               setDeleteOpen((prev) => !prev);
               setSelectedRow(params.row);
             }}
+            size="small"
           >
             <DeleteIcon
               style={{ cursor: "pointer" }}
-              className="text-primary"
+              // className="text-primary"
             />
           </IconButton>
         </>

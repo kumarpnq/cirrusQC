@@ -30,6 +30,7 @@ import axiosInstance from "../../../axiosConfig";
 import CustomSingleSelect from "../../@core/CustomSingleSelect2";
 import { weeklyDays } from "../../constants/dataArray";
 const StyledItemWrapper = styled(Box)(({ theme }) => ({
+  minWidth: 400,
   display: "flex",
   alignItems: "center",
   gap: theme.spacing(0.5), // Using theme spacing for gap
@@ -198,6 +199,16 @@ const EditDialog = ({
       frequency: "Daily",
       updateType: "I",
     },
+    {
+      entityType: "magazine",
+      // companyIds: [],
+      // isSendReport: false,
+      // isIncludeReport: false,
+      slots: [],
+      loginName: "",
+      frequency: "Daily",
+      updateType: "I",
+    },
   ]);
   const [insertStatus2, setInsertStatus2] = useState([
     {
@@ -212,6 +223,11 @@ const EditDialog = ({
     },
     {
       entityType: "both",
+      login: "",
+      weekly: "",
+    },
+    {
+      entityType: "magazine",
       login: "",
       weekly: "",
     },
@@ -234,12 +250,32 @@ const EditDialog = ({
     }
   }, [open, row?.id, selectedClient]);
 
+  // * fetch client wise data
+  const [fetchedRow, setFetchedRow] = useState(null);
+  const fetchScheduleData = async () => {
+    try {
+      const response = await axiosInstance.get(
+        `scheduleForClient/?clientId=${row?.id}`
+      );
+
+      setFetchedRow(response.data.scheduleData.result);
+    } catch (error) {
+      console.log(error.message);
+    }
+  };
+
+  useEffect(() => {
+    if (open && openedFromWhere === "edit") {
+      fetchScheduleData();
+    }
+  }, [open, openedFromWhere, row]);
+
   useEffect(() => {
     if (open && openedFromWhere === "edit") {
       const modifiedScreenData = modifiedData?.[screenTypeDD];
 
       const filteredCompanies =
-        row?.scheduledCompanies
+        fetchedRow?.scheduledCompanies
           ?.filter((company) => company.isActive)
           .map((company) => company.companyId) || [];
 
@@ -247,7 +283,7 @@ const EditDialog = ({
         ? modifiedScreenData.slotUpdates
             .filter((slot) => slot.isActive)
             .map((slot) => slot.time)
-        : row?.schedule
+        : fetchedRow?.schedule
             ?.filter(
               (scheduleItem) =>
                 scheduleItem.isActive &&
@@ -255,8 +291,9 @@ const EditDialog = ({
                 scheduleItem.loginName === login
             )
             .map((scheduleItem) => scheduleItem.time) || [];
+
       const filteredWeekly =
-        row?.excludeDays
+        fetchedRow?.excludeDays
           ?.filter(
             (weekly) =>
               weekly.loginName === login && weekly.screenType === screenTypeDD
@@ -264,19 +301,19 @@ const EditDialog = ({
           .flatMap((weekly) => weekly.excludeDays) || [];
 
       const newInitialData = {
-        selectedClient: row?.id,
+        selectedClient: fetchedRow?.clientId,
         selectedCompany: modifiedScreenData?.companyUpdates?.length
           ? modifiedScreenData.companyUpdates.map(
               (company) => company.companyId
             )
           : filteredCompanies,
-        active: row.active,
-        every: row.schedule[0]?.isDayOrMonth || "Daily",
-        loginName: login || row?.schedule[0]?.loginName,
+        active: fetchedRow?.active,
+        every: fetchedRow?.schedule[0]?.isDayOrMonth || "Daily",
+        loginName: login || fetchedRow?.schedule[0]?.loginName,
         timeStamps: timeStamps,
         report: {
-          sendReport: report.sendReport ? report.sendReport : row?.sendReport,
-          lastReport: report.lastReport ? report.lastReport : row?.lastReport,
+          sendReport: report.sendReport ? "Yes" : fetchedRow?.sendReport,
+          lastReport: report.lastReport ? "Yes" : fetchedRow?.lastReport,
         },
         weekly: filteredWeekly || [],
       };
@@ -297,24 +334,26 @@ const EditDialog = ({
         setWeekly(newInitialData.weekly);
       } else {
         if (initialState) {
-          setSelectedClient(initialState.selectedClient || row?.id);
+          setSelectedClient(initialState.selectedClient || fetchedRow?.id);
           setSelectedCompany(initialState.selectedCompany || filteredCompanies);
-          setActive(initialState.active || row?.active);
+          setActive(initialState.active || fetchedRow?.active);
           setEvery(
-            initialState.every || row.schedule[0]?.isDayOrMonth || "Daily"
+            initialState.every ||
+              fetchedRow.schedule[0]?.isDayOrMonth ||
+              "Daily"
           );
           setTimeStamps(initialState.timeStamps || timeStamps);
           setReport(
             initialState.report || {
-              sendReport: row?.sendReport || report.sendReport,
-              lastReport: row?.lastReport || report.lastReport,
+              sendReport: fetchedRow?.sendReport || !!report.sendReport,
+              lastReport: fetchedRow?.lastReport || !!report.lastReport,
             }
           );
           setWeekly(initialState?.weekly);
         }
       }
     }
-  }, [open, openedFromWhere, row, screenTypeDD, login]);
+  }, [open, openedFromWhere, fetchedRow, screenTypeDD, login]);
 
   // * save the changes in state
   useEffect(() => {
@@ -428,6 +467,11 @@ const EditDialog = ({
           updateEntityStatus("both");
         }
 
+        // Handle "Magazine"
+        if (screenTypeDD === "magazine") {
+          updateEntityStatus("magazine");
+        }
+
         return updatedInsertStatus;
       });
     }
@@ -448,25 +492,6 @@ const EditDialog = ({
       );
 
       if (currentEntity) {
-        // if (
-        //   selectedCompany.length !== currentEntity.companyIds.length ||
-        //   !selectedCompany.every(
-        //     (id, index) => id === currentEntity.companyIds[index]
-        //   )
-        // ) {
-        //   setSelectedCompany(currentEntity.companyIds || []);
-        // }
-
-        // if (
-        //   report.sendReport !== currentEntity.isSendReport ||
-        //   report.lastReport !== currentEntity.isIncludeReport
-        // ) {
-        //   setReport({
-        //     sendReport: currentEntity.isSendReport,
-        //     lastReport: currentEntity.isIncludeReport,
-        //   });
-        // }
-
         if (
           timeStamps.length !== currentEntity.slots.length ||
           !timeStamps.every(
@@ -547,9 +572,6 @@ const EditDialog = ({
         openedFromWhere === "edit" ? [data] : dataForAdd
       );
       if (response.status === 200) {
-        handleClose();
-        handleFetch();
-        console.log(response.data?.success[0]);
         toast.success(response.data?.success[0]);
       }
     } catch (error) {
@@ -573,10 +595,10 @@ const EditDialog = ({
 
       // Check if there are any changes
       const hasReportChanges =
-        row?.sendReport !== report.sendReport ||
-        row?.lastReport !== report.lastReport;
+        fetchedRow?.sendReport !== report.sendReport ||
+        fetchedRow?.lastReport !== report.lastReport;
 
-      const hasActiveChanges = row?.active !== active;
+      const hasActiveChanges = fetchedRow?.active !== active;
 
       const hasFrequencyChanges = initialState.every !== every;
 
@@ -601,24 +623,18 @@ const EditDialog = ({
         // entityType: "",
         // slots: [{ time: "", isActive: "" }],
         // frequency: "",
-        updateType: "U",
+        // updateType: "U",
 
         loginName: login,
       };
-      // if (hasCompanyChanges) {
-      //   requestData.companyIds = companyUpdates;
-      // }
-      // if (hasSlotChanges) {
-      //   requestData.slots = slotUpdates;
-      // }
 
-      if (row?.sendReport !== report.sendReport) {
+      if (fetchedRow?.sendReport !== report.sendReport) {
         requestData.isSendReport = report.sendReport;
       }
-      if (row?.lastReport !== report.lastReport) {
-        requestData.isIncludeReport = report.sendReport;
+      if (fetchedRow?.lastReport !== report.lastReport) {
+        requestData.isIncludeReport = report.lastReport;
       }
-      if (row?.active !== active) {
+      if (fetchedRow?.active !== active) {
         requestData.isActive = active;
       }
 
@@ -640,11 +656,17 @@ const EditDialog = ({
           };
 
           if (slotUpdates && slotUpdates.length > 0) {
-            update.slots = slotUpdates;
+            update.slots = slotUpdates.map((slot) => ({
+              time: slot.time,
+              isActive: slot.isActive ? "Yes" : "No",
+            }));
           }
 
           if (companyUpdates && companyUpdates.length > 0) {
-            update.companyIds = companyUpdates;
+            update.companies = companyUpdates.map((company) => ({
+              companyId: company.companyId,
+              isActive: company.isActive ? "Yes" : "No",
+            }));
           }
 
           if (weeklyUpdates && weeklyUpdates.length > 0) {
@@ -657,15 +679,9 @@ const EditDialog = ({
 
       const SlotOrCompanyObj = data.length ? data[0] : {};
 
-      const dataToSave = [
-        {
-          ...requestData,
-          ...SlotOrCompanyObj,
-        },
-      ];
-
       const requestDataInDict = {
-        data: dataToSave,
+        ...requestData,
+        ...SlotOrCompanyObj,
       };
 
       const response = await axiosInstance.post(
@@ -673,13 +689,22 @@ const EditDialog = ({
         requestDataInDict
       );
 
-      if (response.data.scheduleData?.success?.length) {
+      if (response.data.scheduleData?.status === "success") {
+        setInitialState(null);
+        setFetchedRow(null);
         setModifiedData([]);
-        handleClose();
-        handleFetch();
-        toast.info(
-          ` ${response.data.scheduleData?.success?.length} Schedule updated successfully`
-        );
+        setScreenTypeDD("print");
+        setSelectedClient("");
+        setSelectedCompany([]);
+        setEvery("Daily");
+        setTimeStamps([]);
+        setReport({
+          sendReport: false,
+          lastReport: false,
+        });
+        setLogin("");
+        fetchScheduleData();
+        toast.info(`Schedule updated successfully`);
       } else {
         toast.info(
           ` ${response.data.scheduleData?.error?.length} Schedule not updated.`
@@ -744,11 +769,11 @@ const EditDialog = ({
       };
 
       const response = await axiosInstance.post(
-        `updateMailerScheduler/`,
+        `insertMailerSchedule/`,
         requestData
       );
 
-      if (response.data.scheduleData?.success?.length) {
+      if (response.data.scheduleData?.status === "success") {
         setInsertStatus([
           [
             {
@@ -781,6 +806,16 @@ const EditDialog = ({
               frequency: "Daily",
               updateType: "I",
             },
+            {
+              entityType: "magazine",
+              // companyIds: [],
+              // isSendReport: false,
+              // isIncludeReport: false,
+              slots: [],
+              loginName: "",
+              frequency: "Daily",
+              updateType: "I",
+            },
           ],
         ]);
         setScreenTypeDD("print");
@@ -796,9 +831,9 @@ const EditDialog = ({
 
         handleClose();
         handleFetch();
-        toast.info(`${response.data.scheduleData?.success?.[0]?.status}`);
+        toast.info(`${response.data.scheduleData?.message}`);
       } else {
-        toast.info(`${response.data.scheduleData?.error?.[0]?.status}`);
+        toast.info(`${response.data.scheduleData?.message}`);
       }
     } catch (error) {
       toast.error("Something went wrong.");
@@ -882,7 +917,7 @@ const EditDialog = ({
       maxWidth="md"
       sx={{ "& .MuiDialog-paper": { height: "90vh" } }}
     >
-      <DialogTitle fontSize={"1em"}>
+      <DialogTitle fontSize={"1em"} height={"7px"}>
         {openedFromWhere === "add" ? "Add" : "Edit"} Item
       </DialogTitle>
       <DialogContent
@@ -1004,6 +1039,11 @@ const EditDialog = ({
             <Tab
               label="Both"
               value="both"
+              sx={{ minHeight: "32px", fontSize: "0.8rem" }}
+            />
+            <Tab
+              label="Magazine"
+              value="magazine"
               sx={{ minHeight: "32px", fontSize: "0.8rem" }}
             />
           </Tabs>
