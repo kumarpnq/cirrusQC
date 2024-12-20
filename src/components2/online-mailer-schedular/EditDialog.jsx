@@ -859,6 +859,7 @@ const EditDialog = ({
     setInitialState(null);
     setLogin("");
     setLoginNames([]);
+    setFetchedRow(null);
     setInsertStatus([
       {
         entityType: "print",
