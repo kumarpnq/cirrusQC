@@ -106,7 +106,7 @@ const PreviewModal = ({ open, handleClose, row, query }) => {
             gap: 1,
             my: 1,
             p: 0.5,
-            justifyContent: "space-between",
+            justifyContent: "end",
           }}
           component={Paper}
         >

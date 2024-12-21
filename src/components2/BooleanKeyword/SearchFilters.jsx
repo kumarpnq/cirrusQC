@@ -27,7 +27,7 @@ const SearchFilters = ({ loading, setLoading, setData }) => {
       if (selectedCompany) params.companyId = selectedCompany;
       if (selectedValidity)
         params.isActive = selectedValidity === "Valid" ? "Y" : "N";
-      const response = await axiosInstance.get("keywordBoolean", { params });
+      const response = await axiosInstance.get("keywordBoolean/", { params });
 
       setData(response.data.data.data || []);
     } catch (error) {
