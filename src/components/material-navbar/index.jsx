@@ -22,6 +22,7 @@ import ShoppingBasketIcon from "@mui/icons-material/ShoppingBasket";
 import FolderCopyIcon from "@mui/icons-material/FolderCopy";
 import WhatsAppIcon from "@mui/icons-material/WhatsApp";
 import DeleteIcon from "@mui/icons-material/Delete";
+import MovieIcon from "@mui/icons-material/Movie";
 
 import MoreIcon from "@mui/icons-material/MoreVert";
 import Drawer from "@mui/material/Drawer";
@@ -229,6 +230,16 @@ export default function MainNav() {
             title: "Magazine Stitch",
             path: "/magazine-stitch",
             icon: <IoNewspaperOutline />,
+          },
+        ]
+      : []),
+      ...(screenPermissions.SocialMedia
+      ? [
+          {
+            id: 19,
+            title: "Social Media",
+            path: "/social-media",
+            icon: <MovieIcon />,
           },
         ]
       : []),

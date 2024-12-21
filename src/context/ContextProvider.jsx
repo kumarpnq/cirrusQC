@@ -38,6 +38,7 @@ const ContextProvider = ({ children }) => {
     userMaster: false,
     industryMaster: false,
     Master: false,
+    socialMedia: false,
   });
   const [permissionLoading, setPermissionLoading] = useState(false);
 

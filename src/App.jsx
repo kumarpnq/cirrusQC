@@ -35,6 +35,7 @@ import BooleanKeyword from "./pages/BooleanKeyword";
 import DeletePrintArticles from "./pages/DeletePrintArticles";
 import MagazineStitch from "./pages/MagazineStitch";
 import Master from "./pages/Master";
+import SocialMedia from "./pages/SocialMedia";
 
 // Lazy load the components
 const Home = lazy(() => import("./pages/Home"));
@@ -70,6 +71,7 @@ function App() {
     deletePrintArticles: false,
     magazineStitch: false,
     master: false,
+    socialMedia: false,
   });
   const [loading, setLoading] = useState(false);
 
@@ -131,6 +133,7 @@ function App() {
       deletePrintArticles: screenPermissions.DeletePrintArticles,
       magazineStitch: screenPermissions.MagazineStitch,
       master: screenPermissions.Master,
+      socialMedia: screenPermissions.SocialMedi
     });
   }, [screenPermissions]);
 
@@ -381,6 +384,18 @@ function App() {
                 element={
                   permissions.master ? (
                     <Master />
+                  ) : loading ? (
+                    <div>Loading...</div>
+                  ) : (
+                    <NotFound />
+                  )
+                }
+              />
+              <Route
+                path="/social-media"
+                element={
+                  permissions.socialMedia ? (
+                    <SocialMedia />
                   ) : loading ? (
                     <div>Loading...</div>
                   ) : (
