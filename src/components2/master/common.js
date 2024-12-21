@@ -17,7 +17,7 @@ export const StyledWrapper = styled(Box)(({ theme }) => ({
   alignItems: "center",
   gap: theme.spacing(1),
   margin: theme.spacing(0.2),
-  padding: theme.spacing(1),
+  padding: theme.spacing(0.5),
   border: `1px solid ${theme.palette.primary.main}`,
   borderRadius: theme.shape.borderRadius,
   boxShadow: `0 4px 8px rgba(0, 0, 0, 0.1)`,

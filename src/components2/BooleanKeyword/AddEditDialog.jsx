@@ -17,7 +17,9 @@ const AddEditDialog = ({ open, handleClose, fromWhere, row }) => {
   const fetchBooleanKeywords = async () => {
     try {
       const response = await axiosInstance.get(
-        `companyKeywords/?companyId=${row?.companyId}`
+        `companyKeywords/?companyId=${
+          row?.companyId || selectedClient.companyid
+        }`
       );
 
       let localIncludeQuery = response.data.data.data.includeQuery || [];

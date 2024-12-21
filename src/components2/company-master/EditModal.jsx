@@ -21,12 +21,23 @@ import useFetchData from "../../hooks/useFetchData";
 import axios from "axios";
 import { toast } from "react-toastify";
 
-const StyledFormControl = styled(FormControl)({
+const StyledFormControl = styled(FormControl)(({ theme }) => ({
   display: "flex",
   alignItems: "center",
+  justifyContent: "center",
   flexDirection: "row",
-  gap: 2,
-});
+  gap: theme.spacing(0.5),
+  margin: theme.spacing(0.2),
+  padding: theme.spacing(0.5),
+  border: `1px solid ${theme.palette.primary.main}`,
+  borderRadius: theme.shape.borderRadius,
+  boxShadow: `0 4px 8px rgba(0, 0, 0, 0.1)`,
+  transition: "all 0.5s ease-in-out",
+  "&:hover": {
+    boxShadow: `0 6px 12px rgba(0, 0, 0, 0.2)`,
+  },
+  backgroundColor: theme.palette.background.default,
+}));
 
 const StyledTypo = styled(Typography)({
   textTransform: "uppercase",
@@ -188,7 +199,7 @@ const CompanyFormModal = ({ open, handleClose, rowId, isEdit }) => {
               borderRadius: "3px",
             }}
           >
-            <StyledFormControl fullWidth margin="normal">
+            <StyledFormControl>
               <StyledTypo variant="body2">Company ID : </StyledTypo>
               <CustomTextField
                 value={companyId}
@@ -198,7 +209,7 @@ const CompanyFormModal = ({ open, handleClose, rowId, isEdit }) => {
               />
             </StyledFormControl>
 
-            <StyledFormControl fullWidth margin="normal">
+            <StyledFormControl>
               <StyledTypo variant="body2">Company Name : </StyledTypo>
               <CustomTextField
                 value={companyName}
@@ -208,7 +219,7 @@ const CompanyFormModal = ({ open, handleClose, rowId, isEdit }) => {
               />
             </StyledFormControl>
 
-            <StyledFormControl fullWidth margin="normal">
+            <StyledFormControl>
               <StyledTypo variant="body2"> Parent Company : </StyledTypo>
               <CustomTextField
                 value={parentCompany}
@@ -218,7 +229,7 @@ const CompanyFormModal = ({ open, handleClose, rowId, isEdit }) => {
               />
             </StyledFormControl>
 
-            <StyledFormControl fullWidth margin="normal">
+            <StyledFormControl>
               <StyledTypo variant="body2">Short Company : </StyledTypo>
               <CustomTextField
                 value={shortCompany}
@@ -228,7 +239,7 @@ const CompanyFormModal = ({ open, handleClose, rowId, isEdit }) => {
               />
             </StyledFormControl>
 
-            <StyledFormControl fullWidth margin="normal">
+            <StyledFormControl>
               <StyledTypo variant="body2">Industry : </StyledTypo>
               <FormControl
                 variant="outlined"
@@ -260,7 +271,7 @@ const CompanyFormModal = ({ open, handleClose, rowId, isEdit }) => {
               </FormControl>
             </StyledFormControl>
 
-            <StyledFormControl fullWidth margin="normal">
+            <StyledFormControl>
               <StyledTypo variant="body2">Subcategory : </StyledTypo>
 
               <YesOrNo
@@ -272,7 +283,7 @@ const CompanyFormModal = ({ open, handleClose, rowId, isEdit }) => {
               />
             </StyledFormControl>
 
-            <StyledFormControl fullWidth margin="normal">
+            <StyledFormControl>
               <StyledTypo variant="body2">QC3 : </StyledTypo>
               <YesOrNo
                 classes={classes}
@@ -283,7 +294,7 @@ const CompanyFormModal = ({ open, handleClose, rowId, isEdit }) => {
               />
             </StyledFormControl>
 
-            <StyledFormControl fullWidth margin="normal">
+            <StyledFormControl>
               <StyledTypo variant="body2">Country : </StyledTypo>
               <FormControl
                 variant="outlined"
@@ -315,7 +326,7 @@ const CompanyFormModal = ({ open, handleClose, rowId, isEdit }) => {
               </FormControl>
             </StyledFormControl>
 
-            <StyledFormControl fullWidth margin="normal">
+            <StyledFormControl>
               <StyledTypo variant="body2">Active : </StyledTypo>
               <YesOrNo
                 classes={classes}
